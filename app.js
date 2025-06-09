@@ -137,12 +137,7 @@ function updateAllDisplays() {
 }
 
 function updateDynamicContent() {
-    Object.values(DOMElements).forEach(el => {
-        if (el && el.classList.contains('content-section')) {
-            el.classList.add('hidden');
-        }
-    });
-
+    document.querySelectorAll('.content-section').forEach(section => section.classList.add('hidden'));
     const activeSection = DOMElements[`${currentSettings.viewMode}-section`];
     if (activeSection) {
         activeSection.classList.remove('hidden');
@@ -183,8 +178,8 @@ function updateCurrentStatus() {
         DOMElements['action-icon']?.textContent = '⚡';
         DOMElements['action-text']?.innerHTML = `<strong>HIGH PRIORITY ACTIVE!</strong><br>${alignment.reason}`;
     } else {
-        DOMElements['action-icon']?.textContent = armsPhase.icon;
         const activities = appData.arms_race_phases.find(p => p.name === armsPhase.name)?.activities;
+        DOMElements['action-icon']?.textContent = armsPhase.icon;
         DOMElements['action-text']?.innerHTML = `<strong>Normal Phase:</strong> Focus on ${activities ? activities[0] : 'general tasks'}.`;
     }
   }

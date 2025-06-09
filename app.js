@@ -256,7 +256,8 @@ class LastWarNexus {
       'priority-grid', 'schedule-grid', 'intelligence-content',
       'priority-count', 'schedule-count', 'intel-count', 'event-modal', 'modal-title',
       'modal-body', 'modal-close', 'modal-share', 'modal-remind',
-      'time-format-dropdown', 'detail-level-dropdown', 'view-scope-dropdown'
+      'time-format-dropdown', 'detail-level-dropdown', 'view-scope-dropdown',
+      'bottom-priority-cards', 'bottom-priority-grid', 'minimize-cards', 'bottom-cards-content'
     ];
     
     let allElementsFound = true;
@@ -306,6 +307,7 @@ class LastWarNexus {
         this.addEventListener(this.elements.timeformatdropdown, 'change', (e) => {
           this.settings.timeFormat = e.target.value;
           this.updateAllDisplays();
+          this.updateBottomPriorityCards();
         });
       }
 
@@ -335,6 +337,13 @@ class LastWarNexus {
         this.addEventListener(this.elements.currentarmsstatus, 'click', (e) => {
           e.preventDefault();
           this.toggleDetail('armsRace');
+        });
+      }
+
+      if (this.elements.minimizecards) {
+        this.addEventListener(this.elements.minimizecards, 'click', (e) => {
+          e.preventDefault();
+          this.toggleBottomCards();
         });
       }
 
@@ -573,6 +582,7 @@ class LastWarNexus {
       this.updateCurrentStatus();
       this.updateCountdown();
       this.updateProgress();
+      this.updateBottomPriorityCards();
     } catch (error) {
       console.error('Error updating displays:', error);
     }
@@ -987,6 +997,94 @@ class LastWarNexus {
     } catch (error) {
       console.error('Error creating week schedule:', error);
     }
+  }
+
+  toggleBottomCards() {
+    try {
+      if (this.elements.bottomprioritycards) {
+        this.elements.bottomprioritycards.classList.toggle('minimized');
+        const btn = this.elements.minimizecards;
+        if (btn) {
+          btn.textContent = this.elements.bottomprioritycards.classList.contains('minimized') ? '+' : '−';
+        }
+      }
+    } catch (error) {
+      console.error('Error toggling bottom cards:', error);
+    }
+  }
+
+  updateBottomPriorityCards() {
+    try {
+      if (!this.elements.bottomprioritygrid) return;
+      
+      this.elements.bottomprioritygrid.innerHTML = '';
+      const { utcDay, utcHour } = this.getCurrentUTCInfo();
+      
+      let windows = this.getAllHighPriorityWindows().filter(w => {
+        const isActive = (w.vsDay === utcDay) && (w.hour <= utcHour && utcHour < (w.hour + 4));
+        const isUpcoming = this.isUpcomingWindow(w, utcDay, utcHour);
+        return isActive || isUpcoming;
+      }).slice(0, 6);
+      
+      windows.forEach(window => {
+        const isActive = (window.vsDay === utcDay) && (window.hour <= utcHour && utcHour < (window.hour + 4));
+        
+        const card = document.createElement('div');
+        card.className = `bottom-priority-card ${isActive ? 'active' : ''}`;
+        
+        const timeText = this.formatTimeForDisplay(window.hour);
+        
+        card.innerHTML = `
+          <div class="bottom-card-header">
+            <div>
+              <div class="bottom-card-day">${window.vsDayData.name}</div>
+              <div class="bottom-card-time">${timeText}</div>
+            </div>
+            <div class="bottom-card-badge">${isActive ? 'ACTIVE' : 'UPCOMING'}</div>
+          </div>
+          <div class="bottom-card-content">
+            <div class="bottom-card-phase">${window.armsPhase.icon} ${window.armsPhase.name}</div>
+            ${window.alignment.reason}
+          </div>
+        `;
+        
+        card.addEventListener('click', () => {
+          this.showModal(window.alignment, window.vsDayData, window.armsPhase);
+        });
+        
+        this.elements.bottomprioritygrid.appendChild(card);
+      });
+    } catch (error) {
+      console.error('Error updating bottom priority cards:', error);
+    }
+  }
+
+  formatTimeForDisplay(hour) {
+    const now = new Date();
+    const eventTime = new Date();
+    eventTime.setUTCHours(hour, 0, 0, 0);
+    
+    if (this.settings.timeFormat === 'utc') {
+      return `${String(hour).padStart(2, '0')}:00 - ${String((hour + 4) % 24).padStart(2, '0')}:00 UTC`;
+    } else {
+      const startLocal = new Date(eventTime);
+      const endLocal = new Date(eventTime);
+      endLocal.setUTCHours((hour + 4) % 24);
+      
+      const startTime = startLocal.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const endTime = endLocal.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      
+      return `${startTime} - ${endTime} Local`;
+    }
+  }
+
+  isUpcomingWindow(window, currentDay, currentHour) {
+    if (window.vsDay === currentDay) {
+      return window.hour > currentHour;
+    }
+    
+    const daysUntil = (window.vsDay - currentDay + 7) % 7;
+    return daysUntil <= 2;
   }
 
   populateIntelligence() {

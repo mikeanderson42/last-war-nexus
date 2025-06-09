@@ -5,9 +5,10 @@ class LastWarNexus {
         this.maxInitAttempts = 3;
         
         // Server configuration
-        this.serverNumber = 555;
+        this.serverNumber = 1069;
         this.serverLaunchDate = null;
         this.phaseOffset = 0; // hours offset from UTC
+        this.currentArmsPhase = 'Drone Boost'; // User-selected current phase
         
         // Data structure
         this.data = {
@@ -139,14 +140,13 @@ class LastWarNexus {
             'modal-remind', 'time-format-dropdown', 'detail-level-dropdown', 'view-scope-dropdown',
             'bottom-priority-cards', 'bottom-priority-grid', 'minimize-cards', 'bottom-cards-content',
             'server-toggle', 'server-dropdown', 'server-input', 'apply-server', 'current-server',
-            'server-launch', 'phase-offset'
+            'server-launch', 'phase-offset', 'current-arms-phase'
         ];
 
         let allElementsFound = true;
         elementIds.forEach(id => {
             const element = document.getElementById(id);
             if (element) {
-                // Store with original ID to maintain consistency
                 this.elements[id] = element;
             } else {
                 console.warn(`Element not found: ${id}`);
@@ -208,6 +208,17 @@ class LastWarNexus {
                 this.addEventListenerSingle(this.elements['apply-server'], 'click', (e) => {
                     e.preventDefault();
                     this.applyServerSettings();
+                });
+            }
+
+            // Current Arms Race Phase selector
+            if (this.elements['current-arms-phase']) {
+                this.addEventListenerSingle(this.elements['current-arms-phase'], 'change', (e) => {
+                    this.currentArmsPhase = e.target.value;
+                    this.calculateOffsetFromCurrentPhase();
+                    this.updateServerInfoDisplay();
+                    this.saveServerSettings();
+                    this.updateAllDisplays();
                 });
             }
 
@@ -342,9 +353,15 @@ class LastWarNexus {
             const saved = localStorage.getItem('lwn-server-settings');
             if (saved) {
                 const settings = JSON.parse(saved);
-                this.serverNumber = settings.serverNumber || 555;
+                this.serverNumber = settings.serverNumber || 1069;
                 this.phaseOffset = settings.phaseOffset || 0;
+                this.currentArmsPhase = settings.currentArmsPhase || 'Drone Boost';
                 this.serverLaunchDate = settings.serverLaunchDate ? new Date(settings.serverLaunchDate) : null;
+                
+                // Restore current arms phase selection
+                if (this.elements['current-arms-phase']) {
+                    this.elements['current-arms-phase'].value = this.currentArmsPhase;
+                }
             }
             this.updateServerDisplay();
             this.calculateServerInfo();
@@ -358,6 +375,7 @@ class LastWarNexus {
             const settings = {
                 serverNumber: this.serverNumber,
                 phaseOffset: this.phaseOffset,
+                currentArmsPhase: this.currentArmsPhase,
                 serverLaunchDate: this.serverLaunchDate?.toISOString()
             };
             localStorage.setItem('lwn-server-settings', JSON.stringify(settings));
@@ -385,62 +403,68 @@ class LastWarNexus {
             }
 
             this.serverNumber = parseInt(serverInput, 10);
+            this.currentArmsPhase = this.elements['current-arms-phase']?.value || 'Drone Boost';
             this.calculateServerInfo();
             this.updateServerDisplay();
             this.saveServerSettings();
             this.closeDropdown();
             this.updateAllDisplays();
             
-            console.log(`Server updated to: ${this.serverNumber}`);
+            console.log(`Server updated to: ${this.serverNumber}, Current phase: ${this.currentArmsPhase}`);
         } catch (error) {
             console.error('Error applying server settings:', error);
         }
     }
 
-  calculateServerInfo() {
-    try {
-        // Calculate server launch date based on server number
-        const baseDate = new Date('2023-01-01T00:00:00Z');
-        const daysOffset = Math.floor((this.serverNumber - 1) / 10) * 7;
-        
-        this.serverLaunchDate = new Date(baseDate);
-        this.serverLaunchDate.setUTCDate(baseDate.getUTCDate() + daysOffset);
-        
-        // Improved phase offset calculation for different server ranges
-        this.phaseOffset = this.calculateArmsRaceOffset(this.serverNumber);
-        
-        this.updateServerInfoDisplay();
-    } catch (error) {
-        console.error('Error calculating server info:', error);
+    calculateServerInfo() {
+        try {
+            // Calculate server launch date based on server number
+            const baseDate = new Date('2023-01-01T00:00:00Z');
+            const daysOffset = Math.floor((this.serverNumber - 1) / 10) * 7;
+            
+            this.serverLaunchDate = new Date(baseDate);
+            this.serverLaunchDate.setUTCDate(baseDate.getUTCDate() + daysOffset);
+            
+            // Use user-selected current phase to calculate offset
+            this.calculateOffsetFromCurrentPhase();
+            
+            this.updateServerInfoDisplay();
+        } catch (error) {
+            console.error('Error calculating server info:', error);
+        }
     }
-}
 
-calculateArmsRaceOffset(serverNumber) {
-    // Different server ranges have different Arms Race timing offsets
-    // Based on observed patterns from various servers
-    
-    if (serverNumber >= 1000) {
-        // High server numbers (1000+) - server 1069 observed with 12-hour offset
-        const baseOffset = 12; // Base offset for 1000+ servers  
-        const variation = Math.floor((serverNumber - 1000) / 100) * 1; // Small variations
-        return (baseOffset + variation) % 24;
-    } else if (serverNumber >= 500) {
-        // Mid-range servers (500-999)
-        const baseOffset = 8;
-        const variation = Math.floor((serverNumber - 500) / 25) * 1;
-        return (baseOffset + variation) % 24;
-    } else if (serverNumber >= 100) {
-        // Lower-mid range servers (100-499)
-        const baseOffset = 4;
-        const variation = Math.floor((serverNumber - 100) / 20) * 1;
-        return (baseOffset + variation) % 24;
-    } else {
-        // Early servers (1-99) - closer to standard UTC timing
-        return (serverNumber % 4) * 2;
+    calculateOffsetFromCurrentPhase() {
+        try {
+            const selectedPhase = this.currentArmsPhase;
+            const now = new Date();
+            const currentUTCHour = now.getUTCHours();
+            
+            // Find what hour this phase should start in standard UTC schedule
+            const standardSchedule = {
+                'Mixed Phase': 0,
+                'Drone Boost': 4, 
+                'City Building': 8,
+                'Tech Research': 12,
+                'Hero Advancement': 16,
+                'Unit Progression': 20
+            };
+            
+            const standardStartHour = standardSchedule[selectedPhase];
+            if (standardStartHour !== undefined) {
+                // Calculate the offset needed to align current UTC time with selected phase
+                let offset = currentUTCHour - standardStartHour;
+                
+                // Adjust for phases that cross day boundary
+                if (offset < -12) offset += 24;
+                if (offset > 12) offset -= 24;
+                
+                this.phaseOffset = offset;
+            }
+        } catch (error) {
+            console.error('Error calculating offset from current phase:', error);
+        }
     }
-}
-
-
 
     updateServerDisplay() {
         if (this.elements['current-server']) {
@@ -448,6 +472,9 @@ calculateArmsRaceOffset(serverNumber) {
         }
         if (this.elements['server-input']) {
             this.elements['server-input'].value = this.serverNumber;
+        }
+        if (this.elements['current-arms-phase']) {
+            this.elements['current-arms-phase'].value = this.currentArmsPhase;
         }
     }
 
@@ -829,8 +856,7 @@ calculateArmsRaceOffset(serverNumber) {
 
     updateProgress() {
         try {
-            const now = new Date();
-            const utcHour = now.getUTCHours();
+            const { utcHour } = this.getCurrentUTCInfo();
             
             const phaseSchedule = [
                 { start: 0, end: 4 }, // Mixed Phase
@@ -851,6 +877,7 @@ calculateArmsRaceOffset(serverNumber) {
 
             if (!currentPhase) return;
 
+            const now = this.getServerTime();
             const phaseStart = new Date(now);
             phaseStart.setUTCHours(currentPhase.start, 0, 0, 0);
             const elapsedMs = now - phaseStart;
@@ -1297,15 +1324,6 @@ calculateArmsRaceOffset(serverNumber) {
     }
 
     // Data helper methods
-    getCurrentUTCInfo() {
-        const now = new Date();
-        return {
-            utcDay: now.getUTCDay(),
-            utcHour: now.getUTCHours(),
-            utcMinute: now.getUTCMinutes()
-        };
-    }
-
     getVSDayData(utcDay) {
         return this.data.vsdays.find(d => d.day === utcDay) || this.data.vsdays[0];
     }

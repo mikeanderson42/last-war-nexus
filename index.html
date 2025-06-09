@@ -44,7 +44,7 @@
                     <button class="server-btn" id="server-toggle" type="button">
                         <span class="server-icon">🌐</span>
                         <span class="server-label">Server </span>
-                        <span id="current-server">555</span>
+                        <span id="current-server">1069</span>
                     </button>
                     <div class="server-dropdown" id="server-dropdown">
                         <div class="dropdown-header">
@@ -53,7 +53,18 @@
                         <div class="dropdown-content">
                             <div class="setting-row">
                                 <label for="server-input">Server Number</label>
-                                <input type="number" id="server-input" class="server-input" placeholder="Enter server number" min="1" max="9999" value="555">
+                                <input type="number" id="server-input" class="server-input" placeholder="Enter server number" min="1" max="9999" value="1069">
+                            </div>
+                            <div class="setting-row" style="margin-top: 12px;">
+                                <label for="current-arms-phase">Current Arms Race Phase</label>
+                                <select id="current-arms-phase" class="dropdown-select">
+                                    <option value="Mixed Phase">🔄 Mixed Phase</option>
+                                    <option value="Drone Boost" selected>🚁 Drone Boost</option>
+                                    <option value="City Building">🏗️ City Building</option>
+                                    <option value="Tech Research">🔬 Tech Research</option>
+                                    <option value="Hero Advancement">⚔️ Hero Advancement</option>
+                                    <option value="Unit Progression">🏟️ Unit Progression</option>
+                                </select>
                             </div>
                             <div class="server-info" id="server-info">
                                 <div class="info-row">

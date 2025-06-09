@@ -7,18 +7,11 @@ class LastWarNexus {
     this.data = {
       arms_race_phases: [
         {
-          id: 1, 
-          name: "City Building", 
-          icon: "🏗️", 
-          activities: ["Building upgrades", "Construction speedups"],
-          pointSources: ["Complete building upgrades", "Use construction speedups", "Finish building projects", "Upgrade headquarters", "Construct new buildings"]
-        },
-        {
-          id: 2, 
-          name: "Unit Progression", 
-          icon: "⚔️", 
-          activities: ["Troop training", "Training speedups"],
-          pointSources: ["Train troops", "Use training speedups", "Complete troop upgrades", "Unlock new units", "Enhance unit capabilities"]
+          id: 6, 
+          name: "Mixed Phase", 
+          icon: "🔄", 
+          activities: ["Check in-game calendar"],
+          pointSources: ["Check calendar for current focus", "Mixed activities", "Various point sources", "Event-specific tasks", "General progression"]
         },
         {
           id: 3, 
@@ -42,11 +35,18 @@ class LastWarNexus {
           pointSources: ["Recruit new heroes", "Apply hero EXP", "Upgrade hero skills", "Enhance hero equipment", "Complete hero missions"]
         },
         {
-          id: 6, 
-          name: "Mixed Phase", 
-          icon: "🔄", 
-          activities: ["Check in-game calendar"],
-          pointSources: ["Check calendar for current focus", "Mixed activities", "Various point sources", "Event-specific tasks", "General progression"]
+          id: 1, 
+          name: "City Building", 
+          icon: "🏗️", 
+          activities: ["Building upgrades", "Construction speedups"],
+          pointSources: ["Complete building upgrades", "Use construction speedups", "Finish building projects", "Upgrade headquarters", "Construct new buildings"]
+        },
+        {
+          id: 2, 
+          name: "Unit Progression", 
+          icon: "⚔️", 
+          activities: ["Troop training", "Training speedups"],
+          pointSources: ["Train troops", "Use training speedups", "Complete troop upgrades", "Unlock new units", "Enhance unit capabilities"]
         }
       ],
       vs_days: [
@@ -669,14 +669,38 @@ class LastWarNexus {
 
   calculatePhaseTimeRemaining(utcHour, utcMinute) {
     try {
-      const currentPhaseStart = Math.floor(utcHour / 4) * 4;
-      const currentPhaseEnd = currentPhaseStart + 4;
+      const phaseSchedule = [
+        { start: 3, end: 7 },   // Mixed Phase
+        { start: 7, end: 11 },  // Tech Research  
+        { start: 11, end: 15 }, // Drone Boost
+        { start: 15, end: 19 }, // Hero Advancement
+        { start: 19, end: 23 }, // City Building
+        { start: 23, end: 3 }   // Unit Progression (crosses midnight)
+      ];
+      
+      let currentPhaseEnd = null;
+      
+      for (const phase of phaseSchedule) {
+        if (phase.start < phase.end) {
+          if (utcHour >= phase.start && utcHour < phase.end) {
+            currentPhaseEnd = phase.end;
+            break;
+          }
+        } else {
+          if (utcHour >= phase.start || utcHour < phase.end) {
+            currentPhaseEnd = phase.end;
+            break;
+          }
+        }
+      }
+      
+      if (!currentPhaseEnd) return "Unknown";
       
       const now = new Date();
       const phaseEndTime = new Date();
       phaseEndTime.setUTCHours(currentPhaseEnd % 24, 0, 0, 0);
       
-      if (currentPhaseEnd >= 24) {
+      if (currentPhaseEnd < utcHour || (currentPhaseEnd === 3 && utcHour >= 23)) {
         phaseEndTime.setUTCDate(phaseEndTime.getUTCDate() + 1);
       }
       
@@ -753,9 +777,41 @@ class LastWarNexus {
   updateProgress() {
     try {
       const now = new Date();
-      const phaseStartHour = Math.floor(now.getUTCHours() / 4) * 4;
+      const utcHour = now.getUTCHours();
+      
+      const phaseSchedule = [
+        { start: 3, end: 7 },   // Mixed Phase
+        { start: 7, end: 11 },  // Tech Research  
+        { start: 11, end: 15 }, // Drone Boost
+        { start: 15, end: 19 }, // Hero Advancement
+        { start: 19, end: 23 }, // City Building
+        { start: 23, end: 3 }   // Unit Progression
+      ];
+      
+      let currentPhase = null;
+      
+      for (const phase of phaseSchedule) {
+        if (phase.start < phase.end) {
+          if (utcHour >= phase.start && utcHour < phase.end) {
+            currentPhase = phase;
+            break;
+          }
+        } else {
+          if (utcHour >= phase.start || utcHour < phase.end) {
+            currentPhase = phase;
+            break;
+          }
+        }
+      }
+      
+      if (!currentPhase) return;
+      
       const phaseStart = new Date(now);
-      phaseStart.setUTCHours(phaseStartHour, 0, 0, 0);
+      phaseStart.setUTCHours(currentPhase.start, 0, 0, 0);
+      
+      if (currentPhase.start > utcHour && currentPhase.start === 23) {
+        phaseStart.setUTCDate(phaseStart.getUTCDate() - 1);
+      }
       
       const elapsedMs = now - phaseStart;
       const phaseLengthMs = 4 * 60 * 60 * 1000;
@@ -807,19 +863,17 @@ class LastWarNexus {
       let windows = this.getAllHighPriorityWindows();
       
       if (this.activeFilter === 'active') {
-        windows = windows.filter(w => w.vsDay === utcDay && w.hour <= utcHour && utcHour < (w.hour + 4));
+        windows = windows.filter(w => this.isPhaseActive(w.hour, utcDay, utcHour, w.vsDay));
       } else if (this.activeFilter === 'upcoming') {
         const now = new Date();
         windows = windows.filter(w => {
-          const eventTime = new Date();
-          eventTime.setUTCDate(eventTime.getUTCDate() + (w.vsDay - utcDay + 7) % 7);
-          eventTime.setUTCHours(w.hour, 0, 0, 0);
+          const eventTime = this.getPhaseStartTime(w.hour, w.vsDay);
           return eventTime > now;
         });
       }
       
       windows.forEach(window => {
-        const isActive = (window.vsDay === utcDay) && (window.hour <= utcHour && utcHour < (window.hour + 4));
+        const isActive = this.isPhaseActive(window.hour, utcDay, utcHour, window.vsDay);
         
         const eventCard = document.createElement('div');
         eventCard.className = `priority-event ${isActive ? 'active' : ''}`;
@@ -828,7 +882,7 @@ class LastWarNexus {
           <div class="priority-badge">MAX VALUE</div>
           <div class="event-header">
             <div class="event-day">${window.vsDayData.name}</div>
-            <div class="event-time">${String(window.hour).padStart(2, '0')}:00 - ${String((window.hour + 4) % 24).padStart(2, '0')}:00 UTC</div>
+            <div class="event-time">${this.getPhaseTimeDisplay(window.hour)}</div>
           </div>
           <div class="event-details">
             <div class="event-phase">${window.armsPhase.icon} ${window.armsPhase.name}</div>
@@ -901,18 +955,20 @@ class LastWarNexus {
       const timeSlots = document.createElement('div');
       timeSlots.className = 'time-slots';
       
-      for (let h = 0; h < 24; h += 4) {
+      const phaseHours = [3, 7, 11, 15, 19, 23];
+      
+      phaseHours.forEach(h => {
         const armsPhase = this.getArmsRacePhase(h);
         const alignment = this.getAlignment(todayData.day, armsPhase.name);
         
         const { utcHour } = this.getCurrentUTCInfo();
-        const isCurrentSlot = h <= utcHour && utcHour < h + 4;
+        const isCurrentSlot = this.isPhaseActive(h, todayData.day, utcHour, todayData.day);
         
         const slot = document.createElement('div');
         slot.className = `time-slot ${alignment ? 'priority' : ''} ${isCurrentSlot ? 'current' : ''}`;
         
         let slotContent = `
-          <div class="slot-time">${String(h).padStart(2, '0')}:00 - ${String((h + 4) % 24).padStart(2, '0')}:00</div>
+          <div class="slot-time">${this.getPhaseTimeDisplay(h)}</div>
           <div class="slot-phase">${armsPhase.icon} ${armsPhase.name}</div>
         `;
         
@@ -934,7 +990,7 @@ class LastWarNexus {
         }
         
         timeSlots.appendChild(slot);
-      }
+      });
       
       todayContainer.appendChild(timeSlots);
       this.elements.schedulegrid.appendChild(todayContainer);
@@ -948,7 +1004,7 @@ class LastWarNexus {
       const weekGrid = document.createElement('div');
       weekGrid.className = 'schedule-grid';
       
-      const headers = ['Day/Time', '00:00', '04:00', '08:00', '12:00', '16:00', '20:00'];
+      const headers = ['Day/Time', '03:00', '07:00', '11:00', '15:00', '19:00', '23:00'];
       headers.forEach(h => {
         const headerCell = document.createElement('div');
         headerCell.className = 'schedule-header';
@@ -962,7 +1018,8 @@ class LastWarNexus {
         dayCell.textContent = vsDayData.name;
         weekGrid.appendChild(dayCell);
 
-        for (let h = 0; h < 24; h += 4) {
+        const phaseHours = [3, 7, 11, 15, 19, 23];
+        phaseHours.forEach(h => {
           const armsPhase = this.getArmsRacePhase(h);
           const cell = document.createElement('div');
           cell.className = 'schedule-cell';
@@ -971,7 +1028,7 @@ class LastWarNexus {
           if (alignment) cell.classList.add('priority');
 
           const { utcDay, utcHour } = this.getCurrentUTCInfo();
-          if (vsDayData.day === utcDay && h <= utcHour && utcHour < h + 4) {
+          if (this.isPhaseActive(h, utcDay, utcHour, vsDayData.day)) {
             cell.classList.add('current');
           }
 
@@ -990,7 +1047,7 @@ class LastWarNexus {
           }
           
           weekGrid.appendChild(cell);
-        }
+        });
       });
       
       this.elements.schedulegrid.appendChild(weekGrid);
@@ -1021,13 +1078,13 @@ class LastWarNexus {
       const { utcDay, utcHour } = this.getCurrentUTCInfo();
       
       let windows = this.getAllHighPriorityWindows().filter(w => {
-        const isActive = (w.vsDay === utcDay) && (w.hour <= utcHour && utcHour < (w.hour + 4));
+        const isActive = this.isPhaseActive(w.hour, utcDay, utcHour, w.vsDay);
         const isUpcoming = this.isUpcomingWindow(w, utcDay, utcHour);
         return isActive || isUpcoming;
       }).slice(0, 6);
       
       windows.forEach(window => {
-        const isActive = (window.vsDay === utcDay) && (window.hour <= utcHour && utcHour < (window.hour + 4));
+        const isActive = this.isPhaseActive(window.hour, utcDay, utcHour, window.vsDay);
         
         const card = document.createElement('div');
         card.className = `bottom-priority-card ${isActive ? 'active' : ''}`;
@@ -1060,22 +1117,50 @@ class LastWarNexus {
   }
 
   formatTimeForDisplay(hour) {
-    const now = new Date();
-    const eventTime = new Date();
-    eventTime.setUTCHours(hour, 0, 0, 0);
+    const phaseEnd = this.getPhaseEndHour(hour);
     
     if (this.settings.timeFormat === 'utc') {
-      return `${String(hour).padStart(2, '0')}:00 - ${String((hour + 4) % 24).padStart(2, '0')}:00 UTC`;
+      return `${String(hour).padStart(2, '0')}:00 - ${String(phaseEnd).padStart(2, '0')}:00 UTC`;
     } else {
-      const startLocal = new Date(eventTime);
-      const endLocal = new Date(eventTime);
-      endLocal.setUTCHours((hour + 4) % 24);
+      const startLocal = new Date();
+      startLocal.setUTCHours(hour, 0, 0, 0);
+      const endLocal = new Date();
+      endLocal.setUTCHours(phaseEnd, 0, 0, 0);
       
       const startTime = startLocal.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       const endTime = endLocal.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       
       return `${startTime} - ${endTime} Local`;
     }
+  }
+
+  getPhaseTimeDisplay(hour) {
+    const phaseEnd = this.getPhaseEndHour(hour);
+    return `${String(hour).padStart(2, '0')}:00 - ${String(phaseEnd).padStart(2, '0')}:00 UTC`;
+  }
+
+  getPhaseEndHour(startHour) {
+    return (startHour + 4) % 24;
+  }
+
+  isPhaseActive(phaseHour, currentDay, currentHour, phaseDay) {
+    if (currentDay !== phaseDay) return false;
+    
+    const phaseEnd = this.getPhaseEndHour(phaseHour);
+    
+    if (phaseHour < phaseEnd) {
+      return currentHour >= phaseHour && currentHour < phaseEnd;
+    } else {
+      return currentHour >= phaseHour || currentHour < phaseEnd;
+    }
+  }
+
+  getPhaseStartTime(hour, vsDay) {
+    const now = new Date();
+    const eventTime = new Date();
+    eventTime.setUTCDate(eventTime.getUTCDate() + (vsDay - now.getUTCDay() + 7) % 7);
+    eventTime.setUTCHours(hour, 0, 0, 0);
+    return eventTime;
   }
 
   isUpcomingWindow(window, currentDay, currentHour) {
@@ -1212,7 +1297,22 @@ class LastWarNexus {
   }
 
   getArmsRacePhase(utcHour) {
-    return this.data.arms_race_phases[Math.floor(utcHour / 4) % 6];
+    const phaseSchedule = [
+      { hours: [3, 4, 5, 6], index: 0 },    // Mixed Phase
+      { hours: [7, 8, 9, 10], index: 1 },   // Tech Research
+      { hours: [11, 12, 13, 14], index: 2 }, // Drone Boost
+      { hours: [15, 16, 17, 18], index: 3 }, // Hero Advancement
+      { hours: [19, 20, 21, 22], index: 4 }, // City Building
+      { hours: [23, 0, 1, 2], index: 5 }     // Unit Progression
+    ];
+    
+    for (const phase of phaseSchedule) {
+      if (phase.hours.includes(utcHour)) {
+        return this.data.arms_race_phases[phase.index];
+      }
+    }
+    
+    return this.data.arms_race_phases[0];
   }
 
   getAlignment(utcDay, armsPhaseName) {
@@ -1223,21 +1323,23 @@ class LastWarNexus {
 
   getAllHighPriorityWindows() {
     const windows = [];
+    const phaseHours = [3, 7, 11, 15, 19, 23];
+    
     this.data.high_priority_alignments.forEach(alignment => {
       const vsDayData = this.getVSDayData(alignment.vs_day);
       const armsPhase = this.data.arms_race_phases.find(p => p.name === alignment.arms_phase);
       if (vsDayData && armsPhase) {
-        for (let h = 0; h < 24; h += 4) {
-          if (this.getArmsRacePhase(h).name === alignment.arms_phase) {
+        phaseHours.forEach(hour => {
+          if (this.getArmsRacePhase(hour).name === alignment.arms_phase) {
             windows.push({ 
               vsDay: alignment.vs_day, 
               vsDayData, 
               armsPhase, 
               alignment, 
-              hour: h 
+              hour: hour 
             });
           }
-        }
+        });
       }
     });
     return windows;
@@ -1247,6 +1349,7 @@ class LastWarNexus {
     try {
       const now = new Date();
       const potentialWindows = [];
+      const phaseHours = [3, 7, 11, 15, 19, 23];
 
       for (let dayOffset = 0; dayOffset < 8; dayOffset++) {
         const targetDate = new Date();
@@ -1258,13 +1361,13 @@ class LastWarNexus {
           const armsPhase = this.data.arms_race_phases.find(p => p.name === alignment.arms_phase);
           if (!armsPhase) return;
 
-          for (let h = 0; h < 24; h += 4) {
-            if (this.getArmsRacePhase(h).name === alignment.arms_phase) {
+          phaseHours.forEach(hour => {
+            if (this.getArmsRacePhase(hour).name === alignment.arms_phase) {
               const eventTime = new Date(Date.UTC(
                 targetDate.getUTCFullYear(), 
                 targetDate.getUTCMonth(), 
                 targetDate.getUTCDate(), 
-                h, 0, 0
+                hour, 0, 0
               ));
               if (eventTime > now) {
                 potentialWindows.push({
@@ -1273,11 +1376,11 @@ class LastWarNexus {
                   vsDayData: this.getVSDayData(alignment.vs_day),
                   armsPhase: armsPhase,
                   alignment: alignment,
-                  hour: h
+                  hour: hour
                 });
               }
             }
-          }
+          });
         });
       }
 

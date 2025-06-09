@@ -331,9 +331,8 @@ class LastWarNexus {
       let focusText = this.getOptimizationFocus(armsPhase.name);
       if (optimizationFocus) optimizationFocus.textContent = focusText;
       
-      const nextHour = ((Math.floor(utcHour / 4) + 1) * 4) % 24;
-      const timeToNext = nextHour === 0 ? 24 - utcHour : nextHour - utcHour;
-      if (timeRemaining) timeRemaining.textContent = `${timeToNext}h ${60 - utcMinute}m`;
+      const timeRemainingText = this.calculatePhaseTimeRemaining(utcHour, utcMinute);
+      if (timeRemaining) timeRemaining.textContent = timeRemainingText;
     } else {
       if (actionIcon) actionIcon.textContent = armsPhase.icon;
       if (actionText) actionText.innerHTML = `<strong>Normal Phase:</strong><br>Focus on ${armsPhase.activities[0]} but save major resources for high priority windows.`;
@@ -343,9 +342,36 @@ class LastWarNexus {
       let focusText = this.getOptimizationFocus(armsPhase.name);
       if (optimizationFocus) optimizationFocus.textContent = focusText;
       
-      const nextHour = ((Math.floor(utcHour / 4) + 1) * 4) % 24;
-      const timeToNext = nextHour === 0 ? 24 - utcHour : nextHour - utcHour;
-      if (timeRemaining) timeRemaining.textContent = `${timeToNext}h ${60 - utcMinute}m`;
+      const timeRemainingText = this.calculatePhaseTimeRemaining(utcHour, utcMinute);
+      if (timeRemaining) timeRemaining.textContent = timeRemainingText;
+    }
+  }
+
+  calculatePhaseTimeRemaining(utcHour, utcMinute) {
+    const currentPhaseStart = Math.floor(utcHour / 4) * 4;
+    const currentPhaseEnd = currentPhaseStart + 4;
+    
+    const now = new Date();
+    const phaseEndTime = new Date();
+    phaseEndTime.setUTCHours(currentPhaseEnd % 24, 0, 0, 0);
+    
+    if (currentPhaseEnd >= 24) {
+      phaseEndTime.setUTCDate(phaseEndTime.getUTCDate() + 1);
+    }
+    
+    const timeRemaining = phaseEndTime.getTime() - now.getTime();
+    
+    if (timeRemaining <= 0) {
+      return "Phase ending";
+    }
+    
+    const hours = Math.floor(timeRemaining / (1000 * 60 * 60));
+    const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+    
+    if (hours > 0) {
+      return `${hours}h ${minutes}m`;
+    } else {
+      return `${minutes}m`;
     }
   }
 

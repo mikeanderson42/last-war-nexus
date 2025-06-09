@@ -762,4 +762,18 @@ class LastWarNexus {
         
         if (alignment) {
           slot.addEventListener('click', () => {
-            this.showModal(alignment,
+            this.showModal(alignment, daysToShow[0], armsPhase);
+          });
+        }
+        
+        timeSlots.appendChild(slot);
+      }
+      
+      todayContainer.appendChild(timeSlots);
+      container.appendChild(todayContainer);
+      
+    } else {
+      daysToShow = this.data.vs_days;
+      
+      const weekGrid = document.createElement('div');
+      week

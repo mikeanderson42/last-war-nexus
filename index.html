@@ -83,7 +83,7 @@
     <div class="app-container">
         <section class="hero-dashboard">
             <div class="dashboard-grid">
-                <div class="status-card">
+                <div class="status-card enhanced">
                     <div class="card-header">
                         <h2>Live Server Status</h2>
                         <div class="status-indicator pulse"></div>
@@ -94,13 +94,36 @@
                                 <span class="label">Server Time</span>
                                 <span id="server-time" class="value mono">00:00:00</span>
                             </div>
+                            <div class="status-item highlight-item">
+                                <span class="label">Current VS Day</span>
+                                <span id="current-vs-day" class="value highlight">Loading...</span>
+                            </div>
                             <div class="status-item">
                                 <span class="label">VS Event</span>
                                 <span id="vs-event" class="value highlight">Loading...</span>
                             </div>
                             <div class="status-item">
-                                <span class="label">Arms Race</span>
+                                <span class="label">Arms Race Phase</span>
                                 <span id="arms-phase" class="value">Loading...</span>
+                            </div>
+                            <div class="status-item alignment-status" id="alignment-status">
+                                <span class="label">Event Alignment</span>
+                                <span id="alignment-indicator" class="value">Checking...</span>
+                            </div>
+                        </div>
+                        
+                        <div class="detailed-info" id="detailed-status-info">
+                            <div class="info-section">
+                                <h4>Current VS Day Activities</h4>
+                                <div id="vs-activities" class="activity-list">
+                                    Loading activities...
+                                </div>
+                            </div>
+                            <div class="info-section">
+                                <h4>Arms Race Point Sources</h4>
+                                <div id="arms-activities" class="activity-list">
+                                    Loading activities...
+                                </div>
                             </div>
                         </div>
                     </div>

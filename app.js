@@ -2,21 +2,99 @@ class LastWarNexus {
   constructor() {
     this.data = {
       arms_race_phases: [
-        {id: 1, name: "City Building", icon: "🏗️", activities: ["Building upgrades", "Construction speedups"]},
-        {id: 2, name: "Unit Progression", icon: "⚔️", activities: ["Troop training", "Training speedups"]},
-        {id: 3, name: "Tech Research", icon: "🔬", activities: ["Research completion", "Research speedups"]},
-        {id: 4, name: "Drone Boost", icon: "🚁", activities: ["Stamina usage", "Drone activities"]},
-        {id: 5, name: "Hero Advancement", icon: "⭐", activities: ["Hero recruitment", "Hero EXP"]},
-        {id: 6, name: "Mixed Phase", icon: "🔄", activities: ["Check in-game calendar"]}
+        {
+          id: 1, 
+          name: "City Building", 
+          icon: "🏗️", 
+          activities: ["Building upgrades", "Construction speedups"],
+          pointSources: ["Complete building upgrades", "Use construction speedups", "Finish building projects", "Upgrade headquarters", "Construct new buildings"]
+        },
+        {
+          id: 2, 
+          name: "Unit Progression", 
+          icon: "⚔️", 
+          activities: ["Troop training", "Training speedups"],
+          pointSources: ["Train troops", "Use training speedups", "Complete troop upgrades", "Unlock new units", "Enhance unit capabilities"]
+        },
+        {
+          id: 3, 
+          name: "Tech Research", 
+          icon: "🔬", 
+          activities: ["Research completion", "Research speedups"],
+          pointSources: ["Complete research", "Use research speedups", "Unlock new technologies", "Upgrade existing tech", "Finish research projects"]
+        },
+        {
+          id: 4, 
+          name: "Drone Boost", 
+          icon: "🚁", 
+          activities: ["Stamina usage", "Drone activities"],
+          pointSources: ["Use stamina for attacks", "Complete drone missions", "Gather drone data", "Battle elite enemies", "Use stamina items"]
+        },
+        {
+          id: 5, 
+          name: "Hero Advancement", 
+          icon: "⭐", 
+          activities: ["Hero recruitment", "Hero EXP"],
+          pointSources: ["Recruit new heroes", "Apply hero EXP", "Upgrade hero skills", "Enhance hero equipment", "Complete hero missions"]
+        },
+        {
+          id: 6, 
+          name: "Mixed Phase", 
+          icon: "🔄", 
+          activities: ["Check in-game calendar"],
+          pointSources: ["Check calendar for current focus", "Mixed activities", "Various point sources", "Event-specific tasks", "General progression"]
+        }
       ],
       vs_days: [
-        {day: 0, name: "Sunday", title: "Preparation Day", activities: ["Save radar missions", "Prepare building upgrades"]},
-        {day: 1, name: "Monday", title: "Radar Training", activities: ["Complete radar missions", "Use stamina for attacks"]},
-        {day: 2, name: "Tuesday", title: "Base Expansion", activities: ["Complete building upgrades", "Use construction speedups"]},
-        {day: 3, name: "Wednesday", title: "Age of Science", activities: ["Complete research", "Use research speedups"]},
-        {day: 4, name: "Thursday", title: "Train Heroes", activities: ["Use recruitment tickets", "Apply hero EXP"]},
-        {day: 5, name: "Friday", title: "Total Mobilization", activities: ["Use all speedup types", "Finish buildings/research"]},
-        {day: 6, name: "Saturday", title: "Enemy Buster", activities: ["Attack enemy bases", "Use healing speedups"]}
+        {
+          day: 0, 
+          name: "Sunday", 
+          title: "Preparation Day", 
+          activities: ["Save radar missions", "Prepare building upgrades"],
+          pointActivities: ["Save radar missions for Monday", "Prepare building gifts for Tuesday", "Stack speedups", "Plan resource allocation", "Coordinate with alliance"]
+        },
+        {
+          day: 1, 
+          name: "Monday", 
+          title: "Radar Training", 
+          activities: ["Complete radar missions", "Use stamina for attacks"],
+          pointActivities: ["Complete saved radar missions", "Use stamina for elite battles", "Attack bases for training points", "Use stamina items", "Focus on combat activities"]
+        },
+        {
+          day: 2, 
+          name: "Tuesday", 
+          title: "Base Expansion", 
+          activities: ["Complete building upgrades", "Use construction speedups"],
+          pointActivities: ["Complete building upgrades", "Use construction speedups", "Finish building projects", "Use building gifts", "Upgrade headquarters"]
+        },
+        {
+          day: 3, 
+          name: "Wednesday", 
+          title: "Age of Science", 
+          activities: ["Complete research", "Use research speedups"],
+          pointActivities: ["Complete research projects", "Use research speedups", "Unlock new technologies", "Use valor badges", "Focus on tech advancement"]
+        },
+        {
+          day: 4, 
+          name: "Thursday", 
+          title: "Train Heroes", 
+          activities: ["Use recruitment tickets", "Apply hero EXP"],
+          pointActivities: ["Use recruitment tickets", "Apply hero EXP items", "Upgrade hero skills", "Enhance hero equipment", "Complete hero missions"]
+        },
+        {
+          day: 5, 
+          name: "Friday", 
+          title: "Total Mobilization", 
+          activities: ["Use all speedup types", "Finish buildings/research"],
+          pointActivities: ["Use all saved speedups", "Complete multiple building projects", "Finish research", "Train troops", "Maximum efficiency focus"]
+        },
+        {
+          day: 6, 
+          name: "Saturday", 
+          title: "Enemy Buster", 
+          activities: ["Attack enemy bases", "Use healing speedups"],
+          pointActivities: ["Attack enemy bases", "Use healing speedups", "Focus on combat", "Eliminate threats", "Use combat-related items"]
+        }
       ],
       high_priority_alignments: [
         {vs_day: 1, arms_phase: "Drone Boost", reason: "Stamina/drone activities align perfectly.", points: 3500},
@@ -127,7 +205,8 @@ class LastWarNexus {
   cacheElements() {
     this.elements = {};
     const elementIds = [
-      'server-time', 'vs-event', 'arms-phase', 'countdown-timer', 'event-name', 'event-time',
+      'server-time', 'current-vs-day', 'vs-event', 'arms-phase', 'alignment-indicator', 'alignment-status',
+      'vs-activities', 'arms-activities', 'countdown-timer', 'event-name', 'event-time',
       'progress-fill', 'progress-text', 'action-icon', 'action-text', 'strategy-rating',
       'optimization-focus', 'time-remaining', 'priority-level', 'settings-toggle', 'settings-dropdown',
       'priority-grid', 'schedule-grid', 'intelligence-content',
@@ -298,11 +377,60 @@ class LastWarNexus {
     const armsPhase = this.getArmsRacePhase(utcHour);
     const alignment = this.getAlignment(utcDay, armsPhase.name);
 
+    const currentVsDay = document.getElementById('current-vs-day');
     const vsEvent = document.getElementById('vs-event');
     const armsPhaseEl = document.getElementById('arms-phase');
+    const alignmentIndicator = document.getElementById('alignment-indicator');
+    const alignmentStatus = document.getElementById('alignment-status');
+    const vsActivities = document.getElementById('vs-activities');
+    const armsActivities = document.getElementById('arms-activities');
     
+    if (currentVsDay) currentVsDay.textContent = `${vsDayData.name} (Day ${utcDay + 1})`;
     if (vsEvent) vsEvent.textContent = vsDayData.title;
     if (armsPhaseEl) armsPhaseEl.textContent = `${armsPhase.icon} ${armsPhase.name}`;
+
+    if (alignmentIndicator && alignmentStatus) {
+      if (alignment) {
+        alignmentIndicator.textContent = '⚡ HIGH PRIORITY';
+        alignmentIndicator.style.color = 'var(--accent-success)';
+        alignmentStatus.classList.add('priority-active');
+      } else {
+        alignmentIndicator.textContent = '⏳ Normal Phase';
+        alignmentIndicator.style.color = 'var(--text-secondary)';
+        alignmentStatus.classList.remove('priority-active');
+      }
+    }
+
+    if (vsActivities) {
+      vsActivities.innerHTML = '';
+      const activities = this.settings.detailLevel === 'comprehensive' 
+        ? vsDayData.pointActivities 
+        : vsDayData.activities;
+      
+      activities.forEach(activity => {
+        const activityEl = document.createElement('div');
+        activityEl.className = 'activity-item';
+        activityEl.textContent = activity;
+        vsActivities.appendChild(activityEl);
+      });
+    }
+
+    if (armsActivities) {
+      armsActivities.innerHTML = '';
+      const sources = this.settings.detailLevel === 'comprehensive' 
+        ? armsPhase.pointSources 
+        : armsPhase.activities;
+      
+      sources.forEach((source, index) => {
+        const sourceEl = document.createElement('div');
+        sourceEl.className = 'activity-item';
+        if (alignment && index < 2) {
+          sourceEl.classList.add('high-value');
+        }
+        sourceEl.textContent = source;
+        armsActivities.appendChild(sourceEl);
+      });
+    }
 
     this.updateActionDisplay(alignment, armsPhase, utcHour, utcMinute);
   }
@@ -509,10 +637,10 @@ class LastWarNexus {
         cardContent += `
           <div class="event-detailed-info">
             <div class="detail-section">
-              <strong>Key Activities:</strong> ${window.vsDayData.activities.join(', ')}
+              <strong>Key Activities:</strong> ${window.vsDayData.pointActivities.slice(0, 3).join(', ')}
             </div>
             <div class="detail-section">
-              <strong>Arms Race Focus:</strong> ${window.armsPhase.activities.join(', ')}
+              <strong>Arms Race Focus:</strong> ${window.armsPhase.pointSources.slice(0, 3).join(', ')}
             </div>
             <div class="detail-section">
               <strong>VS Points Potential:</strong> +${window.alignment.points.toLocaleString()}
@@ -712,11 +840,11 @@ class LastWarNexus {
       </div>
       <div class="modal-section">
         <h4>🎯 Arms Race Focus</h4>
-        <p><strong>Primary Activities:</strong> ${armsPhase.activities.join(', ')}</p>
+        <p><strong>Primary Activities:</strong> ${armsPhase.pointSources.slice(0, 3).join(', ')}</p>
       </div>
       <div class="modal-section">
         <h4>🏆 VS Event Objectives</h4>
-        <p><strong>Key Activities:</strong> ${vsDayData.activities.join(', ')}</p>
+        <p><strong>Key Activities:</strong> ${vsDayData.pointActivities.slice(0, 3).join(', ')}</p>
       </div>
       <div class="modal-section">
         <h4>💡 Strategy Recommendations</h4>

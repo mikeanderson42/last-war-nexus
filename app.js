@@ -1,20 +1,20 @@
 // --- Application Data ---
 const appData = {
   arms_race_phases: [
-    {id: 1, name: "City Building", icon: "🏗️", color: "#4CAF50"},
-    {id: 2, name: "Unit Progression", icon: "⚔️", color: "#FF9800"},
-    {id: 3, name: "Tech Research", icon: "🔬", color: "#2196F3"},
-    {id: 4, name: "Drone Boost", icon: "🚁", color: "#9C27B0"},
-    {id: 5, name: "Hero Advancement", icon: "⭐", color: "#FF5722"},
-    {id: 6, name: "Mixed Phase", icon: "🔄", color: "#607D8B"}
+    {id: 1, name: "City Building", icon: "🏗️", color: "#4CAF50", activities: ["Building upgrades", "Construction speedups"]},
+    {id: 2, name: "Unit Progression", icon: "⚔️", color: "#FF9800", activities: ["Troop training", "Training speedups"]},
+    {id: 3, name: "Tech Research", icon: "🔬", color: "#2196F3", activities: ["Research completion", "Research speedups"]},
+    {id: 4, name: "Drone Boost", icon: "🚁", color: "#9C27B0", activities: ["Stamina usage", "Drone activities"]},
+    {id: 5, name: "Hero Advancement", icon: "⭐", color: "#FF5722", activities: ["Hero recruitment", "Hero EXP"]},
+    {id: 6, name: "Mixed Phase", icon: "🔄", color: "#607D8B", activities: ["Check in-game calendar"]}
   ],
   vs_days: [
     {day: 0, name: "Sunday", title: "Preparation Day", objective: "No VS events - prepare for Monday", activities: ["Save radar missions", "Prepare building upgrades", "Stock resources"]},
     {day: 1, name: "Monday", title: "Radar Training", objective: "Stamina, radar missions, hero EXP, drone data/parts", activities: ["Complete radar missions", "Use stamina for attacks/rallies", "Train drones with combat data", "Use hero EXP (2000+ at once)", "Apply drone parts"]},
     {day: 2, name: "Tuesday", title: "Base Expansion", objective: "Building upgrades, construction speedups, recruit survivors", activities: ["Complete building upgrades", "Use construction speedups", "Dispatch legendary truck", "Recruit survivors", "Launch secret tasks"]},
-    {day: 3, name: "Wednesday", title: "Age of Science", objective: "Research completion, research speedups, valor badges, drone components", activities: ["Complete research", "Use research speedups", "Use valor badges for research", "Open drone component chests", "Complete radar missions"]},
-    {day: 4, name: "Thursday", title: "Train Heroes", objective: "Hero recruitment, hero EXP, hero shards, skill medals", activities: ["Use recruitment tickets", "Apply hero EXP", "Use hero shards", "Apply skill medals", "Use weapon shards"]},
-    {day: 5, name: "Friday", title: "Total Mobilization", objective: "All activities (building, research, training)", activities: ["Use all speedup types", "Finish buildings/research", "Train troops", "Use overlord items"]},
+    {day: 3, "name": "Wednesday", "title": "Age of Science", "objective": "Research completion, research speedups, valor badges, drone components", "activities": ["Complete research", "Use research speedups", "Use valor badges for research", "Open drone component chests", "Complete radar missions"]},
+    {day: 4, "name": "Thursday", "title": "Train Heroes", "objective": "Hero recruitment, hero EXP, hero shards, skill medals", "activities": ["Use recruitment tickets", "Apply hero EXP", "Use hero shards", "Apply skill medals", "Use weapon shards"]},
+    {day: 5, "name": "Friday", "title": "Total Mobilization", "objective": "All activities (building, research, training)", "activities": ["Use all speedup types", "Finish buildings/research", "Train troops", "Use overlord items"]},
     {day: 6, "name": "Saturday", "title": "Enemy Buster", "objective": "Combat, speedups, troop training/healing", "activities": ["Attack enemy bases", "Use healing speedups", "Train troops", "Use all speedup types", "Dispatch trucks"]}
   ],
   high_priority_alignments: [
@@ -94,7 +94,7 @@ function cacheDOMElements() {
         'detail-modal', 'priority-section', 'schedule-section', 'intelligence-section',
         'current-time', 'current-vs-day', 'current-arms-phase', 'action-icon', 'action-text',
         'reset-warning', 'countdown-timer', 'next-event-info', 'next-event-time',
-        'high-priority-grid', 'complete-schedule-grid', 'modal-body', 'intelligence-hub-content'
+        'high-priority-grid', 'complete-schedule-grid', 'modal-body'
     ];
     ids.forEach(id => {
         DOMElements[id] = document.getElementById(id);
@@ -303,6 +303,7 @@ function populateIntelligenceHub() {
     if (!container) return;
     container.innerHTML = `<div class="intelligence-hub" id="intelligence-hub-content"></div>`;
     const content = document.getElementById('intelligence-hub-content');
+    if (!content) return;
 
     const sections = {
         'guides': '📚 Game Guides',
@@ -375,6 +376,7 @@ function getCurrentUTCInfo() { return { utcDay: new Date().getUTCDay(), utcHour:
 function getVSDayData(utcDay) { return appData.vs_days.find(d => d.day === utcDay); }
 function getArmsRacePhase(utcHour) { return appData.arms_race_phases[Math.floor(utcHour / 4) % 6]; }
 function getAlignment(utcDay, armsPhaseName) { return appData.high_priority_alignments.find(a => a.vs_day === utcDay && a.arms_phase === armsPhaseName); }
+
 function getAllHighPriorityWindows() {
   const windows = [];
   appData.high_priority_alignments.forEach(alignment => {
@@ -397,7 +399,7 @@ function getNextHighPriorityWindow() {
 
     // Check for events over the next 8 days to catch all possibilities
     for (let dayOffset = 0; dayOffset < 8; dayOffset++) {
-        const targetDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+        const targetDate = new Date();
         targetDate.setUTCDate(targetDate.getUTCDate() + dayOffset);
         
         const targetDay = targetDate.getUTCDay();
@@ -411,11 +413,10 @@ function getNextHighPriorityWindow() {
             // Find all 4-hour slots where this Arms Race phase occurs
             for (let h = 0; h < 24; h += 4) {
                 if (getArmsRacePhase(h).name === alignment.arms_phase) {
-                    const eventTime = new Date(targetDate);
-                    eventTime.setUTCHours(h, 0, 0, 0);
+                    const eventTime = new Date(Date.UTC(targetDate.getUTCFullYear(), targetDate.getUTCMonth(), targetDate.getUTCDate(), h, 0, 0));
 
                     // If the event time is in the future, it's a valid candidate
-                    if (eventTime.getTime() > now.getTime()) {
+                    if (eventTime > now) {
                         potentialWindows.push({
                             startTime: eventTime,
                             vsDay: alignment.vs_day,
@@ -435,6 +436,6 @@ function getNextHighPriorityWindow() {
     }
 
     // Sort all future candidates by time and return the soonest one
-    potentialWindows.sort((a, b) => a.startTime.getTime() - b.startTime.getTime());
+    potentialWindows.sort((a, b) => a.startTime - b.startTime);
     return potentialWindows[0];
 }

@@ -12,10 +12,10 @@ const appData = {
     {day: 0, name: "Sunday", title: "Preparation Day", objective: "No VS events - prepare for Monday", activities: ["Save radar missions", "Prepare building upgrades", "Stock resources"]},
     {day: 1, name: "Monday", title: "Radar Training", objective: "Stamina, radar missions, hero EXP, drone data/parts", activities: ["Complete radar missions", "Use stamina for attacks/rallies", "Train drones with combat data", "Use hero EXP (2000+ at once)", "Apply drone parts"]},
     {day: 2, name: "Tuesday", title: "Base Expansion", objective: "Building upgrades, construction speedups, recruit survivors", activities: ["Complete building upgrades", "Use construction speedups", "Dispatch legendary truck", "Recruit survivors", "Launch secret tasks"]},
-    {day: 3, "name": "Wednesday", "title": "Age of Science", "objective": "Research completion, research speedups, valor badges, drone components", "activities": ["Complete research", "Use research speedups", "Use valor badges for research", "Open drone component chests", "Complete radar missions"]},
-    {day: 4, "name": "Thursday", "title": "Train Heroes", "objective": "Hero recruitment, hero EXP, hero shards, skill medals", "activities": ["Use recruitment tickets", "Apply hero EXP", "Use hero shards", "Apply skill medals", "Use weapon shards"]},
-    {day: 5, "name": "Friday", "title": "Total Mobilization", "objective": "All activities (building, research, training)", "activities": ["Use all speedup types", "Finish buildings/research", "Train troops", "Use overlord items"]},
-    {day: 6, "name": "Saturday", "title": "Enemy Buster", "objective": "Combat, speedups, troop training/healing", "activities": ["Attack enemy bases", "Use healing speedups", "Train troops", "Use all speedup types", "Dispatch trucks"]}
+    {day: 3, name: "Wednesday", title: "Age of Science", objective: "Research completion, research speedups, valor badges, drone components", activities: ["Complete research", "Use research speedups", "Use valor badges for research", "Open drone component chests", "Complete radar missions"]},
+    {day: 4, name: "Thursday", title: "Train Heroes", objective: "Hero recruitment, hero EXP, hero shards, skill medals", activities: ["Use recruitment tickets", "Apply hero EXP", "Use hero shards", "Apply skill medals", "Use weapon shards"]},
+    {day: 5, name: "Friday", title: "Total Mobilization", objective: "All activities (building, research, training)", activities: ["Use all speedup types", "Finish buildings/research", "Train troops", "Use overlord items"]},
+    {day: 6, name: "Saturday", title: "Enemy Buster", objective: "Combat, speedups, troop training/healing", activities: ["Attack enemy bases", "Use healing speedups", "Train troops", "Use all speedup types", "Dispatch trucks"]}
   ],
   high_priority_alignments: [
     {"vs_day": 1, "arms_phase": "Drone Boost", "reason": "Stamina/drone activities align perfectly."},

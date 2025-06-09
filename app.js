@@ -45,8 +45,8 @@ let currentSettings = {
 document.addEventListener('DOMContentLoaded', () => {
   console.log("Last War Nexus initializing...");
   setupEventListeners();
-  updateAllDisplays();
-  setInterval(updateAllDisplays, 1000);
+  updateAllDisplays(); // Initial render
+  setInterval(updateAllDisplays, 1000); // Update every second
 });
 
 function setupEventListeners() {
@@ -82,6 +82,7 @@ function updateAllDisplays() {
   updateCurrentTime();
   updateCurrentStatus();
   updateCountdown();
+  // updateDynamicContent(); // This is now called by control changes, no need to run every second.
 }
 
 function updateDynamicContent() {
@@ -198,6 +199,14 @@ function updateHighPriorityDisplay() {
 function updateCompleteScheduleDisplay() {
   const container = document.getElementById('complete-schedule-grid');
   container.innerHTML = ''; 
+
+  const headers = ['Day/Time', '00:00', '04:00', '08:00', '12:00', '16:00', '20:00'];
+  headers.forEach(h => {
+    const headerCell = document.createElement('div');
+    headerCell.className = 'table-header';
+    headerCell.textContent = h;
+    container.appendChild(headerCell);
+  });
 
   appData.vs_days.forEach(vsDayData => {
     if (currentSettings.calendarView === 'current' && vsDayData.day !== new Date().getUTCDay()) return;

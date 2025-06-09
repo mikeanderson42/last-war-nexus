@@ -390,21 +390,51 @@ function getAllHighPriorityWindows() {
   });
   return windows;
 }
+
 function getNextHighPriorityWindow() {
-  const now = new Date();
-  const allWindows = getAllHighPriorityWindows().map(w => {
-    let startTime = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), w.hour, 0, 0));
-    // Correctly find the *next* occurrence of this day and time
-    while (startTime.getTime() <= now.getTime() || startTime.getUTCDay() !== w.vsDay) {
-        if (startTime.getUTCDay() !== w.vsDay) {
-           startTime.setUTCDate(startTime.getUTCDate() + (w.vsDay - startTime.getUTCDay() + 7) % 7);
-        } else {
-           startTime.setUTCDate(startTime.getUTCDate() + 1); // Move to the next day if time has passed
-        }
+    const now = new Date();
+    const potentialWindows = [];
+
+    // Check for events over the next 8 days to catch all possibilities
+    for (let dayOffset = 0; dayOffset < 8; dayOffset++) {
+        const targetDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+        targetDate.setUTCDate(targetDate.getUTCDate() + dayOffset);
+        
+        const targetDay = targetDate.getUTCDay();
+
+        const alignmentsForDay = appData.high_priority_alignments.filter(a => a.vs_day === targetDay);
+
+        alignmentsForDay.forEach(alignment => {
+            const armsPhase = appData.arms_race_phases.find(p => p.name === alignment.arms_phase);
+            if (!armsPhase) return;
+
+            // Find all 4-hour slots where this Arms Race phase occurs
+            for (let h = 0; h < 24; h += 4) {
+                if (getArmsRacePhase(h).name === alignment.arms_phase) {
+                    const eventTime = new Date(targetDate);
+                    eventTime.setUTCHours(h, 0, 0, 0);
+
+                    // If the event time is in the future, it's a valid candidate
+                    if (eventTime.getTime() > now.getTime()) {
+                        potentialWindows.push({
+                            startTime: eventTime,
+                            vsDay: alignment.vs_day,
+                            vsDayData: getVSDayData(alignment.vs_day),
+                            armsPhase: armsPhase,
+                            alignment: alignment,
+                            hour: h
+                        });
+                    }
+                }
+            }
+        });
     }
-    w.startTime = startTime;
-    return w;
-  });
-  allWindows.sort((a, b) => a.startTime - b.startTime);
-  return allWindows.length > 0 ? allWindows[0] : null;
+
+    if (potentialWindows.length === 0) {
+        return null; // No upcoming events found in the next week
+    }
+
+    // Sort all future candidates by time and return the soonest one
+    potentialWindows.sort((a, b) => a.startTime.getTime() - b.startTime.getTime());
+    return potentialWindows[0];
 }

@@ -1,22 +1,21 @@
 // --- Application Data ---
-// Central object for all game data, making updates easy.
 const appData = {
   arms_race_phases: [
-    {id: 1, name: "City Building", activities: ["Building upgrades", "Construction speedups", "Power increases"], icon: "🏗️", color: "#4CAF50"},
-    {id: 2, name: "Unit Progression", activities: ["Troop training", "Troop upgrades", "Training speedups"], icon: "⚔️", color: "#FF9800"},
-    {id: 3, name: "Tech Research", activities: ["Research completion", "Research speedups", "Tech power increases"], icon: "🔬", color: "#2196F3"},
-    {id: 4, name: "Drone Boost", activities: ["Stamina usage", "Drone data training", "Drone parts"], icon: "🚁", color: "#9C27B0"},
-    {id: 5, name: "Hero Advancement", activities: ["Hero recruitment", "Hero EXP", "Hero shards"], icon: "⭐", color: "#FF5722"},
-    {id: 6, name: "Mixed Phase", activities: ["Check in-game calendar", "Various activities"], icon: "🔄", color: "#607D8B"}
+    {id: 1, name: "City Building", icon: "🏗️", color: "#4CAF50"},
+    {id: 2, name: "Unit Progression", icon: "⚔️", color: "#FF9800"},
+    {id: 3, name: "Tech Research", icon: "🔬", color: "#2196F3"},
+    {id: 4, name: "Drone Boost", icon: "🚁", color: "#9C27B0"},
+    {id: 5, name: "Hero Advancement", icon: "⭐", color: "#FF5722"},
+    {id: 6, name: "Mixed Phase", icon: "🔄", color: "#607D8B"}
   ],
   vs_days: [
-    {day: 0, name: "Sunday", title: "Preparation Day", objective: "No VS events - prepare for Monday", activities: ["Save radar missions", "Prepare building upgrades"]},
-    {day: 1, name: "Monday", title: "Radar Training", objective: "Stamina, radar missions, hero EXP", activities: ["Complete radar missions", "Use stamina for attacks/rallies"]},
-    {day: 2, name: "Tuesday", title: "Base Expansion", objective: "Building upgrades, speedups", activities: ["Complete building upgrades", "Use construction speedups"]},
-    {day: 3, name: "Wednesday", title: "Age of Science", objective: "Research completion, speedups", activities: ["Complete research", "Use research speedups"]},
-    {day: 4, name: "Thursday", title: "Train Heroes", objective: "Hero recruitment, EXP, shards", activities: ["Use recruitment tickets", "Apply hero EXP"]},
-    {day: 5, name: "Friday", title: "Total Mobilization", objective: "All activities", activities: ["Use all speedup types", "Finish buildings/research", "Train troops"]},
-    {day: 6, name: "Saturday", title: "Enemy Buster", objective: "Combat, speedups, training", activities: ["Attack enemy bases", "Use healing speedups", "Train troops"]}
+    {day: 0, name: "Sunday", title: "Preparation Day"},
+    {day: 1, name: "Monday", title: "Radar Training"},
+    {day: 2, name: "Tuesday", title: "Base Expansion"},
+    {day: 3, name: "Wednesday", title: "Age of Science"},
+    {day: 4, name: "Thursday", title: "Train Heroes"},
+    {day: 5, name: "Friday", title: "Total Mobilization"},
+    {day: 6, name: "Saturday", title: "Enemy Buster"}
   ],
   high_priority_alignments: [
     {"vs_day": 1, "arms_phase": "Drone Boost", "reason": "Stamina/drone activities align perfectly."},
@@ -30,12 +29,44 @@ const appData = {
     {"vs_day": 5, "arms_phase": "Tech Research", "reason": "Research component of mobilization."},
     {"vs_day": 6, "arms_phase": "Unit Progression", "reason": "Troop training for combat."},
     {"vs_day": 6, "arms_phase": "City Building", "reason": "Construction speedups for defenses."}
-  ]
+  ],
+  intelligence: {
+    guides: [
+      {
+        title: "Understanding the Event Hub",
+        content: "The Event Hub, unlocked at HQ Level 10, is your central access point for all current and upcoming events. Use the calendar to plan ahead and never miss a limited-time challenge to maximize your rewards."
+      },
+      {
+        title: "Event Types Explained",
+        content: "Events are grouped into categories: <strong>Timed Events</strong> (daily/weekly), <strong>Survival Challenges</strong> (resource scarcity), <strong>Co-op Missions</strong> (team survival), and <strong>Competitive Events</strong> (PvP and leaderboards)."
+      }
+    ],
+    tips: [
+      {
+        title: "Maximize Your Rewards",
+        content: "Always check the <strong>Featured Events</strong> for the best rewards. Track your progress in the Progress Tracker to unlock milestones. Spend event-specific currency in the Rewards Shop before the event ends."
+      },
+      {
+        title: "Core Optimization Strategies",
+        content: "Combine the <strong>Monica + Violet</strong> hero pair for a 39% resource bonus during Drone Boost phases. Bank at least 85% of your speedups for <strong>Total Mobilization Friday</strong> for a 300% efficiency gain. Always avoid activities between 00:00 and 00:05 UTC as no points are awarded."
+      }
+    ],
+    season2: [
+      {
+        title: "Season 2: Rare Soil War Schedule Change",
+        content: "The preparation stage for Rare Soil War has been reduced from 1 hour to <strong>30 minutes</strong>. The new prep time is 14:00 - 14:30 UTC, with the war starting immediately after. This is 30 minutes earlier than before."
+      },
+      {
+        title: "Season 2 Celebration Event Timeline (5 Weeks)",
+        content: "This event starts after Season 2 concludes. <strong>Week 1:</strong> Unlock 'The Age of Oil' tech and participate in server transfers. <strong>Week 2:</strong> 'Dripper' radar tasks, Full Mobilization, and Black Market events. <strong>Week 3:</strong> Zombie Kill, Healing, and Construction ranking events begin."
+      }
+    ]
+  }
 };
 
 // --- Application State ---
 let currentSettings = {
-  viewMode: 'high-priority',
+  viewMode: 'priority',
   timeDisplay: 'utc',
   infoLevel: 'simple',
   calendarView: 'full-week'
@@ -45,8 +76,9 @@ let currentSettings = {
 document.addEventListener('DOMContentLoaded', () => {
   console.log("Last War Nexus initializing...");
   setupEventListeners();
-  updateAllDisplays(); // Initial render
-  setInterval(updateAllDisplays, 1000); // Update every second
+  populateIntelligenceHub();
+  updateAllDisplays();
+  setInterval(updateAllDisplays, 1000);
 });
 
 function setupEventListeners() {
@@ -56,9 +88,7 @@ function setupEventListeners() {
   document.getElementById('calendar-view')?.addEventListener('change', handleControlChange);
   document.getElementById('close-modal-button')?.addEventListener('click', closeDetailModal);
   document.getElementById('detail-modal')?.addEventListener('click', (event) => {
-    if (event.target === document.getElementById('detail-modal')) {
-      closeDetailModal();
-    }
+    if (event.target === document.getElementById('detail-modal')) closeDetailModal();
   });
 }
 
@@ -82,20 +112,15 @@ function updateAllDisplays() {
   updateCurrentTime();
   updateCurrentStatus();
   updateCountdown();
-  // updateDynamicContent(); // This is now called by control changes, no need to run every second.
 }
 
 function updateDynamicContent() {
-  const highPrioritySection = document.getElementById('high-priority-section');
-  const completeScheduleSection = document.getElementById('complete-schedule-section');
+  document.querySelectorAll('.content-section').forEach(section => section.classList.add('hidden'));
+  document.getElementById(`${currentSettings.viewMode}-section`).classList.remove('hidden');
 
-  if (currentSettings.viewMode === 'high-priority') {
-    highPrioritySection.classList.remove('hidden');
-    completeScheduleSection.classList.add('hidden');
+  if (currentSettings.viewMode === 'priority') {
     updateHighPriorityDisplay();
-  } else {
-    highPrioritySection.classList.add('hidden');
-    completeScheduleSection.classList.remove('hidden');
+  } else if (currentSettings.viewMode === 'schedule') {
     updateCompleteScheduleDisplay();
   }
 }
@@ -104,9 +129,7 @@ function updateCurrentTime() {
   const now = new Date();
   const timeElement = document.getElementById('current-time');
   if (timeElement) {
-    timeElement.textContent = currentSettings.timeDisplay === 'utc'
-      ? now.toUTCString().split(' ')[4]
-      : now.toLocaleTimeString();
+    timeElement.textContent = currentSettings.timeDisplay === 'utc' ? now.toUTCString().slice(17, 25) : now.toLocaleTimeString();
   }
 }
 
@@ -134,7 +157,7 @@ function updateCurrentStatus() {
         actionText.innerHTML = `<strong>HIGH PRIORITY ACTIVE!</strong><br>${alignment.reason}`;
     } else {
         actionIcon.textContent = armsPhase.icon;
-        actionText.innerHTML = `<strong>Normal Phase:</strong> Focus on ${armsPhase.activities[0]}.`;
+        actionText.innerHTML = `<strong>Normal Phase:</strong> Focus on ${appData.arms_race_phases.find(p => p.name === armsPhase.name)?.activities[0] || 'general tasks'}.`;
     }
   }
 }
@@ -142,17 +165,21 @@ function updateCurrentStatus() {
 function updateCountdown() {
   const countdownTimer = document.getElementById('countdown-timer');
   const nextEventInfo = document.getElementById('next-event-info');
+  const nextEventTime = document.getElementById('next-event-time');
   const nextWindow = getNextHighPriorityWindow();
 
   if (!nextWindow) {
     countdownTimer.textContent = 'Done for now!';
     nextEventInfo.textContent = 'Check back tomorrow for more events.';
+    nextEventTime.textContent = '';
     return;
   }
 
   const timeDiff = nextWindow.startTime - new Date();
   if (timeDiff <= 0) {
       countdownTimer.textContent = "ACTIVE NOW";
+      nextEventInfo.textContent = `${nextWindow.armsPhase.name} + ${nextWindow.vsDayData.title}`;
+      nextEventTime.textContent = '';
       return;
   }
   
@@ -161,6 +188,10 @@ function updateCountdown() {
   countdownTimer.textContent = `${String(hours).padStart(2,'0')}h ${String(minutes).padStart(2,'0')}m`;
   
   nextEventInfo.textContent = `Next up: ${nextWindow.armsPhase.name} + ${nextWindow.vsDayData.title}`;
+  
+  const localTime = nextWindow.startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const utcTime = nextWindow.startTime.toUTCString().slice(17, 22);
+  nextEventTime.textContent = currentSettings.timeDisplay === 'utc' ? `Starts at ${utcTime} UTC` : `Starts at ${localTime} (Your Time)`;
 }
 
 // --- Dynamic Content Generation ---
@@ -242,6 +273,49 @@ function updateCompleteScheduleDisplay() {
   });
 }
 
+function populateIntelligenceHub() {
+    const container = document.getElementById('intelligence-section');
+    container.innerHTML = `<div class="intelligence-hub" id="intelligence-hub-content"></div>`;
+    const content = document.getElementById('intelligence-hub-content');
+
+    const sections = {
+        'guides': '📚 Guides',
+        'tips': '💡 Pro Tips',
+        'season2': '🚀 Season 2 Updates'
+    };
+
+    for (const [key, title] of Object.entries(sections)) {
+        const sectionHTML = `
+            <div class="accordion-item">
+                <div class="accordion-header">${title}</div>
+                <div class="accordion-content">
+                    <div class="content-inner">
+                        ${appData.intelligence[key].map(item => `
+                            <h4>${item.title}</h4>
+                            <p>${item.content}</p>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+        content.innerHTML += sectionHTML;
+    }
+
+    // Add event listeners for the accordion
+    document.querySelectorAll('.accordion-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const item = header.parentElement;
+            item.classList.toggle('active');
+            const content = header.nextElementSibling;
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+            } else {
+                content.style.maxHeight = content.scrollHeight + 'px';
+            }
+        });
+    });
+}
+
 // --- Modal Logic ---
 function showDetailModal(alignment, vsDayData, armsPhase) {
     if (!alignment) return;
@@ -256,17 +330,11 @@ function showDetailModal(alignment, vsDayData, armsPhase) {
         </div>
         <div class="modal-section">
             <h4>🎯 Arms Race Focus</h4>
-            <p>${armsPhase.activities.join(', ')}</p>
+            <p>${appData.arms_race_phases.find(p => p.name === armsPhase.name)?.activities.join(', ')}</p>
         </div>
         <div class="modal-section">
             <h4>🏆 VS Event Goal</h4>
-            <p>${vsDayData.activities.join(', ')}</p>
-        </div>
-        <div class="modal-section">
-            <h4>💡 Strategic Tips</h4>
-            <ul class="modal-tips">
-                ${getSpecificTips(armsPhase.name).map(tip => `<li>${tip}</li>`).join('')}
-            </ul>
+            <p>${appData.vs_days.find(d => d.day === vsDayData.day)?.activities.join(', ')}</p>
         </div>
     `;
     modal.style.display = 'flex';
@@ -307,15 +375,5 @@ function getNextHighPriorityWindow() {
     return w;
   });
   allWindows.sort((a, b) => a.startTime - b.startTime);
-  return allWindows[0];
-}
-function getSpecificTips(phaseName) {
-    const tips = {
-        'City Building': ['Start long upgrades ~30 mins before the phase begins.', 'Use 1-minute speedups for instant points.'],
-        'Unit Progression': ['Use troop laddering (T7→T8→T9) for max points.', 'Heal troops for points during combat phases.'],
-        'Tech Research': ['Complete multiple small researches for more point badges.', 'Save large research projects for this window.'],
-        'Drone Boost': ['Use Monica + Violet heroes for a 39% resource bonus from stamina use.', 'Open drone component chests during alignment.'],
-        'Hero Advancement': ['Use EXP items in large batches (2000+) for efficiency.', 'Save hero shards for this phase.'],
-    };
-    return tips[phaseName] || ['Coordinate with your alliance for maximum benefit.'];
+  return allWindows.length > 0 ? allWindows[0] : null;
 }

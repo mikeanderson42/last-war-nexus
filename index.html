@@ -56,6 +56,7 @@
                     <div class="countdown-section">
                         <div id="countdown-timer" class="countdown-timer">Calculating...</div>
                         <div id="next-event-info" class="next-event-info">Loading...</div>
+                        <div id="next-event-time" class="next-event-time"></div>
                     </div>
                 </div>
             </div>
@@ -115,21 +116,26 @@
         <main>
             <div class="view-switcher">
                 <div id="nav-pills" class="nav-pills">
-                    <button class="nav-pill active" data-view="high-priority">🏆 High Priority</button>
-                    <button class="nav-pill" data-view="complete">📅 Complete Schedule</button>
+                    <button class="nav-pill active" data-view="priority">🏆 High Priority</button>
+                    <button class="nav-pill" data-view="schedule">📅 Schedule</button>
+                    <button class="nav-pill" data-view="intelligence">🧠 Intelligence</button>
                 </div>
             </div>
 
-            <div id="high-priority-section" class="schedule-section">
+            <div id="priority-section" class="content-section">
                 <div id="high-priority-grid" class="priority-grid">
                     <!-- High priority cards will be populated here -->
                 </div>
             </div>
 
-            <div id="complete-schedule-section" class="schedule-section hidden">
+            <div id="schedule-section" class="content-section hidden">
                 <div id="complete-schedule-grid" class="schedule-grid-table">
                     <!-- Complete schedule table will be populated here -->
                 </div>
+            </div>
+
+            <div id="intelligence-section" class="content-section hidden">
+                <!-- Intelligence Hub content will be populated here -->
             </div>
         </main>
         

@@ -1,249 +1,305 @@
 <!DOCTYPE html>
-<html lang="en```<head>
-    <meta charset```TF-8">
-    <meta name```iewport" content="width=device-width, initial-scale=1.0">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Last War Nexus - Pro Event Tracker</title>
-    <meta```me="description" content="Professional-grade Last```r event tracker with real-time VS points optimization and strategic insights.">
+    <meta name="description" content="Professional-grade Last War event tracker with real-time VS points optimization and strategic insights.">
     
-    <link rel="preconnect" href="```ps://fonts.googleapis.com">
-    <link rel="preconnect" href="```ps://fonts.gstatic.com"```ossorigin>
-    <link href="https```fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">```  
-    <script async src="https://pag```2.googlesyndication.com/```ead/js/adsbygoogle.js?client=ca-pub-2898635719839576" crossorigin="anonymous">```cript>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <link```l="stylesheet" href="style```s">
-    <link```l="icon" href="data:image/svg+```,<svg xmlns='http://www.w```rg/2000/svg' view```='0 0 100 100'><text y='.9em' font```ze='90'>🎯</text></svg>">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2898635719839576" crossorigin="anonymous"></script>
+    
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
 </head>
 <body>
-    <nav class="main```v">
-        <div class="nav```ntainer">
-            <div class="bran```ection">
-                <div class="bran```
-                    <div class="bran```con-container">
-                        <span```ass="brand-icon">🎯</span>```                      <div class="brand-glow"></div>
-                    </div>```                  <div class="brand-info">
-                        <span class="brand-text">Last War Nexus</span>```                      <span class="brand-subtitle```rofessional Event Tracker</span>
-                    ```iv>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <div class="brand-section">
+                <div class="brand">
+                    <div class="brand-icon-container">
+                        <span class="brand-icon">🎯</span>
+                        <div class="brand-glow"></div>
+                    </div>
+                    <div class="brand-info">
+                        <span class="brand-text">Last War Nexus</span>
+                        <span class="brand-subtitle">Professional Event Tracker</span>
+                    </div>
                     <span class="brand-tag">PRO</span>
-                </div>```              <div class="brand-stats">
-                    ```v class="live-indicator">
-                        ```v class="pulse-dot"></div>
-                ```     <span>LIVE</span>```                  </div>
                 </div>
-            ```iv>
+                <div class="brand-stats">
+                    <div class="live-indicator">
+                        <div class="pulse-dot"></div>
+                        <span>LIVE</span>
+                    </div>
+                </div>
+            </div>
             <div class="nav-actions">
-                <div class="settings```opdown-container">
-                    ```tton class="settings-btn" id="settings-toggle">
-                        ```an class="settings-icon">⚙️</span>
-                        ```an class="settings-label">Settings```pan>
+                <div class="settings-dropdown-container">
+                    <button class="settings-btn" id="settings-toggle">
+                        <span class="settings-icon">⚙️</span>
+                        <span class="settings-label">Settings</span>
                     </button>
-                ``` <div class="settings-dropdown" i```settings-dropdown">
-                        <div```ass="dropdown-header">
-                            <h```isplay Settings</h3>
+                    <div class="settings-dropdown" id="settings-dropdown">
+                        <div class="dropdown-header">
+                            <h3>Display Settings</h3>
                         </div>
-                        <div class="```pdown-content">
-                            ```v class="setting-row">
-                                ```bel for="time-format-dropdown">Time Format```abel>
-                                <select id="time```rmat-dropdown" class="dropdown-select">
-                                    <option value="ut```selected>UTC Server Time</option>
-                ```                 <option value="local">Local Time```ption>
-                                </select>```                          </div>
-                            <div```ass="setting-row">
-                                ```bel for="detail-level-dropdown">```ail Level</label>
-                                <select```="detail-level-dropdown" class="```pdown-select">
-                                    <option```lue="essential" selected>Essential</option>```                                  <option value="comprehensive">```prehensive</option>
-                                </select```                           </div>
-                            ```v class="setting-row">
-                ```             <label for="view-scope-dropdown">View Scope</label>```                              <select id="view-scope-dropdown" class="dropdown-select">
-                ```                 <option value="week```elected>Full Week</option>```                                  <option value="today">Today Only</option```                               </select>
-                            ```iv>
-                        </div>```                  </div>
-                </div>```          </div>
-        ```iv>
+                        <div class="dropdown-content">
+                            <div class="setting-row">
+                                <label for="time-format-dropdown">Time Format</label>
+                                <select id="time-format-dropdown" class="dropdown-select">
+                                    <option value="utc" selected>UTC Server Time</option>
+                                    <option value="local">Local Time</option>
+                                </select>
+                            </div>
+                            <div class="setting-row">
+                                <label for="detail-level-dropdown">Detail Level</label>
+                                <select id="detail-level-dropdown" class="dropdown-select">
+                                    <option value="essential" selected>Essential</option>
+                                    <option value="comprehensive">Comprehensive</option>
+                                </select>
+                            </div>
+                            <div class="setting-row">
+                                <label for="view-scope-dropdown">View Scope</label>
+                                <select id="view-scope-dropdown" class="dropdown-select">
+                                    <option value="week" selected>Full Week</option>
+                                    <option value="today">Today Only</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </nav>
 
     <div class="ad-banner-top">
-        <ins class="adsbyg```le" style="display:block" data-ad-client="ca-pub-2898635719839576" data-ad-slot="auto```ata-ad-format="auto"```ta-full-width-responsive="true">```ns>
+        <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-2898635719839576" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
     </div>
 
     <div class="app-container">
-        ```ction class="hero-dashboar```
-            <div class="dashboar```rid">
-                <div```ass="status-card">
-                    <div class="```d-header">
+        <section class="hero-dashboard">
+            <div class="dashboard-grid">
+                <div class="status-card">
+                    <div class="card-header">
                         <h2>Live Server Status</h2>
-                        ```v class="status-indicator pulse```/div>
+                        <div class="status-indicator pulse"></div>
                     </div>
-                ``` <div class="card-content">```                      <div class="status-grid">
+                    <div class="card-content">
+                        <div class="status-grid">
                             <div class="status-item">
-                                <span class="label```erver Time</span>
-                ```             <span id="server-time" class="value mono">00:00:00</span>
-                            </div>```                          <div class="status-item clickable-status" id="current-vs-status">
-                                <span class="label">```rent VS Day</span>
-                                ```an id="current-vs-day" class```alue highlight">Loading...</span>
-                ```             <span class="expand-icon">▼</span>
-                            </div>```                          <div class="status-item click```e-status" id="current-arms-status">
-                                ```an class="label">Arms Race</span>```                              <span id="arms-phase" class="value">Loading...</span>```                              <span class="expand-icon">▼</span>
-                            </div```                           <div class="status```em alignment-status" id="alignment-status">
-                                <span class="label">```nt Alignment</span>
-                                <span```="alignment-indicator" class="value">```cking...</span>
+                                <span class="label">Server Time</span>
+                                <span id="server-time" class="value mono">00:00:00</span>
                             </div>
-                ```     </div>
-                        ```                      <div class="expandable-details" i```vs-day-details">
-                ```         <div class="detail-header">```                              <h4>VS Day Activities```4>
+                            <div class="status-item clickable-status" id="current-vs-status">
+                                <span class="label">Current VS Day</span>
+                                <span id="current-vs-day" class="value highlight">Loading...</span>
+                                <span class="expand-icon">▼</span>
                             </div>
-                ```         <div class="detail-content" i```vs-day-content">
-                                ```ding VS day information...
-                            ```iv>
+                            <div class="status-item clickable-status" id="current-arms-status">
+                                <span class="label">Arms Race</span>
+                                <span id="arms-phase" class="value">Loading...</span>
+                                <span class="expand-icon">▼</span>
+                            </div>
+                            <div class="status-item alignment-status" id="alignment-status">
+                                <span class="label">Event Alignment</span>
+                                <span id="alignment-indicator" class="value">Checking...</span>
+                            </div>
                         </div>
-                ```     
-                        <div class="expandable```tails" id="arms-race-details">
+                        
+                        <div class="expandable-details" id="vs-day-details">
+                            <div class="detail-header">
+                                <h4>VS Day Activities</h4>
+                            </div>
+                            <div class="detail-content" id="vs-day-content">
+                                Loading VS day information...
+                            </div>
+                        </div>
+                        
+                        <div class="expandable-details" id="arms-race-details">
                             <div class="detail-header">
                                 <h4>Arms Race Point Sources</h4>
-                            </div```                           <div class="detail-content" id="arms-race-content">```                              Loading Arms Race information...
-                            ```iv>
-                        </div>```                  </div>
-                </div>```               <div class="countdown-card">
-                    ```v class="card-header">
-                        ```>Next Priority Event</h2>
-                        <div class="priority-indicator high```/div>
+                            </div>
+                            <div class="detail-content" id="arms-race-content">
+                                Loading Arms Race information...
+                            </div>
+                        </div>
                     </div>
-                ``` <div class="card-content">```                      <div class="countdown-display">
-                            <div class="priority```plainer">
-                                ```an class="explainer-text">⚡ When VS Events + Arms Race align```r maximum rewards</span>
-                ```         </div>
-                            <div i```countdown-timer" class="countdown-value">00h 00m</div>
-                            <div class="countdown```tails">
-                                ```v id="event-name" class="event```me">Calculating...</div>
-                ```             <div id="event-time" class="event-time">Loading```</div>
-                                <div class```ountdown-progress">
-                                    ```v class="progress-bar">
-                                        <div i```progress-fill" class="progress-fill"></div>
-                                    </div>```                                  <span id="progress-text" class="progress-text">0% complete</span>
-                                </div>```                          </div>
-                        </div```                   </div>
-                ```iv>
-            </div>```           <div class="action-card-full">
-                <div```ass="card-header">
-                    ```>Recommended Strategy</h2>
-                    <div class="strategy-rating">
-                        <span i```strategy-rating" class="rating-value">A+</span>
-                ```     <span class="rating-label">Efficiency</span>
-                    ```iv>
                 </div>
-                ```v class="card-content">
-                ``` <div class="action-display">
-                        <div class="action-icon-large" id="action-icon">⏳</div>
-                ```     <div class="action-content-expanded">
-                            <div```="action-text" class="action-text">Analyzing optimal strategy...</div>
-                ```         <div class="action-meta-expanded">
-                                <div class="meta-item">
-                                    <span```ass="meta-label">Priority Level</span>```                                  <span id="priority```vel" class="priority-tag">Medium</span>
-                                </div>```                              <div class="meta-item">
-                                    <span class="meta-label">Optimization Focus</span>
-                ```                 <span id="optimization-focus" class="focus-value">Building```pan>
+
+                <div class="countdown-card">
+                    <div class="card-header">
+                        <h2>Next Priority Event</h2>
+                        <div class="priority-indicator high"></div>
+                    </div>
+                    <div class="card-content">
+                        <div class="countdown-display">
+                            <div class="priority-explainer">
+                                <span class="explainer-text">⚡ When VS Events + Arms Race align for maximum rewards</span>
+                            </div>
+                            <div id="countdown-timer" class="countdown-value">00h 00m</div>
+                            <div class="countdown-details">
+                                <div id="event-name" class="event-name">Calculating...</div>
+                                <div id="event-time" class="event-time">Loading...</div>
+                                <div class="countdown-progress">
+                                    <div class="progress-bar">
+                                        <div id="progress-fill" class="progress-fill"></div>
+                                    </div>
+                                    <span id="progress-text" class="progress-text">0% complete</span>
                                 </div>
-                ```             <div class="meta-item">
-                ```                 <span class="meta-label">Time Remaining</span>
-                                    <span i```time-remaining" class="time-value">3h 45m</span>```                              </div>
-                            </div```                       </div>
-                    ```iv>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            ```iv>
+            </div>
+
+            <div class="action-card-full">
+                <div class="card-header">
+                    <h2>Recommended Strategy</h2>
+                    <div class="strategy-rating">
+                        <span id="strategy-rating" class="rating-value">A+</span>
+                        <span class="rating-label">Efficiency</span>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="action-display">
+                        <div class="action-icon-large" id="action-icon">⏳</div>
+                        <div class="action-content-expanded">
+                            <div id="action-text" class="action-text">Analyzing optimal strategy...</div>
+                            <div class="action-meta-expanded">
+                                <div class="meta-item">
+                                    <span class="meta-label">Priority Level</span>
+                                    <span id="priority-level" class="priority-tag">Medium</span>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-label">Optimization Focus</span>
+                                    <span id="optimization-focus" class="focus-value">Building</span>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-label">Time Remaining</span>
+                                    <span id="time-remaining" class="time-value">3h 45m</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
 
-        ```in class="main-content">
-            <div class="tab```vigation">
+        <main class="main-content">
+            <div class="tab-navigation">
                 <div class="tab-container">
-                    <button class="tab```n active" data-tab="priority">
-                        <span class```ab-icon">🏆</span>
-                        <span class```ab-label">Priority Events```pan>
-                        <span class="tab```unt" id="priority-count">12</span>
-                ``` </button>
-                    <button class```ab-btn" data-tab="schedule```                        <span class="tab-icon">📅</span>
-                        ```an class="tab-label">Full```hedule</span>
-                        <span class```ab-count" id="schedule-count">42</span>
-                    </button>```                  <button class="tab-btn" data-tab="intelligence">
-                        ```an class="tab-icon">🧠</span>
-                        <span class```ab-label">Strategy Hub```pan>
-                        <span class="```-count" id="intel-count">16</span>
-                    </button>```              </div>
-            </div>```           <div class="tab-content">```              <div id="priority-tab" class="tab-panel active">
-                    ```v class="section-header">
-                ```     <h2>High Priority Events</h2>
-                        <p class```ection-subtitle">These are the```lden opportunities when VS Events perfectly align with Arms Race phases```r maximum efficiency and rewards</p>
-                        ```v class="priority-explanation">
-                            ```v class="explanation-card">
-                                <span```ass="explanation-icon">⚡</span>
-                                <span```ass="explanation-text">High```iority = VS Event activities match```ms Race focus</span>
-                            ```iv>
-                        ```iv>
-                        <div class="section```lters">
-                            ```tton class="filter-btn active" data-filter="all">All Events</button>
-                ```         <button class="filter-btn" data```lter="active">Active Now```utton>
-                            <button class="```ter-btn" data-filter="upcoming">```oming</button>
-                        ```iv>
-                    </div>```                  <div id="priority-grid" class="priority-grid">
-                    ```iv>
+                    <button class="tab-btn active" data-tab="priority">
+                        <span class="tab-icon">🏆</span>
+                        <span class="tab-label">Priority Events</span>
+                        <span class="tab-count" id="priority-count">12</span>
+                    </button>
+                    <button class="tab-btn" data-tab="schedule">
+                        <span class="tab-icon">📅</span>
+                        <span class="tab-label">Full Schedule</span>
+                        <span class="tab-count" id="schedule-count">42</span>
+                    </button>
+                    <button class="tab-btn" data-tab="intelligence">
+                        <span class="tab-icon">🧠</span>
+                        <span class="tab-label">Strategy Hub</span>
+                        <span class="tab-count" id="intel-count">16</span>
+                    </button>
                 </div>
-
-                ```v id="schedule-tab" class="```-panel">
-                    <div class```ection-header">
-                        <h```omplete Event Schedule</h2>
-                        <p class="section-subtitle```lan your week with the```ll Arms Race and VS event calendar```>
-                        <div class="```edule-legend">
-                            ```v class="legend-item">
-                                ```v class="legend-color priority```/div>
-                                <span```gh Priority</span>
-                            </div>```                          <div class="legend-item">
-                                <div class="legend-color current"></div>
-                                <span>Active```w</span>
-                            </div>```                          <div class="legend-item">
-                                <div class="legend-color normal"></div>
-                                <span>Standar```span>
-                            </div>```                      </div>
-                    </div>```                  <div id="schedule-grid" class="schedule-container">
-                    ```iv>
-                </div>
-
-                ```v id="intelligence-tab" class="```-panel">
-                    <div class```ection-header">
-                        <h```trategy Intelligence Hub</h2>
-                        <p class="section-subtitle">```ert guides, pro tips, and comprehensive```rategies</p>
-                        <div class="intel```ats">
-                            <div class="intel```at">
-                                <span class="stat-number">24</span>
-                                <span class="```t-label">Guides</span>
-                            </div>```                          <div class="intel-stat">
-                                <span class="stat-number">156</span>
-                                <span class="```t-label">Tips</span>
-                ```         </div>
-                            <div class```ntel-stat">
-                                <span```ass="stat-number">S4</span>
-                                <span class="```t-label">Season</span>
-                            ```iv>
-                        </div>```                  </div>
-                    <div```="intelligence-content" class="intelligence```b">
-                    </div>
-                ```iv>
             </div>
-        ```ain>
+
+            <div class="tab-content">
+                <div id="priority-tab" class="tab-panel active">
+                    <div class="section-header">
+                        <h2>High Priority Events</h2>
+                        <p class="section-subtitle">These are the golden opportunities when VS Events perfectly align with Arms Race phases for maximum efficiency and rewards</p>
+                        <div class="priority-explanation">
+                            <div class="explanation-card">
+                                <span class="explanation-icon">⚡</span>
+                                <span class="explanation-text">High Priority = VS Event activities match Arms Race focus</span>
+                            </div>
+                        </div>
+                        <div class="section-filters">
+                            <button class="filter-btn active" data-filter="all">All Events</button>
+                            <button class="filter-btn" data-filter="active">Active Now</button>
+                            <button class="filter-btn" data-filter="upcoming">Upcoming</button>
+                        </div>
+                    </div>
+                    <div id="priority-grid" class="priority-grid">
+                    </div>
+                </div>
+
+                <div id="schedule-tab" class="tab-panel">
+                    <div class="section-header">
+                        <h2>Complete Event Schedule</h2>
+                        <p class="section-subtitle">Plan your week with the full Arms Race and VS event calendar</p>
+                        <div class="schedule-legend">
+                            <div class="legend-item">
+                                <div class="legend-color priority"></div>
+                                <span>High Priority</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color current"></div>
+                                <span>Active Now</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color normal"></div>
+                                <span>Standard</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="schedule-grid" class="schedule-container">
+                    </div>
+                </div>
+
+                <div id="intelligence-tab" class="tab-panel">
+                    <div class="section-header">
+                        <h2>Strategy Intelligence Hub</h2>
+                        <p class="section-subtitle">Expert guides, pro tips, and comprehensive strategies</p>
+                        <div class="intel-stats">
+                            <div class="intel-stat">
+                                <span class="stat-number">24</span>
+                                <span class="stat-label">Guides</span>
+                            </div>
+                            <div class="intel-stat">
+                                <span class="stat-number">156</span>
+                                <span class="stat-label">Tips</span>
+                            </div>
+                            <div class="intel-stat">
+                                <span class="stat-number">S4</span>
+                                <span class="stat-label">Season</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="intelligence-content" class="intelligence-hub">
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
 
     <div id="event-modal" class="modal">
-        ```v class="modal-content">
-            ```v class="modal-header">
-                <h```d="modal-title">Event Details```3>
-                <button class="```al-close" id="modal-close">×</button>
-            </div>```          <div id="modal-body" class="modal-body">
-            ```iv>
-            <div class="modal```oter">
-                <button class="modal```n secondary" id="modal-share">Share Event</button>
-                ```tton class="modal-btn primary" i```modal-remind">Set Reminder</button>```          </div>
-        </div>```  </div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Event Details</h3>
+                <button class="modal-close" id="modal-close">×</button>
+            </div>
+            <div id="modal-body" class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn secondary" id="modal-share">Share Event</button>
+                <button class="modal-btn primary" id="modal-remind">Set Reminder</button>
+            </div>
+        </div>
+    </div>
 
-    <script src```pp.js"></script>
-    <script>```      document.addEventListener('DOMContentLoaded', function```{
-            (adsbygoogle = window```sbygoogle || []).push({});
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            (adsbygoogle = window.adsbygoogle || []).push({});
         });
-    </script>```body>
+    </script>
+</body>
 </html>

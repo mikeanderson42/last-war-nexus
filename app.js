@@ -752,30 +752,4 @@ class LastWarNexus {
         if (this.settings.detailLevel === 'comprehensive' && alignment) {
           slotContent += `
             <div class="slot-details">
-              <div class="slot-reason">${alignment.reason}</div>
-              <div class="slot-points">+${alignment.points.toLocaleString()} points</div>
-            </div>
-          `;
-        }
-        
-        slot.innerHTML = slotContent;
-        
-        if (alignment) {
-          slot.addEventListener('click', () => {
-            this.showModal(alignment, daysToShow[0], armsPhase);
-          });
-        }
-        
-        timeSlots.appendChild(slot);
-      }
-      
-      todayContainer.appendChild(timeSlots);
-      container.appendChild(todayContainer);
-      
-    } else {
-      daysToShow = this.data.vs_days;
-      
-      const weekGrid = document.createElement('div');
-      weekGrid.className = 'schedule-grid';
-      
-      const headers =
+              <div```

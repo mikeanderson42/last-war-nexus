@@ -1,55 +1,36 @@
-/* Enhanced Interface Styling */
 :root {
-  /* Color Palette */
   --bg-primary: #0a0e13;
   --bg-secondary: #151922;
   --bg-elevated: #1e242e;
   --bg-hover: #252b37;
   --bg-card: #1a1f28;
-  
-  /* -Inspired Accents */
   --accent-primary: #00d4ff;
   --accent-secondary: #ff6b35;
   --accent-success: #00ff88;
   --accent-warning: #ffb800;
   --accent-error: #ff4757;
   --accent-purple: #8b5cf6;
-  
-  /* Text Colors */
   --text-primary: #ffffff;
   --text-secondary: #9ca3af;
   --text-muted: #6b7280;
   --text-accent: #00d4ff;
-  
-  /* Border Colors */
   --border-primary: #2d3748;
   --border-accent: #374151;
   --border-highlight: #00d4ff;
-  
-  /* Typography */
   --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'SF Mono', Monaco, 'Cascadia Code', monospace;
-  
-  /* Spacing (Mobile-First) */
   --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
   --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px;
-  
-  /* Border Radius */
   --radius-sm: 4px; --radius-md: 6px; --radius-lg: 8px; --radius-xl: 12px;
-  
-  /* Shadows */
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.6);
   --shadow-glow: 0 0 20px rgba(0, 212, 255, 0.3);
-  
-  /* Transitions */
   --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-base: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Reset & Base */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
   font-family: var(--font-primary);
@@ -61,7 +42,6 @@ body {
   font-size: 14px;
 }
 
-/* Enhanced Navigation */
 .main-nav {
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--border-primary);
@@ -118,7 +98,6 @@ body {
   border-color: var(--border-accent);
 }
 
-/* Ad Banner */
 .ad-banner-top {
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--border-primary);
@@ -128,14 +107,12 @@ body {
   min-height: 50px;
 }
 
-/* App Container */
 .app-container {
   max-width: 1400px;
   margin: 0 auto;
   padding: var(--space-4);
 }
 
-/* Enhanced Hero Dashboard */
 .hero-dashboard {
   margin-bottom: var(--space-6);
 }
@@ -147,7 +124,6 @@ body {
   margin-bottom: var(--space-4);
 }
 
-/* Enhanced Cards */
 .status-card, .countdown-card {
   background: var(--bg-card);
   border: 1px solid var(--border-primary);
@@ -208,7 +184,6 @@ body {
   padding: var(--space-4);
 }
 
-/* Status Grid */
 .status-grid {
   display: flex;
   flex-direction: column;
@@ -241,7 +216,6 @@ body {
 .value.mono { font-family: var(--font-mono); color: var(--accent-primary); }
 .value.highlight { color: var(--accent-secondary); }
 
-/* Enhanced Countdown Display */
 .countdown-display {
   text-align: center;
 }
@@ -315,7 +289,6 @@ body {
   font-family: var(--font-mono);
 }
 
-/* Enhanced Full-Width Action Card */
 .action-card-full {
   background: var(--bg-card);
   border: 1px solid var(--border-primary);
@@ -425,7 +398,6 @@ body {
   font-size: 0.9rem;
 }
 
-/* Priority Explanation */
 .priority-explanation {
   margin: var(--space-4) 0;
   display: flex;
@@ -453,7 +425,6 @@ body {
   font-weight: 500;
 }
 
-/* Collapsible Settings Panel */
 .settings-panel {
   background: var(--bg-card);
   border: 1px solid var(--border-primary);
@@ -544,7 +515,6 @@ body {
   box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.2);
 }
 
-/* Enhanced Tab Navigation */
 .tab-navigation {
   margin-bottom: var(--space-6);
 }
@@ -612,7 +582,6 @@ body {
   background: rgba(255, 255, 255, 0.3);
 }
 
-/* Enhanced Tab Content */
 .tab-content {
   min-height: 400px;
 }
@@ -731,7 +700,6 @@ body {
   letter-spacing: 0.5px;
 }
 
-/* Enhanced Priority Grid */
 .priority-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -842,7 +810,6 @@ body {
   border-top: 1px solid var(--border-primary);
 }
 
-/* Enhanced Schedule Container */
 .schedule-container {
   background: var(--bg-card);
   border: 1px solid var(--border-primary);
@@ -905,7 +872,6 @@ body {
   font-size: 0.7rem;
 }
 
-/* Enhanced Intelligence Hub */
 .intelligence-hub {
   display: flex;
   flex-direction: column;
@@ -987,7 +953,6 @@ body {
   text-decoration: underline;
 }
 
-/* Enhanced Modal */
 .modal {
   display: none;
   position: fixed;
@@ -1114,7 +1079,6 @@ body {
   border-color: var(--accent-secondary);
 }
 
-/* Mobile Optimizations */
 @media (max-width: 768px) {
   .app-container { padding: var(--space-3); }
   .nav-container { padding: 0 var(--space-3); }

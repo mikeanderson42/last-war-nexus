@@ -4,7 +4,7 @@ class LastWarNexus {
     this.initializationAttempts = 0;
     this.maxInitAttempts = 3;
     
-    // Server settings
+    // Server settings with proper offset calculation
     this.serverNumber = parseInt(localStorage.getItem('lwn-server-number')) || 555;
     this.serverOffset = parseInt(localStorage.getItem('lwn-server-offset')) || 0;
     
@@ -296,6 +296,97 @@ class LastWarNexus {
     }
   }
 
+  // Server calculation functions
+  calculateServerLaunchDate(serverNumber) {
+    // Base calculation: Server 1 launched on March 15, 2024
+    const baseDate = new Date('2024-03-15T00:00:00Z');
+    const serverLaunchDate = new Date(baseDate.getTime() + (serverNumber - 1) * 7 * 24 * 60 * 60 * 1000);
+    return serverLaunchDate;
+  }
+
+  calculateServerOffset(serverNumber) {
+    // Calculate phase offset based on server launch
+    const launchDate = this.calculateServerLaunchDate(serverNumber);
+    const now = new Date();
+    const daysSinceLaunch = Math.floor((now - launchDate) / (24 * 60 * 60 * 1000));
+    return (daysSinceLaunch * 2) % 24; // 2 hours offset per day
+  }
+
+  updateServerInfo() {
+    try {
+      const serverNumber = parseInt(this.elements.serverinput?.value) || this.serverNumber;
+      const launchDate = this.calculateServerLaunchDate(serverNumber);
+      const offset = this.calculateServerOffset(serverNumber);
+      
+      if (this.elements.serverlaunch) {
+        this.elements.serverlaunch.textContent = launchDate.toLocaleDateString();
+      }
+      if (this.elements.phaseoffset) {
+        this.elements.phaseoffset.textContent = `+${offset}h`;
+      }
+    } catch (error) {
+      console.error('Error updating server info:', error);
+    }
+  }
+
+  applyServerSettings() {
+    try {
+      const newServerNumber = parseInt(this.elements.serverinput?.value) || 555;
+      this.serverNumber = newServerNumber;
+      this.serverOffset = this.calculateServerOffset(newServerNumber);
+      
+      // Save to localStorage
+      localStorage.setItem('lwn-server-number', this.serverNumber.toString());
+      localStorage.setItem('lwn-server-offset', this.serverOffset.toString());
+      
+      // Update display
+      if (this.elements.currentserver) {
+        this.elements.currentserver.textContent = this.serverNumber;
+      }
+      
+      // Close dropdown and refresh all displays
+      this.closeServerDropdown();
+      this.updateAllDisplays();
+      
+      console.log(`Applied server ${this.serverNumber} with offset ${this.serverOffset}h`);
+    } catch (error) {
+      console.error('Error applying server settings:', error);
+    }
+  }
+
+  toggleServerDropdown() {
+    try {
+      const isOpen = this.elements.serverdropdown?.classList.contains('show');
+      
+      if (isOpen) {
+        this.closeServerDropdown();
+      } else {
+        this.closeDropdown(); // Close settings dropdown
+        if (this.elements.serverdropdown) {
+          this.elements.serverdropdown.classList.add('show');
+        }
+        if (this.elements.servertoggle) {
+          this.elements.servertoggle.classList.add('active');
+        }
+      }
+    } catch (error) {
+      console.error('Error toggling server dropdown:', error);
+    }
+  }
+
+  closeServerDropdown() {
+    try {
+      if (this.elements.serverdropdown) {
+        this.elements.serverdropdown.classList.remove('show');
+      }
+      if (this.elements.servertoggle) {
+        this.elements.servertoggle.classList.remove('active');
+      }
+    } catch (error) {
+      console.error('Error closing server dropdown:', error);
+    }
+  }
+
   setupEventListeners() {
     this.removeEventListeners();
     
@@ -465,97 +556,6 @@ class LastWarNexus {
       }
     });
     this.eventListeners = [];
-  }
-
-  // Server functionality
-  calculateServerLaunchDate(serverNumber) {
-    // Base calculation: Server 1 launched on March 15, 2024
-    const baseDate = new Date('2024-03-15T00:00:00Z');
-    const serverLaunchDate = new Date(baseDate.getTime() + (serverNumber - 1) * 7 * 24 * 60 * 60 * 1000);
-    return serverLaunchDate;
-  }
-
-  calculateServerOffset(serverNumber) {
-    // Calculate phase offset based on server launch
-    const launchDate = this.calculateServerLaunchDate(serverNumber);
-    const now = new Date();
-    const daysSinceLaunch = Math.floor((now - launchDate) / (24 * 60 * 60 * 1000));
-    return (daysSinceLaunch * 2) % 24; // 2 hours offset per day
-  }
-
-  updateServerInfo() {
-    try {
-      const serverNumber = parseInt(this.elements.serverinput?.value) || this.serverNumber;
-      const launchDate = this.calculateServerLaunchDate(serverNumber);
-      const offset = this.calculateServerOffset(serverNumber);
-      
-      if (this.elements.serverlaunch) {
-        this.elements.serverlaunch.textContent = launchDate.toLocaleDateString();
-      }
-      if (this.elements.phaseoffset) {
-        this.elements.phaseoffset.textContent = `+${offset}h`;
-      }
-    } catch (error) {
-      console.error('Error updating server info:', error);
-    }
-  }
-
-  applyServerSettings() {
-    try {
-      const newServerNumber = parseInt(this.elements.serverinput?.value) || 555;
-      this.serverNumber = newServerNumber;
-      this.serverOffset = this.calculateServerOffset(newServerNumber);
-      
-      // Save to localStorage
-      localStorage.setItem('lwn-server-number', this.serverNumber.toString());
-      localStorage.setItem('lwn-server-offset', this.serverOffset.toString());
-      
-      // Update display
-      if (this.elements.currentserver) {
-        this.elements.currentserver.textContent = this.serverNumber;
-      }
-      
-      // Close dropdown and refresh all displays
-      this.closeServerDropdown();
-      this.updateAllDisplays();
-      
-      console.log(`Applied server ${this.serverNumber} with offset ${this.serverOffset}h`);
-    } catch (error) {
-      console.error('Error applying server settings:', error);
-    }
-  }
-
-  toggleServerDropdown() {
-    try {
-      const isOpen = this.elements.serverdropdown?.classList.contains('show');
-      
-      if (isOpen) {
-        this.closeServerDropdown();
-      } else {
-        this.closeDropdown(); // Close settings dropdown
-        if (this.elements.serverdropdown) {
-          this.elements.serverdropdown.classList.add('show');
-        }
-        if (this.elements.servertoggle) {
-          this.elements.servertoggle.classList.add('active');
-        }
-      }
-    } catch (error) {
-      console.error('Error toggling server dropdown:', error);
-    }
-  }
-
-  closeServerDropdown() {
-    try {
-      if (this.elements.serverdropdown) {
-        this.elements.serverdropdown.classList.remove('show');
-      }
-      if (this.elements.servertoggle) {
-        this.elements.servertoggle.classList.remove('active');
-      }
-    } catch (error) {
-      console.error('Error closing server dropdown:', error);
-    }
   }
 
   safeUpdateElement(elementKey, property, value) {

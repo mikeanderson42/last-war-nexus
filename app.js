@@ -420,10 +420,9 @@ calculateArmsRaceOffset(serverNumber) {
     // Based on observed patterns from various servers
     
     if (serverNumber >= 1000) {
-        // High server numbers (1000+) typically have significant offsets
-        // Server 1069 observed to be ~13 hours offset from standard UTC
-        const baseOffset = 13; // Base offset for 1000+ servers
-        const variation = Math.floor((serverNumber - 1000) / 50) * 2; // Additional variation
+        // High server numbers (1000+) - server 1069 observed with 12-hour offset
+        const baseOffset = 12; // Base offset for 1000+ servers  
+        const variation = Math.floor((serverNumber - 1000) / 100) * 1; // Small variations
         return (baseOffset + variation) % 24;
     } else if (serverNumber >= 500) {
         // Mid-range servers (500-999)
@@ -440,6 +439,7 @@ calculateArmsRaceOffset(serverNumber) {
         return (serverNumber % 4) * 2;
     }
 }
+
 
 
     updateServerDisplay() {

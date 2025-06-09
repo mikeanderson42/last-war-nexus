@@ -5,21 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Last War Nexus - Complete Tracking Dashboard</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Google AdSense (preserved from original) -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR-ID" crossorigin="anonymous"></script>
 </head>
 <body>
-    <!-- Header with Server Selection -->
-    <header class="main-header">
+    <header class="header">
         <div class="header-content">
             <div class="logo-section">
                 <h1>Last War Nexus</h1>
                 <span class="version">v2.1 - Arms Race Edition</span>
             </div>
             
-            <!-- Server Selection (Fixed Integration) -->
             <div class="server-selector">
-                <label for="server-select" class="server-label">Server:</label>
+                <label for="server-select">Server:</label>
                 <select id="server-select" class="server-dropdown">
                     <option value="">Select Server</option>
                 </select>
@@ -29,39 +25,32 @@
                 </div>
             </div>
             
-            <div class="header-controls">
-                <button id="settings-btn" class="settings-button">
-                    ⚙️ Settings
-                </button>
-            </div>
+            <button id="settings-btn" class="settings-button">⚙️ Settings</button>
         </div>
     </header>
 
-    <!-- Main Dashboard Container -->
-    <div class="dashboard-container">
-        <!-- Arms Race Display (New - Fixed) -->
-        <section class="arms-race-section" id="arms-race-section">
+    <main class="container">
+        <!-- Arms Race Section -->
+        <section class="arms-race-section">
             <div class="section-header">
                 <h2>Arms Race Schedule</h2>
-                <div class="phase-status" id="phase-status">
-                    <span class="current-phase">Select Server</span>
+                <div class="phase-status">
+                    <span class="current-phase" id="current-phase">Select Server</span>
                     <div class="phase-timer" id="phase-timer">--:--:--</div>
                 </div>
             </div>
             
-            <div class="phase-display">
-                <div class="phase-grid" id="phase-grid">
-                    <!-- Phase cards populated by JavaScript -->
-                </div>
+            <div class="phase-grid" id="phase-grid">
+                <!-- Populated by JavaScript -->
             </div>
             
             <div class="phase-details">
-                <div class="current-phase-info">
+                <div class="phase-info">
                     <h3 id="current-phase-title">Current Phase</h3>
                     <p id="current-phase-description">Select a server to view Arms Race information</p>
-                    <div class="phase-progress">
+                    <div class="progress-container">
                         <div class="progress-bar">
-                            <div class="progress-fill" id="progress-fill"></div>
+                            <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
                         </div>
                         <span class="progress-text" id="progress-text">0%</span>
                     </div>
@@ -70,47 +59,42 @@
                 <div class="next-phase-info">
                     <h4 id="next-phase-title">Next Phase</h4>
                     <p id="next-phase-description">--</p>
-                    <div class="countdown-display">
-                        <span class="countdown-label">Time remaining:</span>
+                    <div class="countdown">
+                        <span>Time remaining: </span>
                         <span class="countdown-timer" id="countdown-timer">--:--:--</span>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Existing Hero Management Section (Preserved) -->
-        <section class="hero-section">
+        <!-- Hero Management Section -->
+        <section class="section">
             <div class="section-header">
                 <h2>Hero Management</h2>
-                <button id="add-hero-btn" class="add-button">Add Hero</button>
+                <button id="add-hero-btn" class="btn btn-primary">Add Hero</button>
             </div>
             
-            <div class="hero-form">
-                <div class="form-row">
-                    <input type="text" id="hero-name" placeholder="Hero Name" list="hero-suggestions">
-                    <datalist id="hero-suggestions"></datalist>
-                    
-                    <select id="hero-type">
-                        <option value="">Select Type</option>
-                        <option value="missile">Missile</option>
-                        <option value="tank">Tank</option>
-                        <option value="air">Air</option>
-                    </select>
-                    
-                    <input type="number" id="hero-level" placeholder="Level" min="1" max="100" value="1">
-                </div>
+            <div class="hero-form" id="hero-form">
+                <input type="text" id="hero-name" placeholder="Hero Name" class="form-input">
+                <select id="hero-type" class="form-select">
+                    <option value="">Select Type</option>
+                    <option value="missile">Missile</option>
+                    <option value="tank">Tank</option>
+                    <option value="air">Air</option>
+                </select>
+                <input type="number" id="hero-level" placeholder="Level" min="1" max="100" value="1" class="form-input">
             </div>
             
-            <div class="heroes-list" id="heroes-list">
-                <!-- Hero cards populated dynamically -->
+            <div id="heroes-list" class="heroes-list">
+                <!-- Heroes populated by JavaScript -->
             </div>
         </section>
 
-        <!-- Existing Code Strategy Section (Preserved) -->
-        <section class="strategy-section">
+        <!-- Code Strategy Section -->
+        <section class="section">
             <div class="section-header">
                 <h2>Code Strategies</h2>
-                <select id="code-select">
+                <select id="code-select" class="form-select">
                     <option value="">Select Code</option>
                     <option value="64">Code 64 - Missile Heroes +50%</option>
                     <option value="87">Code 87 - Tank Heroes +50%</option>
@@ -118,54 +102,48 @@
                 </select>
             </div>
             
-            <div class="code-strategy" id="code-strategy">
-                <!-- Strategy details populated dynamically -->
+            <div id="code-strategy" class="code-strategy">
+                <!-- Strategy populated by JavaScript -->
             </div>
         </section>
 
-        <!-- Data Management Section (Preserved) -->
-        <section class="data-section">
+        <!-- Data Management Section -->
+        <section class="section">
             <div class="section-header">
                 <h2>Data Management</h2>
                 <div class="data-controls">
-                    <button id="export-data-btn" class="data-button">Export Data</button>
-                    <button id="import-data-btn" class="data-button">Import Data</button>
+                    <button id="export-data-btn" class="btn btn-secondary">Export Data</button>
+                    <button id="import-data-btn" class="btn btn-secondary">Import Data</button>
                 </div>
             </div>
         </section>
-    </div>
+    </main>
 
-    <!-- Settings Modal (Fixed) -->
+    <!-- Settings Modal -->
     <div id="settings-modal" class="modal" style="display: none;">
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Settings</h3>
-                <button class="close-button" id="close-settings">&times;</button>
+                <button id="close-settings" class="close-btn">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="setting-group">
-                    <label>
-                        <input type="checkbox" id="auto-save" checked>
-                        Auto-save data every 30 seconds
-                    </label>
-                </div>
-                <div class="setting-group">
-                    <label>
-                        <input type="checkbox" id="notifications" checked>
-                        Show notifications
-                    </label>
-                </div>
-                <div class="setting-group">
-                    <label>
-                        <input type="checkbox" id="phase-alerts" checked>
-                        Arms Race phase change alerts
-                    </label>
-                </div>
+                <label class="setting-item">
+                    <input type="checkbox" id="auto-save" checked>
+                    <span>Auto-save data every 30 seconds</span>
+                </label>
+                <label class="setting-item">
+                    <input type="checkbox" id="notifications" checked>
+                    <span>Show notifications</span>
+                </label>
+                <label class="setting-item">
+                    <input type="checkbox" id="phase-alerts" checked>
+                    <span>Arms Race phase change alerts</span>
+                </label>
             </div>
         </div>
     </div>
 
-    <!-- Scripts (Fixed Order) -->
+    <!-- Scripts in correct order -->
     <script src="armsrace.js"></script>
     <script src="app.js"></script>
 </body>

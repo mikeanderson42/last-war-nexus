@@ -1941,5 +1941,11 @@ button,
   .minimize-btn {
     min-height: 48px;
     min-width: 48px;
+  .settings-dropdown { 
+    right: var(--space-2); 
+    left: var(--space-2);
+    min-width: calc(100vw - 32px);
+    max-width: calc(100vw - 32px);
+  }
   }
 }

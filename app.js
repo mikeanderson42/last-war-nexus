@@ -752,4 +752,14 @@ class LastWarNexus {
         if (this.settings.detailLevel === 'comprehensive' && alignment) {
           slotContent += `
             <div class="slot-details">
-              <div```
+              <div class="slot-reason">${alignment.reason}</div>
+              <div class="slot-points">+${alignment.points.toLocaleString()} points</div>
+            </div>
+          `;
+        }
+        
+        slot.innerHTML = slotContent;
+        
+        if (alignment) {
+          slot.addEventListener('click', () => {
+            this.showModal(alignment,

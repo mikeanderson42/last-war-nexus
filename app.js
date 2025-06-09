@@ -1,4 +1,4 @@
-// Enhanced Last War Nexus - Tracker.gg COD Inspired
+// Enhanced Last War Nexus - Complete Working Implementation
 class LastWarNexus {
   constructor() {
     this.data = {
@@ -139,43 +139,65 @@ class LastWarNexus {
     });
 
     // Settings controls
-    this.elements.settingsToggle.addEventListener('click', () => {
-      this.toggleSettings();
-    });
+    if (this.elements.settingsToggle) {
+      this.elements.settingsToggle.addEventListener('click', () => {
+        this.toggleSettings();
+      });
+    }
 
-    this.elements.settingsCollapse.addEventListener('click', () => {
-      this.toggleSettings();
-    });
+    if (this.elements.settingsCollapse) {
+      this.elements.settingsCollapse.addEventListener('click', () => {
+        this.toggleSettings();
+      });
+    }
 
-    document.getElementById('time-format').addEventListener('change', (e) => {
-      this.settings.timeFormat = e.target.value;
-      this.updateAllDisplays();
-    });
+    const timeFormat = document.getElementById('time-format');
+    if (timeFormat) {
+      timeFormat.addEventListener('change', (e) => {
+        this.settings.timeFormat = e.target.value;
+        this.updateAllDisplays();
+      });
+    }
 
-    document.getElementById('detail-level').addEventListener('change', (e) => {
-      this.settings.detailLevel = e.target.value;
-      this.updateContent();
-    });
+    const detailLevel = document.getElementById('detail-level');
+    if (detailLevel) {
+      detailLevel.addEventListener('change', (e) => {
+        this.settings.detailLevel = e.target.value;
+        this.updateContent();
+      });
+    }
 
-    document.getElementById('view-scope').addEventListener('change', (e) => {
-      this.settings.viewScope = e.target.value;
-      this.updateContent();
-    });
+    const viewScope = document.getElementById('view-scope');
+    if (viewScope) {
+      viewScope.addEventListener('change', (e) => {
+        this.settings.viewScope = e.target.value;
+        this.updateContent();
+      });
+    }
 
     // Modal controls
-    this.elements.modalClose.addEventListener('click', () => this.closeModal());
-    this.elements.modal.addEventListener('click', (e) => {
-      if (e.target === this.elements.modal) this.closeModal();
-    });
+    if (this.elements.modalClose) {
+      this.elements.modalClose.addEventListener('click', () => this.closeModal());
+    }
+    
+    if (this.elements.modal) {
+      this.elements.modal.addEventListener('click', (e) => {
+        if (e.target === this.elements.modal) this.closeModal();
+      });
+    }
 
     // Modal action buttons
-    this.elements.modalShare.addEventListener('click', () => {
-      this.shareEvent();
-    });
+    if (this.elements.modalShare) {
+      this.elements.modalShare.addEventListener('click', () => {
+        this.shareEvent();
+      });
+    }
 
-    this.elements.modalRemind.addEventListener('click', () => {
-      this.setReminder();
-    });
+    if (this.elements.modalRemind) {
+      this.elements.modalRemind.addEventListener('click', () => {
+        this.setReminder();
+      });
+    }
 
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
@@ -192,8 +214,12 @@ class LastWarNexus {
 
   toggleSettings() {
     this.settingsCollapsed = !this.settingsCollapsed;
-    this.elements.settingsPanel.classList.toggle('collapsed', this.settingsCollapsed);
-    this.elements.settingsCollapse.textContent = this.settingsCollapsed ? '+' : '−';
+    if (this.elements.settingsPanel) {
+      this.elements.settingsPanel.classList.toggle('collapsed', this.settingsCollapsed);
+    }
+    if (this.elements.settingsCollapse) {
+      this.elements.settingsCollapse.textContent = this.settingsCollapsed ? '+' : '−';
+    }
   }
 
   setFilter(filter) {
@@ -246,34 +272,14 @@ class LastWarNexus {
 
   updateActionDisplay(alignment, armsPhase, utcHour, utcMinute) {
     if (utcHour === 0 && utcMinute < 5) {
-      this.elements.actionIcon.textContent = '⏳';
-      this.elements.actionText.innerHTML = '<strong>Server Reset in Progress</strong><br>No points awarded during this period';
-      this.elements.priorityLevel.textContent = 'System';
-      this.elements.strategyRating.textContent = 'N/A';
-      this.elements.pointsPotential.textContent = '0';
-      this.elements.timeRemaining.textContent = `${5 - utcMinute}m`;
+      if (this.elements.actionIcon) this.elements.actionIcon.textContent = '⏳';
+      if (this.elements.actionText) this.elements.actionText.innerHTML = '<strong>Server Reset in Progress</strong><br>No points awarded during this period';
+      if (this.elements.priorityLevel) this.elements.priorityLevel.textContent = 'System';
+      if (this.elements.strategyRating) this.elements.strategyRating.textContent = 'N/A';
+      if (this.elements.pointsPotential) this.elements.pointsPotential.textContent = '0';
+      if (this.elements.timeRemaining) this.elements.timeRemaining.textContent = `${5 - utcMinute}m`;
     } else if (alignment) {
-      this.elements.actionIcon.textContent = '⚡';
-      this.elements.actionText.innerHTML = `<strong>HIGH PRIORITY ACTIVE!</strong><br>${alignment.reason}`;
-      this.elements.priorityLevel.textContent = 'Critical';
-      this.elements.strategyRating.textContent = 'A+';
-      this.elements.pointsPotential.textContent = `+${alignment.points.toLocaleString()}`;
-      
-      const nextHour = ((Math.floor(utcHour / 4) + 1) * 4) % 24;
-      const timeToNext = nextHour === 0 ? 24 - utcHour : nextHour - utcHour;
-      this.elements.timeRemaining.textContent = `${timeToNext}h ${60 - utcMinute}m`;
-    } else {
-      this.elements.actionIcon.textContent = armsPhase.icon;
-      this.elements.actionText.innerHTML = `<strong>Normal Phase:</strong><br>Focus on ${armsPhase.activities[0]}`;
-      this.elements.priorityLevel.textContent = 'Medium';
-      this.elements.strategyRating.textContent = 'B';
-      this.elements.pointsPotential.textContent = '+1,500';
-      
-      const nextHour = ((Math.floor(utcHour / 4) + 1) * 4) % 24;
-      const timeToNext = nextHour === 0 ? 24 - utcHour : nextHour - utcHour;
-      this.elements.timeRemaining.textContent = `${timeToNext}h ${60 - utcMinute}m`;
-    }
-  }
-
-  updateCountdown() {
-    const nextWindow = this.get
+      if (this.elements.actionIcon) this.elements.actionIcon.textContent = '⚡';
+      if (this.elements.actionText) this.elements.actionText.innerHTML = `<strong>HIGH PRIORITY ACTIVE!</strong><br>${alignment.reason}`;
+      if (this.elements.priorityLevel) this.elements.priorityLevel.textContent = 'Critical';
+      if (this

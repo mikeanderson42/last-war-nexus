@@ -6,30 +6,14 @@
     <meta name="description" content="Last War Nexus - Your ultimate event tracker and VS points optimization center for Last War: Survival Game. Stay ahead with real-time schedules and strategies.">
     <meta name="keywords" content="Last War Survival, event tracker, VS points, game strategy, mobile game tools, Season 4 Evernight Isle">
     <meta name="author" content="Last War Nexus Team">
-    <meta property="og:title" content="Last War Nexus - Ultimate Event Tracker">
-    <meta property="og:description" content="Optimize your Last War gameplay with real-time event tracking and VS points strategies.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://www.lastwarnexus.com">
     <title>Last War Nexus - Ultimate Event Tracker</title>
-    
-    <!-- Google AdSense Correct Implementation -->
+    <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2898635719839576" crossorigin="anonymous"></script>
-    
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎯</text></svg>">
-    <!-- Optional Google Analytics (Uncomment to Enable) -->
-    <!--
-    <script async src="https://www.googletagmanager.com/gtag/js?id=YOUR_GA_ID"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'YOUR_GA_ID');
-    </script>
-    -->
 </head>
 <body>
-    <!-- Top Ad Banner - Responsive Unit -->
+    <!-- Top Ad Banner -->
     <div class="ad-zone ad-banner-top">
         <ins class="adsbygoogle"
             style="display:block"
@@ -41,13 +25,11 @@
     </div>
 
     <div class="container">
-        <!-- Header Section -->
         <header class="header">
             <h1>🎯 Last War Nexus</h1>
             <p class="subtitle">VS Points Optimization Center</p>
         </header>
 
-        <!-- Live Status Dashboard -->
         <section class="dashboard-grid">
             <div class="card">
                 <div class="card__header">
@@ -70,7 +52,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="card">
                 <div class="card__header">
                     <h3>⏰ Next High Priority</h3>
@@ -85,7 +66,6 @@
             </div>
         </section>
 
-        <!-- What to Do Now Section -->
         <section class="card">
             <div class="card__header">
                 <h3>✅ What to Do Now</h3>
@@ -103,7 +83,6 @@
             </div>
         </section>
 
-        <!-- View Controls Section -->
         <section class="card">
             <div class="card__header">
                 <h3>📊 View Controls</h3>
@@ -135,7 +114,6 @@
             </div>
         </section>
 
-        <!-- Main Navigation & Content Area -->
         <main>
             <div class="view-switcher">
                 <div id="nav-pills" class="nav-pills">
@@ -144,27 +122,18 @@
                     <button class="nav-pill" data-view="intelligence">🧠 Intelligence</button>
                 </div>
             </div>
-
             <div id="priority-section" class="content-section">
                 <div id="high-priority-grid" class="priority-grid loading">
                     <div class="spinner"></div>
-                    <!-- High priority cards will be populated here -->
                 </div>
             </div>
-
             <div id="schedule-section" class="content-section hidden">
                 <div id="complete-schedule-grid" class="schedule-grid-table loading">
                     <div class="spinner"></div>
-                    <!-- Complete schedule table will be populated here -->
                 </div>
             </div>
-
-            <div id="intelligence-section" class="content-section hidden">
-                <!-- Intelligence Hub content will be populated here -->
-            </div>
+            <div id="intelligence-section" class="content-section hidden"></div>
         </main>
-        
-        <!-- Bottom Ad Banner Placeholder -->
         <div class="ad-zone ad-banner-bottom">
             <ins class="adsbygoogle"
                 style="display:block"
@@ -175,16 +144,12 @@
             <div class="ad-placeholder">Bottom Responsive Ad</div>
         </div>
     </div>
-
-    <!-- Modal for detailed information -->
     <div id="detail-modal" class="modal">
         <div class="modal-content">
             <span id="close-modal-button" class="close-button">&times;</span>
             <div id="modal-body"></div>
         </div>
     </div>
-
-    <!-- Sticky Mobile Footer Ad -->
     <div class="ad-zone ad-sticky-footer">
         <ins class="adsbygoogle"
             style="display:inline-block;width:320px;height:50px"
@@ -193,10 +158,8 @@
             data-ad-format="auto"></ins>
         <div class="ad-placeholder">Mobile Footer Ad</div>
     </div>
-
     <script src="app.js"></script>
     <script>
-        // Initialize AdSense with Lazy Loading
         document.addEventListener('DOMContentLoaded', function() {
             (adsbygoogle = window.adsbygoogle || []).push({});
         });

@@ -110,7 +110,7 @@ class LastWarNexus {
     this.activeTab = 'priority';
     this.activeFilter = 'all';
     this.updateInterval = null;
-    this.settingsCollapsed = true;
+    this.dropdownOpen = false;
     
     this.init();
   }
@@ -129,8 +129,8 @@ class LastWarNexus {
     const elementIds = [
       'server-time', 'vs-event', 'arms-phase', 'countdown-timer', 'event-name', 'event-time',
       'progress-fill', 'progress-text', 'action-icon', 'action-text', 'strategy-rating',
-      'optimization-focus', 'time-remaining', 'priority-level', 'settings-toggle', 'settings-panel',
-      'settings-collapse', 'priority-grid', 'schedule-grid', 'intelligence-content',
+      'optimization-focus', 'time-remaining', 'priority-level', 'settings-toggle', 'settings-dropdown',
+      'priority-grid', 'schedule-grid', 'intelligence-content',
       'priority-count', 'schedule-count', 'intel-count', 'event-modal', 'modal-title',
       'modal-body', 'modal-close', 'modal-share', 'modal-remind'
     ];
@@ -155,37 +155,41 @@ class LastWarNexus {
 
     const settingsToggle = document.getElementById('settings-toggle');
     if (settingsToggle) {
-      settingsToggle.addEventListener('click', () => this.toggleSettings());
+      settingsToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.toggleDropdown();
+      });
     }
 
-    const settingsCollapse = document.getElementById('settings-collapse');
-    if (settingsCollapse) {
-      settingsCollapse.addEventListener('click', () => this.toggleSettings());
-    }
-
-    const timeFormat = document.getElementById('time-format');
-    if (timeFormat) {
-      timeFormat.addEventListener('change', (e) => {
+    const timeFormatDropdown = document.getElementById('time-format-dropdown');
+    if (timeFormatDropdown) {
+      timeFormatDropdown.addEventListener('change', (e) => {
         this.settings.timeFormat = e.target.value;
         this.updateAllDisplays();
       });
     }
 
-    const detailLevel = document.getElementById('detail-level');
-    if (detailLevel) {
-      detailLevel.addEventListener('change', (e) => {
+    const detailLevelDropdown = document.getElementById('detail-level-dropdown');
+    if (detailLevelDropdown) {
+      detailLevelDropdown.addEventListener('change', (e) => {
         this.settings.detailLevel = e.target.value;
         this.updateContent();
       });
     }
 
-    const viewScope = document.getElementById('view-scope');
-    if (viewScope) {
-      viewScope.addEventListener('change', (e) => {
+    const viewScopeDropdown = document.getElementById('view-scope-dropdown');
+    if (viewScopeDropdown) {
+      viewScopeDropdown.addEventListener('change', (e) => {
         this.settings.viewScope = e.target.value;
         this.updateContent();
       });
     }
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.settings-dropdown-container')) {
+        this.closeDropdown();
+      }
+    });
 
     const modalClose = document.getElementById('modal-close');
     if (modalClose) {
@@ -210,23 +214,35 @@ class LastWarNexus {
     }
 
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') this.closeModal();
+      if (e.key === 'Escape') {
+        this.closeModal();
+        this.closeDropdown();
+      }
       if (e.key === '1') this.switchTab('priority');
       if (e.key === '2') this.switchTab('schedule');
       if (e.key === '3') this.switchTab('intelligence');
     });
   }
 
-  toggleSettings() {
-    this.settingsCollapsed = !this.settingsCollapsed;
-    const panel = document.getElementById('settings-panel');
-    const collapse = document.getElementById('settings-collapse');
+  toggleDropdown() {
+    this.dropdownOpen = !this.dropdownOpen;
+    const dropdown = document.getElementById('settings-dropdown');
+    const toggle = document.getElementById('settings-toggle');
     
-    if (panel) {
-      panel.classList.toggle('collapsed', this.settingsCollapsed);
+    if (dropdown && toggle) {
+      dropdown.classList.toggle('show', this.dropdownOpen);
+      toggle.classList.toggle('active', this.dropdownOpen);
     }
-    if (collapse) {
-      collapse.textContent = this.settingsCollapsed ? '+' : '−';
+  }
+
+  closeDropdown() {
+    this.dropdownOpen = false;
+    const dropdown = document.getElementById('settings-dropdown');
+    const toggle = document.getElementById('settings-toggle');
+    
+    if (dropdown && toggle) {
+      dropdown.classList.remove('show');
+      toggle.classList.remove('active');
     }
   }
 

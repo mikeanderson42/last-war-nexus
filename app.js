@@ -189,6 +189,10 @@ class LastWarNexus {
     this.activeFilter = 'all';
     this.updateInterval = null;
     this.dropdownOpen = false;
+    this.expandedDetails = {
+      vsDay: false,
+      armsRace: false
+    };
     
     this.init();
   }
@@ -205,8 +209,10 @@ class LastWarNexus {
   cacheElements() {
     this.elements = {};
     const elementIds = [
-      'server-time', 'current-vs-day', 'vs-event', 'arms-phase', 'alignment-indicator', 'alignment-status',
-      'vs-activities', 'arms-activities', 'countdown-timer', 'event-name', 'event-time',
+      'server-time', 'current-vs-day', 'arms-phase', 'alignment-indicator', 'alignment-status',
+      'vs-day-details', 'arms-race-details', 'vs-day-content', 'arms-race-content',
+      'current-vs-status', 'current-arms-status',
+      'countdown-timer', 'event-name', 'event-time',
       'progress-fill', 'progress-text', 'action-icon', 'action-text', 'strategy-rating',
       'optimization-focus', 'time-remaining', 'priority-level', 'settings-toggle', 'settings-dropdown',
       'priority-grid', 'schedule-grid', 'intelligence-content',
@@ -253,6 +259,7 @@ class LastWarNexus {
       detailLevelDropdown.addEventListener('change', (e) => {
         this.settings.detailLevel = e.target.value;
         this.updateContent();
+        this.updateExpandedDetails();
       });
     }
 
@@ -261,6 +268,20 @@ class LastWarNexus {
       viewScopeDropdown.addEventListener('change', (e) => {
         this.settings.viewScope = e.target.value;
         this.updateContent();
+      });
+    }
+
+    const currentVsStatus = document.getElementById('current-vs-status');
+    if (currentVsStatus) {
+      currentVsStatus.addEventListener('click', () => {
+        this.toggleDetail('vsDay');
+      });
+    }
+
+    const currentArmsStatus = document.getElementById('current-arms-status');
+    if (currentArmsStatus) {
+      currentArmsStatus.addEventListener('click', () => {
+        this.toggleDetail('armsRace');
       });
     }
 
@@ -301,6 +322,69 @@ class LastWarNexus {
       if (e.key === '2') this.switchTab('schedule');
       if (e.key === '3') this.switchTab('intelligence');
     });
+  }
+
+  toggleDetail(type) {
+    this.expandedDetails[type] = !this.expandedDetails[type];
+    
+    const detailsElement = document.getElementById(type === 'vsDay' ? 'vs-day-details' : 'arms-race-details');
+    const statusElement = document.getElementById(type === 'vsDay' ? 'current-vs-status' : 'current-arms-status');
+    
+    if (detailsElement && statusElement) {
+      if (this.expandedDetails[type]) {
+        detailsElement.classList.add('expanded');
+        statusElement.classList.add('expanded');
+      } else {
+        detailsElement.classList.remove('expanded');
+        statusElement.classList.remove('expanded');
+      }
+    }
+    
+    this.updateExpandedDetails();
+  }
+
+  updateExpandedDetails() {
+    const { utcDay, utcHour } = this.getCurrentUTCInfo();
+    const vsDayData = this.getVSDayData(utcDay);
+    const armsPhase = this.getArmsRacePhase(utcHour);
+    const alignment = this.getAlignment(utcDay, armsPhase.name);
+
+    if (this.expandedDetails.vsDay) {
+      const vsDayContent = document.getElementById('vs-day-content');
+      if (vsDayContent) {
+        vsDayContent.innerHTML = '';
+        const activities = this.settings.detailLevel === 'comprehensive' 
+          ? vsDayData.pointActivities 
+          : vsDayData.activities;
+        
+        activities.forEach(activity => {
+          const activityEl = document.createElement('div');
+          activityEl.className = 'detail-item';
+          activityEl.textContent = activity;
+          vsDayContent.appendChild(activityEl);
+        });
+      }
+    }
+
+    if (this.expandedDetails.armsRace) {
+      const armsRaceContent = document.getElementById('arms-race-content');
+      if (armsRaceContent) {
+        armsRaceContent.innerHTML = '';
+        const sources = this.settings.detailLevel === 'comprehensive' 
+          ? armsPhase.pointSources 
+          : armsPhase.activities;
+        
+        sources.forEach((source, index) => {
+          const sourceEl = document.createElement('div');
+          sourceEl.className = 'detail-item';
+          if (alignment && index < 2) {
+            sourceEl.classList.add('high-value');
+          }
+          sourceEl.textContent = source;
+          armsRaceContent.appendChild(sourceEl);
+        });
+      }
+    }
   }
 
   toggleDropdown() {
@@ -378,15 +462,11 @@ class LastWarNexus {
     const alignment = this.getAlignment(utcDay, armsPhase.name);
 
     const currentVsDay = document.getElementById('current-vs-day');
-    const vsEvent = document.getElementById('vs-event');
     const armsPhaseEl = document.getElementById('arms-phase');
     const alignmentIndicator = document.getElementById('alignment-indicator');
     const alignmentStatus = document.getElementById('alignment-status');
-    const vsActivities = document.getElementById('vs-activities');
-    const armsActivities = document.getElementById('arms-activities');
     
-    if (currentVsDay) currentVsDay.textContent = `${vsDayData.name} (Day ${utcDay + 1})`;
-    if (vsEvent) vsEvent.textContent = vsDayData.title;
+    if (currentVsDay) currentVsDay.textContent = `${vsDayData.name} - ${vsDayData.title}`;
     if (armsPhaseEl) armsPhaseEl.textContent = `${armsPhase.icon} ${armsPhase.name}`;
 
     if (alignmentIndicator && alignmentStatus) {
@@ -401,37 +481,7 @@ class LastWarNexus {
       }
     }
 
-    if (vsActivities) {
-      vsActivities.innerHTML = '';
-      const activities = this.settings.detailLevel === 'comprehensive' 
-        ? vsDayData.pointActivities 
-        : vsDayData.activities;
-      
-      activities.forEach(activity => {
-        const activityEl = document.createElement('div');
-        activityEl.className = 'activity-item';
-        activityEl.textContent = activity;
-        vsActivities.appendChild(activityEl);
-      });
-    }
-
-    if (armsActivities) {
-      armsActivities.innerHTML = '';
-      const sources = this.settings.detailLevel === 'comprehensive' 
-        ? armsPhase.pointSources 
-        : armsPhase.activities;
-      
-      sources.forEach((source, index) => {
-        const sourceEl = document.createElement('div');
-        sourceEl.className = 'activity-item';
-        if (alignment && index < 2) {
-          sourceEl.classList.add('high-value');
-        }
-        sourceEl.textContent = source;
-        armsActivities.appendChild(sourceEl);
-      });
-    }
-
+    this.updateExpandedDetails();
     this.updateActionDisplay(alignment, armsPhase, utcHour, utcMinute);
   }
 
@@ -728,243 +778,4 @@ class LastWarNexus {
       const weekGrid = document.createElement('div');
       weekGrid.className = 'schedule-grid';
       
-      const headers = ['Day/Time', '00:00', '04:00', '08:00', '12:00', '16:00', '20:00'];
-      headers.forEach(h => {
-        const headerCell = document.createElement('div');
-        headerCell.className = 'schedule-header';
-        headerCell.textContent = h;
-        weekGrid.appendChild(headerCell);
-      });
-
-      daysToShow.forEach(vsDayData => {
-        if (!vsDayData) return;
-
-        const dayCell = document.createElement('div');
-        dayCell.className = 'schedule-day-header';
-        dayCell.textContent = vsDayData.name;
-        weekGrid.appendChild(dayCell);
-
-        for (let h = 0; h < 24; h += 4) {
-          const armsPhase = this.getArmsRacePhase(h);
-          const cell = document.createElement('div');
-          cell.className = 'schedule-cell';
-          
-          const alignment = this.getAlignment(vsDayData.day, armsPhase.name);
-          if (alignment) cell.classList.add('priority');
-
-          const { utcDay, utcHour } = this.getCurrentUTCInfo();
-          if (vsDayData.day === utcDay && h <= utcHour && utcHour < h + 4) {
-            cell.classList.add('current');
-          }
-
-          let cellContent = `<div class="cell-phase">${armsPhase.icon} ${armsPhase.name}</div>`;
-          
-          if (this.settings.detailLevel === 'comprehensive' && alignment) {
-            cellContent += `<div class="cell-reason">${alignment.reason}</div>`;
-          }
-          
-          cell.innerHTML = cellContent;
-          
-          if (alignment) {
-            cell.addEventListener('click', () => {
-              this.showModal(alignment, vsDayData, armsPhase);
-            });
-          }
-          
-          weekGrid.appendChild(cell);
-        }
-      });
-      
-      container.appendChild(weekGrid);
-    }
-  }
-
-  populateIntelligence() {
-    const container = document.getElementById('intelligence-content');
-    if (!container) return;
-
-    const sections = {
-      'guides': '📚 Game Guides',
-      'tips': '💡 Pro Tips & Strategies',
-      'season4': '🚀 Season 4 Updates'
-    };
-
-    for (const [key, title] of Object.entries(sections)) {
-      const section = document.createElement('div');
-      section.className = 'intel-section';
-      section.innerHTML = `
-        <div class="intel-header">${title}</div>
-        <div class="intel-content">
-          <div class="intel-inner">
-            ${this.data.intelligence[key].map(item => `
-              <h4>${item.title}</h4>
-              <p>${item.content}</p>
-              <p><a href="${item.link}" target="_blank" rel="noopener">View Complete Guide →</a></p>
-            `).join('')}
-          </div>
-        </div>
-      `;
-      
-      const header = section.querySelector('.intel-header');
-      header.addEventListener('click', () => {
-        section.classList.toggle('active');
-        const content = section.querySelector('.intel-content');
-        if (content.style.maxHeight) {
-          content.style.maxHeight = null;
-        } else {
-          content.style.maxHeight = content.scrollHeight + 'px';
-        }
-      });
-      
-      container.appendChild(section);
-    }
-  }
-
-  showModal(alignment, vsDayData, armsPhase) {
-    if (!alignment) return;
-    
-    const modal = document.getElementById('event-modal');
-    const modalTitle = document.getElementById('modal-title');
-    const modalBody = document.getElementById('modal-body');
-    
-    if (!modal || !modalBody) return;
-
-    if (modalTitle) {
-      modalTitle.textContent = `${armsPhase.icon} ${armsPhase.name} + ${vsDayData.title}`;
-    }
-
-    modalBody.innerHTML = `
-      <div class="modal-section">
-        <h4>⭐ High Priority Alignment</h4>
-        <p>${alignment.reason}</p>
-      </div>
-      <div class="modal-section">
-        <h4>🎯 Arms Race Focus</h4>
-        <p><strong>Primary Activities:</strong> ${armsPhase.pointSources.slice(0, 3).join(', ')}</p>
-      </div>
-      <div class="modal-section">
-        <h4>🏆 VS Event Objectives</h4>
-        <p><strong>Key Activities:</strong> ${vsDayData.pointActivities.slice(0, 3).join(', ')}</p>
-      </div>
-      <div class="modal-section">
-        <h4>💡 Strategy Recommendations</h4>
-        <p>Focus on completing ${armsPhase.activities[0]} during this window for maximum VS points. Plan your resources and timing accordingly for optimal efficiency.</p>
-      </div>
-    `;
-    
-    modal.style.display = 'flex';
-  }
-
-  closeModal() {
-    const modal = document.getElementById('event-modal');
-    if (modal) modal.style.display = 'none';
-  }
-
-  shareEvent() {
-    if (navigator.share) {
-      navigator.share({
-        title: 'Last War Nexus Event',
-        text: 'Check out this high priority event!',
-        url: window.location.href
-      });
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      alert('Event link copied to clipboard!');
-    }
-  }
-
-  setReminder() {
-    alert('Reminder feature coming soon!');
-  }
-
-  getCurrentUTCInfo() {
-    const now = new Date();
-    return { 
-      utcDay: now.getUTCDay(), 
-      utcHour: now.getUTCHours(), 
-      utcMinute: now.getUTCMinutes() 
-    };
-  }
-
-  getVSDayData(utcDay) {
-    return this.data.vs_days.find(d => d.day === utcDay) || this.data.vs_days[0];
-  }
-
-  getArmsRacePhase(utcHour) {
-    return this.data.arms_race_phases[Math.floor(utcHour / 4) % 6];
-  }
-
-  getAlignment(utcDay, armsPhaseName) {
-    return this.data.high_priority_alignments.find(
-      a => a.vs_day === utcDay && a.arms_phase === armsPhaseName
-    );
-  }
-
-  getAllHighPriorityWindows() {
-    const windows = [];
-    this.data.high_priority_alignments.forEach(alignment => {
-      const vsDayData = this.getVSDayData(alignment.vs_day);
-      const armsPhase = this.data.arms_race_phases.find(p => p.name === alignment.arms_phase);
-      if (vsDayData && armsPhase) {
-        for (let h = 0; h < 24; h += 4) {
-          if (this.getArmsRacePhase(h).name === alignment.arms_phase) {
-            windows.push({ 
-              vsDay: alignment.vs_day, 
-              vsDayData, 
-              armsPhase, 
-              alignment, 
-              hour: h 
-            });
-          }
-        }
-      }
-    });
-    return windows;
-  }
-
-  getNextHighPriorityWindow() {
-    const now = new Date();
-    const potentialWindows = [];
-
-    for (let dayOffset = 0; dayOffset < 8; dayOffset++) {
-      const targetDate = new Date();
-      targetDate.setUTCDate(targetDate.getUTCDate() + dayOffset);
-      const targetDay = targetDate.getUTCDay();
-
-      this.data.high_priority_alignments.forEach(alignment => {
-        if (alignment.vs_day !== targetDay) return;
-        const armsPhase = this.data.arms_race_phases.find(p => p.name === alignment.arms_phase);
-        if (!armsPhase) return;
-
-        for (let h = 0; h < 24; h += 4) {
-          if (this.getArmsRacePhase(h).name === alignment.arms_phase) {
-            const eventTime = new Date(Date.UTC(
-              targetDate.getUTCFullYear(), 
-              targetDate.getUTCMonth(), 
-              targetDate.getUTCDate(), 
-              h, 0, 0
-            ));
-            if (eventTime > now) {
-              potentialWindows.push({
-                startTime: eventTime,
-                vsDay: alignment.vs_day,
-                vsDayData: this.getVSDayData(alignment.vs_day),
-                armsPhase: armsPhase,
-                alignment: alignment,
-                hour: h
-              });
-            }
-          }
-        }
-      });
-    }
-
-    if (potentialWindows.length === 0) return null;
-    potentialWindows.sort((a, b) => a.startTime - b.startTime);
-    return potentialWindows[0];
-  }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  new LastWarNexus();
-});
+      const headers =

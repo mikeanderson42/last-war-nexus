@@ -273,7 +273,7 @@ body {
 .settings-dropdown {
   position: absolute;
   top: calc(100% + var(--space-2));
-  right: 0;
+  right: var(--space-4);  
   background: var(--bg-card);
   border: 1px solid var(--border-primary);
   border-radius: var(--radius-xl);

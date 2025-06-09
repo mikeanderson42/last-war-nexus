@@ -67,6 +67,8 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   position: relative;
+  max-width: 1400px;          /* Add this line */
+  margin: 0 auto;             /* Add this line */
 }
 
 .main-nav {

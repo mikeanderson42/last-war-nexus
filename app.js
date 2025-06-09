@@ -1,395 +1,355 @@
-// Application data
-const gameData = {
-  armsRacePhases: [
-    {name: "City Building", icon: "🏗️", focus: "Upgrade buildings, use construction speedups"},
-    {name: "Unit Progression", icon: "⚔️", focus: "Train/upgrade troops, use training speedups"},
-    {name: "Tech Research", icon: "🔬", focus: "Complete research, use research speedups"},
-    {name: "Drone Boost", icon: "🚁", focus: "Use stamina, drone combat, radar missions"},
-    {name: "Hero Advancement", icon: "⭐", focus: "Recruit heroes, gain hero EXP, use shards"},
-    {name: "Mixed Phase", icon: "🔄", focus: "Check in-game calendar for specific focus"}
+// --- Application Data ---
+// This central object holds all game data, making it easy to update.
+const appData = {
+  arms_race_phases: [
+    {id: 1, name: "City Building", activities: ["Building upgrades", "Construction speedups"], icon: "🏗️", color: "#4CAF50"},
+    {id: 2, name: "Unit Progression", activities: ["Troop training", "Training speedups"], icon: "⚔️", color: "#FF9800"},
+    {id: 3, name: "Tech Research", activities: ["Research completion", "Research speedups"], icon: "🔬", color: "#2196F3"},
+    {id: 4, name: "Drone Boost", activities: ["Stamina usage", "Drone activities"], icon: "🚁", color: "#9C27B0"},
+    {id: 5, name: "Hero Advancement", activities: ["Hero recruitment", "Hero EXP"], icon: "⭐", color: "#FF5722"},
+    {id: 6, name: "Mixed Phase", activities: ["Check in-game calendar"], icon: "🔄", color: "#607D8B"}
   ],
-  
-  vsEvents: [
-    {day: 1, name: "Radar Training", focus: "Use stamina on missions, drone activities"},
-    {day: 2, name: "Base Expansion", focus: "Upgrade buildings, use speedups, train troops"},
-    {day: 3, name: "Age of Science", focus: "Complete research, use research speedups"},
-    {day: 4, name: "Train Heroes", focus: "Recruit heroes, use hero EXP and shards"},
-    {day: 5, name: "Total Mobilization", focus: "All activities - buildings, troops, research"},
-    {day: 6, name: "Enemy Buster", focus: "Combat activities, attack enemies, heal troops"}
+  vs_days: [
+    {day: 0, name: "Sunday", title: "Preparation Day", objective: "No VS events - prepare for Monday"},
+    {day: 1, name: "Monday", title: "Radar Training", objective: "Stamina, radar missions, hero EXP"},
+    {day: 2, name: "Tuesday", title: "Base Expansion", objective: "Building upgrades, construction speedups"},
+    {day: 3, name: "Wednesday", title: "Age of Science", objective: "Research completion, research speedups"},
+    {day: 4, name: "Thursday", title: "Train Heroes", objective: "Hero recruitment, hero EXP, shards"},
+    {day: 5, name: "Friday", title: "Total Mobilization", objective: "All activities - building, research, training"},
+    {day: 6, name: "Saturday", title: "Enemy Buster", objective: "Combat, speedups, troop training/healing"}
   ],
-  
-  highPriorityWindows: [
-    {day: "Monday", time: "00:00-04:00", armsRace: "Drone Boost", vsGoal: "Radar Training", priority: "high"},
-    {day: "Monday", time: "20:00-00:00", armsRace: "Drone Boost", vsGoal: "Radar Training", priority: "high"},
-    {day: "Tuesday", time: "00:00-04:00", armsRace: "City Building", vsGoal: "Base Expansion", priority: "high"},
-    {day: "Tuesday", time: "20:00-00:00", armsRace: "City Building", vsGoal: "Base Expansion", priority: "high"},
-    {day: "Wednesday", time: "00:00-04:00", armsRace: "Tech Research", vsGoal: "Age of Science", priority: "high"},
-    {day: "Wednesday", time: "20:00-00:00", armsRace: "Tech Research", vsGoal: "Age of Science", priority: "high"},
-    {day: "Thursday", time: "00:00-04:00", armsRace: "Hero Advancement", vsGoal: "Train Heroes", priority: "high"},
-    {day: "Thursday", time: "20:00-00:00", armsRace: "Hero Advancement", vsGoal: "Train Heroes", priority: "high"},
-    {day: "Friday", time: "00:00-04:00", armsRace: "City Building", vsGoal: "Total Mobilization", priority: "high"},
-    {day: "Friday", time: "04:00-08:00", armsRace: "Unit Progression", vsGoal: "Total Mobilization", priority: "high"},
-    {day: "Friday", time: "08:00-12:00", armsRace: "Tech Research", vsGoal: "Total Mobilization", priority: "high"},
-    {day: "Friday", time: "20:00-00:00", armsRace: "City Building", vsGoal: "Total Mobilization", priority: "high"},
-    {day: "Saturday", time: "00:00-04:00", armsRace: "Unit Progression", vsGoal: "Enemy Buster", priority: "high"},
-    {day: "Saturday", time: "04:00-08:00", armsRace: "Drone Boost", vsGoal: "Enemy Buster", priority: "high"},
-    {day: "Saturday", time: "08:00-12:00", armsRace: "City Building", vsGoal: "Enemy Buster", priority: "high"},
-    {day: "Saturday", time: "12:00-16:00", armsRace: "Tech Research", vsGoal: "Enemy Buster", priority: "high"},
-    {day: "Saturday", time: "20:00-00:00", armsRace: "Unit Progression", vsGoal: "Enemy Buster", priority: "high"}
+  high_priority_alignments: [
+    {"vs_day": 1, "arms_phase": "Drone Boost", "reason": "Stamina and drone activities align perfectly."},
+    {"vs_day": 2, "arms_phase": "City Building", "reason": "Building activities align perfectly."},
+    {"vs_day": 3, "arms_phase": "Tech Research", "reason": "Research activities align perfectly."},
+    {"vs_day": 4, "arms_phase": "Hero Advancement", "reason": "Hero activities align perfectly."},
+    {"vs_day": 5, "arms_phase": "City Building", "reason": "Building component of mobilization."},
+    {"vs_day": 5, "arms_phase": "Unit Progression", "reason": "Training component of mobilization."},
+    {"vs_day": 5, "arms_phase": "Tech Research", "reason": "Research component of mobilization."},
+    {"vs_day": 6, "arms_phase": "Unit Progression", "reason": "Troop training for combat."},
+    {"vs_day": 6, "arms_phase": "City Building", "reason": "Construction speedups for defenses."}
   ]
 };
 
-// Global variables
-let updateInterval;
+// --- Application State ---
+// Stores the user's current settings from the controls.
+let currentSettings = {
+  viewMode: 'high-priority',
+  timeDisplay: 'utc',
+  infoLevel: 'simple',
+  calendarView: 'full-week'
+};
 
-// Initialize application
-document.addEventListener('DOMContentLoaded', function() {
-  initializeApp();
+// --- Initialization ---
+document.addEventListener('DOMContentLoaded', () => {
+  console.log("Last War Nexus initializing...");
+  setupEventListeners();
+  updateAllDisplays();
+  setInterval(updateAllDisplays, 1000); // Update every second for live clock
 });
 
-function initializeApp() {
-  setupTabNavigation();
-  setupStrategyToggles();
-  startClockUpdates();
-  generateWeeklySchedule();
-  generateQuickReference();
-  updateCurrentStatus();
-}
+function setupEventListeners() {
+  // View controls
+  document.getElementById('view-mode')?.addEventListener('change', handleControlChange);
+  document.getElementById('time-display')?.addEventListener('change', handleControlChange);
+  document.getElementById('info-level')?.addEventListener('change', handleControlChange);
+  document.getElementById('calendar-view')?.addEventListener('change', handleControlChange);
 
-// Tab Navigation
-function setupTabNavigation() {
-  const tabButtons = document.querySelectorAll('.tab-btn');
-  const tabContents = document.querySelectorAll('.tab-content');
-  
-  tabButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      const targetTab = button.getAttribute('data-tab');
-      
-      // Remove active class from all tabs and contents
-      tabButtons.forEach(btn => btn.classList.remove('active'));
-      tabContents.forEach(content => content.classList.remove('active'));
-      
-      // Add active class to clicked tab and corresponding content
-      button.classList.add('active');
-      document.getElementById(targetTab).classList.add('active');
-    });
+  // Modal close buttons
+  document.querySelector('.close-button')?.addEventListener('click', closeDetailModal);
+  document.getElementById('detail-modal')?.addEventListener('click', (event) => {
+    if (event.target === document.getElementById('detail-modal')) {
+      closeDetailModal();
+    }
   });
 }
 
-// Strategy section toggles
-function setupStrategyToggles() {
-  const strategyHeaders = document.querySelectorAll('.strategy-header');
-  
-  strategyHeaders.forEach(header => {
-    header.addEventListener('click', () => {
-      const targetId = header.getAttribute('data-toggle');
-      const content = document.getElementById(targetId);
-      const icon = header.querySelector('.toggle-icon');
-      
-      header.classList.toggle('active');
-      content.classList.toggle('active');
-      
-      if (content.classList.contains('active')) {
-        icon.textContent = '−';
-      } else {
-        icon.textContent = '+';
-      }
-    });
-  });
+function handleControlChange(event) {
+  const controlId = event.target.id;
+  const value = event.target.value;
+
+  switch(controlId) {
+    case 'view-mode':
+      currentSettings.viewMode = value;
+      break;
+    case 'time-display':
+      currentSettings.timeDisplay = value;
+      break;
+    case 'info-level':
+    case 'calendar-view':
+      currentSettings[controlId.split('-')[0]] = value;
+      break;
+  }
+  updateDynamicContent(); // Re-render content based on new settings
 }
 
-// Clock and countdown functionality
-function startClockUpdates() {
-  updateClock();
-  updateInterval = setInterval(updateClock, 1000);
-}
-
-function updateClock() {
-  const now = new Date();
-  const utcTime = now.toUTCString().split(' ')[4];
-  document.getElementById('utc-clock').textContent = utcTime;
-  
-  updateCountdown(now);
+// --- Core Update Functions ---
+function updateAllDisplays() {
+  updateCurrentTime();
   updateCurrentStatus();
+  updateCountdown();
 }
 
-function updateCountdown(currentTime) {
-  const nextHighPriority = getNextHighPriorityWindow(currentTime);
-  const countdown = document.getElementById('countdown');
-  
-  if (nextHighPriority) {
-    const timeUntil = nextHighPriority.startTime - currentTime;
-    
-    if (timeUntil > 0) {
-      const hours = Math.floor(timeUntil / (1000 * 60 * 60));
-      const minutes = Math.floor((timeUntil % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((timeUntil % (1000 * 60)) / 1000);
-      
-      countdown.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-      
-      // Add urgent class if less than 1 hour
-      if (timeUntil < 3600000) {
-        countdown.classList.add('urgent');
-      } else {
-        countdown.classList.remove('urgent');
-      }
+function updateDynamicContent() {
+    if (currentSettings.viewMode === 'high-priority') {
+        document.getElementById('high-priority-section').classList.remove('hidden');
+        document.getElementById('complete-schedule-section').classList.add('hidden');
+        updateHighPriorityDisplay();
     } else {
-      countdown.textContent = "NOW ACTIVE";
-      countdown.classList.add('urgent');
+        document.getElementById('high-priority-section').classList.add('hidden');
+        document.getElementById('complete-schedule-section').classList.remove('hidden');
+        updateCompleteScheduleDisplay();
     }
-  } else {
-    countdown.textContent = "--:--:--";
-    countdown.classList.remove('urgent');
+}
+
+function updateCurrentTime() {
+  const now = new Date();
+  const timeElement = document.getElementById('current-time');
+  if (timeElement) {
+    timeElement.textContent = currentSettings.timeDisplay === 'utc'
+      ? now.toUTCString().split(' ')[4]
+      : now.toLocaleTimeString();
   }
 }
 
-function getNextHighPriorityWindow(currentTime) {
-  const currentDay = currentTime.getUTCDay(); // 0 = Sunday, 1 = Monday, etc.
-  const currentHour = currentTime.getUTCHours();
-  const currentMinute = currentTime.getUTCMinutes();
-  const currentTimeInMinutes = currentHour * 60 + currentMinute;
-  
-  const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-  
-  // Look for next high priority window in the current week
-  for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
-    const checkDay = (currentDay + dayOffset) % 7;
-    const checkDayName = dayNames[checkDay];
-    
-    const dayWindows = gameData.highPriorityWindows.filter(window => window.day === checkDayName);
-    
-    for (const window of dayWindows) {
-      const [startTime, endTime] = window.time.split('-');
-      const [startHour, startMinute] = startTime.split(':').map(Number);
-      const startTimeInMinutes = startHour * 60 + startMinute;
-      
-      let targetDate = new Date(currentTime);
-      targetDate.setUTCDate(targetDate.getUTCDate() + dayOffset);
-      targetDate.setUTCHours(startHour, startMinute, 0, 0);
-      
-      // Handle midnight crossover for times like "20:00-00:00"
-      if (endTime === "00:00" && dayOffset === 0 && currentTimeInMinutes >= startTimeInMinutes) {
-        continue; // This window is active now or has passed today
-      }
-      
-      if (dayOffset === 0 && startTimeInMinutes <= currentTimeInMinutes) {
-        continue; // This window has already started or passed today
-      }
-      
-      return {
-        startTime: targetDate,
-        window: window
-      };
-    }
-  }
-  
-  return null;
-}
-
-// Current status updates
 function updateCurrentStatus() {
-  const now = new Date();
-  const currentPhase = getCurrentArmsRacePhase(now);
-  const currentVS = getCurrentVSEvent(now);
-  const isHighPriority = isCurrentlyHighPriority(now);
-  
-  // Update phase display
-  const phaseElement = document.getElementById('current-phase');
-  if (phaseElement) {
-    phaseElement.textContent = `${currentPhase.name} ${currentPhase.icon}`;
-  }
-  
-  // Update VS event display
-  const vsElement = document.getElementById('current-vs');
-  if (vsElement) {
-    vsElement.textContent = currentVS ? currentVS.name : "Preparation Day";
-  }
-  
-  // Update priority level
-  const priorityElement = document.getElementById('priority-level');
-  if (priorityElement) {
-    if (isHighPriority) {
-      priorityElement.textContent = "HIGH PRIORITY";
-      priorityElement.className = "status-value priority-high";
-    } else {
-      priorityElement.textContent = "Normal";
-      priorityElement.className = "status-value priority-normal";
-    }
-  }
-  
-  // Update action recommendations
-  updateActionRecommendations(currentPhase, currentVS, isHighPriority);
-}
+  const { utcDay, utcHour, utcMinute } = getCurrentUTCInfo();
+  const vsDayData = getVSDayData(utcDay);
+  const armsPhase = getArmsRacePhase(utcHour);
+  const alignment = getCurrentHighPriorityAlignment(utcDay, armsPhase);
 
-function getCurrentArmsRacePhase(currentTime) {
-  const hoursSinceReset = currentTime.getUTCHours();
-  const phaseIndex = Math.floor(hoursSinceReset / 4);
-  return gameData.armsRacePhases[phaseIndex] || gameData.armsRacePhases[5]; // Default to Mixed Phase
-}
+  // Update displays
+  document.getElementById('current-vs-day').textContent = `${vsDayData.name}: ${vsDayData.title}`;
+  document.getElementById('current-arms-phase').textContent = `${armsPhase.icon} ${armsPhase.name}`;
+  document.getElementById('current-arms-phase').style.color = armsPhase.color;
+  
+  // Update action card
+  const actionIcon = document.getElementById('action-icon');
+  const actionText = document.getElementById('action-text');
+  const resetWarning = document.getElementById('reset-warning');
 
-function getCurrentVSEvent(currentTime) {
-  const dayOfWeek = currentTime.getUTCDay(); // 0 = Sunday, 1 = Monday
-  
-  if (dayOfWeek === 0) {
-    return null; // Sunday is preparation day
-  }
-  
-  return gameData.vsEvents.find(event => event.day === dayOfWeek);
-}
-
-function isCurrentlyHighPriority(currentTime) {
-  const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-  const currentDay = dayNames[currentTime.getUTCDay()];
-  const currentHour = currentTime.getUTCHours();
-  const currentMinute = currentTime.getUTCMinutes();
-  const currentTimeInMinutes = currentHour * 60 + currentMinute;
-  
-  const todayWindows = gameData.highPriorityWindows.filter(window => window.day === currentDay);
-  
-  for (const window of todayWindows) {
-    const [startTime, endTime] = window.time.split('-');
-    const [startHour, startMinute] = startTime.split(':').map(Number);
-    let [endHour, endMinute] = endTime.split(':').map(Number);
-    
-    // Handle midnight crossover
-    if (endHour === 0 && endMinute === 0) {
-      endHour = 24;
-    }
-    
-    const startTimeInMinutes = startHour * 60 + startMinute;
-    const endTimeInMinutes = endHour * 60 + endMinute;
-    
-    if (currentTimeInMinutes >= startTimeInMinutes && currentTimeInMinutes < endTimeInMinutes) {
-      return true;
-    }
-  }
-  
-  return false;
-}
-
-function updateActionRecommendations(currentPhase, currentVS, isHighPriority) {
-  const actionsContainer = document.getElementById('current-actions');
-  if (!actionsContainer) return;
-  
-  let actions = [];
-  
-  // Add phase-specific actions
-  actions.push({
-    icon: currentPhase.icon,
-    text: currentPhase.focus
-  });
-  
-  // Add VS event actions if applicable
-  if (currentVS) {
-    actions.push({
-      icon: "🎯",
-      text: currentVS.focus
-    });
-  }
-  
-  // Add priority-specific recommendations
-  if (isHighPriority) {
-    actions.push({
-      icon: "⚡",
-      text: "OPTIMAL TIME: Maximum points for all activities!"
-    });
+  if (utcHour === 0 && utcMinute < 5) {
+    resetWarning.classList.remove('hidden');
+    actionIcon.textContent = '⏳';
+    actionText.innerHTML = '<strong>No Points Period:</strong> Wait for reset to finish.';
   } else {
-    actions.push({
-      icon: "⏰",
-      text: "Prepare resources for next high-priority window"
-    });
+    resetWarning.classList.add('hidden');
+    if (alignment) {
+        actionIcon.textContent = '⚡';
+        actionText.innerHTML = `<strong>HIGH PRIORITY ACTIVE!</strong><br>${alignment.reason}`;
+    } else {
+        actionIcon.textContent = armsPhase.icon;
+        actionText.innerHTML = `<strong>Normal Phase:</strong><br>Focus on ${armsPhase.activities[0]}.`;
+    }
   }
-  
-  // Generate HTML
-  actionsContainer.innerHTML = actions.map(action => `
-    <div class="action-item">
-      <span class="action-icon">${action.icon}</span>
-      <span class="action-text">${action.text}</span>
-    </div>
-  `).join('');
 }
 
-// Weekly schedule generation
-function generateWeeklySchedule() {
-  const scheduleGrid = document.getElementById('weekly-schedule-grid');
-  if (!scheduleGrid) return;
+function updateCountdown() {
+  const countdownTimer = document.getElementById('countdown-timer');
+  const nextEventInfo = document.getElementById('next-event-info');
+  const nextWindow = getNextHighPriorityWindow();
+
+  if (!nextWindow) {
+    countdownTimer.textContent = 'Done for now!';
+    nextEventInfo.textContent = 'Check back tomorrow for more high priority events.';
+    return;
+  }
+
+  const timeDiff = nextWindow.startTime - new Date();
+  if (timeDiff <= 0) {
+      countdownTimer.textContent = "ACTIVE NOW";
+      return;
+  }
   
-  const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const hours = Math.floor(timeDiff / 3600000);
+  const minutes = Math.floor((timeDiff % 3600000) / 60000);
+  countdownTimer.textContent = `${hours}h ${minutes}m`;
   
-  scheduleGrid.innerHTML = days.map(day => {
-    const vsEvent = gameData.vsEvents.find(event => event.day === days.indexOf(day) + 1);
-    const dayWindows = gameData.highPriorityWindows.filter(window => window.day === day);
+  nextEventInfo.textContent = `Next up: ${nextWindow.armsPhase.name} + ${nextWindow.vsDayData.title}`;
+}
+
+// --- Dynamic Content Generation ---
+function updateHighPriorityDisplay() {
+  const container = document.getElementById('high-priority-grid');
+  container.innerHTML = ''; // Clear previous content
+
+  const now = new Date();
+  const currentDay = now.getUTCDay();
+  const currentHour = now.getUTCHours();
+  
+  getAllHighPriorityWindows().forEach(window => {
+    const isActive = (window.vsDay === currentDay) && (window.hour <= currentHour && currentHour < (window.hour + 4));
     
-    // Generate all time slots for the day
-    const timeSlots = [];
-    for (let hour = 0; hour < 24; hour += 4) {
-      const timeRange = `${hour.toString().padStart(2, '0')}:00-${((hour + 4) % 24).toString().padStart(2, '0')}:00`;
-      const phaseIndex = hour / 4;
-      const phase = gameData.armsRacePhases[phaseIndex] || gameData.armsRacePhases[5];
-      
-      const isHighPriority = dayWindows.some(window => window.time === timeRange);
-      
-      timeSlots.push({
-        time: timeRange,
-        phase: phase,
-        priority: isHighPriority ? 'high' : 'normal'
-      });
-    }
-    
-    return `
-      <div class="day-card">
-        <div class="day-header">
-          <div class="day-name">${day}</div>
-          <div class="vs-event">${vsEvent ? vsEvent.name : 'Preparation Day'}</div>
+    const card = document.createElement('div');
+    card.className = `priority-card ${isActive ? 'active' : ''}`;
+    card.innerHTML = `
+      <div class="priority-badge">MAX VALUE</div>
+      <div class="priority-header">
+        <div class="priority-day">${window.vsDayData.name}</div>
+        <div class="priority-time">${String(window.hour).padStart(2, '0')}:00 - ${String((window.hour + 4) % 24).padStart(2, '0')}:00 UTC</div>
+      </div>
+      <div class="priority-phases">
+        <div class="phase-icon">${window.armsPhase.icon}</div>
+        <div class="phase-details">
+          <div class="phase-name">${window.armsPhase.name}</div>
+          <div class="phase-alignment">${window.vsDayData.title}</div>
         </div>
-        <div class="time-slots">
-          ${timeSlots.map(slot => `
-            <div class="time-slot ${slot.priority}-priority">
-              <span class="time-range">${slot.time}</span>
-              <span class="phase-name">${slot.phase.name} ${slot.phase.icon}</span>
-            </div>
-          `).join('')}
-        </div>
+      </div>
+      <div class="priority-action">
+        <strong>Focus:</strong> ${window.alignment.reason}
       </div>
     `;
-  }).join('');
-}
-
-// Quick reference generation
-function generateQuickReference() {
-  const quickRefGrid = document.getElementById('quick-reference-grid');
-  if (!quickRefGrid) return;
-  
-  // Group high priority windows by day
-  const windowsByDay = {};
-  gameData.highPriorityWindows.forEach(window => {
-    if (!windowsByDay[window.day]) {
-      windowsByDay[window.day] = [];
-    }
-    windowsByDay[window.day].push(window);
+    card.addEventListener('click', () => showDetailModal(window.alignment, window.vsDayData, window.armsPhase));
+    container.appendChild(card);
   });
+  updateDynamicContent();
+}
+updateHighPriorityDisplay();
+
+function updateCompleteScheduleDisplay() {
+  const container = document.getElementById('complete-schedule-grid');
+  container.innerHTML = ''; // Clear previous content
   
-  quickRefGrid.innerHTML = Object.entries(windowsByDay).map(([day, windows]) => `
-    <div class="day-card">
-      <div class="day-header">
-        <div class="day-name">${day}</div>
-        <div class="vs-event">${windows.length} High Priority Windows</div>
-      </div>
-      <div class="time-slots">
-        ${windows.map(window => `
-          <div class="quick-ref-item">
-            <div class="quick-ref-time">${window.time}</div>
-            <div class="quick-ref-events">${window.armsRace} + ${window.vsGoal}</div>
-          </div>
-        `).join('')}
-      </div>
-    </div>
-  `).join('');
+  // Create headers
+  const cornerCell = document.createElement('div');
+  cornerCell.className = 'schedule-header';
+  container.appendChild(cornerCell);
+  for (let h = 0; h < 24; h += 4) {
+    const headerCell = document.createElement('div');
+    headerCell.className = 'schedule-header';
+    headerCell.textContent = `${String(h).padStart(2, '0')}:00`;
+    container.appendChild(headerCell);
+  }
+
+  // Create rows
+  appData.vs_days.forEach(vsDayData => {
+    if (currentSettings.calendarView === 'current' && vsDayData.day !== new Date().getUTCDay()) return;
+
+    const dayHeader = document.createElement('div');
+    dayHeader.className = 'day-header-cell';
+    dayHeader.textContent = vsDayData.name;
+    container.appendChild(dayHeader);
+
+    for (let h = 0; h < 24; h += 4) {
+      const armsPhase = getArmsRacePhase(h);
+      const slot = document.createElement('div');
+      slot.className = 'schedule-slot';
+      
+      const alignment = getCurrentHighPriorityAlignment(vsDayData.day, armsPhase);
+      if (alignment) slot.classList.add('high-priority');
+
+      const isCurrent = (vsDayData.day === new Date().getUTCDay()) && (h <= new Date().getUTCHours() && new Date().getUTCHours() < (h + 4));
+      if (isCurrent) slot.classList.add('current');
+
+      slot.innerHTML = `
+        <div class="slot-phase">${armsPhase.icon} ${armsPhase.name}</div>
+        ${(alignment && currentSettings.infoLevel === 'detailed') ? `<div class="slot-reason">${alignment.reason}</div>` : ''}
+      `;
+      slot.addEventListener('click', () => showDetailModal(alignment, vsDayData, armsPhase));
+      container.appendChild(slot);
+    }
+  });
 }
 
-// Cleanup on page unload
-window.addEventListener('beforeunload', function() {
-  if (updateInterval) {
-    clearInterval(updateInterval);
-  }
-});
+// --- Modal Logic ---
+function showDetailModal(alignment, vsDayData, armsPhase) {
+    if (!alignment) return; // Don't show modal for non-priority slots
+    const modal = document.getElementById('detail-modal');
+    const modalBody = document.getElementById('modal-body');
+
+    modalBody.innerHTML = `
+        <h2>${armsPhase.icon} ${armsPhase.name} + ${vsDayData.title}</h2>
+        <div class="modal-section">
+            <h4>⭐ HIGH PRIORITY ALIGNMENT</h4>
+            <p>${alignment.reason}</p>
+        </div>
+        <div class="modal-section">
+            <h4>🎯 Arms Race Focus</h4>
+            <p><strong>${armsPhase.name}:</strong> ${armsPhase.activities.join(', ')}</p>
+        </div>
+        <div class="modal-section">
+            <h4>🏆 VS Event Goal</h4>
+            <p><strong>${vsDayData.title}:</strong> ${vsDayData.objective}</p>
+        </div>
+        <div class="modal-section">
+            <h4>💡 Strategic Tips</h4>
+            <ul class="modal-tips">
+                <li>Focus maximum effort and resources during this window.</li>
+                <li>Prepare required items (speedups, stamina) before the phase starts.</li>
+                <li>Coordinate with your alliance for maximum benefit during combat phases.</li>
+            </ul>
+        </div>
+    `;
+    modal.style.display = 'flex';
+}
+
+function closeDetailModal() {
+  document.getElementById('detail-modal').style.display = 'none';
+}
+
+// --- Helper Functions ---
+function getCurrentUTCInfo() {
+  const now = new Date();
+  return {
+    utcDay: now.getUTCDay(),
+    utcHour: now.getUTCHours(),
+    utcMinute: now.getUTCMinutes()
+  };
+}
+
+function getVSDayData(utcDay) {
+  return appData.vs_days.find(d => d.day === utcDay);
+}
+
+function getArmsRacePhase(utcHour) {
+  const phaseIndex = Math.floor(utcHour / 4) % 6;
+  return appData.arms_race_phases[phaseIndex];
+}
+
+function getCurrentHighPriorityAlignment(utcDay, armsPhase) {
+  return appData.high_priority_alignments.find(a => 
+    a.vs_day === utcDay && a.arms_phase === armsPhase.name
+  );
+}
+
+function getAllHighPriorityWindows() {
+  const windows = [];
+  appData.high_priority_alignments.forEach(alignment => {
+    const vsDayData = getVSDayData(alignment.vs_day);
+    const armsPhase = appData.arms_race_phases.find(p => p.name === alignment.arms_phase);
+    
+    if (vsDayData && armsPhase) {
+      for (let h = 0; h < 24; h += 4) {
+        if (getArmsRacePhase(h).name === alignment.arms_phase) {
+          windows.push({
+            startTime: null, // Placeholder, calculated when needed
+            vsDay: alignment.vs_day,
+            vsDayData: vsDayData,
+            armsPhase: armsPhase,
+            alignment: alignment,
+            hour: h
+          });
+        }
+      }
+    }
+  });
+  return windows;
+}
+
+function getNextHighPriorityWindow() {
+  const now = new Date();
+  const allWindows = getAllHighPriorityWindows().map(w => {
+      const startTime = new Date();
+      startTime.setUTCHours(w.hour, 0, 0, 0);
+      
+      // Find the next occurrence of this day and time
+      while (startTime <= now || startTime.getUTCDay() !== w.vsDay) {
+          startTime.setDate(startTime.getDate() + 1);
+      }
+      w.startTime = startTime;
+      return w;
+  });
+
+  allWindows.sort((a, b) => a.startTime - b.startTime);
+  return allWindows[0];
+}

@@ -1,4 +1,4 @@
-// --- Application Data ---
+// --- Application Data 1 ---
 const appData = {
   arms_race_phases: [
     {id: 1, name: "City Building", icon: "🏗️", color: "#4CAF50"},
@@ -386,7 +386,7 @@ function getAllHighPriorityWindows() {
         }
       }
     }
-  });
+  }); 
   return windows;
 }
 function getNextHighPriorityWindow() {

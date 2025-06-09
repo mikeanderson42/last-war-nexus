@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Last War Survival - Event Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1 class="app-title">⚔️ Last War Survival</h1>
+                    <p class="app-subtitle">Event Tracker & Strategy Guide</p>
+                </div>
+                <div class="header-right">
+                    <div class="time-display">
+                        <div class="utc-time">
+                            <span class="time-label">UTC Server Time</span>
+                            <span id="utc-clock" class="time-value">--:--:--</span>
+                        </div>
+                        <div class="countdown-timer">
+                            <span class="time-label">Next High Priority</span>
+                            <span id="countdown" class="countdown-value">--:--:--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Top Banner Ad Placeholder -->
+        <div class="ad-banner-top">
+            <div class="ad-placeholder">
+                <span>Advertisement Banner (728x90)</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+        <div class="container">
+            <div class="tab-buttons">
+                <button class="tab-btn active" data-tab="live-tracker">🎯 Live Tracker</button>
+                <button class="tab-btn" data-tab="weekly-schedule">📅 Weekly Schedule</button>
+                <button class="tab-btn" data-tab="strategy-guides">📋 Strategy Guides</button>
+                <button class="tab-btn" data-tab="quick-reference">⚡ Quick Reference</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="content-wrapper">
+                <!-- Sidebar Ad (Desktop Only) -->
+                <div class="sidebar-ad">
+                    <div class="ad-placeholder ad-sidebar">
+                        <span>Advertisement<br>(160x600)</span>
+                    </div>
+                </div>
+
+                <!-- Content Area -->
+                <div class="content-area">
+                    <!-- Live Tracker Tab -->
+                    <div id="live-tracker" class="tab-content active">
+                        <div class="current-status">
+                            <div class="status-card">
+                                <h2>🚨 Current Status</h2>
+                                <div class="status-grid">
+                                    <div class="status-item">
+                                        <span class="status-label">Arms Race Phase</span>
+                                        <span id="current-phase" class="status-value">City Building 🏗️</span>
+                                    </div>
+                                    <div class="status-item">
+                                        <span class="status-label">VS Event</span>
+                                        <span id="current-vs" class="status-value">Base Expansion</span>
+                                    </div>
+                                    <div class="status-item">
+                                        <span class="status-label">Priority Level</span>
+                                        <span id="priority-level" class="status-value priority-high">HIGH PRIORITY</span>
+                                    </div>
+                                </div>
+                                <div class="warning-box">
+                                    <p>⚠️ <strong>Server Reset Warning:</strong> 5-minute no-points period after 00:00 UTC daily</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="next-actions">
+                            <div class="action-card">
+                                <h3>🎯 Recommended Actions</h3>
+                                <div id="current-actions" class="action-list">
+                                    <div class="action-item">
+                                        <span class="action-icon">🏗️</span>
+                                        <span class="action-text">Upgrade buildings and use construction speedups</span>
+                                    </div>
+                                    <div class="action-item">
+                                        <span class="action-icon">⚔️</span>
+                                        <span class="action-text">Focus on base expansion activities</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Weekly Schedule Tab -->
+                    <div id="weekly-schedule" class="tab-content">
+                        <div class="schedule-header">
+                            <h2>📅 Weekly Event Schedule</h2>
+                            <p>High-priority windows are highlighted in gold. Times shown in UTC.</p>
+                        </div>
+                        <div class="schedule-grid" id="weekly-schedule-grid">
+                            <!-- Schedule will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Strategy Guides Tab -->
+                    <div id="strategy-guides" class="tab-content">
+                        <div class="strategy-section">
+                            <h2>📋 Strategy Guides</h2>
+                            
+                            <div class="strategy-category">
+                                <div class="strategy-header" data-toggle="resource-tips">
+                                    <h3>💰 Resource Optimization</h3>
+                                    <span class="toggle-icon">+</span>
+                                </div>
+                                <div id="resource-tips" class="strategy-content">
+                                    <ul class="strategy-list">
+                                        <li>Save 85% of speedups for Total Mobilization Day (Friday)</li>
+                                        <li>Maintain 3 resource accounts at different tiers (T7-T9)</li>
+                                        <li>Use 3 radar scans + 2 drone attacks during Drone Boost phases</li>
+                                        <li>Stock warehouse to 80% capacity before high-priority windows</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="strategy-category">
+                                <div class="strategy-header" data-toggle="squad-tips">
+                                    <h3>⚔️ Squad Power</h3>
+                                    <span class="toggle-icon">+</span>
+                                </div>
+                                <div id="squad-tips" class="strategy-content">
+                                    <ul class="strategy-list">
+                                        <li>Troop laddering T7→T8→T9→T10 for 4x event points</li>
+                                        <li>Use Tank + Missile + Aircraft combo for +15% all stats</li>
+                                        <li>Deploy Monica + Violet heroes for +39% resource bonus</li>
+                                        <li>Focus mid-tier troop upgrades for efficient point gains</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="strategy-category">
+                                <div class="strategy-header" data-toggle="combat-tips">
+                                    <h3>🎯 Combat Tactics</h3>
+                                    <span class="toggle-icon">+</span>
+                                </div>
+                                <div id="combat-tips" class="strategy-content">
+                                    <ul class="strategy-list">
+                                        <li>Rally coordination during Enemy Buster windows</li>
+                                        <li>Heal troops during Unit Progression phases for double points</li>
+                                        <li>Use drone combat during Drone Boost for maximum efficiency</li>
+                                        <li>Attack lower-tier enemies during high-priority windows</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Reference Tab -->
+                    <div id="quick-reference" class="tab-content">
+                        <div class="quick-ref-header">
+                            <h2>⚡ Quick Reference - High Priority Windows</h2>
+                            <p>Only showing the 17 high-priority alignment windows for maximum efficiency.</p>
+                        </div>
+                        <div class="quick-ref-grid" id="quick-reference-grid">
+                            <!-- Quick reference will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Ad Banner -->
+    <div class="ad-banner-bottom">
+        <div class="container">
+            <div class="ad-placeholder ad-responsive">
+                <span>Responsive Bottom Advertisement</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Last War Survival Event Tracker. Not affiliated with the official game.</p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -489,7 +489,8 @@ class LastWarNexus {
       
       const eventCard = document.createElement('div');
       eventCard.className = `priority-event ${isActive ? 'active' : ''}`;
-      eventCard.innerHTML = `
+      
+      let cardContent = `
         <div class="priority-badge">MAX VALUE</div>
         <div class="event-header">
           <div class="event-day">${window.vsDayData.name}</div>
@@ -504,6 +505,24 @@ class LastWarNexus {
         </div>
       `;
       
+      if (this.settings.detailLevel === 'comprehensive') {
+        cardContent += `
+          <div class="event-detailed-info">
+            <div class="detail-section">
+              <strong>Key Activities:</strong> ${window.vsDayData.activities.join(', ')}
+            </div>
+            <div class="detail-section">
+              <strong>Arms Race Focus:</strong> ${window.armsPhase.activities.join(', ')}
+            </div>
+            <div class="detail-section">
+              <strong>VS Points Potential:</strong> +${window.alignment.points.toLocaleString()}
+            </div>
+          </div>
+        `;
+      }
+      
+      eventCard.innerHTML = cardContent;
+      
       eventCard.addEventListener('click', () => {
         this.showModal(window.alignment, window.vsDayData, window.armsPhase);
       });
@@ -516,52 +535,120 @@ class LastWarNexus {
     const container = document.getElementById('schedule-grid');
     if (!container) return;
     
-    container.innerHTML = '<div class="schedule-grid"></div>';
-    const grid = container.querySelector('.schedule-grid');
-
-    const headers = ['Day/Time', '00:00', '04:00', '08:00', '12:00', '16:00', '20:00'];
-    headers.forEach(h => {
-      const headerCell = document.createElement('div');
-      headerCell.className = 'schedule-header';
-      headerCell.textContent = h;
-      grid.appendChild(headerCell);
-    });
-
-    const daysToShow = this.settings.viewScope === 'today'
-      ? [this.getVSDayData(new Date().getUTCDay())]
-      : this.data.vs_days;
+    container.innerHTML = '';
     
-    daysToShow.forEach(vsDayData => {
-      if (!vsDayData) return;
-
+    const { utcDay } = this.getCurrentUTCInfo();
+    let daysToShow;
+    
+    if (this.settings.viewScope === 'today') {
+      daysToShow = [this.getVSDayData(utcDay)];
+      
+      const todayContainer = document.createElement('div');
+      todayContainer.className = 'today-schedule';
+      
+      todayContainer.innerHTML = `
+        <div class="today-header">
+          <h3>${daysToShow[0].name} - ${daysToShow[0].title}</h3>
+          <p>Today's Schedule</p>
+        </div>
+      `;
+      
+      const timeSlots = document.createElement('div');
+      timeSlots.className = 'time-slots';
+      
       for (let h = 0; h < 24; h += 4) {
         const armsPhase = this.getArmsRacePhase(h);
-        const cell = document.createElement('div');
-        cell.className = 'schedule-cell';
+        const alignment = this.getAlignment(daysToShow[0].day, armsPhase.name);
         
-        const alignment = this.getAlignment(vsDayData.day, armsPhase.name);
-        if (alignment) cell.classList.add('priority');
-
-        const { utcDay, utcHour } = this.getCurrentUTCInfo();
-        if (vsDayData.day === utcDay && h <= utcHour && utcHour < h + 4) {
-          cell.classList.add('current');
-        }
-
-        cell.innerHTML = `
-          <div class="cell-phase">${armsPhase.icon} ${armsPhase.name}</div>
-          ${alignment && this.settings.detailLevel === 'comprehensive' ? 
-            `<div class="cell-reason">${alignment.reason}</div>` : ''}
+        const { utcHour } = this.getCurrentUTCInfo();
+        const isCurrentSlot = h <= utcHour && utcHour < h + 4;
+        
+        const slot = document.createElement('div');
+        slot.className = `time-slot ${alignment ? 'priority' : ''} ${isCurrentSlot ? 'current' : ''}`;
+        
+        let slotContent = `
+          <div class="slot-time">${String(h).padStart(2, '0')}:00 - ${String((h + 4) % 24).padStart(2, '0')}:00</div>
+          <div class="slot-phase">${armsPhase.icon} ${armsPhase.name}</div>
         `;
         
-        cell.addEventListener('click', () => {
-          if (alignment) {
-            this.showModal(alignment, vsDayData, armsPhase);
-          }
-        });
+        if (this.settings.detailLevel === 'comprehensive' && alignment) {
+          slotContent += `
+            <div class="slot-details">
+              <div class="slot-reason">${alignment.reason}</div>
+              <div class="slot-points">+${alignment.points.toLocaleString()} points</div>
+            </div>
+          `;
+        }
         
-        grid.appendChild(cell);
+        slot.innerHTML = slotContent;
+        
+        if (alignment) {
+          slot.addEventListener('click', () => {
+            this.showModal(alignment, daysToShow[0], armsPhase);
+          });
+        }
+        
+        timeSlots.appendChild(slot);
       }
-    });
+      
+      todayContainer.appendChild(timeSlots);
+      container.appendChild(todayContainer);
+      
+    } else {
+      daysToShow = this.data.vs_days;
+      
+      const weekGrid = document.createElement('div');
+      weekGrid.className = 'schedule-grid';
+      
+      const headers = ['Day/Time', '00:00', '04:00', '08:00', '12:00', '16:00', '20:00'];
+      headers.forEach(h => {
+        const headerCell = document.createElement('div');
+        headerCell.className = 'schedule-header';
+        headerCell.textContent = h;
+        weekGrid.appendChild(headerCell);
+      });
+
+      daysToShow.forEach(vsDayData => {
+        if (!vsDayData) return;
+
+        const dayCell = document.createElement('div');
+        dayCell.className = 'schedule-day-header';
+        dayCell.textContent = vsDayData.name;
+        weekGrid.appendChild(dayCell);
+
+        for (let h = 0; h < 24; h += 4) {
+          const armsPhase = this.getArmsRacePhase(h);
+          const cell = document.createElement('div');
+          cell.className = 'schedule-cell';
+          
+          const alignment = this.getAlignment(vsDayData.day, armsPhase.name);
+          if (alignment) cell.classList.add('priority');
+
+          const { utcDay, utcHour } = this.getCurrentUTCInfo();
+          if (vsDayData.day === utcDay && h <= utcHour && utcHour < h + 4) {
+            cell.classList.add('current');
+          }
+
+          let cellContent = `<div class="cell-phase">${armsPhase.icon} ${armsPhase.name}</div>`;
+          
+          if (this.settings.detailLevel === 'comprehensive' && alignment) {
+            cellContent += `<div class="cell-reason">${alignment.reason}</div>`;
+          }
+          
+          cell.innerHTML = cellContent;
+          
+          if (alignment) {
+            cell.addEventListener('click', () => {
+              this.showModal(alignment, vsDayData, armsPhase);
+            });
+          }
+          
+          weekGrid.appendChild(cell);
+        }
+      });
+      
+      container.appendChild(weekGrid);
+    }
   }
 
   populateIntelligence() {

@@ -61,11 +61,14 @@
 
                 <div class="countdown-card">
                     <div class="card-header">
-                        <h2>Next Priority Event</h2>
+                        <h2>Next High Priority Event</h2>
                         <div class="priority-indicator high"></div>
                     </div>
                     <div class="card-content">
                         <div class="countdown-display">
+                            <div class="priority-explainer">
+                                <span class="explainer-text">⚡ When VS Events + Arms Race align for maximum rewards</span>
+                            </div>
                             <div id="countdown-timer" class="countdown-value">00h 00m</div>
                             <div class="countdown-details">
                                 <div id="event-name" class="event-name">Calculating...</div>
@@ -97,12 +100,12 @@
                             <div id="action-text" class="action-text">Analyzing optimal strategy...</div>
                             <div class="action-meta-expanded">
                                 <div class="meta-item">
-                                    <span class="meta-label">Priority</span>
+                                    <span class="meta-label">Priority Level</span>
                                     <span id="priority-level" class="priority-tag">Medium</span>
                                 </div>
                                 <div class="meta-item">
-                                    <span class="meta-label">VS Points Potential</span>
-                                    <span id="points-potential" class="points-value">+2,500</span>
+                                    <span class="meta-label">Optimization Focus</span>
+                                    <span id="optimization-focus" class="focus-value">Building</span>
                                 </div>
                                 <div class="meta-item">
                                     <span class="meta-label">Time Remaining</span>
@@ -162,7 +165,7 @@
                     </button>
                     <button class="tab-btn" data-tab="intelligence">
                         <span class="tab-icon">🧠</span>
-                        <span class="tab-label">Intel Hub</span>
+                        <span class="tab-label">Strategy Hub</span>
                         <span class="tab-count" id="intel-count">8</span>
                     </button>
                 </div>
@@ -172,7 +175,13 @@
                 <div id="priority-tab" class="tab-panel active">
                     <div class="section-header">
                         <h2>High Priority Events</h2>
-                        <p class="section-subtitle">Maximize your VS points with these optimal time windows</p>
+                        <p class="section-subtitle">These are the golden opportunities when VS Events perfectly align with Arms Race phases for maximum efficiency and rewards</p>
+                        <div class="priority-explanation">
+                            <div class="explanation-card">
+                                <span class="explanation-icon">⚡</span>
+                                <span class="explanation-text">High Priority = VS Event activities match Arms Race focus</span>
+                            </div>
+                        </div>
                         <div class="section-filters">
                             <button class="filter-btn active" data-filter="all">All Events</button>
                             <button class="filter-btn" data-filter="active">Active Now</button>
@@ -211,7 +220,7 @@
                 <div id="intelligence-tab" class="tab-panel">
                     <div class="section-header">
                         <h2>Strategy Intelligence Hub</h2>
-                        <p class="section-subtitle">Pro tips, guides, and latest updates</p>
+                        <p class="section-subtitle">Expert guides, pro tips, and comprehensive strategies</p>
                         <div class="intel-stats">
                             <div class="intel-stat">
                                 <span class="stat-number">24</span>

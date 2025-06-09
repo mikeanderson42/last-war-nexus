@@ -1,4 +1,4 @@
-// Enhanced Last War Nexus - Complete Working Implementation
+// Enhanced Last War Nexus - Complete Working Implementation with Fixed Timing
 class LastWarNexus {
   constructor() {
     this.data = {
@@ -281,5 +281,4 @@ class LastWarNexus {
     } else if (alignment) {
       if (this.elements.actionIcon) this.elements.actionIcon.textContent = '⚡';
       if (this.elements.actionText) this.elements.actionText.innerHTML = `<strong>HIGH PRIORITY ACTIVE!</strong><br>${alignment.reason}`;
-      if (this.elements.priorityLevel) this.elements.priorityLevel.textContent = 'Critical';
-      if (this
+      if (this.elements.priorityLevel) this.elements.priorityLevel.text

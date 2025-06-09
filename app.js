@@ -203,13 +203,15 @@ class LastWarNexus {
                 });
             }
 
-            // Current Arms Race Phase selector
-            if (this.elements['current-arms-phase']) {
-                this.addEventListenerSingle(this.elements['current-arms-phase'], 'change', (e) => {
-                    this.currentArmsPhase = e.target.value;
-                    this.updateServerDisplay();
-                });
-            }
+			// Current Arms Race Phase selector
+			if (this.elements['current-arms-phase']) {
+				this.addEventListenerSingle(this.elements['current-arms-phase'], 'change', (e) => {
+				this.currentArmsPhase = e.target.value;
+				this.updateServerDisplay();
+				this.saveServerSettings();
+				this.updateAllDisplays();
+    });
+}
 
             // Time offset selector
             if (this.elements['time-offset']) {

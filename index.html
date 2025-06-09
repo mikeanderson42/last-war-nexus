@@ -68,21 +68,21 @@
             </div>
             <div class="nav-actions">
                 <div class="server-dropdown-container">
-                    <button class="server-btn enhanced-server-btn" id="server-toggle" type="button">
+                    <button class="server-btn arms-race-enhanced" id="server-toggle" type="button">
                         <span class="server-icon">🌐</span>
                         <span class="server-label">Server <span id="current-server">555</span></span>
-                        <span class="arms-race-indicator">⚡ Affects Arms Race Timing</span>
+                        <span class="arms-race-badge">⚡ Arms Race</span>
                     </button>
                     <div class="server-dropdown" id="server-dropdown">
                         <div class="dropdown-header">
-                            <h3>🎯 Arms Race Server Setup</h3>
-                            <p class="timing-notice">Your server number determines Arms Race phase timing</p>
+                            <h3>🎯 Server Setup for Arms Race</h3>
+                            <p class="arms-race-notice">Your server number affects Arms Race phase timing</p>
                         </div>
                         <div class="dropdown-content">
                             <div class="setting-row">
-                                <label for="server-input">Server Number (Critical for Arms Race)</label>
-                                <input type="number" id="server-input" class="server-input" placeholder="Enter your server (0-9999)" min="0" max="9999" value="555">
-                                <div class="input-help">Enter your exact server number for accurate Arms Race scheduling</div>
+                                <label for="server-input">Server Number (0-9999)</label>
+                                <input type="number" id="server-input" class="server-input arms-race-input" placeholder="Enter your server (e.g. 555)" min="0" max="9999" value="555">
+                                <div class="arms-race-help">This determines your Arms Race phase schedule</div>
                             </div>
                             <div class="server-info" id="server-info">
                                 <div class="info-row">
@@ -98,7 +98,7 @@
                                     <span id="current-phase-info" class="info-value">Calculating...</span>
                                 </div>
                             </div>
-                            <button class="apply-server-btn" id="apply-server" type="button">Apply Server & Update Arms Race</button>
+                            <button class="apply-server-btn arms-race-apply" id="apply-server" type="button">Apply & Update Arms Race</button>
                         </div>
                     </div>
                 </div>

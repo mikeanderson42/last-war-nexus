@@ -3,13 +3,13 @@ class LastWarNexus {
     this.isInitialized = false;
     this.initializationAttempts = 0;
     this.maxInitAttempts = 3;
-    this.currentServer = 555; // Default server
+    this.currentServer = 555; // Default server for Arms Race calculation
     
-    // Arms Race calculation constants (based on search results)
+    // Arms Race server calculation constants
     this.SERVER_LAUNCH_BASE = {
       server: 93,
       date: new Date("2024-01-20T08:00:00Z"),
-      serversPerDay: 3.2 // Average based on research
+      serversPerDay: 3.2
     };
     
     this.data = {
@@ -240,7 +240,7 @@ class LastWarNexus {
       this.setupEventListeners();
       this.populateIntelligence();
       this.updateTabCounts();
-      this.loadSavedServer();
+      this.loadSavedServer(); // Load saved server before updating displays
       this.updateAllDisplays();
       this.startUpdateLoop();
       
@@ -290,7 +290,7 @@ class LastWarNexus {
     this.removeEventListeners();
     
     try {
-      // Enhanced server input handling
+      // Arms Race server functionality
       if (this.elements.serverinput) {
         this.addEventListener(this.elements.serverinput, 'input', (e) => {
           this.updateServerInfo(e.target.value);
@@ -312,7 +312,7 @@ class LastWarNexus {
         });
       }
 
-      // Existing event listeners (preserved)
+      // Existing event listeners (preserved exactly)
       this.addEventListeners('.tab-btn', 'click', (e) => {
         e.preventDefault();
         const tabName = e.target.closest('.tab-btn')?.dataset?.tab;
@@ -435,7 +435,7 @@ class LastWarNexus {
     }
   }
 
-  // Enhanced server calculation methods
+  // Arms Race server calculation methods
   calculateServerLaunchDate(serverNumber) {
     try {
       const serverDiff = serverNumber - this.SERVER_LAUNCH_BASE.server;
@@ -444,8 +444,7 @@ class LastWarNexus {
       const launchDate = new Date(this.SERVER_LAUNCH_BASE.date);
       launchDate.setDate(launchDate.getDate() + daysFromBase);
       
-      // Add hour offset based on server number (servers launch at different hours)
-      const hourOffset = (serverNumber % 3) - 1; // -1, 0, or 1 hour offset
+      const hourOffset = (serverNumber % 3) - 1;
       launchDate.setHours(launchDate.getHours() + hourOffset);
       
       return launchDate;
@@ -460,15 +459,11 @@ class LastWarNexus {
       const serverLaunch = this.calculateServerLaunchDate(serverNumber);
       const daysSinceLaunch = Math.floor((currentTime - serverLaunch) / (1000 * 60 * 60 * 24));
       
-      // Calculate phase based on current UTC hour with server offset
       const utcHour = currentTime.getUTCHours();
-      const serverOffset = (serverNumber % 6); // 0-5 hour offset pattern
+      const serverOffset = (serverNumber % 6);
       const adjustedHour = (utcHour + serverOffset) % 24;
       
-      // Each phase lasts 4 hours (0-3, 4-7, 8-11, 12-15, 16-19, 20-23)
       const phaseIndex = Math.floor(adjustedHour / 4);
-      
-      // Weekly rotation offset based on days since launch
       const weeklyOffset = (daysSinceLaunch % 7);
       const finalPhaseIndex = (phaseIndex + weeklyOffset) % 6;
       
@@ -519,18 +514,15 @@ class LastWarNexus {
 
       this.currentServer = serverNumber;
       
-      // Update displays
       if (this.elements.currentserver) this.elements.currentserver.textContent = serverNumber;
       if (this.elements.displayserver) this.elements.displayserver.textContent = serverNumber;
       
-      // Save to localStorage
       localStorage.setItem('lastWarNexusServer', serverNumber.toString());
       
-      // Close dropdown and update all displays
       this.closeServerDropdown();
       this.updateAllDisplays();
       
-      console.log(`Server updated to: ${serverNumber}`);
+      console.log(`Arms Race server updated to: ${serverNumber}`);
     } catch (error) {
       console.error('Error applying server settings:', error);
     }
@@ -559,7 +551,6 @@ class LastWarNexus {
       if (this.elements.serverdropdown) {
         const isOpen = this.elements.serverdropdown.classList.contains('show');
         
-        // Close settings dropdown if open
         this.closeDropdown();
         
         if (isOpen) {
@@ -568,7 +559,6 @@ class LastWarNexus {
           this.elements.serverdropdown.classList.add('show');
           this.elements.servertoggle?.classList.add('active');
           
-          // Update server info when opening
           if (this.elements.serverinput?.value) {
             this.updateServerInfo(this.elements.serverinput.value);
           }
@@ -590,22 +580,21 @@ class LastWarNexus {
     }
   }
 
-  // Updated Arms Race calculation methods
+  // Enhanced getArmsRacePhase to use server-specific calculation
   getArmsRacePhase(utcHour) {
     try {
-      // Use server-specific calculation if server is set
       if (this.currentServer) {
         return this.getArmsRacePhaseForServer(this.currentServer);
       }
       
-      // Fallback to default calculation
+      // Fallback to original logic
       const phaseSchedule = [
-        { hours: [0, 1, 2, 3], index: 0 },     // Mixed Phase
-        { hours: [4, 5, 6, 7], index: 1 },     // Drone Boost
-        { hours: [8, 9, 10, 11], index: 2 },   // City Building
-        { hours: [12, 13, 14, 15], index: 3 }, // Tech Research
-        { hours: [16, 17, 18, 19], index: 4 }, // Hero Advancement
-        { hours: [20, 21, 22, 23], index: 5 }  // Unit Progression
+        { hours: [0, 1, 2, 3], index: 0 },
+        { hours: [4, 5, 6, 7], index: 1 },
+        { hours: [8, 9, 10, 11], index: 2 },
+        { hours: [12, 13, 14, 15], index: 3 },
+        { hours: [16, 17, 18, 19], index: 4 },
+        { hours: [20, 21, 22, 23], index: 5 }
       ];
       
       for (const phase of phaseSchedule) {
@@ -621,9 +610,7 @@ class LastWarNexus {
     }
   }
 
-  // Rest of the methods remain exactly the same as your original file
-  // ... (keeping all existing methods unchanged)
-
+  // All remaining methods stay exactly the same as your working file
   addEventListeners(selector, event, handler) {
     const elements = document.querySelectorAll(selector);
     elements.forEach(element => {
@@ -895,12 +882,12 @@ class LastWarNexus {
   calculatePhaseTimeRemaining(utcHour, utcMinute) {
     try {
       const phaseSchedule = [
-        { start: 0, end: 4 },   // Mixed Phase
-        { start: 4, end: 8 },   // Drone Boost  
-        { start: 8, end: 12 },  // City Building
-        { start: 12, end: 16 }, // Tech Research
-        { start: 16, end: 20 }, // Hero Advancement
-        { start: 20, end: 24 }  // Unit Progression
+        { start: 0, end: 4 },
+        { start: 4, end: 8 },
+        { start: 8, end: 12 },
+        { start: 12, end: 16 },
+        { start: 16, end: 20 },
+        { start: 20, end: 24 }
       ];
       
       let currentPhaseEnd = null;
@@ -999,12 +986,12 @@ class LastWarNexus {
       const utcHour = now.getUTCHours();
       
       const phaseSchedule = [
-        { start: 0, end: 4 },   // Mixed Phase
-        { start: 4, end: 8 },   // Drone Boost  
-        { start: 8, end: 12 },  // City Building
-        { start: 12, end: 16 }, // Tech Research
-        { start: 16, end: 20 }, // Hero Advancement
-        { start: 20, end: 24 }  // Unit Progression
+        { start: 0, end: 4 },
+        { start: 4, end: 8 },
+        { start: 8, end: 12 },
+        { start: 12, end: 16 },
+        { start: 16, end: 20 },
+        { start: 20, end: 24 }
       ];
       
       let currentPhase = null;

@@ -18,71 +18,76 @@
     </div>
 
     <div class="container">
-        <!-- Header with Live Status -->
+        <!-- Header Section -->
         <header class="header">
             <h1>🎯 Last War Nexus</h1>
             <p class="subtitle">VS Points Optimization Center</p>
-            <div class="current-status">
-                <div class="time-display">
-                    <div class="time-label">UTC Server Time</div>
-                    <div id="current-time" class="current-time">00:00:00</div>
-                </div>
-                <div class="status-indicators">
-                    <div class="vs-status">
-                        <div class="status-label">VS Day</div>
-                        <div id="current-vs-day" class="status-value">Loading...</div>
-                    </div>
-                    <div class="arms-status">
-                        <div class="status-label">Arms Race Phase</div>
-                        <div id="current-arms-phase" class="status-value">Loading...</div>
-                    </div>
-                </div>
-            </div>
         </header>
 
-        <!-- Current Action & Countdown Section -->
-        <div class="action-grid">
-            <div class="current-action card">
+        <!-- Live Status Dashboard -->
+        <section class="dashboard-grid">
+            <div class="card">
+                <div class="card__header">
+                    <h3>🕒 Live Status</h3>
+                </div>
                 <div class="card__body">
-                    <h3>✅ What to Do Now</h3>
-                    <div id="current-action-content" class="action-content">
-                        <div class="action-status">
-                            <div id="action-icon" class="action-icon">⏳</div>
-                            <div id="action-text" class="action-text">Calculating current priorities...</div>
+                    <div class="status-group">
+                        <div class="status-item">
+                            <span class="status-label">UTC Server Time</span>
+                            <span id="current-time" class="status-value time-value">00:00:00</span>
                         </div>
-                        <div id="reset-warning" class="reset-warning hidden">
-                            ⚠️ <strong>No Points Period:</strong> Wait 5 minutes after server reset!
+                        <div class="status-item">
+                            <span class="status-label">VS Day</span>
+                            <span id="current-vs-day" class="status-value">Loading...</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">Arms Race Phase</span>
+                            <span id="current-arms-phase" class="status-value">Loading...</span>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="next-priority card">
-                <div class="card__body">
-                    <h3>⏰ Next High Priority Window</h3>
-                    <div id="countdown-section" class="countdown-section">
-                        <div id="countdown-timer" class="countdown-timer">Calculating...</div>
-                        <div id="next-event-info" class="next-event-info">
-                            <div class="next-event-details">Loading next event...</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- View Controls -->
-        <div class="controls-section card">
+            <div class="card">
+                <div class="card__header">
+                    <h3>⏰ Next High Priority</h3>
+                </div>
+                <div class="card__body">
+                    <div class="countdown-section">
+                        <div id="countdown-timer" class="countdown-timer">Calculating...</div>
+                        <div id="next-event-info" class="next-event-info">Loading...</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- What to Do Now Section -->
+        <section class="card">
+            <div class="card__header">
+                <h3>✅ What to Do Now</h3>
+            </div>
             <div class="card__body">
+                <div id="current-action-content" class="action-content">
+                    <div class="action-status">
+                        <div id="action-icon" class="action-icon">⏳</div>
+                        <div id="action-text" class="action-text">Calculating current priorities...</div>
+                    </div>
+                    <div id="reset-warning" class="reset-warning hidden">
+                        ⚠️ <strong>No Points Period:</strong> Wait 5 minutes after server reset!
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- View Controls Section -->
+        <section class="card">
+            <div class="card__header">
                 <h3>📊 View Controls</h3>
+            </div>
+            <div class="card__body">
                 <div class="controls-grid">
                     <div class="control-group">
-                        <label class="form-label" for="view-mode">View Mode</label>
-                        <select id="view-mode" class="form-control">
-                            <option value="high-priority" selected>High Priority Only</option>
-                            <option value="complete">Complete Schedule</option>
-                        </select>
-                    </div>
-                    <div class="control-group">
-                        <label class="form-label" for="time-display">Time Display</label>
+                        <label class="form-label" for="time-display">Time Format</label>
                         <select id="time-display" class="form-control">
                             <option value="utc" selected>UTC Server Time</option>
                             <option value="local">Your Local Time</option>
@@ -104,19 +109,24 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Dynamic Content Area -->
+        <!-- Main Navigation & Content Area -->
         <main>
+            <div class="view-switcher">
+                <div id="nav-pills" class="nav-pills">
+                    <button class="nav-pill active" data-view="high-priority">🏆 High Priority</button>
+                    <button class="nav-pill" data-view="complete">📅 Complete Schedule</button>
+                </div>
+            </div>
+
             <div id="high-priority-section" class="schedule-section">
-                <h3>🏆 High Priority Alignments</h3>
                 <div id="high-priority-grid" class="priority-grid">
                     <!-- High priority cards will be populated here -->
                 </div>
             </div>
 
             <div id="complete-schedule-section" class="schedule-section hidden">
-                <h3>📅 Complete Weekly Schedule</h3>
                 <div id="complete-schedule-grid" class="schedule-grid-table">
                     <!-- Complete schedule table will be populated here -->
                 </div>
@@ -132,7 +142,7 @@
     <!-- Modal for detailed information -->
     <div id="detail-modal" class="modal">
         <div class="modal-content">
-            <span class="close-button">&times;</span>
+            <span id="close-modal-button" class="close-button">&times;</span>
             <div id="modal-body"></div>
         </div>
     </div>

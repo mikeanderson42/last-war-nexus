@@ -267,7 +267,7 @@ body {
 .modal-tips li { padding: var(--space-4) 0; }
 .modal-tips li::before { content: '✓'; color: var(--color-accent); margin-right: var(--space-8); }
 
-/* --- Mobile Responsiveness n --- */
+/* --- Mobile Responsiveness --- */
 @media (min-width: 768px) {
     .dashboard-grid { grid-template-columns: 1fr 1fr; }
 }

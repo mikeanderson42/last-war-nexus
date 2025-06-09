@@ -1,4 +1,4 @@
-// --- Application Data 1 ---
+// --- Application Data ---
 const appData = {
   arms_race_phases: [
     {id: 1, name: "City Building", icon: "🏗️", color: "#4CAF50"},
@@ -15,7 +15,7 @@ const appData = {
     {day: 3, name: "Wednesday", title: "Age of Science", objective: "Research completion, research speedups, valor badges, drone components", activities: ["Complete research", "Use research speedups", "Use valor badges for research", "Open drone component chests", "Complete radar missions"]},
     {day: 4, name: "Thursday", title: "Train Heroes", objective: "Hero recruitment, hero EXP, hero shards, skill medals", activities: ["Use recruitment tickets", "Apply hero EXP", "Use hero shards", "Apply skill medals", "Use weapon shards"]},
     {day: 5, name: "Friday", title: "Total Mobilization", objective: "All activities (building, research, training)", activities: ["Use all speedup types", "Finish buildings/research", "Train troops", "Use overlord items"]},
-    {day: 6, name: "Saturday", title: "Enemy Buster", objective: "Combat, speedups, troop training/healing", activities: ["Attack enemy bases", "Use healing speedups", "Train troops", "Use all speedup types", "Dispatch trucks"]}
+    {day: 6, "name": "Saturday", "title": "Enemy Buster", "objective": "Combat, speedups, troop training/healing", "activities": ["Attack enemy bases", "Use healing speedups", "Train troops", "Use all speedup types", "Dispatch trucks"]}
   ],
   high_priority_alignments: [
     {"vs_day": 1, "arms_phase": "Drone Boost", "reason": "Stamina/drone activities align perfectly."},
@@ -82,6 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
   cacheDOMElements();
   setupEventListeners();
   populateIntelligenceHub();
+  updateDynamicContent(); // Initial render to set the view
   updateAllDisplays(); // Initial render for immediate feedback
   if (appInterval) clearInterval(appInterval);
   appInterval = setInterval(updateAllDisplays, 1000);
@@ -342,7 +343,7 @@ function populateIntelligenceHub() {
 
 // --- Modal Logic ---
 function showDetailModal(alignment, vsDayData, armsPhase) {
-    if (!alignment) return;
+    if (!alignment) return; // Only show modal for high-priority slots
     const modal = DOMElements['detail-modal'];
     const modalBody = DOMElements['modal-body'];
     if (!modal || !modalBody) return;
@@ -386,17 +387,19 @@ function getAllHighPriorityWindows() {
         }
       }
     }
-  }); 
+  });
   return windows;
 }
 function getNextHighPriorityWindow() {
   const now = new Date();
   const allWindows = getAllHighPriorityWindows().map(w => {
     let startTime = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), w.hour, 0, 0));
+    // Correctly find the *next* occurrence of this day and time
     while (startTime.getTime() <= now.getTime() || startTime.getUTCDay() !== w.vsDay) {
-        startTime.setUTCDate(startTime.getUTCDate() + 1);
         if (startTime.getUTCDay() !== w.vsDay) {
            startTime.setUTCDate(startTime.getUTCDate() + (w.vsDay - startTime.getUTCDay() + 7) % 7);
+        } else {
+           startTime.setUTCDate(startTime.getUTCDate() + 1); // Move to the next day if time has passed
         }
     }
     w.startTime = startTime;

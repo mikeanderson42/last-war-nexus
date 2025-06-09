@@ -4,13 +4,11 @@ class LastWarNexus {
         this.initializationAttempts = 0;
         this.maxInitAttempts = 3;
         
-        // Server configuration
-        this.serverNumber = 1069;
-        this.serverLaunchDate = null;
-        this.phaseOffset = 0; // hours offset from UTC
+        // Server configuration - simplified
         this.currentArmsPhase = 'Drone Boost'; // User-selected current phase
+        this.timeOffset = 0; // Manual time offset in hours (-4 to +4)
         
-        // Data structure
+        // Data structure (keeping existing data)
         this.data = {
             armsracephases: [
                 { id: 6, name: "Mixed Phase", icon: "🔄", activities: ["Check in-game calendar"], pointSources: ["Check calendar for current focus", "Mixed activities", "Various point sources", "Event-specific tasks", "General progression"] },
@@ -139,8 +137,8 @@ class LastWarNexus {
             'intel-count', 'event-modal', 'modal-title', 'modal-body', 'modal-close', 'modal-share',
             'modal-remind', 'time-format-dropdown', 'detail-level-dropdown', 'view-scope-dropdown',
             'bottom-priority-cards', 'bottom-priority-grid', 'minimize-cards', 'bottom-cards-content',
-            'server-toggle', 'server-dropdown', 'server-input', 'apply-server', 'current-server',
-            'server-launch', 'phase-offset', 'current-arms-phase'
+            'server-toggle', 'server-dropdown', 'apply-server', 'current-server',
+            'current-arms-phase', 'time-offset', 'current-phase-display', 'offset-display'
         ];
 
         let allElementsFound = true;
@@ -197,13 +195,7 @@ class LastWarNexus {
                 });
             }
 
-            // Server input and apply button
-            if (this.elements['server-input']) {
-                this.addEventListenerSingle(this.elements['server-input'], 'input', (e) => {
-                    this.validateServerInput(e.target.value);
-                });
-            }
-
+            // Apply server settings button
             if (this.elements['apply-server']) {
                 this.addEventListenerSingle(this.elements['apply-server'], 'click', (e) => {
                     e.preventDefault();
@@ -215,10 +207,15 @@ class LastWarNexus {
             if (this.elements['current-arms-phase']) {
                 this.addEventListenerSingle(this.elements['current-arms-phase'], 'change', (e) => {
                     this.currentArmsPhase = e.target.value;
-                    this.calculateOffsetFromCurrentPhase();
-                    this.updateServerInfoDisplay();
-                    this.saveServerSettings();
-                    this.updateAllDisplays();
+                    this.updateServerDisplay();
+                });
+            }
+
+            // Time offset selector
+            if (this.elements['time-offset']) {
+                this.addEventListenerSingle(this.elements['time-offset'], 'change', (e) => {
+                    this.timeOffset = parseInt(e.target.value, 10);
+                    this.updateServerDisplay();
                 });
             }
 
@@ -347,24 +344,24 @@ class LastWarNexus {
         this.eventListeners = [];
     }
 
-    // Server management methods
+    // Server management methods - simplified
     loadServerSettings() {
         try {
             const saved = localStorage.getItem('lwn-server-settings');
             if (saved) {
                 const settings = JSON.parse(saved);
-                this.serverNumber = settings.serverNumber || 1069;
-                this.phaseOffset = settings.phaseOffset || 0;
                 this.currentArmsPhase = settings.currentArmsPhase || 'Drone Boost';
-                this.serverLaunchDate = settings.serverLaunchDate ? new Date(settings.serverLaunchDate) : null;
+                this.timeOffset = settings.timeOffset || 0;
                 
-                // Restore current arms phase selection
+                // Restore selections
                 if (this.elements['current-arms-phase']) {
                     this.elements['current-arms-phase'].value = this.currentArmsPhase;
                 }
+                if (this.elements['time-offset']) {
+                    this.elements['time-offset'].value = this.timeOffset.toString();
+                }
             }
             this.updateServerDisplay();
-            this.calculateServerInfo();
         } catch (error) {
             console.error('Error loading server settings:', error);
         }
@@ -373,10 +370,8 @@ class LastWarNexus {
     saveServerSettings() {
         try {
             const settings = {
-                serverNumber: this.serverNumber,
-                phaseOffset: this.phaseOffset,
                 currentArmsPhase: this.currentArmsPhase,
-                serverLaunchDate: this.serverLaunchDate?.toISOString()
+                timeOffset: this.timeOffset
             };
             localStorage.setItem('lwn-server-settings', JSON.stringify(settings));
         } catch (error) {
@@ -384,119 +379,44 @@ class LastWarNexus {
         }
     }
 
-    validateServerInput(value) {
-        const num = parseInt(value, 10);
-        if (isNaN(num) || num < 1 || num > 9999) {
-            this.elements['apply-server']?.classList.add('disabled');
-            return false;
-        }
-        this.elements['apply-server']?.classList.remove('disabled');
-        return true;
-    }
-
     applyServerSettings() {
         try {
-            const serverInput = this.elements['server-input']?.value;
-            if (!this.validateServerInput(serverInput)) {
-                alert('Please enter a valid server number (1-9999)');
-                return;
-            }
-
-            this.serverNumber = parseInt(serverInput, 10);
             this.currentArmsPhase = this.elements['current-arms-phase']?.value || 'Drone Boost';
-            this.calculateServerInfo();
+            this.timeOffset = parseInt(this.elements['time-offset']?.value || '0', 10);
             this.updateServerDisplay();
             this.saveServerSettings();
             this.closeDropdown();
             this.updateAllDisplays();
             
-            console.log(`Server updated to: ${this.serverNumber}, Current phase: ${this.currentArmsPhase}`);
+            console.log(`Settings applied - Phase: ${this.currentArmsPhase}, Offset: ${this.timeOffset}h`);
         } catch (error) {
             console.error('Error applying server settings:', error);
         }
     }
 
-    calculateServerInfo() {
-        try {
-            // Calculate server launch date based on server number
-            const baseDate = new Date('2023-01-01T00:00:00Z');
-            const daysOffset = Math.floor((this.serverNumber - 1) / 10) * 7;
-            
-            this.serverLaunchDate = new Date(baseDate);
-            this.serverLaunchDate.setUTCDate(baseDate.getUTCDate() + daysOffset);
-            
-            // Use user-selected current phase to calculate offset
-            this.calculateOffsetFromCurrentPhase();
-            
-            this.updateServerInfoDisplay();
-        } catch (error) {
-            console.error('Error calculating server info:', error);
-        }
-    }
-
-    calculateOffsetFromCurrentPhase() {
-        try {
-            const selectedPhase = this.currentArmsPhase;
-            const now = new Date();
-            const currentUTCHour = now.getUTCHours();
-            
-            // Find what hour this phase should start in standard UTC schedule
-            const standardSchedule = {
-                'Mixed Phase': 0,
-                'Drone Boost': 4, 
-                'City Building': 8,
-                'Tech Research': 12,
-                'Hero Advancement': 16,
-                'Unit Progression': 20
-            };
-            
-            const standardStartHour = standardSchedule[selectedPhase];
-            if (standardStartHour !== undefined) {
-                // Calculate the offset needed to align current UTC time with selected phase
-                let offset = currentUTCHour - standardStartHour;
-                
-                // Adjust for phases that cross day boundary
-                if (offset < -12) offset += 24;
-                if (offset > 12) offset -= 24;
-                
-                this.phaseOffset = offset;
-            }
-        } catch (error) {
-            console.error('Error calculating offset from current phase:', error);
-        }
-    }
-
     updateServerDisplay() {
         if (this.elements['current-server']) {
-            this.elements['current-server'].textContent = this.serverNumber;
-        }
-        if (this.elements['server-input']) {
-            this.elements['server-input'].value = this.serverNumber;
+            this.elements['current-server'].textContent = 'Settings';
         }
         if (this.elements['current-arms-phase']) {
             this.elements['current-arms-phase'].value = this.currentArmsPhase;
         }
-    }
-
-    updateServerInfoDisplay() {
-        try {
-            if (this.elements['server-launch'] && this.serverLaunchDate) {
-                const launchString = this.serverLaunchDate.toLocaleDateString();
-                this.elements['server-launch'].textContent = launchString;
-            }
-            
-            if (this.elements['phase-offset']) {
-                this.elements['phase-offset'].textContent = `${this.phaseOffset}h`;
-            }
-        } catch (error) {
-            console.error('Error updating server info display:', error);
+        if (this.elements['time-offset']) {
+            this.elements['time-offset'].value = this.timeOffset.toString();
+        }
+        if (this.elements['current-phase-display']) {
+            this.elements['current-phase-display'].textContent = this.currentArmsPhase;
+        }
+        if (this.elements['offset-display']) {
+            const offsetText = this.timeOffset >= 0 ? `UTC +${this.timeOffset}` : `UTC ${this.timeOffset}`;
+            this.elements['offset-display'].textContent = offsetText;
         }
     }
 
-    // Time methods with server offset
+    // Time methods with manual offset
     getCurrentUTCInfo() {
         const now = new Date();
-        const serverTime = new Date(now.getTime() + (this.phaseOffset * 60 * 60 * 1000));
+        const serverTime = new Date(now.getTime() + (this.timeOffset * 60 * 60 * 1000));
         return {
             utcDay: serverTime.getUTCDay(),
             utcHour: serverTime.getUTCHours(),
@@ -506,9 +426,10 @@ class LastWarNexus {
 
     getServerTime() {
         const now = new Date();
-        return new Date(now.getTime() + (this.phaseOffset * 60 * 60 * 1000));
+        return new Date(now.getTime() + (this.timeOffset * 60 * 60 * 1000));
     }
 
+    // Rest of the methods remain the same as before...
     safeUpdateElement(elementKey, property, value) {
         try {
             const element = this.elements[elementKey];

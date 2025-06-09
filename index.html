@@ -44,18 +44,14 @@
                     <button class="server-btn" id="server-toggle" type="button">
                         <span class="server-icon">🌐</span>
                         <span class="server-label">Server </span>
-                        <span id="current-server">1069</span>
+                        <span id="current-server">Settings</span>
                     </button>
                     <div class="server-dropdown" id="server-dropdown">
                         <div class="dropdown-header">
-                            <h3>Select Your Server</h3>
+                            <h3>Server Settings</h3>
                         </div>
                         <div class="dropdown-content">
                             <div class="setting-row">
-                                <label for="server-input">Server Number</label>
-                                <input type="number" id="server-input" class="server-input" placeholder="Enter server number" min="1" max="9999" value="1069">
-                            </div>
-                            <div class="setting-row" style="margin-top: 12px;">
                                 <label for="current-arms-phase">Current Arms Race Phase</label>
                                 <select id="current-arms-phase" class="dropdown-select">
                                     <option value="Mixed Phase">🔄 Mixed Phase</option>
@@ -66,17 +62,31 @@
                                     <option value="Unit Progression">🏟️ Unit Progression</option>
                                 </select>
                             </div>
+                            <div class="setting-row" style="margin-top: 12px;">
+                                <label for="time-offset">Server Time Offset</label>
+                                <select id="time-offset" class="dropdown-select">
+                                    <option value="-4">UTC -4 hours</option>
+                                    <option value="-3">UTC -3 hours</option>
+                                    <option value="-2">UTC -2 hours</option>
+                                    <option value="-1">UTC -1 hour</option>
+                                    <option value="0" selected>UTC +0 hours</option>
+                                    <option value="1">UTC +1 hour</option>
+                                    <option value="2">UTC +2 hours</option>
+                                    <option value="3">UTC +3 hours</option>
+                                    <option value="4">UTC +4 hours</option>
+                                </select>
+                            </div>
                             <div class="server-info" id="server-info">
                                 <div class="info-row">
-                                    <span class="info-label">Server Launch</span>
-                                    <span id="server-launch" class="info-value">Calculating...</span>
+                                    <span class="info-label">Current Phase</span>
+                                    <span id="current-phase-display" class="info-value">Drone Boost</span>
                                 </div>
                                 <div class="info-row">
-                                    <span class="info-label">Phase Offset</span>
-                                    <span id="phase-offset" class="info-value">0h</span>
+                                    <span class="info-label">Time Offset</span>
+                                    <span id="offset-display" class="info-value">UTC +0</span>
                                 </div>
                             </div>
-                            <button class="apply-server-btn" id="apply-server" type="button">Apply Server Settings</button>
+                            <button class="apply-server-btn" id="apply-server" type="button">Apply Settings</button>
                         </div>
                     </div>
                 </div>

@@ -746,3 +746,74 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.innerHTML = '<div style="padding: 20px; text-align: center; color: red; font-family: Arial, sans-serif;"><h2>Initialization Error</h2><p>Failed to initialize Last War Nexus. Please refresh the page.</p></div>';
     }
 });
+
+// Arms Race Integration (Add to existing app.js)
+document.addEventListener('DOMContentLoaded', function() {
+    // Settings modal functionality
+    const settingsBtn = document.getElementById('settings-btn');
+    const settingsModal = document.getElementById('settings-modal');
+    const closeSettings = document.getElementById('close-settings');
+
+    if (settingsBtn && settingsModal) {
+        settingsBtn.addEventListener('click', function() {
+            settingsModal.style.display = 'block';
+        });
+    }
+
+    if (closeSettings && settingsModal) {
+        closeSettings.addEventListener('click', function() {
+            settingsModal.style.display = 'none';
+        });
+    }
+
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+        if (event.target === settingsModal) {
+            settingsModal.style.display = 'none';
+        }
+    });
+
+    // Arms Race integration with existing notification system
+    if (window.armsRaceManager) {
+        console.log('Arms Race Manager integrated successfully');
+    }
+});
+
+// Enhanced notification function (if not exists)
+if (typeof showNotification === 'undefined') {
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 16px;
+            border-radius: 6px;
+            color: white;
+            font-weight: 500;
+            z-index: 3000;
+            max-width: 300px;
+        `;
+        
+        // Set background color based on type
+        switch(type) {
+            case 'success': notification.style.background = '#28a745'; break;
+            case 'error': notification.style.background = '#dc3545'; break;
+            case 'warning': notification.style.background = '#ffc107'; notification.style.color = '#212529'; break;
+            default: notification.style.background = '#17a2b8';
+        }
+        
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 3000);
+    }
+    
+    // Make it available globally
+    window.showNotification = showNotification;
+}

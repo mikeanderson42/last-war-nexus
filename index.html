@@ -3,181 +3,218 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Last War Nexus - Your ultimate event tracker and VS points optimization center for Last War: Survival Game.">
+    <meta name="description" content="Last War Nexus - Professional event tracker and VS points optimization center. Track schedules, optimize strategies, and dominate the battlefield.">
+    <meta name="keywords" content="Last War Survival, event tracker, VS points, game strategy, mobile game tools">
     <title>Last War Nexus - Ultimate Event Tracker</title>
     
-    <!-- Google AdSense -->
+    <!-- Your Corrected AdSense Script -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2898635719839576" crossorigin="anonymous"></script>
     
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎯</text></svg>">
 </head>
 <body>
-    <!-- Top Ad Banner -->
-    <div class="ad-zone ad-banner-top">
+    <!-- Top Floating Ad Banner (Non-intrusive) -->
+    <div class="ad-floating-top">
         <ins class="adsbygoogle"
             style="display:block"
             data-ad-client="ca-pub-2898635719839576"
-            data-ad-slot="1234567890"
-            data-ad-format="auto"
+            data-ad-slot="auto"
+            data-ad-format="horizontal"
             data-full-width-responsive="true"></ins>
-        <div class="ad-placeholder">Top Banner Ad (728x90)</div>
+        <button class="ad-close" onclick="this.parentElement.style.display='none'">×</button>
     </div>
 
     <div class="container">
-        <!-- Header Section -->
+        <!-- Enhanced Header with Stats -->
         <header class="header">
-            <h1>🎯 Last War Nexus</h1>
-            <p class="subtitle">VS Points Optimization Center</p>
+            <div class="header-content">
+                <div class="logo-section">
+                    <h1>🎯 Last War Nexus</h1>
+                    <p class="subtitle">Professional Event Tracker</p>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-item">
+                        <span class="stat-value" id="active-events">12</span>
+                        <span class="stat-label">Active Events</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="users-online">2.4K</span>
+                        <span class="stat-label">Users Online</span>
+                    </div>
+                </div>
+            </div>
         </header>
 
-        <!-- Live Status Dashboard -->
+        <!-- Enhanced Dashboard with Style -->
         <section class="dashboard-grid">
-            <div class="card">
+            <div class="card primary-card">
                 <div class="card__header">
-                    <h3>🕒 Live Status</h3>
+                    <h3>🕒 Live Server Status</h3>
+                    <div class="status-indicator online"></div>
                 </div>
                 <div class="card__body">
-                    <div class="status-group">
+                    <div class="status-grid">
                         <div class="status-item">
-                            <span class="status-label">UTC Server Time</span>
+                            <span class="status-label">Server Time (UTC)</span>
                             <span id="current-time" class="status-value time-value">00:00:00</span>
                         </div>
                         <div class="status-item">
-                            <span class="status-label">VS Day</span>
-                            <span id="current-vs-day" class="status-value">Loading...</span>
+                            <span class="status-label">Current VS Event</span>
+                            <span id="current-vs-day" class="status-value vs-day">Loading...</span>
                         </div>
                         <div class="status-item">
                             <span class="status-label">Arms Race Phase</span>
-                            <span id="current-arms-phase" class="status-value">Loading...</span>
+                            <span id="current-arms-phase" class="status-value arms-phase">Loading...</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="card">
+            <div class="card countdown-card">
                 <div class="card__header">
-                    <h3>⏰ Next High Priority</h3>
+                    <h3>⏰ Next High Priority Event</h3>
+                    <div class="priority-indicator"></div>
                 </div>
                 <div class="card__body">
-                    <div class="countdown-section">
+                    <div class="countdown-display">
                         <div id="countdown-timer" class="countdown-timer">Calculating...</div>
-                        <div id="next-event-info" class="next-event-info">Loading...</div>
-                        <div id="next-event-time" class="next-event-time"></div>
+                        <div class="countdown-details">
+                            <div id="next-event-info" class="next-event-info">Loading...</div>
+                            <div id="next-event-time" class="next-event-time"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card action-card">
+                <div class="card__header">
+                    <h3>✅ Recommended Actions</h3>
+                </div>
+                <div class="card__body">
+                    <div class="action-display">
+                        <div class="action-status">
+                            <div id="action-icon" class="action-icon">⏳</div>
+                            <div class="action-content">
+                                <div id="action-text" class="action-text">Calculating optimal strategy...</div>
+                                <div class="action-priority">Priority: <span id="action-priority">Medium</span></div>
+                            </div>
+                        </div>
+                        <div id="reset-warning" class="reset-warning hidden">
+                            ⚠️ <strong>No Points Period:</strong> Server reset in progress
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- What to Do Now Section -->
-        <section class="card">
-            <div class="card__header">
-                <h3>✅ What to Do Now</h3>
+        <!-- Enhanced Controls Panel -->
+        <section class="controls-panel">
+            <div class="controls-header">
+                <h3>⚙️ Display Settings</h3>
             </div>
-            <div class="card__body">
-                <div id="current-action-content" class="action-content">
-                    <div class="action-status">
-                        <div id="action-icon" class="action-icon">⏳</div>
-                        <div id="action-text" class="action-text">Calculating current priorities...</div>
-                    </div>
-                    <div id="reset-warning" class="reset-warning hidden">
-                        ⚠️ <strong>No Points Period:</strong> Wait 5 minutes after server reset!
-                    </div>
+            <div class="controls-grid">
+                <div class="control-group">
+                    <label class="control-label" for="time-display">Time Format</label>
+                    <select id="time-display" class="control-select">
+                        <option value="utc" selected>UTC Server Time</option>
+                        <option value="local">Local Time</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="info-level">Detail Level</label>
+                    <select id="info-level" class="control-select">
+                        <option value="simple" selected>Essential</option>
+                        <option value="detailed">Comprehensive</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="calendar-view">Schedule View</label>
+                    <select id="calendar-view" class="control-select">
+                        <option value="full-week" selected>Full Week</option>
+                        <option value="current">Today Only</option>
+                    </select>
                 </div>
             </div>
         </section>
 
-        <!-- View Controls Section -->
-        <section class="card">
-            <div class="card__header">
-                <h3>📊 View Controls</h3>
-            </div>
-            <div class="card__body">
-                <div class="controls-grid">
-                    <div class="control-group">
-                        <label class="form-label" for="time-display">Time Format</label>
-                        <select id="time-display" class="form-control">
-                            <option value="utc" selected>UTC Server Time</option>
-                            <option value="local">Your Local Time</option>
-                        </select>
-                    </div>
-                    <div class="control-group">
-                        <label class="form-label" for="info-level">Info Level (Schedule)</label>
-                        <select id="info-level" class="form-control">
-                            <option value="simple" selected>Simple</option>
-                            <option value="detailed">Detailed</option>
-                        </select>
-                    </div>
-                    <div class="control-group">
-                        <label class="form-label" for="calendar-view">Day View (Schedule)</label>
-                        <select id="calendar-view" class="form-control">
-                            <option value="full-week" selected>Full Week</option>
-                            <option value="current">Current Day Only</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Main Navigation & Content Area -->
-        <main>
-            <div class="view-switcher">
+        <!-- Enhanced Navigation -->
+        <main class="main-content">
+            <div class="nav-container">
                 <div id="nav-pills" class="nav-pills">
-                    <button class="nav-pill active" data-view="priority">🏆 High Priority</button>
-                    <button class="nav-pill" data-view="schedule">📅 Schedule</button>
-                    <button class="nav-pill" data-view="intelligence">🧠 Intelligence</button>
+                    <button class="nav-pill active" data-view="priority">
+                        <span class="nav-icon">🏆</span>
+                        <span class="nav-text">High Priority</span>
+                    </button>
+                    <button class="nav-pill" data-view="schedule">
+                        <span class="nav-icon">📅</span>
+                        <span class="nav-text">Event Schedule</span>
+                    </button>
+                    <button class="nav-pill" data-view="intelligence">
+                        <span class="nav-icon">🧠</span>
+                        <span class="nav-text">Strategy Hub</span>
+                    </button>
                 </div>
             </div>
 
+            <!-- Content Sections -->
             <div id="priority-section" class="content-section">
+                <div class="section-header">
+                    <h2>🏆 High Priority Events</h2>
+                    <p class="section-subtitle">Maximize your VS points with these optimal time windows</p>
+                </div>
                 <div id="high-priority-grid" class="priority-grid">
-                    <!-- High priority cards will be populated here -->
+                    <!-- Priority cards populated by JS -->
                 </div>
             </div>
 
             <div id="schedule-section" class="content-section hidden">
+                <div class="section-header">
+                    <h2>📅 Complete Event Schedule</h2>
+                    <p class="section-subtitle">Plan your week with the full Arms Race and VS event calendar</p>
+                </div>
                 <div id="complete-schedule-grid" class="schedule-grid-table">
-                    <!-- Complete schedule table will be populated here -->
+                    <!-- Schedule populated by JS -->
                 </div>
             </div>
 
             <div id="intelligence-section" class="content-section hidden">
-                <!-- Intelligence Hub content will be populated here -->
+                <div class="section-header">
+                    <h2>🧠 Strategy Intelligence Hub</h2>
+                    <p class="section-subtitle">Pro tips, guides, and latest updates to dominate the battlefield</p>
+                </div>
+                <div class="intelligence-hub">
+                    <!-- Intelligence content populated by JS -->
+                </div>
             </div>
         </main>
-        
-        <!-- Bottom Ad Banner -->
-        <div class="ad-zone ad-banner-bottom">
+
+        <!-- Sidebar Ad (Less Intrusive) -->
+        <aside class="sidebar-ad">
             <ins class="adsbygoogle"
                 style="display:block"
                 data-ad-client="ca-pub-2898635719839576"
-                data-ad-slot="0987654321"
-                data-ad-format="auto"
-                data-full-width-responsive="true"></ins>
-            <div class="ad-placeholder">Bottom Responsive Ad</div>
-        </div>
+                data-ad-slot="auto"
+                data-ad-format="vertical"></ins>
+        </aside>
     </div>
 
-    <!-- Modal for detailed information -->
+    <!-- Modal -->
     <div id="detail-modal" class="modal">
         <div class="modal-content">
-            <span id="close-modal-button" class="close-button">&times;</span>
-            <div id="modal-body"></div>
+            <div class="modal-header">
+                <h2 id="modal-title">Event Details</h2>
+                <button id="close-modal-button" class="close-button">×</button>
+            </div>
+            <div id="modal-body" class="modal-body"></div>
         </div>
-    </div>
-
-    <!-- Sticky Mobile Footer Ad -->
-    <div class="ad-zone ad-sticky-footer">
-        <ins class="adsbygoogle"
-            style="display:inline-block;width:320px;height:50px"
-            data-ad-client="ca-pub-2898635719839576"
-            data-ad-slot="6789012345"></ins>
-        <div class="ad-placeholder">Mobile Footer Ad</div>
     </div>
 
     <script src="app.js"></script>
     <script>
+        // Initialize AdSense
         document.addEventListener('DOMContentLoaded', function() {
+            (adsbygoogle = window.adsbygoogle || []).push({});
             (adsbygoogle = window.adsbygoogle || []).push({});
         });
     </script>

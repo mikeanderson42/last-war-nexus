@@ -14,35 +14,6 @@
     
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
-    
-    <style>
-    /* Critical CSS for immediate mobile rendering */
-    * { 
-        margin: 0; 
-        padding: 0; 
-        box-sizing: border-box; 
-        -webkit-tap-highlight-color: transparent;
-    }
-    body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-        background: #0a0e13;
-        color: #ffffff;
-        line-height: 1.5;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        font-size: 14px;
-        min-height: 100vh;
-        overflow-x: hidden;
-        max-width: 1400px;
-        margin: 0 auto;
-    }
-    .app-container {
-        max-width: 100vw;
-        margin: 0 auto;
-        padding: 16px;
-        min-height: 100vh;
-    }
-    </style>
 </head>
 <body>
     <nav class="main-nav">
@@ -68,21 +39,18 @@
             </div>
             <div class="nav-actions">
                 <div class="server-dropdown-container">
-                    <button class="server-btn arms-race-enhanced" id="server-toggle" type="button">
+                    <button class="server-btn" id="server-toggle" type="button">
                         <span class="server-icon">🌐</span>
                         <span class="server-label">Server <span id="current-server">555</span></span>
-                        <span class="arms-race-badge">⚡ Arms Race</span>
                     </button>
                     <div class="server-dropdown" id="server-dropdown">
                         <div class="dropdown-header">
-                            <h3>🎯 Server Setup for Arms Race</h3>
-                            <p class="arms-race-notice">Your server number affects Arms Race phase timing</p>
+                            <h3>Select Your Server</h3>
                         </div>
                         <div class="dropdown-content">
                             <div class="setting-row">
-                                <label for="server-input">Server Number (0-9999)</label>
-                                <input type="number" id="server-input" class="server-input arms-race-input" placeholder="Enter your server (e.g. 555)" min="0" max="9999" value="555">
-                                <div class="arms-race-help">This determines your Arms Race phase schedule</div>
+                                <label for="server-input">Server Number</label>
+                                <input type="number" id="server-input" class="server-input" placeholder="Enter server number" min="1" max="9999" value="555">
                             </div>
                             <div class="server-info" id="server-info">
                                 <div class="info-row">
@@ -90,15 +58,11 @@
                                     <span id="server-launch" class="info-value">Calculating...</span>
                                 </div>
                                 <div class="info-row">
-                                    <span class="info-label">Arms Race Offset:</span>
+                                    <span class="info-label">Phase Offset:</span>
                                     <span id="phase-offset" class="info-value">+0h</span>
                                 </div>
-                                <div class="info-row">
-                                    <span class="info-label">Current Phase:</span>
-                                    <span id="current-phase-info" class="info-value">Calculating...</span>
-                                </div>
                             </div>
-                            <button class="apply-server-btn arms-race-apply" id="apply-server" type="button">Apply & Update Arms Race</button>
+                            <button class="apply-server-btn" id="apply-server" type="button">Apply Server Settings</button>
                         </div>
                     </div>
                 </div>
@@ -157,10 +121,6 @@
                             <div class="status-item">
                                 <span class="label">Server Time</span>
                                 <span id="server-time" class="value mono">00:00:00</span>
-                            </div>
-                            <div class="status-item">
-                                <span class="label">Current Server</span>
-                                <span id="display-server" class="value highlight">555</span>
                             </div>
                             <div class="status-item clickable-status" id="current-vs-status">
                                 <span class="label">Current VS Day</span>

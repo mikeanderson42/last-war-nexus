@@ -3,14 +3,10 @@ class LastWarNexus {
     this.isInitialized = false;
     this.initializationAttempts = 0;
     this.maxInitAttempts = 3;
-    this.currentServer = 555; // Default server for Arms Race calculation
     
-    // Arms Race server calculation constants
-    this.SERVER_LAUNCH_BASE = {
-      server: 93,
-      date: new Date("2024-01-20T08:00:00Z"),
-      serversPerDay: 3.2
-    };
+    // Server settings
+    this.serverNumber = parseInt(localStorage.getItem('lwn-server-number')) || 555;
+    this.serverOffset = parseInt(localStorage.getItem('lwn-server-offset')) || 0;
     
     this.data = {
       arms_race_phases: [
@@ -238,9 +234,9 @@ class LastWarNexus {
       }
 
       this.setupEventListeners();
+      this.initializeServerDisplay();
       this.populateIntelligence();
       this.updateTabCounts();
-      this.loadSavedServer(); // Load saved server before updating displays
       this.updateAllDisplays();
       this.startUpdateLoop();
       
@@ -258,7 +254,7 @@ class LastWarNexus {
     const elementIds = [
       'server-time', 'current-vs-day', 'arms-phase', 'alignment-indicator', 'alignment-status',
       'vs-day-details', 'arms-race-details', 'vs-day-content', 'arms-race-content',
-      'current-vs-status', 'current-arms-status', 'display-server',
+      'current-vs-status', 'current-arms-status',
       'countdown-timer', 'event-name', 'event-time',
       'progress-fill', 'progress-text', 'action-icon', 'action-text', 'strategy-rating',
       'optimization-focus', 'time-remaining', 'priority-level', 'settings-toggle', 'settings-dropdown',
@@ -267,8 +263,8 @@ class LastWarNexus {
       'modal-body', 'modal-close', 'modal-share', 'modal-remind',
       'time-format-dropdown', 'detail-level-dropdown', 'view-scope-dropdown',
       'bottom-priority-cards', 'bottom-priority-grid', 'minimize-cards', 'bottom-cards-content',
-      'server-toggle', 'server-dropdown', 'server-input', 'apply-server', 'current-server',
-      'server-launch', 'phase-offset', 'current-phase-info'
+      'server-toggle', 'server-dropdown', 'server-input', 'current-server', 'apply-server',
+      'server-launch', 'phase-offset', 'server-info'
     ];
     
     let allElementsFound = true;
@@ -286,33 +282,24 @@ class LastWarNexus {
     return allElementsFound;
   }
 
+  initializeServerDisplay() {
+    try {
+      if (this.elements.currentserver) {
+        this.elements.currentserver.textContent = this.serverNumber;
+      }
+      if (this.elements.serverinput) {
+        this.elements.serverinput.value = this.serverNumber;
+      }
+      this.updateServerInfo();
+    } catch (error) {
+      console.error('Error initializing server display:', error);
+    }
+  }
+
   setupEventListeners() {
     this.removeEventListeners();
     
     try {
-      // Arms Race server functionality
-      if (this.elements.serverinput) {
-        this.addEventListener(this.elements.serverinput, 'input', (e) => {
-          this.updateServerInfo(e.target.value);
-        });
-      }
-
-      if (this.elements.applyserver) {
-        this.addEventListener(this.elements.applyserver, 'click', (e) => {
-          e.preventDefault();
-          this.applyServerSettings();
-        });
-      }
-
-      if (this.elements.servertoggle) {
-        this.addEventListener(this.elements.servertoggle, 'click', (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          this.toggleServerDropdown();
-        });
-      }
-
-      // Existing event listeners (preserved exactly)
       this.addEventListeners('.tab-btn', 'click', (e) => {
         e.preventDefault();
         const tabName = e.target.closest('.tab-btn')?.dataset?.tab;
@@ -328,6 +315,28 @@ class LastWarNexus {
           this.setFilter(filter);
         }
       });
+
+      // Server dropdown functionality
+      if (this.elements.servertoggle) {
+        this.addEventListener(this.elements.servertoggle, 'click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          this.toggleServerDropdown();
+        });
+      }
+
+      if (this.elements.applyserver) {
+        this.addEventListener(this.elements.applyserver, 'click', (e) => {
+          e.preventDefault();
+          this.applyServerSettings();
+        });
+      }
+
+      if (this.elements.serverinput) {
+        this.addEventListener(this.elements.serverinput, 'input', (e) => {
+          this.updateServerInfo();
+        });
+      }
 
       if (this.elements.settingstoggle) {
         this.addEventListener(this.elements.settingstoggle, 'click', (e) => {
@@ -435,182 +444,6 @@ class LastWarNexus {
     }
   }
 
-  // Arms Race server calculation methods
-  calculateServerLaunchDate(serverNumber) {
-    try {
-      const serverDiff = serverNumber - this.SERVER_LAUNCH_BASE.server;
-      const daysFromBase = Math.floor(serverDiff / this.SERVER_LAUNCH_BASE.serversPerDay);
-      
-      const launchDate = new Date(this.SERVER_LAUNCH_BASE.date);
-      launchDate.setDate(launchDate.getDate() + daysFromBase);
-      
-      const hourOffset = (serverNumber % 3) - 1;
-      launchDate.setHours(launchDate.getHours() + hourOffset);
-      
-      return launchDate;
-    } catch (error) {
-      console.error('Error calculating server launch date:', error);
-      return new Date();
-    }
-  }
-
-  getArmsRacePhaseForServer(serverNumber, currentTime = new Date()) {
-    try {
-      const serverLaunch = this.calculateServerLaunchDate(serverNumber);
-      const daysSinceLaunch = Math.floor((currentTime - serverLaunch) / (1000 * 60 * 60 * 24));
-      
-      const utcHour = currentTime.getUTCHours();
-      const serverOffset = (serverNumber % 6);
-      const adjustedHour = (utcHour + serverOffset) % 24;
-      
-      const phaseIndex = Math.floor(adjustedHour / 4);
-      const weeklyOffset = (daysSinceLaunch % 7);
-      const finalPhaseIndex = (phaseIndex + weeklyOffset) % 6;
-      
-      return this.data.arms_race_phases[finalPhaseIndex];
-    } catch (error) {
-      console.error('Error calculating Arms Race phase:', error);
-      return this.data.arms_race_phases[0];
-    }
-  }
-
-  updateServerInfo(serverNumber) {
-    try {
-      if (!serverNumber || serverNumber < 0 || serverNumber > 9999) {
-        if (this.elements.serverlaunch) this.elements.serverlaunch.textContent = 'Invalid server';
-        if (this.elements.phaseoffset) this.elements.phaseoffset.textContent = '--';
-        if (this.elements.currentphaseinfo) this.elements.currentphaseinfo.textContent = '--';
-        return;
-      }
-
-      const launchDate = this.calculateServerLaunchDate(parseInt(serverNumber));
-      const currentPhase = this.getArmsRacePhaseForServer(parseInt(serverNumber));
-      const serverOffset = (parseInt(serverNumber) % 6);
-      
-      if (this.elements.serverlaunch) {
-        this.elements.serverlaunch.textContent = launchDate.toLocaleDateString();
-      }
-      
-      if (this.elements.phaseoffset) {
-        this.elements.phaseoffset.textContent = `+${serverOffset}h`;
-      }
-      
-      if (this.elements.currentphaseinfo) {
-        this.elements.currentphaseinfo.textContent = `${currentPhase.icon} ${currentPhase.name}`;
-      }
-    } catch (error) {
-      console.error('Error updating server info:', error);
-    }
-  }
-
-  applyServerSettings() {
-    try {
-      const serverNumber = parseInt(this.elements.serverinput?.value);
-      
-      if (!serverNumber || serverNumber < 0 || serverNumber > 9999) {
-        alert('Please enter a valid server number (0-9999)');
-        return;
-      }
-
-      this.currentServer = serverNumber;
-      
-      if (this.elements.currentserver) this.elements.currentserver.textContent = serverNumber;
-      if (this.elements.displayserver) this.elements.displayserver.textContent = serverNumber;
-      
-      localStorage.setItem('lastWarNexusServer', serverNumber.toString());
-      
-      this.closeServerDropdown();
-      this.updateAllDisplays();
-      
-      console.log(`Arms Race server updated to: ${serverNumber}`);
-    } catch (error) {
-      console.error('Error applying server settings:', error);
-    }
-  }
-
-  loadSavedServer() {
-    try {
-      const savedServer = localStorage.getItem('lastWarNexusServer');
-      if (savedServer) {
-        const serverNumber = parseInt(savedServer);
-        this.currentServer = serverNumber;
-        
-        if (this.elements.serverinput) this.elements.serverinput.value = serverNumber;
-        if (this.elements.currentserver) this.elements.currentserver.textContent = serverNumber;
-        if (this.elements.displayserver) this.elements.displayserver.textContent = serverNumber;
-        
-        this.updateServerInfo(serverNumber);
-      }
-    } catch (error) {
-      console.error('Error loading saved server:', error);
-    }
-  }
-
-  toggleServerDropdown() {
-    try {
-      if (this.elements.serverdropdown) {
-        const isOpen = this.elements.serverdropdown.classList.contains('show');
-        
-        this.closeDropdown();
-        
-        if (isOpen) {
-          this.closeServerDropdown();
-        } else {
-          this.elements.serverdropdown.classList.add('show');
-          this.elements.servertoggle?.classList.add('active');
-          
-          if (this.elements.serverinput?.value) {
-            this.updateServerInfo(this.elements.serverinput.value);
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Error toggling server dropdown:', error);
-    }
-  }
-
-  closeServerDropdown() {
-    try {
-      if (this.elements.serverdropdown) {
-        this.elements.serverdropdown.classList.remove('show');
-        this.elements.servertoggle?.classList.remove('active');
-      }
-    } catch (error) {
-      console.error('Error closing server dropdown:', error);
-    }
-  }
-
-  // Enhanced getArmsRacePhase to use server-specific calculation
-  getArmsRacePhase(utcHour) {
-    try {
-      if (this.currentServer) {
-        return this.getArmsRacePhaseForServer(this.currentServer);
-      }
-      
-      // Fallback to original logic
-      const phaseSchedule = [
-        { hours: [0, 1, 2, 3], index: 0 },
-        { hours: [4, 5, 6, 7], index: 1 },
-        { hours: [8, 9, 10, 11], index: 2 },
-        { hours: [12, 13, 14, 15], index: 3 },
-        { hours: [16, 17, 18, 19], index: 4 },
-        { hours: [20, 21, 22, 23], index: 5 }
-      ];
-      
-      for (const phase of phaseSchedule) {
-        if (phase.hours.includes(utcHour)) {
-          return this.data.arms_race_phases[phase.index];
-        }
-      }
-      
-      return this.data.arms_race_phases[0];
-    } catch (error) {
-      console.error('Error getting Arms Race phase:', error);
-      return this.data.arms_race_phases[0];
-    }
-  }
-
-  // All remaining methods stay exactly the same as your working file
   addEventListeners(selector, event, handler) {
     const elements = document.querySelectorAll(selector);
     elements.forEach(element => {
@@ -632,6 +465,97 @@ class LastWarNexus {
       }
     });
     this.eventListeners = [];
+  }
+
+  // Server functionality
+  calculateServerLaunchDate(serverNumber) {
+    // Base calculation: Server 1 launched on March 15, 2024
+    const baseDate = new Date('2024-03-15T00:00:00Z');
+    const serverLaunchDate = new Date(baseDate.getTime() + (serverNumber - 1) * 7 * 24 * 60 * 60 * 1000);
+    return serverLaunchDate;
+  }
+
+  calculateServerOffset(serverNumber) {
+    // Calculate phase offset based on server launch
+    const launchDate = this.calculateServerLaunchDate(serverNumber);
+    const now = new Date();
+    const daysSinceLaunch = Math.floor((now - launchDate) / (24 * 60 * 60 * 1000));
+    return (daysSinceLaunch * 2) % 24; // 2 hours offset per day
+  }
+
+  updateServerInfo() {
+    try {
+      const serverNumber = parseInt(this.elements.serverinput?.value) || this.serverNumber;
+      const launchDate = this.calculateServerLaunchDate(serverNumber);
+      const offset = this.calculateServerOffset(serverNumber);
+      
+      if (this.elements.serverlaunch) {
+        this.elements.serverlaunch.textContent = launchDate.toLocaleDateString();
+      }
+      if (this.elements.phaseoffset) {
+        this.elements.phaseoffset.textContent = `+${offset}h`;
+      }
+    } catch (error) {
+      console.error('Error updating server info:', error);
+    }
+  }
+
+  applyServerSettings() {
+    try {
+      const newServerNumber = parseInt(this.elements.serverinput?.value) || 555;
+      this.serverNumber = newServerNumber;
+      this.serverOffset = this.calculateServerOffset(newServerNumber);
+      
+      // Save to localStorage
+      localStorage.setItem('lwn-server-number', this.serverNumber.toString());
+      localStorage.setItem('lwn-server-offset', this.serverOffset.toString());
+      
+      // Update display
+      if (this.elements.currentserver) {
+        this.elements.currentserver.textContent = this.serverNumber;
+      }
+      
+      // Close dropdown and refresh all displays
+      this.closeServerDropdown();
+      this.updateAllDisplays();
+      
+      console.log(`Applied server ${this.serverNumber} with offset ${this.serverOffset}h`);
+    } catch (error) {
+      console.error('Error applying server settings:', error);
+    }
+  }
+
+  toggleServerDropdown() {
+    try {
+      const isOpen = this.elements.serverdropdown?.classList.contains('show');
+      
+      if (isOpen) {
+        this.closeServerDropdown();
+      } else {
+        this.closeDropdown(); // Close settings dropdown
+        if (this.elements.serverdropdown) {
+          this.elements.serverdropdown.classList.add('show');
+        }
+        if (this.elements.servertoggle) {
+          this.elements.servertoggle.classList.add('active');
+        }
+      }
+    } catch (error) {
+      console.error('Error toggling server dropdown:', error);
+    }
+  }
+
+  closeServerDropdown() {
+    try {
+      if (this.elements.serverdropdown) {
+        this.elements.serverdropdown.classList.remove('show');
+      }
+      if (this.elements.servertoggle) {
+        this.elements.servertoggle.classList.remove('active');
+      }
+    } catch (error) {
+      console.error('Error closing server dropdown:', error);
+    }
   }
 
   safeUpdateElement(elementKey, property, value) {
@@ -803,9 +727,12 @@ class LastWarNexus {
   updateServerTime() {
     try {
       const now = new Date();
+      // Apply server offset
+      const serverTime = new Date(now.getTime() + (this.serverOffset * 60 * 60 * 1000));
+      
       const timeString = this.settings.timeFormat === 'utc'
-        ? now.toUTCString().slice(17, 25)
-        : now.toLocaleTimeString();
+        ? serverTime.toUTCString().slice(17, 25)
+        : serverTime.toLocaleTimeString();
       
       this.safeUpdateElement('servertime', 'textContent', timeString);
     } catch (error) {
@@ -882,12 +809,12 @@ class LastWarNexus {
   calculatePhaseTimeRemaining(utcHour, utcMinute) {
     try {
       const phaseSchedule = [
-        { start: 0, end: 4 },
-        { start: 4, end: 8 },
-        { start: 8, end: 12 },
-        { start: 12, end: 16 },
-        { start: 16, end: 20 },
-        { start: 20, end: 24 }
+        { start: 0, end: 4 },   // Mixed Phase
+        { start: 4, end: 8 },   // Drone Boost  
+        { start: 8, end: 12 },  // City Building
+        { start: 12, end: 16 }, // Tech Research
+        { start: 16, end: 20 }, // Hero Advancement
+        { start: 20, end: 24 }  // Unit Progression
       ];
       
       let currentPhaseEnd = null;
@@ -986,12 +913,12 @@ class LastWarNexus {
       const utcHour = now.getUTCHours();
       
       const phaseSchedule = [
-        { start: 0, end: 4 },
-        { start: 4, end: 8 },
-        { start: 8, end: 12 },
-        { start: 12, end: 16 },
-        { start: 16, end: 20 },
-        { start: 20, end: 24 }
+        { start: 0, end: 4 },   // Mixed Phase
+        { start: 4, end: 8 },   // Drone Boost  
+        { start: 8, end: 12 },  // City Building
+        { start: 12, end: 16 }, // Tech Research
+        { start: 16, end: 20 }, // Hero Advancement
+        { start: 20, end: 24 }  // Unit Progression
       ];
       
       let currentPhase = null;
@@ -1475,15 +1402,36 @@ class LastWarNexus {
 
   getCurrentUTCInfo() {
     const now = new Date();
+    // Apply server offset to the current time for calculations
+    const serverTime = new Date(now.getTime() + (this.serverOffset * 60 * 60 * 1000));
     return { 
-      utcDay: now.getUTCDay(), 
-      utcHour: now.getUTCHours(), 
-      utcMinute: now.getUTCMinutes() 
+      utcDay: serverTime.getUTCDay(), 
+      utcHour: serverTime.getUTCHours(), 
+      utcMinute: serverTime.getUTCMinutes() 
     };
   }
 
   getVSDayData(utcDay) {
     return this.data.vs_days.find(d => d.day === utcDay) || this.data.vs_days[0];
+  }
+
+  getArmsRacePhase(utcHour) {
+    const phaseSchedule = [
+      { hours: [0, 1, 2, 3], index: 0 },     // Mixed Phase
+      { hours: [4, 5, 6, 7], index: 1 },     // Drone Boost
+      { hours: [8, 9, 10, 11], index: 2 },   // City Building
+      { hours: [12, 13, 14, 15], index: 3 }, // Tech Research
+      { hours: [16, 17, 18, 19], index: 4 }, // Hero Advancement
+      { hours: [20, 21, 22, 23], index: 5 }  // Unit Progression
+    ];
+    
+    for (const phase of phaseSchedule) {
+      if (phase.hours.includes(utcHour)) {
+        return this.data.arms_race_phases[phase.index];
+      }
+    }
+    
+    return this.data.arms_race_phases[0];
   }
 
   getAlignment(utcDay, armsPhaseName) {
@@ -1578,6 +1526,7 @@ class LastWarNexus {
   }
 }
 
+// Initialize the application
 window.addEventListener('load', () => {
   try {
     window.lastWarNexus = new LastWarNexus();

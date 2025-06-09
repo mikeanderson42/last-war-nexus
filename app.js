@@ -9,13 +9,13 @@ const appData = {
     {id: 6, name: "Mixed Phase", icon: "🔄", color: "#607D8B"}
   ],
   vs_days: [
-    {day: 0, name: "Sunday", title: "Preparation Day"},
-    {day: 1, name: "Monday", title: "Radar Training"},
-    {day: 2, name: "Tuesday", title: "Base Expansion"},
-    {day: 3, name: "Wednesday", title: "Age of Science"},
-    {day: 4, name: "Thursday", title: "Train Heroes"},
-    {day: 5, name: "Friday", title: "Total Mobilization"},
-    {day: 6, name: "Saturday", title: "Enemy Buster"}
+    {day: 0, name: "Sunday", title: "Preparation Day", objective: "No VS events - prepare for Monday", activities: ["Save radar missions", "Prepare building upgrades", "Stock resources"]},
+    {day: 1, name: "Monday", title: "Radar Training", objective: "Stamina, radar missions, hero EXP, drone data/parts", activities: ["Complete radar missions", "Use stamina for attacks/rallies", "Train drones with combat data", "Use hero EXP (2000+ at once)", "Apply drone parts"]},
+    {day: 2, name: "Tuesday", title: "Base Expansion", objective: "Building upgrades, construction speedups, recruit survivors", activities: ["Complete building upgrades", "Use construction speedups", "Dispatch legendary truck", "Recruit survivors", "Launch secret tasks"]},
+    {day: 3, name: "Wednesday", title: "Age of Science", objective: "Research completion, research speedups, valor badges, drone components", activities: ["Complete research", "Use research speedups", "Use valor badges for research", "Open drone component chests", "Complete radar missions"]},
+    {day: 4, name: "Thursday", title: "Train Heroes", objective: "Hero recruitment, hero EXP, hero shards, skill medals", activities: ["Use recruitment tickets", "Apply hero EXP", "Use hero shards", "Apply skill medals", "Use weapon shards"]},
+    {day: 5, name: "Friday", title: "Total Mobilization", objective: "All activities (building, research, training)", activities: ["Use all speedup types", "Finish buildings/research", "Train troops", "Use overlord items"]},
+    {day: 6, name: "Saturday", title: "Enemy Buster", objective: "Combat, speedups, troop training/healing", activities: ["Attack enemy bases", "Use healing speedups", "Train troops", "Use all speedup types", "Dispatch trucks"]}
   ],
   high_priority_alignments: [
     {"vs_day": 1, "arms_phase": "Drone Boost", "reason": "Stamina/drone activities align perfectly."},
@@ -71,32 +71,53 @@ let currentSettings = {
   infoLevel: 'simple',
   calendarView: 'full-week'
 };
+let appInterval;
+
+// --- DOM Element Cache ---
+const DOMElements = {};
 
 // --- Initialization ---
 document.addEventListener('DOMContentLoaded', () => {
   console.log("Last War Nexus initializing...");
+  cacheDOMElements();
   setupEventListeners();
   populateIntelligenceHub();
-  updateAllDisplays();
-  setInterval(updateAllDisplays, 1000);
+  updateAllDisplays(); // Initial render for immediate feedback
+  if (appInterval) clearInterval(appInterval);
+  appInterval = setInterval(updateAllDisplays, 1000);
 });
 
-function setupEventListeners() {
-  document.getElementById('nav-pills')?.addEventListener('click', handleNavPillClick);
-  document.getElementById('time-display')?.addEventListener('change', handleControlChange);
-  document.getElementById('info-level')?.addEventListener('change', handleControlChange);
-  document.getElementById('calendar-view')?.addEventListener('change', handleControlChange);
-  document.getElementById('close-modal-button')?.addEventListener('click', closeDetailModal);
-  document.getElementById('detail-modal')?.addEventListener('click', (event) => {
-    if (event.target === document.getElementById('detail-modal')) closeDetailModal();
-  });
+function cacheDOMElements() {
+    const ids = [
+        'nav-pills', 'time-display', 'info-level', 'calendar-view', 'close-modal-button',
+        'detail-modal', 'priority-section', 'schedule-section', 'intelligence-section',
+        'current-time', 'current-vs-day', 'current-arms-phase', 'action-icon', 'action-text',
+        'reset-warning', 'countdown-timer', 'next-event-info', 'next-event-time',
+        'high-priority-grid', 'complete-schedule-grid', 'modal-body', 'intelligence-hub-content'
+    ];
+    ids.forEach(id => {
+        DOMElements[id] = document.getElementById(id);
+    });
 }
 
+function setupEventListeners() {
+    DOMElements['nav-pills']?.addEventListener('click', handleNavPillClick);
+    DOMElements['time-display']?.addEventListener('change', handleControlChange);
+    DOMElements['info-level']?.addEventListener('change', handleControlChange);
+    DOMElements['calendar-view']?.addEventListener('change', handleControlChange);
+    DOMElements['close-modal-button']?.addEventListener('click', closeDetailModal);
+    DOMElements['detail-modal']?.addEventListener('click', (event) => {
+        if (event.target === DOMElements['detail-modal']) closeDetailModal();
+    });
+}
+
+// --- Event Handlers ---
 function handleNavPillClick(event) {
-    if (event.target.classList.contains('nav-pill')) {
+    const target = event.target.closest('.nav-pill');
+    if (target) {
         document.querySelectorAll('.nav-pill').forEach(pill => pill.classList.remove('active'));
-        event.target.classList.add('active');
-        currentSettings.viewMode = event.target.dataset.view;
+        target.classList.add('active');
+        currentSettings.viewMode = target.dataset.view;
         updateDynamicContent();
     }
 }
@@ -105,6 +126,7 @@ function handleControlChange(event) {
   const controlId = event.target.id.split('-')[0];
   currentSettings[controlId] = event.target.value;
   updateDynamicContent();
+  updateCountdown(); // Update countdown display immediately on time format change
 }
 
 // --- Core Update Functions ---
@@ -115,21 +137,30 @@ function updateAllDisplays() {
 }
 
 function updateDynamicContent() {
-  document.querySelectorAll('.content-section').forEach(section => section.classList.add('hidden'));
-  document.getElementById(`${currentSettings.viewMode}-section`).classList.remove('hidden');
+    Object.values(DOMElements).forEach(el => {
+        if (el && el.classList.contains('content-section')) {
+            el.classList.add('hidden');
+        }
+    });
 
-  if (currentSettings.viewMode === 'priority') {
-    updateHighPriorityDisplay();
-  } else if (currentSettings.viewMode === 'schedule') {
-    updateCompleteScheduleDisplay();
-  }
+    const activeSection = DOMElements[`${currentSettings.viewMode}-section`];
+    if (activeSection) {
+        activeSection.classList.remove('hidden');
+    }
+
+    if (currentSettings.viewMode === 'priority') {
+        updateHighPriorityDisplay();
+    } else if (currentSettings.viewMode === 'schedule') {
+        updateCompleteScheduleDisplay();
+    }
 }
 
 function updateCurrentTime() {
   const now = new Date();
-  const timeElement = document.getElementById('current-time');
-  if (timeElement) {
-    timeElement.textContent = currentSettings.timeDisplay === 'utc' ? now.toUTCString().slice(17, 25) : now.toLocaleTimeString();
+  if (DOMElements['current-time']) {
+    DOMElements['current-time'].textContent = currentSettings.timeDisplay === 'utc'
+      ? now.toUTCString().slice(17, 25)
+      : now.toLocaleTimeString();
   }
 }
 
@@ -139,64 +170,58 @@ function updateCurrentStatus() {
   const armsPhase = getArmsRacePhase(utcHour);
   const alignment = getAlignment(utcDay, armsPhase.name);
 
-  document.getElementById('current-vs-day').textContent = vsDayData.title;
-  document.getElementById('current-arms-phase').textContent = `${armsPhase.icon} ${armsPhase.name}`;
+  if (DOMElements['current-vs-day']) DOMElements['current-vs-day'].textContent = vsDayData.title;
+  if (DOMElements['current-arms-phase']) DOMElements['current-arms-phase'].textContent = `${armsPhase.icon} ${armsPhase.name}`;
   
-  const actionIcon = document.getElementById('action-icon');
-  const actionText = document.getElementById('action-text');
-  const resetWarning = document.getElementById('reset-warning');
-
   if (utcHour === 0 && utcMinute < 5) {
-    resetWarning.classList.remove('hidden');
-    actionIcon.textContent = '⏳';
-    actionText.innerHTML = '<strong>No Points Period:</strong> Wait for server reset to finish.';
+    DOMElements['reset-warning']?.classList.remove('hidden');
+    DOMElements['action-icon']?.textContent = '⏳';
+    DOMElements['action-text']?.innerHTML = '<strong>No Points Period:</strong> Wait for server reset to finish.';
   } else {
-    resetWarning.classList.add('hidden');
+    DOMElements['reset-warning']?.classList.add('hidden');
     if (alignment) {
-        actionIcon.textContent = '⚡';
-        actionText.innerHTML = `<strong>HIGH PRIORITY ACTIVE!</strong><br>${alignment.reason}`;
+        DOMElements['action-icon']?.textContent = '⚡';
+        DOMElements['action-text']?.innerHTML = `<strong>HIGH PRIORITY ACTIVE!</strong><br>${alignment.reason}`;
     } else {
-        actionIcon.textContent = armsPhase.icon;
-        actionText.innerHTML = `<strong>Normal Phase:</strong> Focus on ${appData.arms_race_phases.find(p => p.name === armsPhase.name)?.activities[0] || 'general tasks'}.`;
+        DOMElements['action-icon']?.textContent = armsPhase.icon;
+        const activities = appData.arms_race_phases.find(p => p.name === armsPhase.name)?.activities;
+        DOMElements['action-text']?.innerHTML = `<strong>Normal Phase:</strong> Focus on ${activities ? activities[0] : 'general tasks'}.`;
     }
   }
 }
 
 function updateCountdown() {
-  const countdownTimer = document.getElementById('countdown-timer');
-  const nextEventInfo = document.getElementById('next-event-info');
-  const nextEventTime = document.getElementById('next-event-time');
   const nextWindow = getNextHighPriorityWindow();
 
   if (!nextWindow) {
-    countdownTimer.textContent = 'Done for now!';
-    nextEventInfo.textContent = 'Check back tomorrow for more events.';
-    nextEventTime.textContent = '';
+    DOMElements['countdown-timer']?.textContent = 'Done';
+    DOMElements['next-event-info']?.textContent = 'Check back tomorrow.';
+    DOMElements['next-event-time']?.textContent = '';
     return;
   }
 
   const timeDiff = nextWindow.startTime - new Date();
   if (timeDiff <= 0) {
-      countdownTimer.textContent = "ACTIVE NOW";
-      nextEventInfo.textContent = `${nextWindow.armsPhase.name} + ${nextWindow.vsDayData.title}`;
-      nextEventTime.textContent = '';
+      DOMElements['countdown-timer']?.textContent = "ACTIVE";
+      DOMElements['next-event-info']?.textContent = `${nextWindow.armsPhase.name} + ${nextWindow.vsDayData.title}`;
+      DOMElements['next-event-time']?.textContent = '';
       return;
   }
   
   const hours = Math.floor(timeDiff / 3600000);
   const minutes = Math.floor((timeDiff % 3600000) / 60000);
-  countdownTimer.textContent = `${String(hours).padStart(2,'0')}h ${String(minutes).padStart(2,'0')}m`;
-  
-  nextEventInfo.textContent = `Next up: ${nextWindow.armsPhase.name} + ${nextWindow.vsDayData.title}`;
+  DOMElements['countdown-timer']?.textContent = `${String(hours).padStart(2,'0')}h ${String(minutes).padStart(2,'0')}m`;
+  DOMElements['next-event-info']?.textContent = `Next up: ${nextWindow.armsPhase.name}`;
   
   const localTime = nextWindow.startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   const utcTime = nextWindow.startTime.toUTCString().slice(17, 22);
-  nextEventTime.textContent = currentSettings.timeDisplay === 'utc' ? `Starts at ${utcTime} UTC` : `Starts at ${localTime} (Your Time)`;
+  DOMElements['next-event-time']?.textContent = currentSettings.timeDisplay === 'utc' ? `at ${utcTime} UTC` : `at ${localTime} Local`;
 }
 
 // --- Dynamic Content Generation ---
 function updateHighPriorityDisplay() {
-  const container = document.getElementById('high-priority-grid');
+  const container = DOMElements['high-priority-grid'];
+  if (!container) return;
   container.innerHTML = '';
 
   const { utcDay, utcHour } = getCurrentUTCInfo();
@@ -228,59 +253,64 @@ function updateHighPriorityDisplay() {
 }
 
 function updateCompleteScheduleDisplay() {
-  const container = document.getElementById('complete-schedule-grid');
-  container.innerHTML = ''; 
+    const container = DOMElements['complete-schedule-grid'];
+    if (!container) return;
+    container.innerHTML = '';
 
-  const headers = ['Day/Time', '00:00', '04:00', '08:00', '12:00', '16:00', '20:00'];
-  headers.forEach(h => {
-    const headerCell = document.createElement('div');
-    headerCell.className = 'table-header';
-    headerCell.textContent = h;
-    container.appendChild(headerCell);
-  });
+    const headers = ['Day/Time', '00:00', '04:00', '08:00', '12:00', '16:00', '20:00'];
+    headers.forEach(h => {
+        const headerCell = document.createElement('div');
+        headerCell.className = 'table-header';
+        headerCell.textContent = h;
+        container.appendChild(headerCell);
+    });
 
-  appData.vs_days.forEach(vsDayData => {
-    if (currentSettings.calendarView === 'current' && vsDayData.day !== new Date().getUTCDay()) return;
+    const daysToShow = currentSettings.calendarView === 'current'
+        ? [getVSDayData(new Date().getUTCDay())]
+        : appData.vs_days;
+    
+    daysToShow.forEach(vsDayData => {
+        if (!vsDayData) return;
+        const row = document.createElement('div');
+        row.className = 'table-row';
 
-    const row = document.createElement('div');
-    row.className = 'table-row';
+        const dayHeader = document.createElement('div');
+        dayHeader.className = 'day-header-cell';
+        dayHeader.textContent = vsDayData.name;
+        row.appendChild(dayHeader);
 
-    const dayHeader = document.createElement('div');
-    dayHeader.className = 'day-header-cell';
-    dayHeader.textContent = vsDayData.name;
-    row.appendChild(dayHeader);
+        for (let h = 0; h < 24; h += 4) {
+            const armsPhase = getArmsRacePhase(h);
+            const cell = document.createElement('div');
+            cell.className = 'table-cell';
+            cell.setAttribute('data-time', `${String(h).padStart(2, '0')}:00`);
+            
+            const alignment = getAlignment(vsDayData.day, armsPhase.name);
+            if (alignment) cell.classList.add('high-priority');
 
-    for (let h = 0; h < 24; h += 4) {
-      const armsPhase = getArmsRacePhase(h);
-      const cell = document.createElement('div');
-      cell.className = 'table-cell';
-      cell.setAttribute('data-time', `${String(h).padStart(2, '0')}:00`);
-      
-      const alignment = getAlignment(vsDayData.day, armsPhase.name);
-      if (alignment) cell.classList.add('high-priority');
+            const { utcDay, utcHour } = getCurrentUTCInfo();
+            if (vsDayData.day === utcDay && h <= utcHour && utcHour < h + 4) cell.classList.add('current');
 
-      const { utcDay, utcHour } = getCurrentUTCInfo();
-      if (vsDayData.day === utcDay && h <= utcHour && utcHour < h + 4) cell.classList.add('current');
-
-      cell.innerHTML = `<div class="slot-phase">${armsPhase.icon} ${armsPhase.name}</div>`;
-      if (alignment && currentSettings.infoLevel === 'detailed') {
-          cell.innerHTML += `<div class="slot-reason">${alignment.reason}</div>`;
-      }
-      cell.addEventListener('click', () => showDetailModal(alignment, vsDayData, armsPhase));
-      row.appendChild(cell);
-    }
-    container.appendChild(row);
-  });
+            cell.innerHTML = `<div class="slot-phase">${armsPhase.icon} ${armsPhase.name}</div>`;
+            if (alignment && currentSettings.infoLevel === 'detailed') {
+                cell.innerHTML += `<div class="slot-reason">${alignment.reason}</div>`;
+            }
+            cell.addEventListener('click', () => showDetailModal(alignment, vsDayData, armsPhase));
+            row.appendChild(cell);
+        }
+        container.appendChild(row);
+    });
 }
 
 function populateIntelligenceHub() {
-    const container = document.getElementById('intelligence-section');
+    const container = DOMElements['intelligence-section'];
+    if (!container) return;
     container.innerHTML = `<div class="intelligence-hub" id="intelligence-hub-content"></div>`;
     const content = document.getElementById('intelligence-hub-content');
 
     const sections = {
-        'guides': '📚 Guides',
-        'tips': '💡 Pro Tips',
+        'guides': '📚 Game Guides',
+        'tips': '💡 Pro Tips & Tricks',
         'season2': '🚀 Season 2 Updates'
     };
 
@@ -301,12 +331,11 @@ function populateIntelligenceHub() {
         content.innerHTML += sectionHTML;
     }
 
-    // Add event listeners for the accordion
     document.querySelectorAll('.accordion-header').forEach(header => {
-        header.addEventListener('click', () => {
-            const item = header.parentElement;
+        header.addEventListener('click', (event) => {
+            const item = event.currentTarget.parentElement;
             item.classList.toggle('active');
-            const content = header.nextElementSibling;
+            const content = event.currentTarget.nextElementSibling;
             if (content.style.maxHeight) {
                 content.style.maxHeight = null;
             } else {
@@ -319,8 +348,9 @@ function populateIntelligenceHub() {
 // --- Modal Logic ---
 function showDetailModal(alignment, vsDayData, armsPhase) {
     if (!alignment) return;
-    const modal = document.getElementById('detail-modal');
-    const modalBody = document.getElementById('modal-body');
+    const modal = DOMElements['detail-modal'];
+    const modalBody = DOMElements['modal-body'];
+    if (!modal || !modalBody) return;
 
     modalBody.innerHTML = `
         <h2>${armsPhase.icon} ${armsPhase.name} + ${vsDayData.title}</h2>
@@ -341,7 +371,7 @@ function showDetailModal(alignment, vsDayData, armsPhase) {
 }
 
 function closeDetailModal() {
-  document.getElementById('detail-modal').style.display = 'none';
+  DOMElements['detail-modal']?.style.display = 'none';
 }
 
 // --- Helper Functions ---
@@ -357,7 +387,7 @@ function getAllHighPriorityWindows() {
     if (vsDayData && armsPhase) {
       for (let h = 0; h < 24; h += 4) {
         if (getArmsRacePhase(h).name === alignment.arms_phase) {
-          windows.push({ startTime: null, vsDay: alignment.vs_day, vsDayData, armsPhase, alignment, hour: h });
+          windows.push({ vsDay: alignment.vs_day, vsDayData, armsPhase, alignment, hour: h });
         }
       }
     }
@@ -368,8 +398,11 @@ function getNextHighPriorityWindow() {
   const now = new Date();
   const allWindows = getAllHighPriorityWindows().map(w => {
     let startTime = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), w.hour, 0, 0));
-    while (startTime <= now || startTime.getUTCDay() !== w.vsDay) {
+    while (startTime.getTime() <= now.getTime() || startTime.getUTCDay() !== w.vsDay) {
         startTime.setUTCDate(startTime.getUTCDate() + 1);
+        if (startTime.getUTCDay() !== w.vsDay) {
+           startTime.setUTCDate(startTime.getUTCDate() + (w.vsDay - startTime.getUTCDay() + 7) % 7);
+        }
     }
     w.startTime = startTime;
     return w;

@@ -790,7 +790,9 @@ class LastWarNexus {
                 return;
             }
 
-            const timeDiff = nextWindow.startTime - new Date();
+            const now = new Date();
+            const timeDiff = nextWindow.startTime - now;
+            
             if (timeDiff <= 0) {
                 this.safeUpdateElement('countdown-timer', 'textContent', 'ACTIVE');
                 this.safeUpdateElement('event-name', 'textContent', `${nextWindow.armsPhase.name} Priority Window`);
@@ -804,7 +806,7 @@ class LastWarNexus {
             this.safeUpdateElement('countdown-timer', 'textContent', `${String(hours).padStart(2,'0')}h ${String(minutes).padStart(2,'0')}m`);
             this.safeUpdateElement('event-name', 'textContent', `${nextWindow.armsPhase.name} Priority Window`);
             
-            const localTime = nextWindow.startTime.toLocaleTimeString({ hour: '2-digit', minute: '2-digit' });
+            const localTime = nextWindow.startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             const utcTime = nextWindow.startTime.toUTCString().slice(17, 22);
             const timeText = this.settings.timeFormat === 'utc' ? `Starts at ${utcTime} UTC` : `Starts at ${localTime} Local`;
             this.safeUpdateElement('event-time', 'textContent', timeText);
@@ -1125,8 +1127,8 @@ class LastWarNexus {
             startLocal.setUTCHours(hour, 0, 0, 0);
             const endLocal = new Date();
             endLocal.setUTCHours(phaseEnd, 0, 0, 0);
-            const startTime = startLocal.toLocaleTimeString({ hour: '2-digit', minute: '2-digit' });
-            const endTime = endLocal.toLocaleTimeString({ hour: '2-digit', minute: '2-digit' });
+            const startTime = startLocal.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const endTime = endLocal.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             return `${startTime} - ${endTime} Local`;
         }
     }
@@ -1333,9 +1335,9 @@ class LastWarNexus {
             const phaseHours = [0, 4, 8, 12, 16, 20];
 
             for (let dayOffset = 0; dayOffset <= 8; dayOffset++) {
-                const targetDate = new Date();
-                targetDate.setUTCDate(targetDate.getUTCDate() + dayOffset);
-                const targetDay = targetDate.getUTCDay();
+                const targetDate = new Date(now);
+                targetDate.setDate(targetDate.getDate() + dayOffset);
+                const targetDay = targetDate.getDay(); // This gets local day
 
                 this.data.highpriorityalignments.forEach(alignment => {
                     if (alignment.vsday !== targetDay) return;
@@ -1345,14 +1347,8 @@ class LastWarNexus {
 
                     phaseHours.forEach(hour => {
                         if (this.getArmsRacePhase(hour).name === alignment.armsphase) {
-                            const eventTime = new Date(Date.UTC(
-                                targetDate.getUTCFullYear(),
-                                targetDate.getUTCMonth(),
-                                targetDate.getUTCDate(),
-                                hour,
-                                0,
-                                0
-                            ));
+                            const eventTime = new Date(targetDate);
+                            eventTime.setHours(hour, 0, 0, 0);
 
                             if (eventTime > now) {
                                 potentialWindows.push({

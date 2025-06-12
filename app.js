@@ -1154,6 +1154,62 @@ class LastWarNexus {
         }
     }
 
+
+
+
+    // CORRECTED: Fixed countdown for 5-phase cycle
+    updateCountdown() {
+        try {
+            const now = this.getServerTime();
+            if (!now || isNaN(now.getTime())) return;
+            
+            const currentHour = now.getUTCHours();
+            
+            // FIXED: 5-phase schedule with 6 transitions per day
+            const phaseStarts = [0, 4, 8, 12, 16, 20];
+            let nextPhaseStart = 24;
+            
+            for (const start of phaseStarts) {
+                if (currentHour < start) {
+                    nextPhaseStart = start;
+                    break;
+                }
+            }
+            
+            const nextPhaseTime = new Date(now);
+            if (nextPhaseStart === 24) {
+                nextPhaseTime.setUTCDate(now.getUTCDate() + 1);
+                nextPhaseTime.setUTCHours(0, 0, 0, 0);
+            } else {
+                nextPhaseTime.setUTCHours(nextPhaseStart, 0, 0, 0);
+            }
+            
+            const timeDiff = nextPhaseTime.getTime() - now.getTime();
+            if (timeDiff > 0 && isFinite(timeDiff)) {
+                const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+                const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+                
+                const countdownText = hours > 0 ? `${hours}h ${minutes}m ${seconds}s` : `${minutes}m ${seconds}s`;
+                this.safeUpdateElement('countdown-timer', 'textContent', countdownText);
+                
+                // CORRECTED: Map to correct next phase in 5-phase cycle
+                const phaseNames = ["City Building", "Unit Progression", "Tech Research", "Drone Boost", "Hero Advancement", "City Building"];
+                const nextPhaseIndex = phaseStarts.indexOf(nextPhaseStart);
+                const nextPhase = this.data.armsracephases.find(p => p.name === phaseNames[nextPhaseIndex]) || this.data.armsracephases[0];
+                
+                this.safeUpdateElement('event-name', 'textContent', `${nextPhase.name} Phase`);
+                
+                const timeString = nextPhaseStart === 24 ? "00:00" : String(nextPhaseStart).padStart(2, '0') + ":00";
+                this.safeUpdateElement('event-time', 'textContent', `${timeString} Server Time`);
+            }
+            
+        } catch (error) {
+            console.error("Error updating countdown:", error);
+        }
+    }
+}
+
 // ADD THESE METHODS TO YOUR LastWarNexus CLASS
 
 setupBanner() {
@@ -1315,60 +1371,6 @@ cacheElements() {
     return foundCount >= 10;
 }
 
-
-
-    // CORRECTED: Fixed countdown for 5-phase cycle
-    updateCountdown() {
-        try {
-            const now = this.getServerTime();
-            if (!now || isNaN(now.getTime())) return;
-            
-            const currentHour = now.getUTCHours();
-            
-            // FIXED: 5-phase schedule with 6 transitions per day
-            const phaseStarts = [0, 4, 8, 12, 16, 20];
-            let nextPhaseStart = 24;
-            
-            for (const start of phaseStarts) {
-                if (currentHour < start) {
-                    nextPhaseStart = start;
-                    break;
-                }
-            }
-            
-            const nextPhaseTime = new Date(now);
-            if (nextPhaseStart === 24) {
-                nextPhaseTime.setUTCDate(now.getUTCDate() + 1);
-                nextPhaseTime.setUTCHours(0, 0, 0, 0);
-            } else {
-                nextPhaseTime.setUTCHours(nextPhaseStart, 0, 0, 0);
-            }
-            
-            const timeDiff = nextPhaseTime.getTime() - now.getTime();
-            if (timeDiff > 0 && isFinite(timeDiff)) {
-                const hours = Math.floor(timeDiff / (1000 * 60 * 60));
-                const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
-                
-                const countdownText = hours > 0 ? `${hours}h ${minutes}m ${seconds}s` : `${minutes}m ${seconds}s`;
-                this.safeUpdateElement('countdown-timer', 'textContent', countdownText);
-                
-                // CORRECTED: Map to correct next phase in 5-phase cycle
-                const phaseNames = ["City Building", "Unit Progression", "Tech Research", "Drone Boost", "Hero Advancement", "City Building"];
-                const nextPhaseIndex = phaseStarts.indexOf(nextPhaseStart);
-                const nextPhase = this.data.armsracephases.find(p => p.name === phaseNames[nextPhaseIndex]) || this.data.armsracephases[0];
-                
-                this.safeUpdateElement('event-name', 'textContent', `${nextPhase.name} Phase`);
-                
-                const timeString = nextPhaseStart === 24 ? "00:00" : String(nextPhaseStart).padStart(2, '0') + ":00";
-                this.safeUpdateElement('event-time', 'textContent', `${timeString} Server Time`);
-            }
-            
-        } catch (error) {
-            console.error("Error updating countdown:", error);
-        }
-    }
-}
 
 document.addEventListener('DOMContentLoaded', () => {
     new LastWarNexus();

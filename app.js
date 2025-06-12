@@ -2,7 +2,7 @@ class LastWarNexus {
     constructor() {
         this.isInitialized = false;
         this.initializationAttempts = 0;
-        this.maxInitAttempts = 3;
+        this.maxInitAttempts = 5;
         
         // Server configuration
         this.currentArmsPhase = "Drone Boost";
@@ -82,6 +82,11 @@ class LastWarNexus {
         this.elements = {};
         this.eventListeners = [];
         
+        // Make globally available for debugging
+        if (typeof window !== 'undefined') {
+            window.lastWarNexusInstance = this;
+        }
+        
         this.initializeWhenReady();
     }
     
@@ -89,7 +94,7 @@ class LastWarNexus {
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => this.init());
         } else {
-            this.init();
+            setTimeout(() => this.init(), 50);
         }
     }
     
@@ -100,7 +105,7 @@ class LastWarNexus {
             
             if (!this.cacheElements()) {
                 if (this.initializationAttempts < this.maxInitAttempts) {
-                    setTimeout(() => this.init(), 100);
+                    setTimeout(() => this.init(), 200);
                     return;
                 } else {
                     console.error("Failed to initialize after maximum attempts");
@@ -113,6 +118,7 @@ class LastWarNexus {
             this.populateIntelligence();
             this.updateTabCounts();
             this.updateAllDisplays();
+            this.updateContent();
             this.startUpdateLoop();
             this.isInitialized = true;
             
@@ -120,7 +126,7 @@ class LastWarNexus {
         } catch (error) {
             console.error("Initialization error:", error);
             if (this.initializationAttempts < this.maxInitAttempts) {
-                setTimeout(() => this.init(), 200);
+                setTimeout(() => this.init(), 500);
             }
         }
     }
@@ -136,23 +142,22 @@ class LastWarNexus {
             'intel-count', 'event-modal', 'modal-title', 'modal-body', 'modal-close', 'modal-share',
             'modal-remind', 'time-format-dropdown', 'detail-level-dropdown', 'view-scope-dropdown',
             'bottom-priority-cards', 'bottom-priority-grid', 'minimize-cards', 'bottom-cards-content',
-            'server-toggle', 'server-dropdown', 'apply-server', 'current-server',
+            'server-toggle', 'server-dropdown', 'apply-server',
             'current-arms-phase', 'time-offset', 'current-phase-display', 'offset-display',
             'time-slots', 'today-date'
         ];
         
-        let allElementsFound = true;
+        let foundCount = 0;
         elementIds.forEach(id => {
             const element = document.getElementById(id);
             if (element) {
                 this.elements[id] = element;
-            } else {
-                console.warn(`Element not found: ${id}`);
-                allElementsFound = false;
+                foundCount++;
             }
         });
         
-        return allElementsFound;
+        console.log(`Found ${foundCount}/${elementIds.length} elements`);
+        return foundCount >= (elementIds.length * 0.8);
     }
 
     setupEventListeners() {
@@ -190,7 +195,7 @@ class LastWarNexus {
                 });
             }
 
-            // Apply server settings button
+            // Apply server settings
             if (this.elements['apply-server']) {
                 this.addEventListenerSingle(this.elements['apply-server'], 'click', (e) => {
                     e.preventDefault();
@@ -198,7 +203,7 @@ class LastWarNexus {
                 });
             }
 
-            // Current Arms Race Phase selector
+            // Arms Race Phase selector
             if (this.elements['current-arms-phase']) {
                 this.addEventListenerSingle(this.elements['current-arms-phase'], 'change', (e) => {
                     this.currentArmsPhase = e.target.value;
@@ -216,32 +221,25 @@ class LastWarNexus {
                 this.addEventListenerSingle(this.elements['time-offset'], 'change', (e) => {
                     this.timeOffset = parseInt(e.target.value, 10);
                     this.updateServerDisplay();
-                });
-            }
-
-            // Dropdown selects
-            if (this.elements['time-format-dropdown']) {
-                this.addEventListenerSingle(this.elements['time-format-dropdown'], 'change', (e) => {
-                    this.settings.timeFormat = e.target.value;
+                    this.saveServerSettings();
                     this.updateAllDisplays();
-                    this.updateBottomPriorityCards();
                 });
             }
 
-            if (this.elements['detail-level-dropdown']) {
-                this.addEventListenerSingle(this.elements['detail-level-dropdown'], 'change', (e) => {
-                    this.settings.detailLevel = e.target.value;
-                    this.updateContent();
-                    this.updateExpandedDetails();
-                });
-            }
-
-            if (this.elements['view-scope-dropdown']) {
-                this.addEventListenerSingle(this.elements['view-scope-dropdown'], 'change', (e) => {
-                    this.settings.viewScope = e.target.value;
-                    this.updateContent();
-                });
-            }
+            // Display settings
+            ['time-format-dropdown', 'detail-level-dropdown', 'view-scope-dropdown'].forEach(id => {
+                if (this.elements[id]) {
+                    this.addEventListenerSingle(this.elements[id], 'change', (e) => {
+                        const settingKey = id.replace('-dropdown', '').replace('-', '');
+                        const mappedKey = settingKey === 'timeformat' ? 'timeFormat' : 
+                                        settingKey === 'detaillevel' ? 'detailLevel' : 
+                                        settingKey === 'viewscope' ? 'viewScope' : settingKey;
+                        this.settings[mappedKey] = e.target.value;
+                        this.updateContent();
+                        this.updateAllDisplays();
+                    });
+                }
+            });
 
             // Status expansion
             if (this.elements['current-vs-status']) {
@@ -266,13 +264,6 @@ class LastWarNexus {
                 });
             }
 
-            // Close dropdowns on outside click
-            this.addEventListenerSingle(document, 'click', (e) => {
-                if (!e.target.closest('.settings-dropdown-container') && !e.target.closest('.server-dropdown-container')) {
-                    this.closeDropdown();
-                }
-            });
-
             // Modal events
             if (this.elements['modal-close']) {
                 this.addEventListenerSingle(this.elements['modal-close'], 'click', (e) => {
@@ -290,29 +281,21 @@ class LastWarNexus {
                 });
             }
 
-            if (this.elements['modal-share']) {
-                this.addEventListenerSingle(this.elements['modal-share'], 'click', (e) => {
-                    e.preventDefault();
-                    this.shareEvent();
-                });
-            }
+            // Global listeners
+            this.addEventListenerSingle(document, 'click', (e) => {
+                if (!e.target.closest('.settings-dropdown-container') && !e.target.closest('.server-dropdown-container')) {
+                    this.closeDropdown();
+                }
+            });
 
-            if (this.elements['modal-remind']) {
-                this.addEventListenerSingle(this.elements['modal-remind'], 'click', (e) => {
-                    e.preventDefault();
-                    this.setReminder();
-                });
-            }
-
-            // Keyboard shortcuts
             this.addEventListenerSingle(document, 'keydown', (e) => {
                 if (e.key === 'Escape') {
                     this.closeModal();
                     this.closeDropdown();
                 }
-                if (e.key === '1') this.switchTab('priority');
-                if (e.key === '2') this.switchTab('schedule');
-                if (e.key === '3') this.switchTab('intelligence');
+                if (e.key === '1' && !e.target.matches('input, select, textarea')) this.switchTab('priority');
+                if (e.key === '2' && !e.target.matches('input, select, textarea')) this.switchTab('schedule');
+                if (e.key === '3' && !e.target.matches('input, select, textarea')) this.switchTab('intelligence');
             });
 
             console.log("Event listeners set up successfully");
@@ -401,9 +384,6 @@ class LastWarNexus {
     }
 
     updateServerDisplay() {
-        if (this.elements['current-server']) {
-            this.elements['current-server'].textContent = "Settings";
-        }
         if (this.elements['current-arms-phase']) {
             this.elements['current-arms-phase'].value = this.currentArmsPhase;
         }
@@ -555,7 +535,6 @@ class LastWarNexus {
                 }
             }
 
-            // Close the other dropdown
             if (type === 'settings' && this.elements['server-dropdown']) {
                 this.elements['server-dropdown'].classList.remove('show');
                 this.elements['server-toggle']?.classList.remove('active');
@@ -683,7 +662,6 @@ class LastWarNexus {
 
     updateActionDisplay(alignment, armsPhase, utcHour, utcMinute) {
         try {
-            // Check for server reset period (00:00-00:05 UTC)
             if (utcHour === 0 && utcMinute <= 5) {
                 this.safeUpdateElement('action-icon', 'textContent', '🔄');
                 this.safeUpdateElement('action-text', 'innerHTML', '<strong>Server Reset in Progress</strong><br>No points awarded during this period - save your activities!');
@@ -777,9 +755,9 @@ class LastWarNexus {
         try {
             const nextWindow = this.getNextHighPriorityWindow();
             if (!nextWindow) {
-                this.safeUpdateElement('countdown-timer', 'textContent', 'No upcoming events');
-                this.safeUpdateElement('event-name', 'textContent', '');
-                this.safeUpdateElement('event-time', 'textContent', '');
+                this.safeUpdateElement('countdown-timer', 'textContent', 'Calculating...');
+                this.safeUpdateElement('event-name', 'textContent', 'Finding next priority window');
+                this.safeUpdateElement('event-time', 'textContent', 'Please wait...');
                 return;
             }
 
@@ -787,24 +765,37 @@ class LastWarNexus {
             const timeDiff = nextWindow.startTime - now;
 
             if (timeDiff <= 0) {
-                this.safeUpdateElement('countdown-timer', 'textContent', 'ACTIVE');
-                this.safeUpdateElement('event-name', 'textContent', `${nextWindow.armsPhase.name} Priority Window`);
-                this.safeUpdateElement('event-time', 'textContent', 'Currently running');
-                return;
+                const endTime = new Date(nextWindow.startTime.getTime() + (4 * 60 * 60 * 1000));
+                if (now < endTime) {
+                    this.safeUpdateElement('countdown-timer', 'textContent', 'ACTIVE NOW');
+                    this.safeUpdateElement('event-name', 'textContent', `${nextWindow.armsPhase} Priority Window`);
+                    this.safeUpdateElement('event-time', 'textContent', 'Currently active');
+                    return;
+                }
             }
 
             const hours = Math.floor(timeDiff / 3600000);
             const minutes = Math.floor((timeDiff % 3600000) / 60000);
+            const seconds = Math.floor((timeDiff % 60000) / 1000);
 
-            this.safeUpdateElement('countdown-timer', 'textContent', `${String(hours).padStart(2,'0')}h ${String(minutes).padStart(2,'0')}m`);
-            this.safeUpdateElement('event-name', 'textContent', `${nextWindow.armsPhase.name} Priority Window`);
+            if (hours < 0 || minutes < 0 || seconds < 0) {
+                this.safeUpdateElement('countdown-timer', 'textContent', 'Calculating...');
+                return;
+            }
 
-            const localTime = nextWindow.startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            const utcTime = nextWindow.startTime.toUTCString().slice(17, 22);
-            const timeText = this.settings.timeFormat === 'utc' ? `Starts at ${utcTime} UTC` : `Starts at ${localTime} Local`;
+            this.safeUpdateElement('countdown-timer', 'textContent', `${String(hours).padStart(2,'0')}h ${String(minutes).padStart(2,'0')}m ${String(seconds).padStart(2,'0')}s`);
+            this.safeUpdateElement('event-name', 'textContent', `${nextWindow.armsPhase} Priority Window`);
+
+            const timeText = this.settings.timeFormat === 'utc' 
+                ? `Starts ${nextWindow.startTime.toUTCString().slice(17, 22)} UTC`
+                : `Starts ${nextWindow.startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
             this.safeUpdateElement('event-time', 'textContent', timeText);
+            
         } catch (error) {
             console.error("Error updating countdown:", error);
+            this.safeUpdateElement('countdown-timer', 'textContent', 'Error');
+            this.safeUpdateElement('event-name', 'textContent', 'Calculation error');
+            this.safeUpdateElement('event-time', 'textContent', 'Please refresh');
         }
     }
 
@@ -856,7 +847,6 @@ class LastWarNexus {
                     this.updateScheduleGrid();
                     break;
                 case 'intelligence':
-                    // Intelligence is static, already populated
                     break;
             }
         } catch (error) {
@@ -929,9 +919,11 @@ class LastWarNexus {
                     ` : ''}
                 `;
 
-                eventCard.addEventListener('click', () => {
+                const clickHandler = () => {
                     this.showEventModal(window, vsDayData, armsPhase, alignment);
-                });
+                };
+                eventCard.addEventListener('click', clickHandler);
+                this.eventListeners.push({ element: eventCard, event: 'click', handler: clickHandler });
 
                 this.elements['priority-grid'].appendChild(eventCard);
             });
@@ -945,17 +937,14 @@ class LastWarNexus {
             if (!this.elements['schedule-grid']) return;
             
             this.elements['schedule-grid'].innerHTML = '';
-            
-            // Update today's schedule
             this.updateTodaySchedule();
             
-            // Create header
-            const header = document.createElement('div');
-            header.className = 'schedule-header';
-            header.textContent = 'Time / Day';
-            this.elements['schedule-grid'].appendChild(header);
+            const timeHeader = document.createElement('div');
+            timeHeader.className = 'schedule-header';
+            timeHeader.textContent = 'Time';
+            this.elements['schedule-grid'].appendChild(timeHeader);
 
-            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
             days.forEach(day => {
                 const dayHeader = document.createElement('div');
                 dayHeader.className = 'schedule-day-header';
@@ -963,7 +952,6 @@ class LastWarNexus {
                 this.elements['schedule-grid'].appendChild(dayHeader);
             });
 
-            // Create time slots
             const timeSlots = [
                 { start: 0, end: 4, phase: "Mixed Phase" },
                 { start: 4, end: 8, phase: "Drone Boost" },
@@ -974,10 +962,10 @@ class LastWarNexus {
             ];
 
             timeSlots.forEach(slot => {
-                const timeHeader = document.createElement('div');
-                timeHeader.className = 'schedule-header';
-                timeHeader.textContent = `${String(slot.start).padStart(2, '0')}:00-${String(slot.end % 24).padStart(2, '0')}:00`;
-                this.elements['schedule-grid'].appendChild(timeHeader);
+                const timeLabel = document.createElement('div');
+                timeLabel.className = 'schedule-header';
+                timeLabel.textContent = `${String(slot.start).padStart(2, '0')}:00`;
+                this.elements['schedule-grid'].appendChild(timeLabel);
 
                 for (let day = 0; day < 7; day++) {
                     const cell = document.createElement('div');
@@ -995,16 +983,11 @@ class LastWarNexus {
                     }
 
                     const phaseData = this.data.armsracephases.find(p => p.name === slot.phase);
-                    const vsDayData = this.data.vsdays.find(d => d.day === day);
-
+                    
                     cell.innerHTML = `
-                        <div class="cell-phase">${phaseData.icon} ${slot.phase}</div>
-                        <div class="cell-reason">${alignment ? alignment.reason : vsDayData.title}</div>
+                        <div class="cell-phase">${phaseData.icon}</div>
+                        <div class="cell-reason">${alignment ? 'HIGH' : 'Normal'}</div>
                     `;
-
-                    cell.addEventListener('click', () => {
-                        this.showScheduleModal(slot, day, vsDayData, phaseData, alignment);
-                    });
 
                     this.elements['schedule-grid'].appendChild(cell);
                 }
@@ -1107,14 +1090,16 @@ class LastWarNexus {
                 sectionEl.appendChild(headerEl);
                 sectionEl.appendChild(contentEl);
                 
-                headerEl.addEventListener('click', () => {
+                const headerHandler = () => {
                     sectionEl.classList.toggle('active');
                     if (sectionEl.classList.contains('active')) {
                         contentEl.style.maxHeight = contentEl.scrollHeight + 'px';
                     } else {
                         contentEl.style.maxHeight = '0';
                     }
-                });
+                };
+                headerEl.addEventListener('click', headerHandler);
+                this.eventListeners.push({ element: headerEl, event: 'click', handler: headerHandler });
                 
                 this.elements['intelligence-content'].appendChild(sectionEl);
             });
@@ -1130,7 +1115,6 @@ class LastWarNexus {
             this.elements['bottom-priority-grid'].innerHTML = '';
             const { utcDay, utcHour } = this.getCurrentUTCInfo();
             
-            // Get next 3 priority windows
             const upcomingWindows = this.getAllHighPriorityWindows()
                 .filter(w => {
                     const eventTime = this.getPhaseStartTime(w.hour, w.vsDay);
@@ -1195,63 +1179,104 @@ class LastWarNexus {
     }
 
     getAllHighPriorityWindows() {
-        const windows = [];
-        
-        this.data.highpriorityalignments.forEach(alignment => {
-            const timeSlots = [
-                { start: 0, end: 4, phase: "Mixed Phase" },
-                { start: 4, end: 8, phase: "Drone Boost" },
-                { start: 8, end: 12, phase: "City Building" },
-                { start: 12, end: 16, phase: "Tech Research" },
-                { start: 16, end: 20, phase: "Hero Advancement" },
-                { start: 20, end: 24, phase: "Unit Progression" }
-            ];
+        try {
+            const windows = [];
+            
+            this.data.highpriorityalignments.forEach(alignment => {
+                const phaseSchedule = [
+                    { start: 0, phase: "Mixed Phase" },
+                    { start: 4, phase: "Drone Boost" },
+                    { start: 8, phase: "City Building" },
+                    { start: 12, phase: "Tech Research" },
+                    { start: 16, phase: "Hero Advancement" },
+                    { start: 20, phase: "Unit Progression" }
+                ];
 
-            timeSlots.forEach(slot => {
-                if (slot.phase === alignment.armsphase) {
+                const phaseTime = phaseSchedule.find(p => p.phase === alignment.armsphase);
+                
+                if (phaseTime) {
                     windows.push({
                         vsDay: alignment.vsday,
                         armsPhase: alignment.armsphase,
-                        hour: slot.start,
-                        timeRange: `${String(slot.start).padStart(2, '0')}:00-${String(slot.end % 24).padStart(2, '0')}:00`,
+                        hour: phaseTime.start,
+                        timeRange: `${String(phaseTime.start).padStart(2, '0')}:00-${String((phaseTime.start + 4) % 24).padStart(2, '0')}:00`,
                         points: alignment.points,
                         reason: alignment.reason
                     });
                 }
             });
-        });
-
-        return windows.sort((a, b) => {
-            const aTime = this.getPhaseStartTime(a.hour, a.vsDay);
-            const bTime = this.getPhaseStartTime(b.hour, b.vsDay);
-            return aTime - bTime;
-        });
+            
+            return windows;
+            
+        } catch (error) {
+            console.error("Error getting all priority windows:", error);
+            return [];
+        }
     }
 
     getNextHighPriorityWindow() {
-        const now = new Date();
-        const windows = this.getAllHighPriorityWindows();
-        
-        return windows.find(w => {
-            const eventTime = this.getPhaseStartTime(w.hour, w.vsDay);
-            return eventTime > now;
-        });
+        try {
+            const now = new Date();
+            const windows = this.getAllHighPriorityWindows();
+            
+            const sortedWindows = windows.sort((a, b) => {
+                const aTime = this.getPhaseStartTime(a.hour, a.vsDay);
+                const bTime = this.getPhaseStartTime(b.hour, b.vsDay);
+                return aTime - bTime;
+            });
+            
+            for (let i = 0; i < sortedWindows.length; i++) {
+                const window = sortedWindows[i];
+                const startTime = this.getPhaseStartTime(window.hour, window.vsDay);
+                
+                if (startTime > now) {
+                    return {
+                        ...window,
+                        startTime: startTime
+                    };
+                }
+            }
+            
+            if (sortedWindows.length > 0) {
+                const firstWindow = sortedWindows[0];
+                const nextWeekStart = this.getPhaseStartTime(firstWindow.hour, firstWindow.vsDay);
+                nextWeekStart.setDate(nextWeekStart.getDate() + 7);
+                
+                return {
+                    ...firstWindow,
+                    startTime: nextWeekStart
+                };
+            }
+            
+            return null;
+        } catch (error) {
+            console.error("Error getting next priority window:", error);
+            return null;
+        }
     }
 
     getPhaseStartTime(hour, vsDay) {
-        const now = new Date();
-        const eventTime = new Date(now);
-        
-        // Calculate days until the target VS day
-        const currentDay = now.getUTCDay();
-        let daysUntil = vsDay - currentDay;
-        if (daysUntil < 0) daysUntil += 7;
-        if (daysUntil === 0 && hour <= now.getUTCHours()) daysUntil = 7;
-        
-        eventTime.setUTCDate(now.getUTCDate() + daysUntil);
-        eventTime.setUTCHours(hour, 0, 0, 0);
-        
-        return eventTime;
+        try {
+            const now = new Date();
+            const eventTime = new Date();
+            
+            const currentDay = now.getUTCDay();
+            const currentHour = now.getUTCHours();
+            
+            let daysUntil = vsDay - currentDay;
+            
+            if (daysUntil < 0 || (daysUntil === 0 && hour <= currentHour)) {
+                daysUntil += 7;
+            }
+            
+            eventTime.setUTCDate(now.getUTCDate() + daysUntil);
+            eventTime.setUTCHours(hour, 0, 0, 0);
+            
+            return eventTime;
+        } catch (error) {
+            console.error("Error calculating phase start time:", error);
+            return new Date();
+        }
     }
 
     // Modal methods
@@ -1293,42 +1318,6 @@ class LastWarNexus {
         }
     }
 
-    showScheduleModal(slot, day, vsDayData, phaseData, alignment) {
-        try {
-            if (!this.elements['event-modal']) return;
-            
-            this.safeUpdateElement('modal-title', 'textContent', `${phaseData.name} - ${vsDayData.name}`);
-            
-            if (this.elements['modal-body']) {
-                this.elements['modal-body'].innerHTML = `
-                    <div class="modal-section">
-                        <h4>Schedule Details</h4>
-                        <p><strong>Day:</strong> ${vsDayData.name} - ${vsDayData.title}</p>
-                        <p><strong>Phase:</strong> ${phaseData.icon} ${phaseData.name}</p>
-                        <p><strong>Time:</strong> ${String(slot.start).padStart(2, '0')}:00 - ${String(slot.end % 24).padStart(2, '0')}:00 UTC</p>
-                        <p><strong>Priority:</strong> ${alignment ? 'High Priority' : 'Standard'}</p>
-                    </div>
-                    ${alignment ? `
-                        <div class="modal-section">
-                            <h4>Priority Alignment</h4>
-                            <p>${alignment.reason}</p>
-                            <p><strong>Expected Points:</strong> ${alignment.points}</p>
-                        </div>
-                    ` : ''}
-                    <div class="modal-section">
-                        <h4>Activities</h4>
-                        <p><strong>Arms Race:</strong> ${phaseData.pointSources.join(', ')}</p>
-                        <p><strong>VS Focus:</strong> ${vsDayData.pointActivities.join(', ')}</p>
-                    </div>
-                `;
-            }
-            
-            this.elements['event-modal'].style.display = 'flex';
-        } catch (error) {
-            console.error("Error showing schedule modal:", error);
-        }
-    }
-
     closeModal() {
         try {
             if (this.elements['event-modal']) {
@@ -1348,7 +1337,6 @@ class LastWarNexus {
                     url: window.location.href
                 });
             } else {
-                // Fallback - copy to clipboard
                 navigator.clipboard.writeText(window.location.href);
                 alert('Link copied to clipboard!');
             }
@@ -1359,7 +1347,6 @@ class LastWarNexus {
 
     setReminder() {
         try {
-            // This would integrate with browser notifications or calendar APIs
             alert('Reminder feature coming soon! For now, bookmark this page and check back regularly.');
         } catch (error) {
             console.error("Error setting reminder:", error);
@@ -1368,4 +1355,15 @@ class LastWarNexus {
 }
 
 // Initialize the application
-new LastWarNexus();
+try {
+    new LastWarNexus();
+} catch (error) {
+    console.error("Failed to initialize Last War Nexus:", error);
+    setTimeout(() => {
+        try {
+            new LastWarNexus();
+        } catch (retryError) {
+            console.error("Retry failed:", retryError);
+        }
+    }, 1000);
+}

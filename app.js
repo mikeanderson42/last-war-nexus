@@ -783,58 +783,107 @@ class LastWarNexus {
         }
     }
 
-    generateIntelligenceGuides() {
-        return [
-            {
-                title: "Perfect Timing Strategy",
-                category: "VS Points",
-                icon: "🎯",
-                rating: "S+",
-                featured: true,
-                description: "Master the art of dual-event alignment for maximum point generation during high-priority windows.",
-                efficiency: "4",
-                points: "4200",
-                timeframe: "4 hours",
-                tags: ["Essential", "High Priority", "Advanced"]
-            },
-            {
-                title: "Resource Management",
-                category: "Optimization",
-                icon: "💎",
-                rating: "S",
-                featured: false,
-                description: "Efficiently manage speedups, resources, and activities to maximize both events simultaneously.",
-                efficiency: "3",
-                points: "3500",
-                timeframe: "Daily",
-                tags: ["Resource", "Planning", "Efficiency"]
-            },
-            {
-                title: "Alliance Coordination",
-                category: "Teamwork",
-                icon: "🤝",
-                rating: "A+",
-                featured: false,
-                description: "Coordinate with alliance members to maximize collective VS points during peak efficiency windows.",
-                efficiency: "2.5",
-                points: "3000",
-                timeframe: "Weekly",
-                tags: ["Alliance", "Coordination", "Strategy"]
-            },
-            {
-                title: "Phase Transition Timing",
-                category: "Timing",
-                icon: "⏰",
-                rating: "A",
-                featured: false,
-                description: "Learn the optimal timing for activities around Arms Race phase transitions for maximum benefit.",
-                efficiency: "2",
-                points: "2500",
-                timeframe: "4 hours",
-                tags: ["Timing", "Transitions", "Planning"]
-            }
-        ];
-    }
+generateIntelligenceGuides() {
+    return [
+        {
+            title: "Dual Event Optimization",
+            category: "VS Points Strategy",
+            icon: "🎯",
+            rating: "Essential",
+            featured: true,
+            description: "Maximize VS points by timing activities during Arms Race phases that align with Alliance Duel focus days. Complete building upgrades during City Building phase on Base Expansion day.",
+            efficiency: "Maximum",
+            points: "Dual Rewards",
+            timeframe: "4-hour windows",
+            tags: ["Core Strategy", "High Priority", "Timing"]
+        },
+        {
+            title: "Resource Conservation",
+            category: "Speedup Management",
+            icon: "⏱️",
+            rating: "Critical",
+            featured: false,
+            description: "Save speedups for high-priority alignment windows. Use construction speedups only during City Building + Base Expansion day, research speedups during Tech Research + Age of Science.",
+            efficiency: "Optimal",
+            points: "Resource Savings",
+            timeframe: "Weekly planning",
+            tags: ["Resource", "Planning", "Speedups"]
+        },
+        {
+            title: "Alliance Coordination",
+            category: "Team Strategy",
+            icon: "🤝",
+            rating: "Important",
+            featured: false,
+            description: "Coordinate with alliance members for Total Mobilization Friday. Share high-priority window timings and plan collective activities during peak alignment periods.",
+            efficiency: "Team-wide",
+            points: "Alliance Boost",
+            timeframe: "Alliance Events",
+            tags: ["Alliance", "Coordination", "Communication"]
+        },
+        {
+            title: "Phase Transition Strategy",
+            category: "Timing Mastery",
+            icon: "🔄",
+            rating: "Advanced",
+            featured: false,
+            description: "Learn to time activities around 4-hour phase changes. Start long activities (research/construction) 30 minutes before favorable phases begin to maximize overlap time.",
+            efficiency: "Precise",
+            points: "Extended Benefits",
+            timeframe: "Phase Changes",
+            tags: ["Timing", "Advanced", "Phases"]
+        },
+        {
+            title: "Server Reset Optimization",
+            category: "Daily Planning",
+            icon: "🕐",
+            rating: "Useful",
+            featured: false,
+            description: "Plan daily activities around your server's reset time. Know exactly when new Alliance Duel days begin and prepare activities in advance for immediate completion.",
+            efficiency: "Daily",
+            points: "Early Advantage",
+            timeframe: "Server Reset",
+            tags: ["Daily", "Server Time", "Preparation"]
+        },
+        {
+            title: "Priority Window Recognition",
+            category: "Pattern Analysis",
+            icon: "📊",
+            rating: "Expert",
+            featured: false,
+            description: "Identify your server's highest-value windows by tracking Arms Race rotation. Map out weekly patterns to predict when City Building + Base Expansion alignments occur.",
+            efficiency: "Predictive",
+            points: "Pattern Mastery",
+            timeframe: "Weekly Cycles",
+            tags: ["Analysis", "Patterns", "Expert"]
+        },
+        {
+            title: "Multi-Day Event Stacking",
+            category: "Advanced Strategy",
+            icon: "📅",
+            rating: "Master",
+            featured: false,
+            description: "Stack activities across multiple Alliance Duel days during favorable Arms Race phases. Save hero EXP for Hero Advancement + Train Heroes day combinations.",
+            efficiency: "Complex",
+            points: "Stacked Rewards",
+            timeframe: "Multi-day",
+            tags: ["Advanced", "Stacking", "Long-term"]
+        },
+        {
+            title: "Emergency Activity Planning",
+            category: "Contingency Strategy",
+            icon: "🚨",
+            rating: "Backup",
+            featured: false,
+            description: "Prepare backup activities for when planned high-priority windows don't align. Keep small speedups ready for unexpected favorable phase combinations.",
+            efficiency: "Flexible",
+            points: "Backup Plans",
+            timeframe: "As needed",
+            tags: ["Backup", "Flexibility", "Contingency"]
+        }
+    ];
+}
+
 
     // CORRECTED: Phase hours for 5-phase system
     getPhaseHours(phaseName) {

@@ -300,47 +300,59 @@ class LastWarNexus {
         this.eventListeners = [];
     }
 
-    updateCurrentStatus() {
-        try {
-            const { utcDay, utcHour, utcMinute } = this.getCurrentUTCInfo();
-            const currentVSDay = this.getVSDayData(utcDay);
-            const currentArmsPhase = this.getCurrentArmsPhase();
-            
-            if (!currentVSDay || !currentArmsPhase) {
-                console.warn("Missing basic data - VS Day or Arms Phase");
-                this.setErrorState("Loading basic data...");
-                return;
-            }
-            
-            console.log(`Status Update: Day ${utcDay} (${currentVSDay.title}), Phase: ${currentArmsPhase.name}`);
-            
-            // Check for active alignment
-            const alignment = this.data.highpriorityalignments.find(a => 
-                a.vsday === utcDay && a.armsphase === currentArmsPhase.name
-            );
-
-            const activeNowElement = document.getElementById('active-now');
-            
-            if (alignment) {
-                console.log("Active alignment found:", alignment);
-                this.displayActiveAlignment(alignment, currentArmsPhase, currentVSDay, activeNowElement);
-            } else {
-                console.log("No active alignment, finding next window");
-                this.displayNextPriorityWindow(currentArmsPhase, currentVSDay, activeNowElement);
-            }
-
-            // Update footer with guaranteed values
-            this.safeUpdateElement('current-vs-day', 'textContent', currentVSDay.title);
-            this.safeUpdateElement('arms-phase', 'textContent', currentArmsPhase.name);
-            
-            const nextChangeTime = this.calculateTimeUntilNextPhase();
-            this.safeUpdateElement('next-alignment-countdown', 'textContent', nextChangeTime);
-
-        } catch (error) {
-            console.error("Critical error in updateCurrentStatus:", error);
-            this.setErrorState("System error - please refresh");
+ updateCurrentStatus() {
+    try {
+        console.log("🚀 updateCurrentStatus started");
+        
+        const { utcDay, utcHour, utcMinute } = this.getCurrentUTCInfo();
+        const currentVSDay = this.getVSDayData(utcDay);
+        const currentArmsPhase = this.getCurrentArmsPhase();
+        
+        console.log(`📊 Current state: Day ${utcDay} (${currentVSDay?.title}), Phase: ${currentArmsPhase?.name}`);
+        
+        if (!currentVSDay || !currentArmsPhase) {
+            console.warn("⚠️ Missing basic data");
+            this.safeUpdateElement('next-priority-time', 'textContent', 'Loading...');
+            this.safeUpdateElement('next-priority-event', 'textContent', 'Initializing...');
+            return;
         }
+        
+        // Check for active alignment with enhanced logging
+        const alignment = this.data.highpriorityalignments.find(a => {
+            const dayMatch = a.vsday === utcDay;
+            const phaseMatch = a.armsphase === currentArmsPhase.name;
+            console.log(`🔍 Checking alignment: vsday ${a.vsday} === ${utcDay} (${dayMatch}), armsphase "${a.armsphase}" === "${currentArmsPhase.name}" (${phaseMatch})`);
+            return dayMatch && phaseMatch;
+        });
+
+        console.log("🎯 Final alignment result:", alignment);
+
+        const activeNowElement = document.getElementById('active-now');
+        
+        if (alignment) {
+            console.log("✅ Active alignment found, displaying active state");
+            this.displayActiveAlignment(alignment, currentArmsPhase, currentVSDay, activeNowElement);
+        } else {
+            console.log("⚠️ No active alignment, showing next window");
+            this.displayNextPriorityWindow(currentArmsPhase, currentVSDay, activeNowElement);
+        }
+
+        // Update footer with guaranteed values
+        this.safeUpdateElement('current-vs-day', 'textContent', currentVSDay.title);
+        this.safeUpdateElement('arms-phase', 'textContent', currentArmsPhase.name);
+        
+        const nextChangeTime = this.calculateTimeUntilNextPhase();
+        this.safeUpdateElement('next-alignment-countdown', 'textContent', nextChangeTime);
+        
+        console.log("✅ updateCurrentStatus completed successfully");
+
+    } catch (error) {
+        console.error("❌ Critical error in updateCurrentStatus:", error);
+        this.safeUpdateElement('next-priority-time', 'textContent', 'Critical Error');
+        this.safeUpdateElement('next-priority-event', 'textContent', 'System Malfunction');
     }
+}
+
 
     displayActiveAlignment(alignment, currentArmsPhase, currentVSDay, activeNowElement) {
         try {
@@ -368,41 +380,49 @@ class LastWarNexus {
         }
     }
 
-    displayNextPriorityWindow(currentArmsPhase, currentVSDay, activeNowElement) {
-        try {
-            if (activeNowElement) {
-                activeNowElement.style.display = 'none';
-            }
-            
-            const nextWindow = this.getNextHighPriorityWindow();
-            console.log("Next window result:", nextWindow);
-            
-            if (nextWindow && nextWindow.startTime && nextWindow.vsTitle && nextWindow.armsPhase) {
-                this.safeUpdateElement('badge-label', 'textContent', 'NEXT HIGH PRIORITY');
-                this.safeUpdateElement('next-priority-event', 'textContent', `${nextWindow.armsPhase} + ${nextWindow.vsTitle}`);
-                this.safeUpdateElement('efficiency-level', 'textContent', 'High');
-                this.safeUpdateElement('current-action', 'textContent', `Save resources for upcoming window: ${nextWindow.reason}`);
-                
-                const timeToNext = this.calculateTimeToWindow(nextWindow);
-                this.safeUpdateElement('next-priority-time', 'textContent', timeToNext);
-                this.safeUpdateElement('countdown-label', 'textContent', 'TIME REMAINING');
-            } else {
-                // Always show meaningful fallback
-                console.log("No priority windows found, showing current phase info");
-                this.safeUpdateElement('badge-label', 'textContent', 'NORMAL PHASE');
-                this.safeUpdateElement('next-priority-event', 'textContent', `${currentArmsPhase.name} Active`);
-                this.safeUpdateElement('efficiency-level', 'textContent', 'Medium');
-                this.safeUpdateElement('current-action', 'textContent', `Focus on ${currentArmsPhase.activities[0]} - Save speedups for priority windows`);
-                
-                const timeUntilPhaseEnd = this.calculateTimeUntilNextPhase();
-                this.safeUpdateElement('next-priority-time', 'textContent', timeUntilPhaseEnd);
-                this.safeUpdateElement('countdown-label', 'textContent', 'PHASE CHANGES IN');
-            }
-            
-        } catch (error) {
-            console.error("Error displaying next priority window:", error);
-            this.setErrorState("Error finding next window");
+displayNextPriorityWindow(currentArmsPhase, currentVSDay, activeNowElement) {
+    try {
+        console.log("🔍 Displaying next priority window logic started");
+        
+        if (activeNowElement) {
+            activeNowElement.style.display = 'none';
         }
+        
+        const nextWindow = this.getNextHighPriorityWindow();
+        console.log("🎯 Next window result:", nextWindow);
+        
+        if (nextWindow && nextWindow.startTime && nextWindow.vsTitle && nextWindow.armsPhase) {
+            console.log("✅ Valid next window found, updating display");
+            this.safeUpdateElement('badge-label', 'textContent', 'NEXT HIGH PRIORITY');
+            this.safeUpdateElement('next-priority-event', 'textContent', `${nextWindow.armsPhase} + ${nextWindow.vsTitle}`);
+            this.safeUpdateElement('efficiency-level', 'textContent', 'High');
+            this.safeUpdateElement('current-action', 'textContent', `Save resources: ${nextWindow.reason}`);
+            
+            const timeToNext = this.calculateTimeToWindow(nextWindow);
+            console.log("⏰ Time to next calculated:", timeToNext);
+            this.safeUpdateElement('next-priority-time', 'textContent', timeToNext);
+            this.safeUpdateElement('countdown-label', 'textContent', 'TIME REMAINING');
+        } else {
+            console.log("⚠️ No valid priority windows, showing current phase fallback");
+            this.safeUpdateElement('badge-label', 'textContent', 'NORMAL PHASE');
+            this.safeUpdateElement('next-priority-event', 'textContent', `${currentArmsPhase.name} Phase`);
+            this.safeUpdateElement('efficiency-level', 'textContent', 'Medium');
+            this.safeUpdateElement('current-action', 'textContent', `Focus on ${currentArmsPhase.activities[0]} activities`);
+            
+            const timeUntilPhaseEnd = this.calculateTimeUntilNextPhase();
+            this.safeUpdateElement('next-priority-time', 'textContent', timeUntilPhaseEnd);
+            this.safeUpdateElement('countdown-label', 'textContent', 'PHASE CHANGES IN');
+        }
+        
+    } catch (error) {
+        console.error("❌ Critical error in displayNextPriorityWindow:", error);
+        // Emergency fallback
+        this.safeUpdateElement('next-priority-time', 'textContent', 'System Error');
+        this.safeUpdateElement('next-priority-event', 'textContent', 'Please Refresh Page');
+    }
+}
+
+    
     }
 
     setErrorState(message) {
@@ -729,6 +749,29 @@ class LastWarNexus {
         }
     }
 
+emergencyElementUpdate(elementKey, property, value) {
+    // Last resort: try to find element by any means
+    const selectors = [
+        `#${elementKey}`,
+        `.${elementKey}`,
+        `[data-id="${elementKey}"]`,
+        `[class*="${elementKey}"]`
+    ];
+    
+    for (const selector of selectors) {
+        const element = document.querySelector(selector);
+        if (element) {
+            console.log(`🚨 Emergency update found element with selector: ${selector}`);
+            if (property === 'textContent') {
+                element.textContent = String(value || 'Emergency Update');
+            }
+            this.elements[elementKey] = element; // Cache for future
+            break;
+        }
+    }
+}
+
+
     toggleDropdown(type) {
         try {
             if (type === 'settings') {
@@ -984,6 +1027,20 @@ class LastWarNexus {
         }
         this.removeEventListeners();
     }
+	
+	debugElementStatus() {
+    console.log("🔧 DEBUG: Element Status Check");
+    const criticalElements = ['badge-label', 'next-priority-event', 'next-priority-time', 'countdown-label', 'current-action'];
+    
+    criticalElements.forEach(id => {
+        const element = document.getElementById(id);
+        console.log(`Element ${id}:`, element ? '✅ Found' : '❌ Missing', element);
+    });
+    
+    console.log("Current elements cache:", this.elements);
+}
+
+	
 }
 
 // Initialize the application

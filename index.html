@@ -13,7 +13,7 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚔️</text></svg>">
 </head>
 <body>
-    <!-- NEW: Initial Setup Modal -->
+    <!-- Initial Setup Modal -->
     <div id="initial-setup-modal" class="modal-overlay" style="display: none;">
         <div class="modal-container setup-modal">
             <div class="modal-header">
@@ -98,7 +98,7 @@
         </div>
     </div>
 
-    <!-- NEW: Arms Race Update Modal -->
+    <!-- Arms Race Update Modal -->
     <div id="arms-race-modal" class="modal-overlay" style="display: none;">
         <div class="modal-container">
             <div class="modal-header">
@@ -153,20 +153,19 @@
             
             <div class="nav-actions">
                 <div class="server-dropdown-container">
-                    <button class="server-btn" id="server-toggle" type="button">
-                        <span class="server-icon">🌍</span>
+                    <button class="server-btn" id="server-toggle" type="button" aria-label="Server Settings">
+                        <span class="server-icon" aria-hidden="true">⚙️</span>
                         <span class="server-label">Server</span>
-                        <span id="current-server">Settings</span>
                     </button>
-                    <div class="server-dropdown" id="server-dropdown">
+                    <div class="server-dropdown" id="server-dropdown" role="menu" aria-labelledby="server-toggle">
                         <div class="dropdown-header">
                             <h3>Server Settings</h3>
                         </div>
                         <div class="dropdown-content">
-                            <!-- UPDATED: Current + Next Arms Race Phase Selection -->
+                            <!-- UPDATED: Current + Next Phase Selection -->
                             <div class="setting-row">
                                 <label for="current-arms-phase">Current Arms Race Phase</label>
-                                <select id="current-arms-phase" class="dropdown-select">
+                                <select id="current-arms-phase" class="dropdown-select" aria-describedby="phase-help">
                                     <option value="Tech Research" selected>Tech Research</option>
                                     <option value="Drone Boost">Drone Boost</option>
                                     <option value="Hero Advancement">Hero Advancement</option>
@@ -184,11 +183,12 @@
                                     <option value="City Building">City Building</option>
                                     <option value="Unit Progression">Unit Progression</option>
                                 </select>
+                                <div id="phase-help" class="sr-only">Select your server's current Arms Race phase</div>
                             </div>
                             
                             <div class="setting-row" style="margin-top: 12px;">
                                 <label for="time-offset">Server Time Offset</label>
-                                <select id="time-offset" class="dropdown-select">
+                                <select id="time-offset" class="dropdown-select" aria-describedby="offset-help">
                                     <option value="-12">UTC -12 hours</option>
                                     <option value="-11">UTC -11 hours</option>
                                     <option value="-10">UTC -10 hours</option>
@@ -201,7 +201,7 @@
                                     <option value="-3">UTC -3 hours</option>
                                     <option value="-2">UTC -2 hours</option>
                                     <option value="-1">UTC -1 hour</option>
-                                    <option value="0" selected>UTC +0 hours</option>
+                                    <option value="0" selected>UTC 0 hours</option>
                                     <option value="1">UTC +1 hour</option>
                                     <option value="2">UTC +2 hours</option>
                                     <option value="3">UTC +3 hours</option>
@@ -215,38 +215,39 @@
                                     <option value="11">UTC +11 hours</option>
                                     <option value="12">UTC +12 hours</option>
                                 </select>
+                                <div id="offset-help" class="sr-only">Set your server's time offset from UTC</div>
                             </div>
                             
                             <div class="server-info" id="server-info">
                                 <div class="info-row">
-                                    <span class="info-label">Current Phase:</span>
+                                    <span class="info-label">Current Phase</span>
                                     <span id="current-phase-display" class="info-value">Tech Research</span>
                                 </div>
                                 <div class="info-row">
-                                    <span class="info-label">Next Phase:</span>
+                                    <span class="info-label">Next Phase</span>
                                     <span id="next-phase-display" class="info-value">Drone Boost</span>
                                 </div>
                                 <div class="info-row">
-                                    <span class="info-label">Server Time:</span>
+                                    <span class="info-label">Server Time</span>
                                     <span id="server-time-display" class="info-value">Loading...</span>
                                 </div>
                                 <div class="info-row">
-                                    <span class="info-label">Time Offset:</span>
+                                    <span class="info-label">Time Offset</span>
                                     <span id="offset-display" class="info-value">UTC +0</span>
                                 </div>
                             </div>
                             
-                            <button class="apply-server-btn" id="apply-server" type="button">Apply Changes</button>
+                            <button class="apply-server-btn" id="apply-server" type="button" aria-label="Apply server settings">Apply Changes</button>
                         </div>
                     </div>
                 </div>
                 
                 <div class="settings-dropdown-container">
-                    <button class="settings-btn" id="settings-toggle" type="button">
-                        <span class="settings-icon">⚙️</span>
+                    <button class="settings-btn" id="settings-toggle" type="button" aria-label="Display Settings">
+                        <span class="settings-icon" aria-hidden="true">🎮</span>
                         <span class="settings-label">Display</span>
                     </button>
-                    <div class="settings-dropdown" id="settings-dropdown">
+                    <div class="settings-dropdown" id="settings-dropdown" role="menu" aria-labelledby="settings-toggle">
                         <div class="dropdown-header">
                             <h3>Display Settings</h3>
                         </div>
@@ -258,9 +259,7 @@
                                     <option value="local">Local Time</option>
                                 </select>
                             </div>
-                            
-                            <!-- REMOVED: Detail Level Dropdown - No longer needed -->
-                            
+                            <!-- REMOVED: Detail Level Dropdown -->
                             <div class="setting-row">
                                 <label for="notification-alerts">Priority Alerts</label>
                                 <select id="notification-alerts" class="dropdown-select">
@@ -270,7 +269,6 @@
                                     <option value="both">Both 15min & 5min</option>
                                 </select>
                             </div>
-                            
                             <div class="setting-row">
                                 <label for="phase-alerts">Phase Change Alerts</label>
                                 <select id="phase-alerts" class="dropdown-select">
@@ -288,9 +286,9 @@
     </nav>
 
     <div class="app-container">
-        <section class="hero-dashboard">
-            <div class="dashboard-grid">
-                <div class="status-card gaming-inspired">
+        <section class="hero-dashboard-compact">
+            <div class="dashboard-grid-compact">
+                <div class="priority-main-card">
                     <div class="card-header gaming-header">
                         <div class="header-left">
                             <h2>VS Points Optimizer</h2>
@@ -299,13 +297,17 @@
                                 <span>LIVE</span>
                             </div>
                         </div>
-                        <div id="server-time" class="server-time-gaming">04:21:41</div>
+                        <div class="time-display-enhanced">
+                            <div id="server-time" class="server-time-gaming" title="Current server time">04:21:41</div>
+                            <div id="local-time" class="local-time-small" title="Your local time">12:21:41</div>
+                            <button id="sync-time" class="sync-btn" title="Sync with server">🔄</button>
+                        </div>
                     </div>
                     <div class="card-content gaming-content">
                         <div class="priority-gaming-hero" id="priority-hero">
                             <div class="active-now-strip" id="active-now" style="display: none;">
-                                <span class="active-badge">🔥 ACTIVE</span>
-                                <span id="active-action">Use research speedups now</span>
+                                <span class="active-badge">ACTIVE</span>
+                                <span id="active-action">Use research speedups now!</span>
                             </div>
                             
                             <div class="hero-badge">
@@ -324,19 +326,10 @@
                                     <div class="event-row">
                                         <div id="next-priority-event" class="event-name-gaming">Tech Research Wednesday</div>
                                         <div id="efficiency-level" class="efficiency-badge">High</div>
+                                        <div class="info-tooltip" data-tooltip="Research activities are in peak efficiency">ℹ️</div>
                                     </div>
                                     <div id="event-day-gaming" class="event-timing-gaming">Wednesday 12:00 UTC</div>
                                     <div id="current-action" class="event-action-gaming">Complete research projects for maximum points</div>
-                                </div>
-                            </div>
-                            
-                            <div class="priority-progress-bar">
-                                <div class="progress-track">
-                                    <div id="priority-progress-fill" class="progress-fill" style="width: 35%;"></div>
-                                </div>
-                                <div class="progress-labels">
-                                    <span class="progress-start">Now</span>
-                                    <span class="progress-end">High Priority</span>
                                 </div>
                             </div>
                         </div>
@@ -347,63 +340,58 @@
                                     <div class="item-label">VS Day</div>
                                     <div id="current-vs-day" class="item-value">Wednesday</div>
                                 </div>
-                                <div class="status-divider-gaming"></div>
+                                <div class="status-divider-gaming">•</div>
                                 <div class="status-item-gaming">
                                     <div class="item-label">Arms Race</div>
-                                    <div id="arms-phase" class="item-value">Tech Research</div>
+                                    <div id="arms-phase" class="item-value" data-tooltip="Current Arms Race phase">Tech Research</div>
                                 </div>
-                                <div class="status-divider-gaming"></div>
+                                <div class="status-divider-gaming">•</div>
                                 <div class="status-item-gaming">
-                                    <div class="item-label">Changes In</div>
-                                    <div id="next-alignment-countdown" class="item-value highlight">37m</div>
+                                    <div class="item-label">Next Reset</div>
+                                    <div id="next-reset-countdown" class="item-value highlight">12h 37m</div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 
-                <div class="countdown-card">
-                    <div class="card-header">
-                        <h2>Next Phase Transition</h2>
-                        <div class="priority-indicator"></div>
-                    </div>
-                    <div class="card-content">
-                        <div class="countdown-display">
-                            <div class="phase-explainer">
-                                <span class="explainer-text">Arms Race phases change every 4 hours</span>
-                            </div>
+                <div class="side-cards">
+                    <div class="countdown-card-compact">
+                        <div class="card-header">
+                            <h3>Phase Transition</h3>
+                            <div class="priority-indicator"></div>
+                        </div>
+                        <div class="card-content">
                             <div id="countdown-timer" class="countdown-value">43m 22s</div>
-                            <div class="countdown-details">
-                                <div id="event-name" class="event-name">Drone Boost Phase</div>
-                                <div id="event-time" class="event-time">08:00 Server Time</div>
+                            <div class="phase-info">
+                                <div id="current-phase-name" class="current-phase">Tech Research</div>
+                                <div class="phase-arrow">→</div>
+                                <div id="next-phase-name" class="next-phase">Drone Boost Next</div>
                             </div>
-                            <div class="countdown-progress">
-                                <div class="progress-bar urgency-bar">
-                                    <div id="progress-fill" class="progress-fill"></div>
-                                    <span id="progress-text" class="progress-text">Phase transition</span>
+                            <div class="phase-progress-container">
+                                <div class="phase-progress-bar">
+                                    <div id="phase-progress-fill" class="phase-progress-fill" style="width: 65%;"></div>
+                                </div>
+                                <div class="phase-labels">
+                                    <span>Started</span>
+                                    <span>Ending</span>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                
-                <div class="action-card-minimal">
-                    <div class="card-header-minimal">
-                        <h3>Current Strategy</h3>
-                        <div class="strategy-rating">
-                            <span id="strategy-rating" class="rating-value">A</span>
+                    
+                    <div class="strategy-card-compact">
+                        <div class="card-header">
+                            <h3>Strategy</h3>
+                            <div class="strategy-rating">
+                                <span id="strategy-rating" class="rating-value">A</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="card-content-minimal">
-                        <div class="action-display-minimal">
-                            <div id="action-text" class="action-text-minimal">Activities earn standard points. Save speedups for high priority windows.</div>
-                            <div class="action-meta-minimal">
-                                <span class="meta-label">Focus:</span>
-                                <span id="optimization-focus" class="focus-value">Dual Event Alignment</span>
+                        <div class="card-content">
+                            <div id="action-text" class="action-text">Save speedups for high priority windows that align with VS day activities</div>
+                            <div class="strategy-meta">
                                 <span class="meta-label">Priority:</span>
                                 <span id="priority-level" class="priority-tag">Medium</span>
-                                <span class="meta-label">Next:</span>
-                                <span id="time-remaining" class="time-value">Calculating...</span>
                             </div>
                         </div>
                     </div>
@@ -411,130 +399,132 @@
             </div>
         </section>
 
-        <main class="main-content">
-            <div class="tab-navigation">
-                <div class="tab-container">
-                    <button class="tab-btn active" data-tab="priority" type="button">
-                        <span class="tab-icon">🎯</span>
-                        <span class="tab-label">VS Points Optimizer</span>
-                        <span class="tab-count" id="priority-count">Loading</span>
-                    </button>
-                    <button class="tab-btn" data-tab="schedule" type="button">
-                        <span class="tab-icon">📅</span>
-                        <span class="tab-label">Arms Race Schedule</span>
-                        <span class="tab-count" id="schedule-count">42 Events</span>
-                    </button>
-                    <button class="tab-btn" data-tab="intelligence" type="button">
-                        <span class="tab-icon">🧠</span>
-                        <span class="tab-label">Server Battle Strategies</span>
-                        <span class="tab-count" id="intel-count">16 Guides</span>
-                    </button>
-                </div>
+        <div class="tab-navigation-enhanced">
+            <div class="tab-container" role="tablist" aria-label="Main navigation tabs">
+                <button class="tab-btn active" data-tab="priority" type="button" role="tab" aria-selected="true" aria-controls="priority-tab">
+                    <div class="tab-content">
+                        <span class="tab-icon" aria-hidden="true">⚡</span>
+                        <div class="tab-info">
+                            <span class="tab-label">VS Points Optimizer</span>
+                            <span class="tab-count" id="priority-count">Loading</span>
+                        </div>
+                    </div>
+                </button>
+                <button class="tab-btn" data-tab="schedule" type="button" role="tab" aria-selected="false" aria-controls="schedule-tab">
+                    <div class="tab-content">
+                        <span class="tab-icon" aria-hidden="true">📅</span>
+                        <div class="tab-info">
+                            <span class="tab-label">Arms Race Schedule</span>
+                            <span class="tab-count" id="schedule-count">42 Events</span>
+                        </div>
+                    </div>
+                </button>
+                <button class="tab-btn" data-tab="guides" type="button" role="tab" aria-selected="false" aria-controls="guides-tab">
+                    <div class="tab-content">
+                        <span class="tab-icon" aria-hidden="true">📚</span>
+                        <div class="tab-info">
+                            <span class="tab-label">Strategy Guides</span>
+                            <span class="tab-count" id="guides-count">8 Guides</span>
+                        </div>
+                    </div>
+                </button>
             </div>
-            
+        </div>
+
+        <main class="main-content">
             <div class="tab-content">
-                <div id="priority-tab" class="tab-panel active">
+                <div id="priority-tab" class="tab-panel active" role="tabpanel" aria-labelledby="priority-btn">
                     <div class="section-header">
                         <h2>Maximum VS Points Windows</h2>
                         <p class="section-subtitle">Optimal timing windows when activities contribute to both Alliance Duel VS points AND Arms Race points simultaneously</p>
-                    </div>
-                    
-                    <div class="priority-explanation">
-                        <div class="explanation-card">
-                            <span class="explanation-icon">⚡</span>
-                            <span class="explanation-text">High Priority: Activities that earn points for BOTH events simultaneously</span>
+                        <div class="priority-explanation">
+                            <div class="explanation-card">
+                                <span class="explanation-icon">🎯</span>
+                                <span class="explanation-text">High Priority: Activities that earn points for BOTH events simultaneously</span>
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="section-filters">
-                        <button class="filter-btn active" data-filter="all" type="button">All Windows</button>
-                        <button class="filter-btn" data-filter="active" type="button">Active Now</button>
-                        <button class="filter-btn" data-filter="upcoming" type="button">Upcoming</button>
+                    <div class="section-filters" role="group" aria-label="Filter priority windows">
+                        <button class="filter-btn active" data-filter="all" type="button" aria-pressed="true">All Windows</button>
+                        <button class="filter-btn" data-filter="active" type="button" aria-pressed="false">Active Now</button>
+                        <button class="filter-btn" data-filter="upcoming" type="button" aria-pressed="false">Upcoming</button>
                     </div>
                     
-                    <div id="priority-grid" class="priority-grid">
-                        <div class="loading-message">Loading VS Points optimization data...</div>
+                    <div id="priority-grid" class="priority-grid" aria-live="polite">
+                        <div class="skeleton-grid">
+                            <div class="skeleton-card"></div>
+                            <div class="skeleton-card"></div>
+                            <div class="skeleton-card"></div>
+                        </div>
                     </div>
                 </div>
                 
-                <div id="schedule-tab" class="tab-panel">
+                <div id="schedule-tab" class="tab-panel" role="tabpanel" aria-labelledby="schedule-btn">
                     <div class="section-header">
                         <h2>Complete Arms Race Schedule</h2>
                         <p class="section-subtitle">Plan your week with the full Arms Race and VS event calendar</p>
-                    </div>
-                    
-                    <div class="schedule-legend">
-                        <div class="legend-item">
-                            <div class="legend-color priority"></div>
-                            <span>Peak Efficiency</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-color current"></div>
-                            <span>Active Now</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-color normal"></div>
-                            <span>Standard</span>
+                        <div class="schedule-legend">
+                            <div class="legend-item">
+                                <div class="legend-color priority"></div>
+                                <span>Peak Efficiency</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color current"></div>
+                                <span>Active Now</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color normal"></div>
+                                <span>Standard</span>
+                            </div>
                         </div>
                     </div>
                     
                     <div class="schedule-container">
-                        <div id="schedule-grid" class="schedule-grid">
-                            <!-- Schedule grid will be populated here -->
-                        </div>
+                        <div id="schedule-grid" class="schedule-grid" aria-live="polite"></div>
                     </div>
                 </div>
                 
-                <div id="intelligence-tab" class="tab-panel">
+                <div id="guides-tab" class="tab-panel" role="tabpanel" aria-labelledby="guides-btn">
                     <div class="section-header">
-                        <h2>Server Battle Strategies</h2>
-                        <p class="section-subtitle">Expert guides, pro tips, and comprehensive strategies</p>
+                        <h2>Last War: Survival Strategy Guides</h2>
+                        <p class="section-subtitle">Expert strategies and optimization tips for maximizing your gameplay</p>
+                        <div class="guides-stats">
+                            <div class="guides-stat">
+                                <span class="stat-number">Dual</span>
+                                <span class="stat-label">Event Focus</span>
+                            </div>
+                            <div class="guides-stat">
+                                <span class="stat-number">4hr</span>
+                                <span class="stat-label">Phase Cycles</span>
+                            </div>
+                            <div class="guides-stat">
+                                <span class="stat-number">6</span>
+                                <span class="stat-label">VS Days</span>
+                            </div>
+                        </div>
                     </div>
                     
-                    <div class="intel-stats">
-                        <div class="intel-stat">
-                            <span class="stat-number">Max</span>
-                            <span class="stat-label">VS Points</span>
-                        </div>
-                        <div class="intel-stat">
-                            <span class="stat-number">2-4x</span>
-                            <span class="stat-label">Efficiency</span>
-                        </div>
-                        <div class="intel-stat">
-                            <span class="stat-number">S4</span>
-                            <span class="stat-label">Season</span>
-                        </div>
-                    </div>
-                    
-                    <div id="intelligence-content" class="intelligence-hub">
-                        <!-- Intelligence content will be populated here -->
-                    </div>
+                    <div id="guides-content" class="guides-hub" aria-live="polite"></div>
                 </div>
             </div>
         </main>
     </div>
-    
-    <!-- NEW: Bottom Priority Events Bar -->
-    <div id="bottom-events-bar" class="bottom-events-bar collapsed">
-        <div class="events-bar-header" id="events-bar-toggle">
-            <div class="events-bar-title">
-                <span class="events-icon">⚡</span>
-                <span>Priority Windows</span>
-                <span id="events-count" class="events-count">4 upcoming</span>
-            </div>
-            <div class="events-bar-controls">
-                <span id="bar-toggle-text" class="toggle-text">Expand</span>
-                <span id="bar-toggle-icon" class="toggle-icon">▲</span>
-            </div>
-        </div>
-        <div class="events-bar-content" id="events-bar-content">
-            <div id="bottom-events-grid" class="bottom-events-grid">
-                <!-- Priority events will be populated here -->
+
+    <div class="priority-banner" id="priority-banner" role="alert" aria-live="assertive">
+        <div class="banner-container">
+            <div class="banner-content" id="banner-content">
+                <div class="banner-icon">⚡</div>
+                <div class="banner-text">
+                    <div class="banner-title" id="banner-title">High Priority Active</div>
+                    <div class="banner-subtitle" id="banner-subtitle">Tech Research + Wednesday Research</div>
+                </div>
+                <div class="banner-time" id="banner-time">2h 37m remaining</div>
+                <button class="banner-close" id="banner-close" type="button" aria-label="Close banner">✕</button>
             </div>
         </div>
     </div>
 
-    <!-- NEW: Notification Modal with Proper Centering -->
     <div id="notification-modal" class="notification-modal" style="display: none;">
         <div class="modal-content">
             <h3>Enable Notifications?</h3>
@@ -546,6 +536,7 @@
         </div>
     </div>
 
+    <div class="sr-only" aria-live="polite" id="status-announcements"></div>
     <script src="app.js"></script>
 </body>
 </html>

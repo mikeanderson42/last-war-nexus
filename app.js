@@ -643,8 +643,6 @@ class LastWarNexus {
         }
     }
 
-    // **FIXED: Enhanced time calculation methods**
-    calculateTime
 <div style="max-height: 400px; overflow-y: auto; border: 1px solid #333; background: #1a1a1a; padding: 10px; font-family: monospace; font-size: 11px;">
     // **FIXED: Complete time calculation methods**
     calculateTimeUntilNextPhase() {
@@ -1008,3 +1006,4 @@ document.addEventListener('DOMContentLoaded', () => {
     new LastWarNexus();
 });
 </div>
+

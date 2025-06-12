@@ -6,15 +6,23 @@ class LastWarNexus {
         
         this.currentArmsPhase = "auto";
         this.timeOffset = 0;
+        this.isVisible = true;
+        this.updateFrequency = 1000;
+        this.notificationsEnabled = false;
+        this.lastSelectedTab = localStorage.getItem('lwn-last-tab') || 'priority';
+        this.lastNotifiedWindow = null;
         
+        this.visibilityHandler = this.handleVisibilityChange.bind(this);
+        this.keyboardHandler = this.handleKeyboard.bind(this);
+        
+        // CORRECTED: Based on PDF - 5 phases only (no Mixed Phase)
         this.data = {
             armsracephases: [
                 { id: 1, name: "City Building", icon: "🏗️", activities: ["Building upgrades", "Construction speedups"], pointSources: ["Complete building upgrades", "Use construction speedups", "Finish building projects", "Upgrade headquarters", "Construct new buildings"] },
                 { id: 2, name: "Unit Progression", icon: "⚔️", activities: ["Troop training", "Training speedups"], pointSources: ["Train troops", "Use training speedups", "Complete troop upgrades", "Unlock new units", "Enhance unit capabilities"] },
                 { id: 3, name: "Tech Research", icon: "🔬", activities: ["Research completion", "Research speedups"], pointSources: ["Complete research", "Use research speedups", "Unlock new technologies", "Upgrade existing tech", "Finish research projects"] },
                 { id: 4, name: "Drone Boost", icon: "🚁", activities: ["Stamina usage", "Drone activities"], pointSources: ["Use stamina for attacks", "Complete drone missions", "Gather drone data", "Battle elite enemies", "Use stamina items"] },
-                { id: 5, name: "Hero Advancement", icon: "🦸", activities: ["Hero recruitment", "Hero EXP"], pointSources: ["Recruit new heroes", "Apply hero EXP", "Upgrade hero skills", "Enhance hero equipment", "Complete hero missions"] },
-                { id: 6, name: "Mixed Phase", icon: "🔄", activities: ["Check in-game calendar"], pointSources: ["Check calendar for current focus", "Mixed activities", "Various point sources", "Event-specific tasks", "General progression"] }
+                { id: 5, name: "Hero Advancement", icon: "🦸", activities: ["Hero recruitment", "Hero EXP"], pointSources: ["Recruit new heroes", "Apply hero EXP", "Upgrade hero skills", "Enhance hero equipment", "Complete hero missions"] }
             ],
             
             vsdays: [
@@ -27,35 +35,36 @@ class LastWarNexus {
                 { day: 6, name: "Saturday", title: "Enemy Buster", activities: ["Attack enemy bases", "Use healing speedups"], pointActivities: ["Attack enemy bases", "Use healing speedups", "Focus on combat", "Eliminate threats", "Use combat-related items"] }
             ],
             
+            // FIXED: No fake point values - use benefit descriptions
             highpriorityalignments: [
-                { vsday: 1, armsphase: "Drone Boost", reason: "Stamina/drone activities align perfectly.", points: 3500 },
-                { vsday: 1, armsphase: "Hero Advancement", reason: "Hero EXP activities align.", points: 3200 },
-                { vsday: 2, armsphase: "City Building", reason: "Building activities align perfectly.", points: 4000 },
-                { vsday: 3, armsphase: "Tech Research", reason: "Research activities align perfectly.", points: 3800 },
-                { vsday: 3, armsphase: "Drone Boost", reason: "Drone component activities align.", points: 3300 },
-                { vsday: 4, armsphase: "Hero Advancement", reason: "Hero activities align perfectly.", points: 3600 },
-                { vsday: 4, armsphase: "City Building", reason: "Building activities during hero training day.", points: 3200 },
-                { vsday: 5, armsphase: "City Building", reason: "Building component of mobilization.", points: 4200 },
-                { vsday: 5, armsphase: "Unit Progression", reason: "Training component of mobilization.", points: 3900 },
-                { vsday: 5, armsphase: "Tech Research", reason: "Research component of mobilization.", points: 4100 },
-                { vsday: 6, armsphase: "Unit Progression", reason: "Troop training for combat.", points: 3700 },
-                { vsday: 6, armsphase: "City Building", reason: "Construction speedups for defenses.", points: 3400 }
+                { vsday: 1, armsphase: "Drone Boost", reason: "Stamina activities align with radar training day.", benefit: "High Efficiency" },
+                { vsday: 1, armsphase: "Hero Advancement", reason: "Hero EXP activities complement radar training.", benefit: "Good Synergy" },
+                { vsday: 2, armsphase: "City Building", reason: "Building upgrades align perfectly with base expansion.", benefit: "Maximum Efficiency" },
+                { vsday: 3, armsphase: "Tech Research", reason: "Research activities align perfectly with science day.", benefit: "Perfect Alignment" },
+                { vsday: 3, armsphase: "Drone Boost", reason: "Drone components support research focus.", benefit: "High Efficiency" },
+                { vsday: 4, armsphase: "Hero Advancement", reason: "Hero activities align perfectly with training day.", benefit: "Perfect Match" },
+                { vsday: 4, armsphase: "City Building", reason: "Building upgrades during hero training day.", benefit: "Good Timing" },
+                { vsday: 5, armsphase: "City Building", reason: "Building component of total mobilization.", benefit: "Peak Efficiency" },
+                { vsday: 5, armsphase: "Unit Progression", reason: "Training component of mobilization day.", benefit: "High Impact" },
+                { vsday: 5, armsphase: "Tech Research", reason: "Research component of mobilization day.", benefit: "Maximum Impact" },
+                { vsday: 6, armsphase: "Unit Progression", reason: "Troop training supports combat activities.", benefit: "Strong Synergy" },
+                { vsday: 6, armsphase: "City Building", reason: "Defense preparations for enemy buster day.", benefit: "Good Support" }
             ]
         };
         
         this.settings = { timeFormat: "utc", detailLevel: "essential", viewScope: "week" };
-        this.activeTab = "priority";
+        this.activeTab = this.lastSelectedTab;
         this.activeFilter = "all";
         this.updateInterval = null;
-        this.dropdownOpen = false;
         this.elements = {};
-        this.eventListeners = [];
         
         if (typeof window !== 'undefined') {
             window.lastWarNexusInstance = this;
         }
         
         this.initializeWhenReady();
+        this.setupPerformanceOptimizations();
+        this.setupAccessibility();
     }
     
     initializeWhenReady() {
@@ -66,7 +75,152 @@ class LastWarNexus {
         }
     }
     
-    init() {
+    // Smart Updates - Only update visible elements
+    handleVisibilityChange() {
+        this.isVisible = !document.hidden;
+        
+        if (this.isVisible) {
+            this.updateFrequency = 1000;
+            this.updateAllDisplays();
+        } else {
+            this.updateFrequency = 10000;
+        }
+        
+        if (this.updateInterval) {
+            clearInterval(this.updateInterval);
+            this.startUpdateLoop();
+        }
+    }
+    
+    // Performance Optimizations
+    setupPerformanceOptimizations() {
+        document.addEventListener('visibilitychange', this.visibilityHandler);
+        this.setupCardAnimations();
+        this.preloadAnimations();
+    }
+    
+    setupCardAnimations() {
+        if ('IntersectionObserver' in window) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.style.animationDelay = `${index * 50}ms`;
+                            entry.target.classList.add('animate-in');
+                        }, index * 50);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            this.cardObserver = observer;
+        }
+    }
+    
+    preloadAnimations() {
+        const style = document.createElement('style');
+        style.textContent = `
+            .preload-animations * {
+                transition: none !important;
+                animation: none !important;
+            }
+        `;
+        document.head.appendChild(style);
+        
+        setTimeout(() => {
+            document.head.removeChild(style);
+        }, 100);
+    }
+    
+    // Enhanced Accessibility
+    setupAccessibility() {
+        document.addEventListener('keydown', this.keyboardHandler);
+        this.setupScreenReaderAnnouncements();
+        this.setupARIALabels();
+    }
+    
+    handleKeyboard(event) {
+        if (event.target.classList.contains('tab-btn')) {
+            if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+                event.preventDefault();
+                this.navigateTabs(event.key === 'ArrowRight' ? 1 : -1);
+            } else if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                event.target.click();
+            }
+        }
+        
+        if (event.target.classList.contains('filter-btn')) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                event.target.click();
+            }
+        }
+        
+        if (event.ctrlKey || event.metaKey) {
+            switch(event.key) {
+                case '1':
+                    event.preventDefault();
+                    this.switchTab('priority');
+                    break;
+                case '2':
+                    event.preventDefault();
+                    this.switchTab('schedule');
+                    break;
+                case '3':
+                    event.preventDefault();
+                    this.switchTab('guides');
+                    break;
+            }
+        }
+    }
+    
+    navigateTabs(direction) {
+        const tabs = document.querySelectorAll('.tab-btn');
+        const currentIndex = Array.from(tabs).findIndex(tab => tab.classList.contains('active'));
+        const newIndex = Math.max(0, Math.min(tabs.length - 1, currentIndex + direction));
+        
+        if (newIndex !== currentIndex) {
+            tabs[newIndex].focus();
+            tabs[newIndex].click();
+        }
+    }
+    
+    setupScreenReaderAnnouncements() {
+        this.announcements = document.getElementById('status-announcements');
+    }
+    
+    announceToScreenReader(message) {
+        if (this.announcements) {
+            this.announcements.textContent = message;
+            setTimeout(() => {
+                this.announcements.textContent = '';
+            }, 1000);
+        }
+    }
+    
+    setupARIALabels() {
+        setTimeout(() => {
+            this.updateARIALabels();
+        }, 1000);
+    }
+    
+    updateARIALabels() {
+        const currentPhase = this.getCurrentArmsPhaseInfo();
+        const currentVSDay = this.getCurrentVSDayInfo();
+        
+        if (this.elements['arms-phase']) {
+            this.elements['arms-phase'].setAttribute('aria-label', 
+                `Current Arms Race phase: ${currentPhase.name}, ends in ${this.calculateTimeUntilPhaseEnd()}`);
+        }
+        
+        if (this.elements['current-vs-day']) {
+            this.elements['current-vs-day'].setAttribute('aria-label', 
+                `Current Alliance Duel day: ${currentVSDay.title}`);
+        }
+    }
+    
+    async init() {
         try {
             this.initializationAttempts++;
             console.log(`Initialization attempt ${this.initializationAttempts}`);
@@ -82,12 +236,22 @@ class LastWarNexus {
             this.setupEventListeners();
             this.setupTabNavigation();
             this.setupBanner();
+            this.handleOfflineState();
+            
+            const savedNotificationPref = localStorage.getItem('lwn-notifications');
+            if (savedNotificationPref === 'true') {
+                this.notificationsEnabled = true;
+            } else if (savedNotificationPref === null) {
+                setTimeout(() => this.requestNotificationPermission(), 3000);
+            }
+            
+            this.switchTab(this.activeTab);
             this.populateAllSections();
             this.updateAllDisplays();
             this.startUpdateLoop();
             this.isInitialized = true;
             
-            console.log("Last War Nexus initialized successfully");
+            console.log("Last War Nexus initialized successfully with all A+ features");
         } catch (error) {
             console.error("Initialization error:", error);
         }
@@ -102,7 +266,9 @@ class LastWarNexus {
             'badge-label', 'next-priority-event', 'efficiency-level', 'current-action', 
             'next-priority-time', 'countdown-label', 'next-alignment-countdown', 'active-now', 'active-action',
             'priority-grid', 'schedule-grid', 'guides-content', 'priority-count', 'guides-count',
-            'priority-banner', 'banner-title', 'banner-subtitle', 'banner-time', 'banner-close'
+            'priority-banner', 'banner-title', 'banner-subtitle', 'banner-time', 'banner-close',
+            'local-time', 'sync-time', 'next-reset-countdown', 'current-phase-name', 'next-phase-name',
+            'phase-progress-fill', 'action-text'
         ];
         
         let foundCount = 0;
@@ -161,6 +327,13 @@ class LastWarNexus {
                 });
             }
 
+            if (this.elements['sync-time']) {
+                this.elements['sync-time'].addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.syncWithServer();
+                });
+            }
+
             document.addEventListener('click', (e) => {
                 if (!e.target.closest('.settings-dropdown-container') && 
                     !e.target.closest('.server-dropdown-container')) {
@@ -214,12 +387,13 @@ class LastWarNexus {
     switchTab(tabName) {
         try {
             this.activeTab = tabName;
+            localStorage.setItem('lwn-last-tab', tabName);
             
             document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.getAttribute('data-tab') === tabName) {
-                    btn.classList.add('active');
-                }
+                const isActive = btn.getAttribute('data-tab') === tabName;
+                btn.classList.toggle('active', isActive);
+                btn.setAttribute('aria-selected', isActive);
+                btn.setAttribute('tabindex', isActive ? '0' : '-1');
             });
             
             document.querySelectorAll('.tab-panel').forEach(panel => {
@@ -229,10 +403,30 @@ class LastWarNexus {
             const targetPanel = document.getElementById(`${tabName}-tab`);
             if (targetPanel) {
                 targetPanel.classList.add('active');
+                this.triggerStaggeredAnimations(targetPanel);
+                this.announceToScreenReader(`Switched to ${tabName} section`);
             }
         } catch (error) {
             console.error("Error switching tab:", error);
         }
+    }
+    
+    triggerStaggeredAnimations(container) {
+        const cards = container.querySelectorAll('.priority-window-card, .guide-card, .schedule-day');
+        cards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                card.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+                
+                if (this.cardObserver) {
+                    this.cardObserver.observe(card);
+                }
+            }, index * 50);
+        });
     }
 
     setFilter(filter) {
@@ -240,10 +434,9 @@ class LastWarNexus {
             this.activeFilter = filter;
             
             document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.getAttribute('data-filter') === filter) {
-                    btn.classList.add('active');
-                }
+                const isActive = btn.getAttribute('data-filter') === filter;
+                btn.classList.toggle('active', isActive);
+                btn.setAttribute('aria-pressed', isActive);
             });
             
             this.populatePriorityGrid();
@@ -266,10 +459,12 @@ class LastWarNexus {
                     }
                     if (this.elements['settings-toggle']) {
                         this.elements['settings-toggle'].classList.remove('active');
+                        this.elements['settings-toggle'].setAttribute('aria-expanded', 'false');
                     }
                     
                     dropdown.classList.toggle('show', !isOpen);
                     toggle.classList.toggle('active', !isOpen);
+                    toggle.setAttribute('aria-expanded', !isOpen);
                 }
             } else if (type === 'settings') {
                 const dropdown = this.elements['settings-dropdown'];
@@ -283,10 +478,12 @@ class LastWarNexus {
                     }
                     if (this.elements['server-toggle']) {
                         this.elements['server-toggle'].classList.remove('active');
+                        this.elements['server-toggle'].setAttribute('aria-expanded', 'false');
                     }
                     
                     dropdown.classList.toggle('show', !isOpen);
                     toggle.classList.toggle('active', !isOpen);
+                    toggle.setAttribute('aria-expanded', !isOpen);
                 }
             }
         } catch (error) {
@@ -305,6 +502,7 @@ class LastWarNexus {
             ['server-toggle', 'settings-toggle'].forEach(id => {
                 if (this.elements[id]) {
                     this.elements[id].classList.remove('active');
+                    this.elements[id].setAttribute('aria-expanded', 'false');
                 }
             });
         } catch (error) {
@@ -322,12 +520,13 @@ class LastWarNexus {
         }
     }
 
+    // CORRECTED: 5-phase Arms Race as per PDF
     getCurrentArmsPhaseInfo() {
         try {
             const now = this.getServerTime();
             const hour = now.getUTCHours();
-            const phaseIndex = Math.floor(hour / 4) % 6;
-            const phases = ["City Building", "Unit Progression", "Tech Research", "Drone Boost", "Hero Advancement", "Mixed Phase"];
+            const phaseIndex = Math.floor(hour / 4) % 5; // 5 phases, not 6
+            const phases = ["City Building", "Unit Progression", "Tech Research", "Drone Boost", "Hero Advancement"];
             
             if (this.currentArmsPhase !== "auto") {
                 const manualPhase = this.data.armsracephases.find(p => p.name === this.currentArmsPhase);
@@ -336,20 +535,20 @@ class LastWarNexus {
                         name: manualPhase.name,
                         index: phaseIndex,
                         startHour: phaseIndex * 4,
-                        nextStartHour: ((phaseIndex + 1) % 6) * 4
+                        nextStartHour: ((phaseIndex + 1) % 5) * 4
                     };
                 }
             }
             
             const currentPhase = phases[phaseIndex];
             const phaseStartHour = phaseIndex * 4;
-            const nextPhaseStartHour = ((phaseIndex + 1) % 6) * 4;
+            const nextPhaseStartHour = ((phaseIndex + 1) % 5) * 4;
             
             return {
                 name: currentPhase,
                 index: phaseIndex,
                 startHour: phaseStartHour,
-                nextStartHour: nextPhaseStartHour === 0 ? 24 : nextPhaseStartHour
+                nextStartHour: nextPhaseStartHour === 0 ? 20 : nextPhaseStartHour // Last phase ends at 20:00
             };
         } catch (error) {
             return { name: "City Building", index: 0, startHour: 0, nextStartHour: 4 };
@@ -392,8 +591,7 @@ class LastWarNexus {
                 "Unit Progression": [4],
                 "Tech Research": [8],
                 "Drone Boost": [12],
-                "Hero Advancement": [16],
-                "Mixed Phase": [20]
+                "Hero Advancement": [16]
             };
             
             for (let dayOffset = 0; dayOffset < 14; dayOffset++) {
@@ -425,7 +623,7 @@ class LastWarNexus {
                                 vsTitle: vsDayData.title,
                                 armsPhase: alignment.armsphase,
                                 reason: alignment.reason,
-                                points: alignment.points,
+                                benefit: alignment.benefit,
                                 timeToWindow: this.safeFormatTimeDifference(timeDiff),
                                 timeDiffMs: timeDiff
                             };
@@ -484,7 +682,7 @@ class LastWarNexus {
                             <span class="window-name">${window.armsPhase} + ${window.vsTitle}</span>
                         </div>
                         <div class="window-details">
-                            <div class="points-potential">+${window.points.toLocaleString()} VS Points</div>
+                            <div class="points-potential">${window.benefit}</div>
                             <div class="window-reason">${window.reason}</div>
                         </div>
                         <div class="window-actions">
@@ -532,7 +730,6 @@ class LastWarNexus {
         }
     }
 
-    // CORRECTED: Accurate Last War: Survival guides
     populateGuidesHub() {
         try {
             const hub = this.elements['guides-content'];
@@ -578,7 +775,6 @@ class LastWarNexus {
         }
     }
 
-    // VERIFIED: Accurate Last War: Survival strategy guides
     generateStrategyGuides() {
         return [
             {
@@ -713,10 +909,10 @@ class LastWarNexus {
                             timeDisplay: this.formatTimeToWindow(timeDiff),
                             armsPhase: alignment.armsphase,
                             vsTitle: vsDay.title,
-                            points: alignment.points,
+                            benefit: alignment.benefit,
                             reason: alignment.reason,
                             isActive: isActive,
-                            isPeak: alignment.points >= 3800,
+                            isPeak: alignment.benefit.includes('Maximum') || alignment.benefit.includes('Peak') || alignment.benefit.includes('Perfect'),
                             status: isActive ? 'ACTIVE NOW' : timeDiff > 0 ? 'UPCOMING' : 'COMPLETED',
                             statusClass: isActive ? 'active' : timeDiff > 0 ? 'upcoming' : 'completed',
                             icon: phase ? phase.icon : '⚡',
@@ -746,12 +942,12 @@ class LastWarNexus {
                 const isToday = dayOffset === 0;
                 
                 const phases = [];
-                const phaseHours = [0, 4, 8, 12, 16, 20];
-                const phaseNames = ["City Building", "Unit Progression", "Tech Research", "Drone Boost", "Hero Advancement", "Mixed Phase"];
+                const phaseHours = [0, 4, 8, 12, 16]; // 5 phases
+                const phaseNames = ["City Building", "Unit Progression", "Tech Research", "Drone Boost", "Hero Advancement"];
                 
                 for (let i = 0; i < phaseHours.length; i++) {
                     const hour = phaseHours[i];
-                    const nextHour = phaseHours[i + 1] || 24;
+                    const nextHour = phaseHours[i + 1] || 20; // Last phase ends at 20:00
                     const phaseName = phaseNames[i];
                     const phase = this.data.armsracephases.find(p => p.name === phaseName);
                     
@@ -790,8 +986,7 @@ class LastWarNexus {
             "Unit Progression": [4],
             "Tech Research": [8],
             "Drone Boost": [12],
-            "Hero Advancement": [16],
-            "Mixed Phase": [20]
+            "Hero Advancement": [16]
         };
         return phaseMap[phaseName] || [0];
     }
@@ -829,8 +1024,8 @@ class LastWarNexus {
         try {
             const now = this.getServerTime();
             const currentHour = now.getUTCHours();
-            const phaseStarts = [0, 4, 8, 12, 16, 20];
-            let nextPhaseHour = 24;
+            const phaseStarts = [0, 4, 8, 12, 16]; // 5 phases
+            let nextPhaseHour = 20; // Last phase ends at 20:00
             
             for (const startHour of phaseStarts) {
                 if (currentHour < startHour) {
@@ -857,6 +1052,52 @@ class LastWarNexus {
         }
     }
 
+    // Smart Notifications
+    async requestNotificationPermission() {
+        if ('Notification' in window && Notification.permission === 'default') {
+            const modal = document.getElementById('notification-modal');
+            if (modal) {
+                modal.style.display = 'flex';
+                
+                return new Promise((resolve) => {
+                    document.getElementById('enable-notifications').onclick = async () => {
+                        modal.style.display = 'none';
+                        const permission = await Notification.requestPermission();
+                        this.notificationsEnabled = permission === 'granted';
+                        localStorage.setItem('lwn-notifications', this.notificationsEnabled);
+                        resolve(this.notificationsEnabled);
+                    };
+                    
+                    document.getElementById('decline-notifications').onclick = () => {
+                        modal.style.display = 'none';
+                        localStorage.setItem('lwn-notifications', false);
+                        resolve(false);
+                    };
+                });
+            }
+        }
+        
+        return this.notificationsEnabled;
+    }
+    
+    showNotification(title, body, icon = '🎯') {
+        if (this.notificationsEnabled && 'Notification' in window && Notification.permission === 'granted') {
+            const notification = new Notification(title, {
+                body: body,
+                icon: `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">${icon}</text></svg>`,
+                tag: 'lastwar-priority',
+                requireInteraction: false
+            });
+            
+            notification.onclick = () => {
+                window.focus();
+                notification.close();
+            };
+            
+            setTimeout(() => notification.close(), 5000);
+        }
+    }
+
     updateBanner() {
         try {
             const banner = document.getElementById('priority-banner');
@@ -877,17 +1118,30 @@ class LastWarNexus {
                 const timeRemaining = this.calculateTimeUntilPhaseEnd();
                 
                 this.safeUpdateElement('banner-title', 'textContent', 'Peak Efficiency Active!');
-                this.safeUpdateElement('banner-subtitle', 'textContent', `${currentArmsPhase.name} + ${currentVSDay.title} - Use speedups now!`);
+                this.safeUpdateElement('banner-subtitle', 'textContent', 
+                    `${currentArmsPhase.name} + ${currentVSDay.title} - Use speedups now!`);
                 this.safeUpdateElement('banner-time', 'textContent', timeRemaining);
                 
                 banner.className = 'priority-banner peak-priority show';
+                banner.setAttribute('aria-label', `High priority window active: ${activeAlignment.benefit}`);
+                
+                if (!this.lastNotifiedWindow || this.lastNotifiedWindow !== activeAlignment.reason) {
+                    this.showNotification(
+                        'High Priority Window Active!', 
+                        `${currentArmsPhase.name} + ${currentVSDay.title}`,
+                        '⚡'
+                    );
+                    this.lastNotifiedWindow = activeAlignment.reason;
+                }
                 
             } else if (nextWindow && nextWindow.timeDiffMs && nextWindow.timeDiffMs < (2 * 60 * 60 * 1000)) {
                 this.safeUpdateElement('banner-title', 'textContent', 'High Priority Soon');
-                this.safeUpdateElement('banner-subtitle', 'textContent', `${nextWindow.armsPhase} + ${nextWindow.vsTitle} starting soon`);
+                this.safeUpdateElement('banner-subtitle', 'textContent', 
+                    `${nextWindow.armsPhase} + ${nextWindow.vsTitle} starting soon`);
                 this.safeUpdateElement('banner-time', 'textContent', nextWindow.timeToWindow);
                 
                 banner.className = 'priority-banner high-priority show';
+                banner.setAttribute('aria-label', `High priority window starting in ${nextWindow.timeToWindow}`);
             } else {
                 this.hideBanner();
             }
@@ -898,12 +1152,107 @@ class LastWarNexus {
 
     showBanner() {
         const banner = document.getElementById('priority-banner');
-        if (banner) banner.classList.add('show');
+        if (banner) {
+            banner.classList.remove('hidden');
+            banner.classList.add('show');
+        }
     }
 
     hideBanner() {
         const banner = document.getElementById('priority-banner');
-        if (banner) banner.classList.add('hidden');
+        if (banner) {
+            banner.classList.remove('show');
+            banner.classList.add('hidden');
+        }
+    }
+
+    updatePhaseProgress() {
+        try {
+            const now = this.getServerTime();
+            const currentHour = now.getUTCHours();
+            const phaseStart = Math.floor(currentHour / 4) * 4;
+            const phaseEnd = phaseStart + 4;
+            
+            const elapsed = currentHour - phaseStart + (now.getUTCMinutes() / 60);
+            const progress = (elapsed / 4) * 100;
+            
+            const progressFill = document.getElementById('phase-progress-fill');
+            if (progressFill) {
+                progressFill.style.width = `${Math.min(100, Math.max(0, progress))}%`;
+            }
+            
+            const currentPhase = this.getCurrentArmsPhaseInfo();
+            const nextPhaseIndex = (currentPhase.index + 1) % 5;
+            const phaseNames = ["City Building", "Unit Progression", "Tech Research", "Drone Boost", "Hero Advancement"];
+            const nextPhaseName = phaseNames[nextPhaseIndex];
+            
+            this.safeUpdateElement('current-phase-name', 'textContent', `${currentPhase.name} Active`);
+            this.safeUpdateElement('next-phase-name', 'textContent', `${nextPhaseName} Next`);
+        } catch (error) {
+            console.error("Error updating phase progress:", error);
+        }
+    }
+
+    updateTimeDisplays() {
+        try {
+            const serverTime = this.getServerTime();
+            const localTime = new Date();
+            
+            if (serverTime) {
+                const serverTimeString = serverTime.toUTCString().slice(17, 25);
+                this.safeUpdateElement('server-time', 'textContent', serverTimeString);
+                
+                const localTimeString = localTime.toLocaleTimeString([], { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+                this.safeUpdateElement('local-time', 'textContent', localTimeString);
+                
+                const nextReset = new Date(serverTime);
+                nextReset.setUTCHours(24, 0, 0, 0);
+                const timeToReset = nextReset.getTime() - serverTime.getTime();
+                const resetCountdown = this.safeFormatTimeDifference(timeToReset);
+                this.safeUpdateElement('next-reset-countdown', 'textContent', resetCountdown);
+            }
+        } catch (error) {
+            console.error("Error updating time displays:", error);
+        }
+    }
+
+    handleOfflineState() {
+        const showOfflineIndicator = () => {
+            if (!document.getElementById('offline-indicator')) {
+                const indicator = document.createElement('div');
+                indicator.id = 'offline-indicator';
+                indicator.className = 'offline-indicator';
+                indicator.textContent = '⚠️ Offline - Times may be inaccurate';
+                indicator.setAttribute('role', 'alert');
+                document.body.appendChild(indicator);
+            }
+        };
+        
+        const hideOfflineIndicator = () => {
+            const indicator = document.getElementById('offline-indicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        };
+        
+        window.addEventListener('online', () => {
+            hideOfflineIndicator();
+            this.announceToScreenReader('Connection restored');
+            this.updateAllDisplays();
+        });
+        
+        window.addEventListener('offline', () => {
+            showOfflineIndicator();
+            this.announceToScreenReader('Connection lost - times may be inaccurate');
+        });
+    }
+
+    syncWithServer() {
+        this.announceToScreenReader('Syncing time with server');
+        this.updateAllDisplays();
     }
 
     updateCurrentStatus() {
@@ -1054,12 +1403,15 @@ class LastWarNexus {
 
     startUpdateLoop() {
         try {
-            if (this.updateInterval) clearInterval(this.updateInterval);
+            if (this.updateInterval) {
+                clearInterval(this.updateInterval);
+            }
+            
             this.updateInterval = setInterval(() => {
-                if (this.isInitialized) {
+                if (this.isInitialized && this.isVisible) {
                     this.updateAllDisplays();
                 }
-            }, 1000);
+            }, this.updateFrequency);
         } catch (error) {
             console.error("Error starting update loop:", error);
         }
@@ -1067,24 +1419,14 @@ class LastWarNexus {
 
     updateAllDisplays() {
         try {
-            this.updateServerTime();
+            this.updateTimeDisplays();
             this.updateCurrentStatus();
             this.updateCountdown();
             this.updateBanner();
+            this.updatePhaseProgress();
+            this.updateARIALabels();
         } catch (error) {
             console.error("Error updating displays:", error);
-        }
-    }
-
-    updateServerTime() {
-        try {
-            const serverTime = this.getServerTime();
-            if (serverTime) {
-                const timeString = serverTime.toUTCString().slice(17, 25);
-                this.safeUpdateElement('server-time', 'textContent', timeString);
-            }
-        } catch (error) {
-            console.error("Error updating server time:", error);
         }
     }
 
@@ -1092,8 +1434,8 @@ class LastWarNexus {
         try {
             const now = this.getServerTime();
             const currentHour = now.getUTCHours();
-            const phaseStarts = [0, 4, 8, 12, 16, 20];
-            let nextPhaseStart = 24;
+            const phaseStarts = [0, 4, 8, 12, 16]; // 5 phases
+            let nextPhaseStart = 20; // Last phase ends at 20:00
             
             for (const start of phaseStarts) {
                 if (currentHour < start) {
@@ -1103,7 +1445,7 @@ class LastWarNexus {
             }
             
             const nextPhaseTime = new Date(now);
-            if (nextPhaseStart === 24) {
+            if (nextPhaseStart === 20) {
                 nextPhaseTime.setUTCDate(now.getUTCDate() + 1);
                 nextPhaseTime.setUTCHours(0, 0, 0, 0);
             } else {
@@ -1127,9 +1469,22 @@ class LastWarNexus {
             console.error("Error updating countdown:", error);
         }
     }
+
+    destroy() {
+        document.removeEventListener('visibilitychange', this.visibilityHandler);
+        document.removeEventListener('keydown', this.keyboardHandler);
+        
+        if (this.updateInterval) {
+            clearInterval(this.updateInterval);
+        }
+        
+        if (this.cardObserver) {
+            this.cardObserver.disconnect();
+        }
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("DOM loaded, initializing Last War Nexus...");
+    console.log("DOM loaded, initializing Last War Nexus with all A+ features...");
     new LastWarNexus();
 });

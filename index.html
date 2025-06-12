@@ -13,7 +13,7 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚔️</text></svg>">
 </head>
 <body>
-    <!-- Initial Setup Modal -->
+    <!-- NEW: Initial Setup Modal -->
     <div id="initial-setup-modal" class="modal-overlay" style="display: none;">
         <div class="modal-container setup-modal">
             <div class="modal-header">
@@ -98,7 +98,7 @@
         </div>
     </div>
 
-    <!-- Arms Race Update Modal -->
+    <!-- NEW: Arms Race Update Modal -->
     <div id="arms-race-modal" class="modal-overlay" style="display: none;">
         <div class="modal-container">
             <div class="modal-header">
@@ -163,6 +163,7 @@
                             <h3>Server Settings</h3>
                         </div>
                         <div class="dropdown-content">
+                            <!-- UPDATED: Current + Next Arms Race Phase Selection -->
                             <div class="setting-row">
                                 <label for="current-arms-phase">Current Arms Race Phase</label>
                                 <select id="current-arms-phase" class="dropdown-select">
@@ -258,7 +259,7 @@
                                 </select>
                             </div>
                             
-                            <!-- REMOVED: Detail Level Dropdown -->
+                            <!-- REMOVED: Detail Level Dropdown - No longer needed -->
                             
                             <div class="setting-row">
                                 <label for="notification-alerts">Priority Alerts</label>
@@ -513,7 +514,7 @@
         </main>
     </div>
     
-    <!-- Bottom Priority Events Bar -->
+    <!-- NEW: Bottom Priority Events Bar -->
     <div id="bottom-events-bar" class="bottom-events-bar collapsed">
         <div class="events-bar-header" id="events-bar-toggle">
             <div class="events-bar-title">
@@ -529,6 +530,18 @@
         <div class="events-bar-content" id="events-bar-content">
             <div id="bottom-events-grid" class="bottom-events-grid">
                 <!-- Priority events will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW: Notification Modal with Proper Centering -->
+    <div id="notification-modal" class="notification-modal" style="display: none;">
+        <div class="modal-content">
+            <h3>Enable Notifications?</h3>
+            <p>Get notified when high-priority VS point windows become active.</p>
+            <div class="modal-actions">
+                <button id="enable-notifications-popup" class="btn-primary">Enable</button>
+                <button id="decline-notifications" class="btn-secondary">Maybe Later</button>
             </div>
         </div>
     </div>

@@ -657,16 +657,34 @@ class LastWarNexus {
             
 if (this.activeFilter === 'active') {
     priorityWindows = priorityWindows.filter(w => w.isActive);
-    // If no active windows, show the next upcoming window
+    
+    // If no active windows but banner shows high priority, create one
     if (priorityWindows.length === 0) {
-        const nextWindow = this.generatePriorityWindows().find(w => w.timeToStart > 0);
-        if (nextWindow) {
-            priorityWindows = [nextWindow];
+        const currentAlignment = this.isCurrentlyHighPriority();
+        if (currentAlignment) {
+            const currentPhase = this.getCurrentArmsPhaseInfo();
+            const currentVSDay = this.getCurrentVSDayInfo();
+            const phase = this.data.armsracephases.find(p => p.name === currentAlignment.armsphase);
+            
+            priorityWindows = [{
+                timeDisplay: "Active Now",
+                armsPhase: currentAlignment.armsphase,
+                vsTitle: currentVSDay.title,
+                benefit: currentAlignment.benefit,
+                reason: currentAlignment.reason,
+                isActive: true,
+                isPeak: true,
+                status: 'ACTIVE NOW',
+                statusClass: 'active',
+                icon: phase ? phase.icon : '⚡',
+                activities: phase ? phase.activities : []
+            }];
         }
     }
 } else if (this.activeFilter === 'upcoming') {
     priorityWindows = priorityWindows.filter(w => !w.isActive && w.timeToStart > 0);
 }
+
 
 
             if (this.elements['priority-count']) {

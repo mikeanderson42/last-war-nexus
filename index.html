@@ -41,11 +41,11 @@
                                 <label for="current-arms-phase">Arms Race Schedule</label>
                                 <select id="current-arms-phase" class="dropdown-select">
                                     <option value="auto" selected>Auto (4-Hour Blocks)</option>
+                                    <option value="City Building">City Building</option>
+                                    <option value="Unit Progression">Unit Progression</option>
                                     <option value="Tech Research">Tech Research</option>
                                     <option value="Drone Boost">Drone Boost</option>
                                     <option value="Hero Advancement">Hero Advancement</option>
-                                    <option value="City Building">City Building</option>
-                                    <option value="Unit Progression">Unit Progression</option>
                                 </select>
                             </div>
                             <div class="setting-row" style="margin-top: 12px;">
@@ -241,6 +241,101 @@
                 </div>
             </div>
         </section>
+
+        <main class="main-content">
+            <div class="tab-navigation">
+                <div class="tab-container">
+                    <button class="tab-btn active" data-tab="priority" type="button">
+                        <span class="tab-icon">⚡</span>
+                        <span class="tab-label">VS Points Optimizer</span>
+                        <span class="tab-count" id="priority-count">Loading</span>
+                    </button>
+                    <button class="tab-btn" data-tab="schedule" type="button">
+                        <span class="tab-icon">📅</span>
+                        <span class="tab-label">Arms Race Schedule</span>
+                        <span class="tab-count" id="schedule-count">42 Events</span>
+                    </button>
+                    <button class="tab-btn" data-tab="intelligence" type="button">
+                        <span class="tab-icon">🧠</span>
+                        <span class="tab-label">Server Battle Strategies</span>
+                        <span class="tab-count" id="intel-count">16 Guides</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="tab-content">
+                <div id="priority-tab" class="tab-panel active">
+                    <div class="section-header">
+                        <h2>Maximum VS Points Windows</h2>
+                        <p class="section-subtitle">Optimal timing windows when activities contribute to both Alliance Duel VS points AND Arms Race points simultaneously</p>
+                        <div class="priority-explanation">
+                            <div class="explanation-card">
+                                <span class="explanation-icon">🎯</span>
+                                <span class="explanation-text">High Priority: Activities that earn points for BOTH events simultaneously</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section-filters">
+                        <button class="filter-btn active" data-filter="all" type="button">All Windows</button>
+                        <button class="filter-btn" data-filter="active" type="button">Active Now</button>
+                        <button class="filter-btn" data-filter="upcoming" type="button">Upcoming</button>
+                    </div>
+                    <div id="priority-grid" class="priority-grid">
+                        <div class="loading-message">Loading VS Points optimization data...</div>
+                    </div>
+                </div>
+
+                <div id="schedule-tab" class="tab-panel">
+                    <div class="section-header">
+                        <h2>Complete Arms Race Schedule</h2>
+                        <p class="section-subtitle">Plan your week with the full Arms Race and VS event calendar</p>
+                        <div class="schedule-legend">
+                            <div class="legend-item">
+                                <div class="legend-color priority"></div>
+                                <span>Peak Efficiency</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color current"></div>
+                                <span>Active Now</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color normal"></div>
+                                <span>Standard</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="schedule-container">
+                        <div id="schedule-grid" class="schedule-grid">
+                            <!-- Schedule grid will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <div id="intelligence-tab" class="tab-panel">
+                    <div class="section-header">
+                        <h2>Server Battle Strategies</h2>
+                        <p class="section-subtitle">Expert guides, pro tips, and comprehensive strategies</p>
+                        <div class="intel-stats">
+                            <div class="intel-stat">
+                                <span class="stat-number">Max</span>
+                                <span class="stat-label">VS Points</span>
+                            </div>
+                            <div class="intel-stat">
+                                <span class="stat-number">2-4x</span>
+                                <span class="stat-label">Efficiency</span>
+                            </div>
+                            <div class="intel-stat">
+                                <span class="stat-number">S4</span>
+                                <span class="stat-label">Season</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="intelligence-content" class="intelligence-hub">
+                        <!-- Intelligence content will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
 
     <script src="app.js"></script>

@@ -4,18 +4,17 @@ class LastWarNexus {
         this.initializationAttempts = 0;
         this.maxInitAttempts = 5;
         
-        // FIXED: Default to "auto" for proper phase detection
         this.currentArmsPhase = "auto";
         this.timeOffset = 0;
         
         this.data = {
+            // CORRECTED: Removed "Mixed Phase" - Only 5 actual phases in 20-hour cycle
             armsracephases: [
-                { id: 6, name: "Mixed Phase", icon: "🔄", activities: ["Check in-game calendar"], pointSources: ["Check calendar for current focus", "Mixed activities", "Various point sources", "Event-specific tasks", "General progression"] },
-                { id: 4, name: "Drone Boost", icon: "🚁", activities: ["Stamina usage", "Drone activities"], pointSources: ["Use stamina for attacks", "Complete drone missions", "Gather drone data", "Battle elite enemies", "Use stamina items"] },
                 { id: 1, name: "City Building", icon: "🏗️", activities: ["Building upgrades", "Construction speedups"], pointSources: ["Complete building upgrades", "Use construction speedups", "Finish building projects", "Upgrade headquarters", "Construct new buildings"] },
+                { id: 2, name: "Unit Progression", icon: "⚔️", activities: ["Troop training", "Training speedups"], pointSources: ["Train troops", "Use training speedups", "Complete troop upgrades", "Unlock new units", "Enhance unit capabilities"] },
                 { id: 3, name: "Tech Research", icon: "🔬", activities: ["Research completion", "Research speedups"], pointSources: ["Complete research", "Use research speedups", "Unlock new technologies", "Upgrade existing tech", "Finish research projects"] },
-                { id: 5, name: "Hero Advancement", icon: "🦸", activities: ["Hero recruitment", "Hero EXP"], pointSources: ["Recruit new heroes", "Apply hero EXP", "Upgrade hero skills", "Enhance hero equipment", "Complete hero missions"] },
-                { id: 2, name: "Unit Progression", icon: "⚔️", activities: ["Troop training", "Training speedups"], pointSources: ["Train troops", "Use training speedups", "Complete troop upgrades", "Unlock new units", "Enhance unit capabilities"] }
+                { id: 4, name: "Drone Boost", icon: "🚁", activities: ["Stamina usage", "Drone activities"], pointSources: ["Use stamina for attacks", "Complete drone missions", "Gather drone data", "Battle elite enemies", "Use stamina items"] },
+                { id: 5, name: "Hero Advancement", icon: "🦸", activities: ["Hero recruitment", "Hero EXP"], pointSources: ["Recruit new heroes", "Apply hero EXP", "Upgrade hero skills", "Enhance hero equipment", "Complete hero missions"] }
             ],
             
             vsdays: [
@@ -81,6 +80,8 @@ class LastWarNexus {
             
             this.loadServerSettings();
             this.setupEventListeners();
+            this.setupTabNavigation();
+            this.populateAllSections();
             this.updateAllDisplays();
             this.startUpdateLoop();
             this.isInitialized = true;
@@ -98,7 +99,8 @@ class LastWarNexus {
             'settings-toggle', 'settings-dropdown', 'server-toggle', 'server-dropdown', 'apply-server',
             'current-arms-phase', 'time-offset', 'current-phase-display', 'offset-display',
             'badge-label', 'next-priority-event', 'efficiency-level', 'current-action', 
-            'next-priority-time', 'countdown-label', 'next-alignment-countdown', 'active-now', 'active-action'
+            'next-priority-time', 'countdown-label', 'next-alignment-countdown', 'active-now', 'active-action',
+            'priority-grid', 'schedule-grid', 'intelligence-content', 'priority-count'
         ];
         
         let foundCount = 0;
@@ -166,7 +168,71 @@ class LastWarNexus {
         }
     }
 
-    // BULLETPROOF SERVER TIME METHOD
+    setupTabNavigation() {
+        try {
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const targetTab = e.currentTarget.getAttribute('data-tab');
+                    this.switchTab(targetTab);
+                });
+            });
+
+            filterButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const filter = e.currentTarget.getAttribute('data-filter');
+                    this.setFilter(filter);
+                });
+            });
+        } catch (error) {
+            console.error("Error setting up tab navigation:", error);
+        }
+    }
+
+    switchTab(tabName) {
+        try {
+            this.activeTab = tabName;
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-tab') === tabName) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            document.querySelectorAll('.tab-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            
+            const targetPanel = document.getElementById(`${tabName}-tab`);
+            if (targetPanel) {
+                targetPanel.classList.add('active');
+            }
+        } catch (error) {
+            console.error("Error switching tab:", error);
+        }
+    }
+
+    setFilter(filter) {
+        try {
+            this.activeFilter = filter;
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-filter') === filter) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            this.populatePriorityGrid();
+        } catch (error) {
+            console.error("Error setting filter:", error);
+        }
+    }
+
+    // CORRECTED: Fixed 5-phase Arms Race logic (no Mixed Phase)
     getServerTime() {
         try {
             const now = new Date();
@@ -196,18 +262,21 @@ class LastWarNexus {
         }
     }
 
-    // ROBUST ARMS PHASE DETECTION
+    // CORRECTED: Fixed Arms Race phase detection - 5 phases, not 6
     getCurrentArmsPhaseInfo() {
         try {
             const now = this.getServerTime();
             
             if (!now || isNaN(now.getTime())) {
-                return { name: "Mixed Phase", index: 0, startHour: 0, nextStartHour: 4 };
+                return { name: "City Building", index: 0, startHour: 0, nextStartHour: 4 };
             }
             
             const hour = now.getUTCHours();
-            const phaseIndex = Math.floor(hour / 4);
-            const phases = ["Mixed Phase", "Drone Boost", "City Building", "Tech Research", "Hero Advancement", "Unit Progression"];
+            
+            // FIXED: 5-phase cycle (City Building, Unit Progression, Tech Research, Drone Boost, Hero Advancement)
+            // Each phase is 4 hours, cycle repeats every 20 hours
+            const phaseIndex = Math.floor(hour / 4) % 5;
+            const phases = ["City Building", "Unit Progression", "Tech Research", "Drone Boost", "Hero Advancement"];
             
             // Manual override if not auto
             if (this.currentArmsPhase !== "auto") {
@@ -217,28 +286,27 @@ class LastWarNexus {
                         name: manualPhase.name,
                         index: phaseIndex,
                         startHour: phaseIndex * 4,
-                        nextStartHour: ((phaseIndex + 1) % 6) * 4 || 24
+                        nextStartHour: ((phaseIndex + 1) % 5) * 4
                     };
                 }
             }
             
-            const currentPhase = phases[phaseIndex % phases.length] || "Mixed Phase";
+            const currentPhase = phases[phaseIndex];
             const phaseStartHour = phaseIndex * 4;
-            const nextPhaseStartHour = ((phaseIndex + 1) % 6) * 4;
+            const nextPhaseStartHour = ((phaseIndex + 1) % 5) * 4;
             
             return {
                 name: currentPhase,
                 index: phaseIndex,
                 startHour: phaseStartHour,
-                nextStartHour: nextPhaseStartHour === 0 ? 24 : nextPhaseStartHour
+                nextStartHour: nextPhaseStartHour === 0 ? 20 : nextPhaseStartHour // 20-hour cycle
             };
         } catch (error) {
             console.error("Error getting current arms phase:", error);
-            return { name: "Mixed Phase", index: 0, startHour: 0, nextStartHour: 4 };
+            return { name: "City Building", index: 0, startHour: 0, nextStartHour: 4 };
         }
     }
 
-    // ROBUST VS DAY DETECTION
     getCurrentVSDayInfo() {
         try {
             const now = this.getServerTime();
@@ -247,7 +315,7 @@ class LastWarNexus {
                 return { day: 0, name: "Sunday", title: "Preparation Day" };
             }
             
-            const dayOfWeek = now.getUTCDay(); // Sunday=0, Monday=1, etc.
+            const dayOfWeek = now.getUTCDay();
             const vsDayData = this.data.vsdays.find(day => day.day === dayOfWeek);
             
             return vsDayData || { day: 0, name: "Sunday", title: "Preparation Day" };
@@ -257,7 +325,6 @@ class LastWarNexus {
         }
     }
 
-    // ROBUST PRIORITY DETECTION  
     isCurrentlyHighPriority() {
         try {
             const vsDayInfo = this.getCurrentVSDayInfo();
@@ -279,7 +346,6 @@ class LastWarNexus {
         }
     }
 
-    // BULLETPROOF NEXT PRIORITY WINDOW FINDER
     findNextPriorityWindow() {
         try {
             const now = this.getServerTime();
@@ -292,16 +358,15 @@ class LastWarNexus {
             let nearestWindow = null;
             let minTimeDiff = Infinity;
             
+            // CORRECTED: Updated phase schedule for 5 phases
             const phaseSchedule = {
-                "Mixed Phase": [0],
-                "Drone Boost": [4], 
-                "City Building": [8],
-                "Tech Research": [12],
-                "Hero Advancement": [16],
-                "Unit Progression": [20]
+                "City Building": [0, 20], // Starts at hour 0 and repeats at hour 20
+                "Unit Progression": [4],
+                "Tech Research": [8],
+                "Drone Boost": [12],
+                "Hero Advancement": [16]
             };
             
-            // Check next 14 days
             for (let dayOffset = 0; dayOffset < 14; dayOffset++) {
                 try {
                     const checkDate = new Date(now);
@@ -365,7 +430,6 @@ class LastWarNexus {
         }
     }
 
-    // BULLETPROOF TIME FORMATTING
     safeFormatTimeDifference(timeDiffMs) {
         try {
             if (timeDiffMs === null || timeDiffMs === undefined) {
@@ -406,7 +470,7 @@ class LastWarNexus {
         }
     }
 
-    // BULLETPROOF PHASE TIME CALCULATION
+    // CORRECTED: Fixed phase time calculation for 5-phase cycle
     calculateTimeUntilPhaseEnd() {
         try {
             const now = this.getServerTime();
@@ -423,8 +487,9 @@ class LastWarNexus {
                 return "Error";
             }
             
+            // FIXED: 5-phase cycle - phases start at 0, 4, 8, 12, 16, then repeat at 20
             const phaseStarts = [0, 4, 8, 12, 16, 20];
-            let nextPhaseHour = 24;
+            let nextPhaseHour = 24; // Default to tomorrow's first phase
             
             for (const startHour of phaseStarts) {
                 if (currentHour < startHour) {
@@ -469,7 +534,338 @@ class LastWarNexus {
         }
     }
 
-    // MAIN UPDATE METHOD WITH ROBUST ERROR HANDLING
+    populateAllSections() {
+        try {
+            this.populatePriorityGrid();
+            this.populateScheduleGrid();
+            this.populateIntelligenceHub();
+        } catch (error) {
+            console.error("Error populating sections:", error);
+        }
+    }
+
+    populatePriorityGrid() {
+        try {
+            const grid = this.elements['priority-grid'];
+            if (!grid) return;
+
+            let priorityWindows = this.generatePriorityWindows();
+            
+            if (this.activeFilter === 'active') {
+                priorityWindows = priorityWindows.filter(w => w.isActive);
+            } else if (this.activeFilter === 'upcoming') {
+                priorityWindows = priorityWindows.filter(w => !w.isActive && w.timeToStart > 0);
+            }
+
+            if (this.elements['priority-count']) {
+                this.elements['priority-count'].textContent = `${priorityWindows.length} Windows`;
+            }
+
+            grid.innerHTML = priorityWindows.map(window => `
+                <div class="priority-window-card ${window.isActive ? 'active' : ''} ${window.isPeak ? 'peak' : ''}">
+                    <div class="window-header">
+                        <div class="window-time">${window.timeDisplay}</div>
+                        <div class="window-status ${window.statusClass}">${window.status}</div>
+                    </div>
+                    <div class="window-content">
+                        <div class="window-title">
+                            <span class="window-icon">${window.icon}</span>
+                            <span class="window-name">${window.armsPhase} + ${window.vsTitle}</span>
+                        </div>
+                        <div class="window-details">
+                            <div class="points-potential">+${window.points.toLocaleString()} VS Points</div>
+                            <div class="window-reason">${window.reason}</div>
+                        </div>
+                        <div class="window-actions">
+                            ${window.activities.map(activity => `<span class="activity-tag">${activity}</span>`).join('')}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+        } catch (error) {
+            console.error("Error populating priority grid:", error);
+            if (this.elements['priority-grid']) {
+                this.elements['priority-grid'].innerHTML = '<div class="error-message">Error loading priority windows</div>';
+            }
+        }
+    }
+
+    populateScheduleGrid() {
+        try {
+            const grid = this.elements['schedule-grid'];
+            if (!grid) return;
+
+            const scheduleData = this.generateWeeklySchedule();
+            
+            grid.innerHTML = `
+                <div class="schedule-week">
+                    ${scheduleData.map(day => `
+                        <div class="schedule-day ${day.isToday ? 'today' : ''}">
+                            <div class="day-header">
+                                <h3>${day.name}</h3>
+                                <div class="day-subtitle">${day.vsTitle}</div>
+                            </div>
+                            <div class="day-phases">
+                                ${day.phases.map(phase => `
+                                    <div class="phase-block ${phase.isPriority ? 'priority' : ''} ${phase.isActive ? 'active' : ''}">
+                                        <div class="phase-time">${phase.timeRange}</div>
+                                        <div class="phase-name">${phase.name}</div>
+                                        <div class="phase-icon">${phase.icon}</div>
+                                        ${phase.isPriority ? `<div class="priority-badge">HIGH</div>` : ''}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+        } catch (error) {
+            console.error("Error populating schedule grid:", error);
+            if (this.elements['schedule-grid']) {
+                this.elements['schedule-grid'].innerHTML = '<div class="error-message">Error loading schedule</div>';
+            }
+        }
+    }
+
+    populateIntelligenceHub() {
+        try {
+            const hub = this.elements['intelligence-content'];
+            if (!hub) return;
+
+            const guides = this.generateIntelligenceGuides();
+            
+            hub.innerHTML = `
+                <div class="intelligence-grid">
+                    ${guides.map(guide => `
+                        <div class="guide-card ${guide.featured ? 'featured' : ''}">
+                            <div class="guide-header">
+                                <div class="guide-icon">${guide.icon}</div>
+                                <div class="guide-meta">
+                                    <h3 class="guide-title">${guide.title}</h3>
+                                    <div class="guide-category">${guide.category}</div>
+                                </div>
+                                <div class="guide-rating">${guide.rating}</div>
+                            </div>
+                            <div class="guide-content">
+                                <p class="guide-description">${guide.description}</p>
+                                <div class="guide-stats">
+                                    <span class="stat">⚡ ${guide.efficiency}x Efficiency</span>
+                                    <span class="stat">🎯 ${guide.points}+ Points</span>
+                                    <span class="stat">⏱️ ${guide.timeframe}</span>
+                                </div>
+                            </div>
+                            <div class="guide-footer">
+                                <div class="guide-tags">
+                                    ${guide.tags.map(tag => `<span class="guide-tag">${tag}</span>`).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+        } catch (error) {
+            console.error("Error populating intelligence hub:", error);
+            if (this.elements['intelligence-content']) {
+                this.elements['intelligence-content'].innerHTML = '<div class="error-message">Error loading guides</div>';
+            }
+        }
+    }
+
+    generatePriorityWindows() {
+        try {
+            const now = this.getServerTime();
+            const windows = [];
+            
+            for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
+                const checkDate = new Date(now);
+                checkDate.setUTCDate(now.getUTCDate() + dayOffset);
+                
+                const dayOfWeek = checkDate.getUTCDay();
+                const vsDay = this.data.vsdays.find(d => d.day === dayOfWeek);
+                
+                if (!vsDay) continue;
+                
+                const alignments = this.data.highpriorityalignments.filter(a => a.vsday === dayOfWeek);
+                
+                for (const alignment of alignments) {
+                    const phase = this.data.armsracephases.find(p => p.name === alignment.armsphase);
+                    const phaseHours = this.getPhaseHours(alignment.armsphase);
+                    
+                    for (const hour of phaseHours) {
+                        const windowTime = new Date(checkDate);
+                        windowTime.setUTCHours(hour, 0, 0, 0);
+                        
+                        const timeDiff = windowTime.getTime() - now.getTime();
+                        const isActive = Math.abs(timeDiff) < (4 * 60 * 60 * 1000) && timeDiff > -(4 * 60 * 60 * 1000);
+                        
+                        windows.push({
+                            time: windowTime,
+                            timeToStart: timeDiff,
+                            timeDisplay: this.formatTimeToWindow(timeDiff),
+                            armsPhase: alignment.armsphase,
+                            vsTitle: vsDay.title,
+                            points: alignment.points,
+                            reason: alignment.reason,
+                            isActive: isActive,
+                            isPeak: alignment.points >= 3800,
+                            status: isActive ? 'ACTIVE NOW' : timeDiff > 0 ? 'UPCOMING' : 'COMPLETED',
+                            statusClass: isActive ? 'active' : timeDiff > 0 ? 'upcoming' : 'completed',
+                            icon: phase ? phase.icon : '⚡',
+                            activities: phase ? phase.activities : []
+                        });
+                    }
+                }
+            }
+            
+            return windows.sort((a, b) => a.timeToStart - b.timeToStart);
+        } catch (error) {
+            console.error("Error generating priority windows:", error);
+            return [];
+        }
+    }
+
+    generateWeeklySchedule() {
+        try {
+            const schedule = [];
+            const now = this.getServerTime();
+            
+            for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
+                const checkDate = new Date(now);
+                checkDate.setUTCDate(now.getUTCDate() + dayOffset);
+                
+                const dayOfWeek = checkDate.getUTCDay();
+                const vsDay = this.data.vsdays.find(d => d.day === dayOfWeek);
+                const isToday = dayOffset === 0;
+                
+                const phases = [];
+                // CORRECTED: 5-phase schedule
+                const phaseHours = [0, 4, 8, 12, 16, 20];
+                const phaseNames = ["City Building", "Unit Progression", "Tech Research", "Drone Boost", "Hero Advancement", "City Building"];
+                
+                for (let i = 0; i < phaseHours.length; i++) {
+                    const hour = phaseHours[i];
+                    const nextHour = phaseHours[i + 1] || 24;
+                    const phaseName = phaseNames[i];
+                    const phase = this.data.armsracephases.find(p => p.name === phaseName);
+                    
+                    const isPriority = this.data.highpriorityalignments.some(a => 
+                        a.vsday === dayOfWeek && a.armsphase === phaseName
+                    );
+                    
+                    const phaseTime = new Date(checkDate);
+                    phaseTime.setUTCHours(hour, 0, 0, 0);
+                    const isActive = isToday && now.getUTCHours() >= hour && now.getUTCHours() < nextHour;
+                    
+                    phases.push({
+                        name: phaseName,
+                        icon: phase ? phase.icon : '⚡',
+                        timeRange: `${String(hour).padStart(2, '0')}:00-${String(nextHour).padStart(2, '0')}:00`,
+                        isPriority: isPriority,
+                        isActive: isActive
+                    });
+                }
+                
+                schedule.push({
+                    name: vsDay ? vsDay.name : 'Unknown',
+                    vsTitle: vsDay ? vsDay.title : 'Unknown Day',
+                    isToday: isToday,
+                    phases: phases
+                });
+            }
+            
+            return schedule;
+        } catch (error) {
+            console.error("Error generating weekly schedule:", error);
+            return [];
+        }
+    }
+
+    generateIntelligenceGuides() {
+        return [
+            {
+                title: "Perfect Timing Strategy",
+                category: "VS Points",
+                icon: "🎯",
+                rating: "S+",
+                featured: true,
+                description: "Master the art of dual-event alignment for maximum point generation during high-priority windows.",
+                efficiency: "4",
+                points: "4200",
+                timeframe: "4 hours",
+                tags: ["Essential", "High Priority", "Advanced"]
+            },
+            {
+                title: "Resource Management",
+                category: "Optimization",
+                icon: "💎",
+                rating: "S",
+                featured: false,
+                description: "Efficiently manage speedups, resources, and activities to maximize both events simultaneously.",
+                efficiency: "3",
+                points: "3500",
+                timeframe: "Daily",
+                tags: ["Resource", "Planning", "Efficiency"]
+            },
+            {
+                title: "Alliance Coordination",
+                category: "Teamwork",
+                icon: "🤝",
+                rating: "A+",
+                featured: false,
+                description: "Coordinate with alliance members to maximize collective VS points during peak efficiency windows.",
+                efficiency: "2.5",
+                points: "3000",
+                timeframe: "Weekly",
+                tags: ["Alliance", "Coordination", "Strategy"]
+            },
+            {
+                title: "Phase Transition Timing",
+                category: "Timing",
+                icon: "⏰",
+                rating: "A",
+                featured: false,
+                description: "Learn the optimal timing for activities around Arms Race phase transitions for maximum benefit.",
+                efficiency: "2",
+                points: "2500",
+                timeframe: "4 hours",
+                tags: ["Timing", "Transitions", "Planning"]
+            }
+        ];
+    }
+
+    // CORRECTED: Phase hours for 5-phase system
+    getPhaseHours(phaseName) {
+        const phaseMap = {
+            "City Building": [0, 20], // Appears twice in 24h cycle
+            "Unit Progression": [4],
+            "Tech Research": [8],
+            "Drone Boost": [12],
+            "Hero Advancement": [16]
+        };
+        return phaseMap[phaseName] || [0];
+    }
+
+    formatTimeToWindow(timeDiff) {
+        try {
+            if (Math.abs(timeDiff) < 60000) return "Now";
+            
+            const absTimeDiff = Math.abs(timeDiff);
+            const hours = Math.floor(absTimeDiff / (1000 * 60 * 60));
+            const minutes = Math.floor((absTimeDiff % (1000 * 60 * 60)) / (1000 * 60));
+            
+            if (timeDiff < 0) {
+                return hours > 0 ? `${hours}h ${minutes}m ago` : `${minutes}m ago`;
+            } else {
+                return hours > 0 ? `in ${hours}h ${minutes}m` : `in ${minutes}m`;
+            }
+        } catch (error) {
+            return "Unknown";
+        }
+    }
+
     updateCurrentStatus() {
         try {
             const now = this.getServerTime();
@@ -503,7 +899,6 @@ class LastWarNexus {
         }
     }
 
-    // SAFE ACTIVE ALIGNMENT DISPLAY
     displayActiveAlignment(alignment, armsPhase, vsDay) {
         try {
             this.safeUpdateElement('active-now', 'style', { display: 'flex' });
@@ -525,7 +920,6 @@ class LastWarNexus {
         }
     }
 
-    // SAFE NEXT WINDOW DISPLAY
     displayNextWindow() {
         try {
             this.safeUpdateElement('active-now', 'style', { display: 'none' });
@@ -561,7 +955,6 @@ class LastWarNexus {
         }
     }
 
-    // BULLETPROOF UPDATE ELEMENT METHOD
     safeUpdateElement(elementId, property, value) {
         try {
             let element = this.elements[elementId] || document.getElementById(elementId);
@@ -597,7 +990,6 @@ class LastWarNexus {
         }
     }
 
-    // SAFE BASIC INFO UPDATE
     updateBasicInfo(vsDay, armsPhase) {
         try {
             this.safeUpdateElement('current-vs-day', 'textContent', vsDay.title || 'Loading...');
@@ -610,7 +1002,6 @@ class LastWarNexus {
         }
     }
 
-    // SAFE FALLBACK DISPLAY
     setFallbackDisplay(message) {
         try {
             this.safeUpdateElement('next-priority-time', 'textContent', 'Loading...');
@@ -624,7 +1015,6 @@ class LastWarNexus {
         }
     }
 
-    // Additional robust methods for settings and updates...
     loadServerSettings() {
         try {
             const saved = localStorage.getItem('lwn-server-settings');
@@ -764,6 +1154,7 @@ class LastWarNexus {
         }
     }
 
+    // CORRECTED: Fixed countdown for 5-phase cycle
     updateCountdown() {
         try {
             const now = this.getServerTime();
@@ -771,6 +1162,7 @@ class LastWarNexus {
             
             const currentHour = now.getUTCHours();
             
+            // FIXED: 5-phase schedule with 6 transitions per day
             const phaseStarts = [0, 4, 8, 12, 16, 20];
             let nextPhaseStart = 24;
             
@@ -798,8 +1190,11 @@ class LastWarNexus {
                 const countdownText = hours > 0 ? `${hours}h ${minutes}m ${seconds}s` : `${minutes}m ${seconds}s`;
                 this.safeUpdateElement('countdown-timer', 'textContent', countdownText);
                 
-                const nextPhaseIndex = Math.floor(nextPhaseStart / 4) % this.data.armsracephases.length;
-                const nextPhase = this.data.armsracephases[nextPhaseIndex];
+                // CORRECTED: Map to correct next phase in 5-phase cycle
+                const phaseNames = ["City Building", "Unit Progression", "Tech Research", "Drone Boost", "Hero Advancement", "City Building"];
+                const nextPhaseIndex = phaseStarts.indexOf(nextPhaseStart);
+                const nextPhase = this.data.armsracephases.find(p => p.name === phaseNames[nextPhaseIndex]) || this.data.armsracephases[0];
+                
                 this.safeUpdateElement('event-name', 'textContent', `${nextPhase.name} Phase`);
                 
                 const timeString = nextPhaseStart === 24 ? "00:00" : String(nextPhaseStart).padStart(2, '0') + ":00";

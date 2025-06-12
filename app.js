@@ -4,7 +4,7 @@ class VSPointsOptimizer {
         this.settings = {
             timeFormat: 'utc',
             timeOffset: 0,
-            detailLevel: 'essential',
+            // REMOVED: detailLevel - No more filtering
             currentArmsPhase: 'Tech Research',
             nextArmsPhase: 'Drone Boost',
             notificationAlerts: '15min',
@@ -51,7 +51,7 @@ class VSPointsOptimizer {
             'server-toggle', 'server-dropdown', 'current-arms-phase', 'next-arms-phase',
             'time-offset', 'current-phase-display', 'next-phase-display', 'server-time-display',
             'offset-display', 'apply-server', 'settings-toggle', 'settings-dropdown',
-            'time-format-dropdown', 'detail-level-dropdown', 'notification-alerts', 'phase-alerts',
+            'time-format-dropdown', 'notification-alerts', 'phase-alerts',
             'priority-grid', 'schedule-grid', 'intelligence-content', 'priority-count',
             'active-now', 'active-action', 'badge-label', 'countdown-label',
             
@@ -136,14 +136,7 @@ class VSPointsOptimizer {
             });
         }
 
-        if (this.elements['detail-level-dropdown']) {
-            this.elements['detail-level-dropdown'].addEventListener('change', (e) => {
-                this.settings.detailLevel = e.target.value;
-                this.saveSettings();
-                this.updateAllDisplays();
-                this.populateAllSections();
-            });
-        }
+        // REMOVED: detail-level-dropdown event listener
 
         if (this.elements['notification-alerts']) {
             this.elements['notification-alerts'].addEventListener('change', (e) => {
@@ -196,7 +189,6 @@ class VSPointsOptimizer {
 
     setupInitialModal() {
         const enableNotifications = this.elements['enable-notifications'];
-        const skipNotifications = this.elements['skip-notifications'];
         const timeOffset = this.elements['setup-time-offset'];
         const completeSetup = this.elements['complete-setup'];
         const skipSetup = this.elements['skip-setup'];
@@ -730,6 +722,16 @@ class VSPointsOptimizer {
         }
     }
 
+    formatDuration(milliseconds) {
+        const hours = Math.floor(milliseconds / (1000 * 60 * 60));
+        const minutes = Math.floor((milliseconds % (1000 * 60 * 60)) / (1000 * 60));
+        
+        if (hours > 0) {
+            return `${hours}h ${minutes}m`;
+        }
+        return `${minutes}m`;
+    }
+
     getNextPriorityWindow(currentTime) {
         const priorityWindows = this.generatePriorityWindows(currentTime);
         
@@ -742,8 +744,9 @@ class VSPointsOptimizer {
         const windows = [];
         const serverTime = this.getServerTime();
         
-        for (let i = 0; i < 4; i++) {
-            const windowStart = new Date(serverTime.getTime() + (i + 1) * 6 * 60 * 60 * 1000);
+        // Generate 8 detailed priority windows (ALWAYS comprehensive)
+        for (let i = 0; i < 8; i++) {
+            const windowStart = new Date(serverTime.getTime() + (i + 1) * 3 * 60 * 60 * 1000);
             
             const phaseAtTime = this.getPhaseAtTime(windowStart);
             const vsActivityAtTime = this.getVSActivityForDay(windowStart.getUTCDay());
@@ -754,17 +757,23 @@ class VSPointsOptimizer {
                     startTime: windowStart,
                     duration: 2 * 60 * 60 * 1000,
                     efficiency: 'High',
-                    action: `Use ${vsActivityAtTime.speedups} for maximum points`,
-                    priority: 'high'
+                    action: `Use ${vsActivityAtTime.speedups} for maximum points. This is a peak efficiency window where both events align perfectly.`,
+                    priority: 'high',
+                    vsPoints: '150-300%',
+                    armsPoints: '200-400%',
+                    multiplier: '2.5x'
                 });
             } else {
                 windows.push({
-                    name: `${this.getDayName(windowStart.getUTCDay())} Window`,
+                    name: `${this.getDayName(windowStart.getUTCDay())} Standard Window`,
                     startTime: windowStart,
                     duration: 1 * 60 * 60 * 1000,
                     efficiency: 'Medium',
-                    action: 'Standard activities earn regular points',
-                    priority: 'medium'
+                    action: 'Standard activities earn regular points. Save resources for upcoming high priority windows.',
+                    priority: 'medium',
+                    vsPoints: '100%',
+                    armsPoints: '100%',
+                    multiplier: '1x'
                 });
             }
         }
@@ -834,28 +843,52 @@ class VSPointsOptimizer {
         this.populateBottomEventsBar();
     }
 
+    // FIXED: Always show comprehensive detailed content
     populatePriorityGrid() {
         const grid = this.elements['priority-grid'];
         if (!grid) return;
         
         const windows = this.generatePriorityWindows(this.getServerTime());
-        const filteredWindows = this.settings.detailLevel === 'comprehensive' ? 
-            windows : windows.slice(0, 6);
         
-        grid.innerHTML = filteredWindows.map(window => `
+        // ALWAYS show all windows with rich detail (NO FILTERING)
+        grid.innerHTML = windows.map(window => `
             <div class="priority-window-card ${window.priority}">
                 <div class="window-header">
-                    <h3>${window.name}</h3>
-                    <span class="efficiency-badge">${window.efficiency}</span>
+                    <div class="window-title-section">
+                        <h3>${window.name}</h3>
+                        <span class="efficiency-badge">${window.efficiency}</span>
+                    </div>
+                    <div class="window-countdown">
+                        <span class="countdown-time">${this.formatCountdown(window.startTime.getTime() - this.getServerTime().getTime())}</span>
+                        <span class="countdown-label">remaining</span>
+                    </div>
                 </div>
                 <div class="window-content">
-                    <p class="window-time">${window.startTime.toLocaleString()}</p>
-                    <p class="window-action">${window.action}</p>
+                    <div class="window-timing">
+                        <span class="timing-label">Start Time:</span>
+                        <span class="timing-value">${window.startTime.toLocaleString()}</span>
+                    </div>
+                    <div class="window-duration">
+                        <span class="duration-label">Duration:</span>
+                        <span class="duration-value">${this.formatDuration(window.duration)}</span>
+                    </div>
+                    <div class="window-action-detailed">
+                        <span class="action-label">Strategy:</span>
+                        <p class="action-description">${window.action}</p>
+                    </div>
+                    <div class="window-benefits">
+                        <span class="benefits-label">Expected Benefits:</span>
+                        <ul class="benefits-list">
+                            <li>VS Points: ${window.vsPoints || 'High'}</li>
+                            <li>Arms Race Points: ${window.armsPoints || 'High'}</li>
+                            <li>Efficiency Multiplier: ${window.multiplier || '2x'}</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         `).join('');
         
-        this.safeUpdateElement('priority-count', 'textContent', `${filteredWindows.length} Windows`);
+        this.safeUpdateElement('priority-count', 'textContent', `${windows.length} Windows`);
     }
 
     populateScheduleGrid() {
@@ -1014,9 +1047,7 @@ class VSPointsOptimizer {
         if (this.elements['time-format-dropdown']) {
             this.elements['time-format-dropdown'].value = this.settings.timeFormat;
         }
-        if (this.elements['detail-level-dropdown']) {
-            this.elements['detail-level-dropdown'].value = this.settings.detailLevel;
-        }
+        // REMOVED: detail-level-dropdown value setting
         if (this.elements['notification-alerts']) {
             this.elements['notification-alerts'].value = this.settings.notificationAlerts;
         }

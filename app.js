@@ -543,7 +543,7 @@ class VSPointsOptimizer {
     updateCountdowns() {
         const serverTime = this.getServerTime();
         const nextPhaseTime = this.getNextPhaseTime(serverTime);
-        const timeUntilPhase = nextPhaseTime - serverTime;
+        const timeUntilPhase = nextPhaseTime.getTime() - serverTime.getTime();
         
         if (timeUntilPhase > 0) {
             const countdown = this.formatCountdown(timeUntilPhase);
@@ -551,7 +551,8 @@ class VSPointsOptimizer {
             this.safeUpdateElement('next-alignment-countdown', 'textContent', countdown);
             
             const totalPhaseTime = 4 * 60 * 60 * 1000;
-            const elapsed = totalPhaseTime - timeUntilPhase;
+            const currentPhaseStart = this.getCurrentPhaseStartTime(serverTime);
+            const elapsed = serverTime.getTime() - currentPhaseStart.getTime();
             const progress = Math.max(0, Math.min(100, (elapsed / totalPhaseTime) * 100));
             
             this.safeUpdateElement('progress-fill', 'style', `width: ${progress}%`);
@@ -560,12 +561,44 @@ class VSPointsOptimizer {
         this.updatePriorityCountdowns();
     }
 
+    getNextPhaseTime(currentTime) {
+        const hour = currentTime.getUTCHours();
+        const minute = currentTime.getUTCMinutes();
+        const second = currentTime.getUTCSeconds();
+        
+        const hoursUntilNext = 4 - (hour % 4);
+        const nextPhaseTime = new Date(currentTime);
+        
+        if (hoursUntilNext === 4 && minute === 0 && second === 0) {
+            nextPhaseTime.setUTCHours(hour + 4, 0, 0, 0);
+        } else if (hoursUntilNext === 4) {
+            nextPhaseTime.setUTCHours(hour + (4 - (hour % 4)), 0, 0, 0);
+        } else {
+            nextPhaseTime.setUTCHours(hour + hoursUntilNext, 0, 0, 0);
+        }
+        
+        if (nextPhaseTime.getUTCHours() >= 24) {
+            nextPhaseTime.setUTCDate(nextPhaseTime.getUTCDate() + 1);
+            nextPhaseTime.setUTCHours(nextPhaseTime.getUTCHours() - 24, 0, 0, 0);
+        }
+        
+        return nextPhaseTime;
+    }
+
+    getCurrentPhaseStartTime(currentTime) {
+        const hour = currentTime.getUTCHours();
+        const phaseStartHour = Math.floor(hour / 4) * 4;
+        const phaseStartTime = new Date(currentTime);
+        phaseStartTime.setUTCHours(phaseStartHour, 0, 0, 0);
+        return phaseStartTime;
+    }
+
     updatePriorityCountdowns() {
         const serverTime = this.getServerTime();
         const nextPriorityWindow = this.getNextPriorityWindow(serverTime);
         
         if (nextPriorityWindow) {
-            const timeUntil = nextPriorityWindow.startTime - serverTime;
+            const timeUntil = nextPriorityWindow.startTime.getTime() - serverTime.getTime();
             
             if (timeUntil > 0) {
                 const countdown = this.formatCountdown(timeUntil);
@@ -592,23 +625,13 @@ class VSPointsOptimizer {
                         activeNow.style.display = 'none';
                     }
                 }
+                
+                const totalTime = 24 * 60 * 60 * 1000;
+                const timeSinceLastPriority = totalTime - timeUntil;
+                const priorityProgress = Math.max(0, Math.min(100, (timeSinceLastPriority / totalTime) * 100));
+                this.safeUpdateElement('priority-progress-fill', 'style', `width: ${priorityProgress}%`);
             }
         }
-    }
-
-    getNextPhaseTime(currentTime) {
-        const hour = currentTime.getUTCHours();
-        const nextPhaseHour = Math.ceil((hour + 1) / 4) * 4;
-        const nextPhaseTime = new Date(currentTime);
-        
-        if (nextPhaseHour >= 24) {
-            nextPhaseTime.setUTCDate(nextPhaseTime.getUTCDate() + 1);
-            nextPhaseTime.setUTCHours(0, 0, 0, 0);
-        } else {
-            nextPhaseTime.setUTCHours(nextPhaseHour, 0, 0, 0);
-        }
-        
-        return nextPhaseTime;
     }
 
     getCurrentArmsPhaseInfo() {
@@ -616,16 +639,7 @@ class VSPointsOptimizer {
         const currentPhase = this.settings.currentArmsPhase;
         const nextPhase = this.settings.nextArmsPhase;
         
-        const hour = serverTime.getUTCHours();
-        const nextPhaseHour = Math.ceil((hour + 1) / 4) * 4;
-        const nextPhaseTime = new Date(serverTime);
-        
-        if (nextPhaseHour >= 24) {
-            nextPhaseTime.setUTCDate(nextPhaseTime.getUTCDate() + 1);
-            nextPhaseTime.setUTCHours(0, 0, 0, 0);
-        } else {
-            nextPhaseTime.setUTCHours(nextPhaseHour, 0, 0, 0);
-        }
+        const nextPhaseTime = this.getNextPhaseTime(serverTime);
         
         return {
             name: currentPhase,
@@ -639,8 +653,9 @@ class VSPointsOptimizer {
         const serverTime = this.getServerTime();
         const hour = serverTime.getUTCHours();
         const minute = serverTime.getUTCMinutes();
+        const second = serverTime.getUTCSeconds();
         
-        if (minute === 0 && [0, 4, 8, 12, 16, 20].includes(hour)) {
+        if (minute === 0 && second === 0 && hour % 4 === 0) {
             this.autoRotatePhases();
         }
     }
@@ -725,66 +740,91 @@ class VSPointsOptimizer {
 
     generatePriorityWindows(baseTime) {
         const windows = [];
-        const currentPhase = this.settings.currentArmsPhase;
+        const serverTime = this.getServerTime();
         
-        const vsActivities = this.getVSActivities();
-        const armsActivities = this.getArmsRaceActivities(currentPhase);
-        
-        vsActivities.forEach(vsActivity => {
-            armsActivities.forEach(armsActivity => {
-                if (this.activitiesOverlap(vsActivity, armsActivity)) {
-                    windows.push({
-                        name: `${vsActivity.name} + ${armsActivity.name}`,
-                        startTime: new Date(vsActivity.startTime),
-                        duration: vsActivity.duration,
-                        efficiency: 'High',
-                        action: `Use ${vsActivity.speedups} for maximum points`,
-                        priority: 'high'
-                    });
-                }
-            });
-        });
+        for (let i = 0; i < 4; i++) {
+            const windowStart = new Date(serverTime.getTime() + (i + 1) * 6 * 60 * 60 * 1000);
+            
+            const phaseAtTime = this.getPhaseAtTime(windowStart);
+            const vsActivityAtTime = this.getVSActivityForDay(windowStart.getUTCDay());
+            
+            if (phaseAtTime && vsActivityAtTime && this.activitiesOverlap(vsActivityAtTime, phaseAtTime)) {
+                windows.push({
+                    name: `${vsActivityAtTime.name} + ${phaseAtTime.name}`,
+                    startTime: windowStart,
+                    duration: 2 * 60 * 60 * 1000,
+                    efficiency: 'High',
+                    action: `Use ${vsActivityAtTime.speedups} for maximum points`,
+                    priority: 'high'
+                });
+            } else {
+                windows.push({
+                    name: `${this.getDayName(windowStart.getUTCDay())} Window`,
+                    startTime: windowStart,
+                    duration: 1 * 60 * 60 * 1000,
+                    efficiency: 'Medium',
+                    action: 'Standard activities earn regular points',
+                    priority: 'medium'
+                });
+            }
+        }
         
         return windows.sort((a, b) => a.startTime - b.startTime);
+    }
+
+    getPhaseAtTime(time) {
+        const hour = time.getUTCHours();
+        const phaseIndex = Math.floor(hour / 4) % this.armsRacePhases.length;
+        return {
+            name: this.armsRacePhases[phaseIndex],
+            type: this.getPhaseType(this.armsRacePhases[phaseIndex])
+        };
+    }
+
+    getPhaseType(phaseName) {
+        const phaseTypes = {
+            'Tech Research': 'research',
+            'Drone Boost': 'drones',
+            'Hero Advancement': 'heroes',
+            'City Building': 'building',
+            'Unit Progression': 'training'
+        };
+        return phaseTypes[phaseName] || 'unknown';
+    }
+
+    getVSActivityForDay(dayIndex) {
+        const activities = {
+            0: { name: 'Sunday Research', speedups: 'research speedups', type: 'research' },
+            1: { name: 'Monday Building', speedups: 'building speedups', type: 'building' },
+            2: { name: 'Tuesday Training', speedups: 'training speedups', type: 'training' },
+            3: { name: 'Wednesday Research', speedups: 'research speedups', type: 'research' },
+            4: { name: 'Thursday Building', speedups: 'building speedups', type: 'building' },
+            5: { name: 'Friday Training', speedups: 'training speedups', type: 'training' },
+            6: { name: 'Saturday Research', speedups: 'research speedups', type: 'research' }
+        };
+        return activities[dayIndex];
+    }
+
+    getDayName(dayIndex) {
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        return days[dayIndex];
     }
 
     getVSActivities() {
         const serverTime = this.getServerTime();
         const day = serverTime.getUTCDay();
-        
-        const schedule = {
-            0: [{ name: 'Sunday Research', speedups: 'research speedups', startTime: new Date(), duration: 3600000 }],
-            1: [{ name: 'Monday Building', speedups: 'building speedups', startTime: new Date(), duration: 3600000 }],
-            2: [{ name: 'Tuesday Training', speedups: 'training speedups', startTime: new Date(), duration: 3600000 }],
-            3: [{ name: 'Wednesday Research', speedups: 'research speedups', startTime: new Date(), duration: 3600000 }],
-            4: [{ name: 'Thursday Building', speedups: 'building speedups', startTime: new Date(), duration: 3600000 }],
-            5: [{ name: 'Friday Training', speedups: 'training speedups', startTime: new Date(), duration: 3600000 }],
-            6: [{ name: 'Saturday Research', speedups: 'research speedups', startTime: new Date(), duration: 3600000 }]
-        };
-        
-        return schedule[day] || [];
+        return [this.getVSActivityForDay(day)].filter(Boolean);
     }
 
     getArmsRaceActivities(phase) {
-        const activities = {
-            'Tech Research': [{ name: 'Research Projects', type: 'research' }],
-            'Drone Boost': [{ name: 'Drone Upgrades', type: 'drones' }],
-            'Hero Advancement': [{ name: 'Hero Training', type: 'heroes' }],
-            'City Building': [{ name: 'Construction', type: 'building' }],
-            'Unit Progression': [{ name: 'Troop Training', type: 'training' }]
-        };
-        
-        return activities[phase] || [];
+        return [{
+            name: phase,
+            type: this.getPhaseType(phase)
+        }];
     }
 
     activitiesOverlap(vsActivity, armsActivity) {
-        const typeMap = {
-            'research speedups': 'research',
-            'building speedups': 'building',
-            'training speedups': 'training'
-        };
-        
-        return typeMap[vsActivity.speedups] === armsActivity.type;
+        return vsActivity.type === armsActivity.type;
     }
 
     populateAllSections() {
@@ -864,11 +904,12 @@ class VSPointsOptimizer {
         
         grid.innerHTML = upcomingEvents.map(event => `
             <div class="bottom-event-card">
-                <div class="event-icon">${event.icon}</div>
-                <div class="event-details">
-                    <div class="event-name">${event.name}</div>
-                    <div class="event-countdown">${this.formatCountdown(event.timeUntil)}</div>
+                <div class="event-icon-compact">${event.icon}</div>
+                <div class="event-details-compact">
+                    <div class="event-name-compact">${event.name}</div>
+                    <div class="event-countdown-compact">${this.formatCountdown(event.timeUntil)}</div>
                 </div>
+                <div class="event-priority-indicator ${event.priority}"></div>
             </div>
         `).join('');
         
@@ -899,6 +940,20 @@ class VSPointsOptimizer {
                 summary: 'Perfect timing for maximum efficiency',
                 difficulty: 'Advanced',
                 impact: 'Very High'
+            },
+            {
+                title: 'Resource Management',
+                category: 'Economics',
+                summary: 'Optimize speedup usage for maximum return',
+                difficulty: 'Beginner',
+                impact: 'Medium'
+            },
+            {
+                title: 'Alliance Coordination',
+                category: 'Team Strategy',
+                summary: 'Coordinate with alliance for peak efficiency',
+                difficulty: 'Advanced',
+                impact: 'Very High'
             }
         ];
     }
@@ -907,16 +962,25 @@ class VSPointsOptimizer {
         const events = [];
         const baseTime = this.getServerTime();
         
-        for (let i = 0; i < 4; i++) {
-            const eventTime = new Date(baseTime.getTime() + (i + 1) * 2 * 60 * 60 * 1000);
-            events.push({
-                name: `Priority Window ${i + 1}`,
-                icon: '⚡',
-                timeUntil: eventTime - baseTime
-            });
-        }
+        const nextPhase = this.getNextPhaseTime(baseTime);
+        events.push({
+            name: `${this.settings.nextArmsPhase} Phase`,
+            icon: '⚔️',
+            timeUntil: nextPhase.getTime() - baseTime.getTime(),
+            priority: 'high'
+        });
         
-        return events;
+        const priorityWindows = this.generatePriorityWindows(baseTime).slice(0, 3);
+        priorityWindows.forEach((window, index) => {
+            events.push({
+                name: window.name,
+                icon: window.priority === 'high' ? '⚡' : '📅',
+                timeUntil: window.startTime.getTime() - baseTime.getTime(),
+                priority: window.priority
+            });
+        });
+        
+        return events.slice(0, 4);
     }
 
     switchTab(tabName) {

@@ -1169,6 +1169,57 @@ body {
     font-size: 1rem;
 }
 
+/* Priority Window Cards */
+.priority-window-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-lg);
+    transition: all var(--transition-fast);
+}
+
+.priority-window-card:hover {
+    border-color: var(--accent-primary);
+    box-shadow: var(--glow-primary);
+    transform: translateY(-2px);
+}
+
+.priority-window-card.high {
+    border-color: var(--accent-primary);
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(0, 212, 255, 0.05) 100%);
+}
+
+.window-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-md);
+}
+
+.window-header h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.window-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.window-time {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-family: 'Courier New', monospace;
+}
+
+.window-action {
+    font-size: 0.85rem;
+    color: var(--accent-primary);
+    font-weight: 500;
+}
+
 /* Schedule Legend */
 .schedule-legend {
     display: flex;
@@ -1220,6 +1271,48 @@ body {
     gap: var(--spacing-md);
 }
 
+/* Schedule Events */
+.schedule-event {
+    padding: var(--spacing-md);
+    background: var(--bg-tertiary);
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--border-secondary);
+    transition: all var(--transition-fast);
+}
+
+.schedule-event:hover {
+    border-color: var(--accent-primary);
+    transform: translateY(-1px);
+}
+
+.schedule-event.priority {
+    border-color: var(--accent-primary);
+    background: linear-gradient(135deg, var(--bg-tertiary) 0%, rgba(0, 212, 255, 0.1) 100%);
+}
+
+.schedule-event.current {
+    border-color: var(--accent-success);
+    background: linear-gradient(135deg, var(--bg-tertiary) 0%, rgba(0, 255, 136, 0.1) 100%);
+}
+
+.event-time {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-family: 'Courier New', monospace;
+}
+
+.event-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: var(--spacing-xs) 0;
+}
+
+.event-phase {
+    font-size: 0.8rem;
+    color: var(--accent-primary);
+}
+
 /* Intelligence Hub */
 .intel-stats {
     display: flex;
@@ -1254,6 +1347,78 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: var(--spacing-lg);
+}
+
+.intelligence-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-lg);
+    transition: all var(--transition-fast);
+}
+
+.intelligence-card:hover {
+    border-color: var(--accent-primary);
+    box-shadow: var(--glow-primary);
+    transform: translateY(-2px);
+}
+
+.guide-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-md);
+}
+
+.guide-header h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.guide-category {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: var(--bg-tertiary);
+    color: var(--accent-secondary);
+    border: 1px solid var(--accent-secondary);
+}
+
+.guide-content p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: var(--spacing-md);
+}
+
+.guide-meta {
+    display: flex;
+    gap: var(--spacing-md);
+    font-size: 0.8rem;
+}
+
+.difficulty,
+.impact {
+    padding: 2px 6px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.difficulty {
+    background: var(--bg-tertiary);
+    color: var(--accent-warning);
+    border: 1px solid var(--accent-warning);
+}
+
+.impact {
+    background: var(--bg-tertiary);
+    color: var(--accent-success);
+    border: 1px solid var(--accent-success);
 }
 
 /* Bottom Priority Events Bar */
@@ -1342,6 +1507,83 @@ body {
     overflow-y: auto;
 }
 
+/* Bottom Event Cards */
+.bottom-event-card {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-secondary);
+    border-radius: var(--border-radius-md);
+    transition: all var(--transition-fast);
+    position: relative;
+    overflow: hidden;
+}
+
+.bottom-event-card:hover {
+    border-color: var(--accent-primary);
+    box-shadow: var(--glow-primary);
+    transform: translateY(-1px);
+}
+
+.event-icon-compact {
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--border-primary);
+    flex-shrink: 0;
+}
+
+.event-details-compact {
+    flex: 1;
+    min-width: 0;
+}
+
+.event-name-compact {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.event-countdown-compact {
+    font-size: 0.75rem;
+    color: var(--accent-primary);
+    font-weight: 500;
+    font-family: 'Courier New', monospace;
+}
+
+.event-priority-indicator {
+    width: 4px;
+    height: 100%;
+    position: absolute;
+    right: 0;
+    top: 0;
+    border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0;
+}
+
+.event-priority-indicator.high {
+    background: var(--gradient-primary);
+    box-shadow: var(--glow-primary);
+}
+
+.event-priority-indicator.medium {
+    background: var(--gradient-secondary);
+}
+
+.event-priority-indicator.low {
+    background: var(--bg-tertiary);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .nav-container {
@@ -1373,7 +1615,7 @@ body {
 
     .app-container {
         padding: var(--spacing-md);
-        padding-bottom: 120px;
+        padding-bottom: 100px;
     }
 
     .dashboard-grid {
@@ -1388,12 +1630,14 @@ body {
     .event-gaming-card {
         flex-direction: column;
         text-align: center;
+        padding: var(--spacing-md);
     }
 
     .event-icon-large {
         width: 48px;
         height: 48px;
         font-size: 1.5rem;
+        margin-bottom: var(--spacing-sm);
     }
 
     .tab-container {
@@ -1449,13 +1693,36 @@ body {
         gap: var(--spacing-sm);
     }
 
-    .bottom-events-bar {
-        /* Start collapsed on mobile */
-    }
-
     .bottom-events-grid {
         grid-template-columns: 1fr;
-        max-height: 150px;
+        max-height: 120px;
+    }
+
+    .bottom-event-card {
+        padding: var(--spacing-sm);
+        gap: var(--spacing-xs);
+    }
+
+    .event-icon-compact {
+        width: 28px;
+        height: 28px;
+        font-size: 1rem;
+    }
+
+    .event-name-compact {
+        font-size: 0.8rem;
+    }
+
+    .event-countdown-compact {
+        font-size: 0.7rem;
+    }
+
+    .events-bar-header {
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+
+    .events-bar-content {
+        padding: 0 var(--spacing-md) var(--spacing-sm);
     }
 }
 
@@ -1481,6 +1748,48 @@ body {
     .setup-btn.large {
         padding: var(--spacing-md) var(--spacing-lg);
         font-size: 0.9rem;
+    }
+
+    .app-container {
+        padding: var(--spacing-xs);
+        padding-bottom: 90px;
+    }
+
+    .card-header {
+        padding: var(--spacing-md);
+    }
+
+    .card-content {
+        padding: var(--spacing-sm);
+    }
+
+    .countdown-main-gaming {
+        font-size: 1.8rem;
+    }
+
+    .event-gaming-card {
+        padding: var(--spacing-sm);
+    }
+
+    .status-items-gaming {
+        flex-direction: row;
+        justify-content: space-around;
+    }
+
+    .status-divider-gaming {
+        display: none;
+    }
+
+    .bottom-event-card {
+        padding: var(--spacing-xs) var(--spacing-sm);
+    }
+
+    .event-name-compact {
+        font-size: 0.75rem;
+    }
+
+    .event-countdown-compact {
+        font-size: 0.65rem;
     }
 }
 

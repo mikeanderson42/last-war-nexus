@@ -74,6 +74,10 @@ body {
     padding: 0 !important;
 }
 
+
+box-shadow: var(--shadow-card); /* This variable is undefined */
+
+
 /* Gaming-Inspired Header Styling */
 .main-nav {
     background: linear-gradient(145deg, rgba(30, 30, 35, 0.98), rgba(25, 25, 30, 0.95)) !important;
@@ -1360,6 +1364,8 @@ body {
 .intel-inner p:last-child {
     margin-bottom: 0;
 }
+
+
 
 /* Intel Stats */
 .intel-stats {

@@ -32,6 +32,7 @@
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
     --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
     --shadow-accent: 0 4px 20px rgba(0, 212, 255, 0.3);
+    --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.15);
     
     --spacing-xs: 4px;
     --spacing-sm: 8px;
@@ -73,10 +74,6 @@ body {
     margin: 0 !important;
     padding: 0 !important;
 }
-
-
-box-shadow: var(--shadow-card); /* This variable is undefined */
-
 
 /* Gaming-Inspired Header Styling */
 .main-nav {
@@ -1365,8 +1362,6 @@ box-shadow: var(--shadow-card); /* This variable is undefined */
     margin-bottom: 0;
 }
 
-
-
 /* Intel Stats */
 .intel-stats {
     display: flex;
@@ -1394,5 +1389,16 @@ box-shadow: var(--shadow-card); /* This variable is undefined */
     color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.5;
+        transform: scale(1.1);
+    }
 }
 </div>

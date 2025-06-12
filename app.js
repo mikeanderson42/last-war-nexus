@@ -6,7 +6,7 @@ class LastWarNexus {
         this.maxInitAttempts = 5;
         
         // Server configuration
-        this.currentArmsPhase = "Drone Boost";
+        this.currentArmsPhase = "City Building";
         this.timeOffset = 0;
         
         // Data structure
@@ -37,6 +37,7 @@ class LastWarNexus {
                 { vsday: 3, armsphase: "Tech Research", reason: "Research activities align perfectly.", points: 3800 },
                 { vsday: 3, armsphase: "Drone Boost", reason: "Drone component activities align.", points: 3300 },
                 { vsday: 4, armsphase: "Hero Advancement", reason: "Hero activities align perfectly.", points: 3600 },
+                { vsday: 4, armsphase: "City Building", reason: "Building activities during hero training day.", points: 3200 },
                 { vsday: 5, armsphase: "City Building", reason: "Building component of mobilization.", points: 4200 },
                 { vsday: 5, armsphase: "Unit Progression", reason: "Training component of mobilization.", points: 3900 },
                 { vsday: 5, armsphase: "Tech Research", reason: "Research component of mobilization.", points: 4100 },
@@ -299,7 +300,6 @@ class LastWarNexus {
         this.eventListeners = [];
     }
 
-    // **COMPLETE: updateCurrentStatus method**
     updateCurrentStatus() {
         try {
             const { utcDay, utcHour, utcMinute } = this.getCurrentUTCInfo();
@@ -342,7 +342,6 @@ class LastWarNexus {
         }
     }
 
-    // **COMPLETE: Display methods**
     displayActiveAlignment(alignment, currentArmsPhase, currentVSDay, activeNowElement) {
         try {
             if (activeNowElement) {
@@ -414,13 +413,12 @@ class LastWarNexus {
         this.safeUpdateElement('efficiency-level', 'textContent', 'Error');
     }
 
-    // Server management methods
     loadServerSettings() {
         try {
             const saved = localStorage.getItem('lwn-server-settings');
             if (saved) {
                 const settings = JSON.parse(saved);
-                this.currentArmsPhase = settings.currentArmsPhase || "Drone Boost";
+                this.currentArmsPhase = settings.currentArmsPhase || "City Building";
                 this.timeOffset = settings.timeOffset || 0;
                 
                 if (this.elements['current-arms-phase']) {
@@ -450,7 +448,7 @@ class LastWarNexus {
 
     applyServerSettings() {
         try {
-            this.currentArmsPhase = this.elements['current-arms-phase']?.value || "Drone Boost";
+            this.currentArmsPhase = this.elements['current-arms-phase']?.value || "City Building";
             this.timeOffset = parseInt(this.elements['time-offset']?.value || '0', 10);
             this.updateServerDisplay();
             this.saveServerSettings();
@@ -479,7 +477,6 @@ class LastWarNexus {
         }
     }
 
-    // Time methods
     getCurrentUTCInfo() {
         const now = new Date();
         const serverTime = new Date(now.getTime() + (this.timeOffset * 60 * 60 * 1000));
@@ -513,7 +510,6 @@ class LastWarNexus {
         return schedulePhase.name === this.currentArmsPhase;
     }
 
-    // **COMPLETE: All missing calculation methods**
     calculateTimeUntilNextPhase() {
         try {
             const now = this.getServerTime();
@@ -696,7 +692,7 @@ class LastWarNexus {
             } else if (hours > 0) {
                 return `${hours}h ${minutes}m`;
             } else {
-                return `${Math.max(1, minutes)}m`; // Always show at least 1m
+                return `${Math.max(1, minutes)}m`;
             }
             
         } catch (error) {

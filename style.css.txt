@@ -1250,7 +1250,6 @@ body {
     }
 }
 
-
 /* Schedule Legend */
 .schedule-legend {
     display: flex;

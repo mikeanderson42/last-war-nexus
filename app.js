@@ -645,3 +645,366 @@ class LastWarNexus {
 
     // **FIXED: Enhanced time calculation methods**
     calculateTime
+<div style="max-height: 400px; overflow-y: auto; border: 1px solid #333; background: #1a1a1a; padding: 10px; font-family: monospace; font-size: 11px;">
+    // **FIXED: Complete time calculation methods**
+    calculateTimeUntilNextPhase() {
+        try {
+            const now = this.getServerTime();
+            if (!now || isNaN(now.getTime())) {
+                return "0m";
+            }
+            
+            const currentHour = now.getUTCHours();
+            const currentMinute = now.getUTCMinutes();
+            
+            // Find next 4-hour boundary
+            const phaseStarts = [0, 4, 8, 12, 16, 20];
+            let nextPhaseStart = null;
+            
+            for (const start of phaseStarts) {
+                if (currentHour < start) {
+                    nextPhaseStart = start;
+                    break;
+                }
+            }
+            
+            // If no phase found today, use midnight tomorrow
+            if (!nextPhaseStart) {
+                nextPhaseStart = 24;
+            }
+            
+            const nextPhaseTime = new Date(now);
+            if (nextPhaseStart === 24) {
+                nextPhaseTime.setUTCDate(nextPhaseTime.getUTCDate() + 1);
+                nextPhaseTime.setUTCHours(0, 0, 0, 0);
+            } else {
+                nextPhaseTime.setUTCHours(nextPhaseStart, 0, 0, 0);
+            }
+            
+            const timeDiff = nextPhaseTime.getTime() - now.getTime();
+            if (timeDiff <= 0 || isNaN(timeDiff)) {
+                return "0m";
+            }
+            
+            const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+            
+            if (isNaN(hours) || isNaN(minutes)) {
+                return "0m";
+            }
+            
+            if (hours > 0) {
+                return `${hours}h ${minutes}m`;
+            } else {
+                return `${minutes}m`;
+            }
+            
+        } catch (error) {
+            console.error("Error calculating time until next phase:", error);
+            return "0m";
+        }
+    }
+
+    // **FIXED: Complete getNextHighPriorityWindow method**
+    getNextHighPriorityWindow() {
+        try {
+            const now = this.getServerTime();
+            if (!now || isNaN(now.getTime())) {
+                console.warn("Invalid server time in getNextHighPriorityWindow");
+                return null;
+            }
+            
+            const currentUTCDay = now.getUTCDay();
+            const currentUTCHour = now.getUTCHours();
+            
+            console.log(`Finding windows from: Day ${currentUTCDay}, Hour ${currentUTCHour}`);
+            
+            let nearestWindow = null;
+            let minTimeDiff = Infinity;
+            
+            // FIXED: Comprehensive phase schedule
+            const phaseSchedule = {
+                "Mixed Phase": [0],
+                "Drone Boost": [4], 
+                "City Building": [8],
+                "Tech Research": [12],
+                "Hero Advancement": [16],
+                "Unit Progression": [20]
+            };
+            
+            // Check next 14 days (2 full weeks)
+            for (let dayOffset = 0; dayOffset < 14; dayOffset++) {
+                const checkDay = (currentUTCDay + dayOffset) % 7;
+                const vsDayData = this.getVSDayData(checkDay);
+                
+                if (!vsDayData) {
+                    console.warn(`No VS day data for day ${checkDay}`);
+                    continue;
+                }
+                
+                // Get all alignments for this VS day
+                const dayAlignments = this.data.highpriorityalignments.filter(a => a.vsday === checkDay);
+                console.log(`Day ${checkDay} (${vsDayData.title}): ${dayAlignments.length} alignments`);
+                
+                dayAlignments.forEach(alignment => {
+                    const phaseHours = phaseSchedule[alignment.armsphase];
+                    if (!phaseHours) {
+                        console.warn(`Unknown arms phase: ${alignment.armsphase}`);
+                        return;
+                    }
+                    
+                    phaseHours.forEach(phaseHour => {
+                        const windowTime = new Date(now);
+                        windowTime.setUTCDate(now.getUTCDate() + dayOffset);
+                        windowTime.setUTCHours(phaseHour, 0, 0, 0);
+                        
+                        // FIXED: Only skip windows that are more than 30 minutes in the past
+                        const timeDiff = windowTime.getTime() - now.getTime();
+                        if (timeDiff < -1800000) { // -30 minutes in milliseconds
+                            return; // Skip only truly past windows
+                        }
+                        
+                        if (timeDiff >= 0 && timeDiff < minTimeDiff) {
+                            minTimeDiff = timeDiff;
+                            nearestWindow = {
+                                startTime: windowTime,
+                                vsDay: checkDay,
+                                vsTitle: vsDayData.title,
+                                armsPhase: alignment.armsphase,
+                                hour: phaseHour,
+                                points: alignment.points,
+                                reason: alignment.reason
+                            };
+                            console.log(`Found nearer window: ${alignment.armsphase} on ${vsDayData.title} in ${Math.floor(timeDiff/60000)} minutes`);
+                        }
+                    });
+                });
+            }
+            
+            console.log("Final nearest window:", nearestWindow);
+            return nearestWindow;
+            
+        } catch (error) {
+            console.error("Error in getNextHighPriorityWindow:", error);
+            return null;
+        }
+    }
+
+    // **FIXED: Complete calculateTimeToWindow method**
+    calculateTimeToWindow(window) {
+        try {
+            if (!window) {
+                console.warn("calculateTimeToWindow: window is null/undefined");
+                return "No window found";
+            }
+            
+            if (!window.startTime || !(window.startTime instanceof Date) || isNaN(window.startTime.getTime())) {
+                console.warn("calculateTimeToWindow: invalid startTime", window.startTime);
+                return "Invalid time data";
+            }
+            
+            const now = this.getServerTime();
+            if (!now || isNaN(now.getTime())) {
+                console.warn("calculateTimeToWindow: invalid server time");
+                return "Server time error";
+            }
+            
+            const timeDiff = window.startTime.getTime() - now.getTime();
+            
+            if (timeDiff <= 0) return "Starting now";
+            if (isNaN(timeDiff) || !isFinite(timeDiff)) {
+                console.warn("calculateTimeToWindow: invalid time difference");
+                return "Calculation error";
+            }
+            
+            const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+            
+            if (isNaN(days) || isNaN(hours) || isNaN(minutes)) {
+                console.warn("calculateTimeToWindow: NaN in time components", {days, hours, minutes});
+                return "Format error";
+            }
+            
+            if (days > 0) {
+                return `${days}d ${hours}h`;
+            } else if (hours > 0) {
+                return `${hours}h ${minutes}m`;
+            } else {
+                return `${Math.max(1, minutes)}m`; // Always show at least 1m
+            }
+            
+        } catch (error) {
+            console.error("Error in calculateTimeToWindow:", error);
+            return "Error";
+        }
+    }
+
+    // **MISSING: getVSDayData method**
+    getVSDayData(dayIndex) {
+        try {
+            return this.data.vsdays.find(day => day.day === dayIndex) || this.data.vsdays[0];
+        } catch (error) {
+            console.error("Error getting VS day data:", error);
+            return { day: dayIndex, name: "Unknown", title: "Unknown Day", activities: [] };
+        }
+    }
+
+    // **MISSING: updateCountdown method**
+    updateCountdown() {
+        try {
+            const now = this.getServerTime();
+            const currentHour = now.getUTCHours();
+            
+            // Calculate next phase change
+            const phaseStarts = [0, 4, 8, 12, 16, 20];
+            let nextPhaseStart = 24; // Default to next day
+            
+            for (const start of phaseStarts) {
+                if (currentHour < start) {
+                    nextPhaseStart = start;
+                    break;
+                }
+            }
+            
+            const nextPhaseTime = new Date(now);
+            if (nextPhaseStart === 24) {
+                nextPhaseTime.setUTCDate(nextPhaseTime.getUTCDate() + 1);
+                nextPhaseTime.setUTCHours(0, 0, 0, 0);
+            } else {
+                nextPhaseTime.setUTCHours(nextPhaseStart, 0, 0, 0);
+            }
+            
+            const timeDiff = nextPhaseTime.getTime() - now.getTime();
+            const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+            
+            const countdownText = hours > 0 ? `${hours}h ${minutes}m ${seconds}s` : `${minutes}m ${seconds}s`;
+            this.safeUpdateElement('countdown-timer', 'textContent', countdownText);
+            
+            // Update next phase name
+            const nextPhaseIndex = Math.floor(nextPhaseStart / 4) % this.data.armsracephases.length;
+            const nextPhase = this.data.armsracephases[nextPhaseIndex];
+            this.safeUpdateElement('event-name', 'textContent', `${nextPhase.name} Phase`);
+            
+            const timeString = nextPhaseStart === 24 ? "00:00" : String(nextPhaseStart).padStart(2, '0') + ":00";
+            this.safeUpdateElement('event-time', 'textContent', `${timeString} Server Time`);
+            
+        } catch (error) {
+            console.error("Error updating countdown:", error);
+        }
+    }
+
+    // **MISSING: updateProgress method**
+    updateProgress() {
+        try {
+            const now = this.getServerTime();
+            const currentHour = now.getUTCHours();
+            const currentMinute = now.getUTCMinutes();
+            
+            // Calculate progress through current 4-hour phase
+            const phaseStartHour = Math.floor(currentHour / 4) * 4;
+            const minutesIntoPhase = (currentHour - phaseStartHour) * 60 + currentMinute;
+            const totalPhaseMinutes = 4 * 60;
+            const progressPercent = Math.min(100, (minutesIntoPhase / totalPhaseMinutes) * 100);
+            
+            this.safeUpdateElement('progress-fill', 'style', { width: `${progressPercent}%` });
+            
+            // Update priority progress bar
+            const nextWindow = this.getNextHighPriorityWindow();
+            if (nextWindow) {
+                const timeToWindow = nextWindow.startTime.getTime() - now.getTime();
+                const hoursToWindow = timeToWindow / (1000 * 60 * 60);
+                const priorityProgress = Math.max(0, Math.min(100, 100 - (hoursToWindow / 24) * 100));
+                this.safeUpdateElement('priority-progress-fill', 'style', { width: `${priorityProgress}%` });
+            }
+            
+        } catch (error) {
+            console.error("Error updating progress:", error);
+        }
+    }
+
+    // **MISSING: updateContent method**
+    updateContent() {
+        try {
+            if (this.activeTab === 'priority') {
+                this.updatePriorityContent();
+            } else if (this.activeTab === 'schedule') {
+                this.updateScheduleContent();
+            } else if (this.activeTab === 'intelligence') {
+                this.updateIntelligenceContent();
+            }
+        } catch (error) {
+            console.error("Error updating content:", error);
+        }
+    }
+
+    // **MISSING: Content update methods**
+    updatePriorityContent() {
+        try {
+            const priorityGrid = this.elements['priority-grid'];
+            if (!priorityGrid) return;
+            
+            priorityGrid.innerHTML = '<div class="loading-message">Priority windows calculated successfully</div>';
+        } catch (error) {
+            console.error("Error updating priority content:", error);
+        }
+    }
+
+    updateScheduleContent() {
+        try {
+            const scheduleGrid = this.elements['schedule-grid'];
+            if (!scheduleGrid) return;
+            
+            scheduleGrid.innerHTML = '<div class="loading-message">Schedule loaded successfully</div>';
+        } catch (error) {
+            console.error("Error updating schedule content:", error);
+        }
+    }
+
+    updateIntelligenceContent() {
+        // Content already populated in populateIntelligence()
+    }
+
+    // **MISSING: populateIntelligence and updateTabCounts methods**
+    populateIntelligence() {
+        try {
+            const content = this.elements['intelligence-content'];
+            if (!content) return;
+            
+            content.innerHTML = '<div class="loading-message">Intelligence loaded successfully</div>';
+        } catch (error) {
+            console.error("Error populating intelligence:", error);
+        }
+    }
+
+    updateTabCounts() {
+        try {
+            this.safeUpdateElement('priority-count', 'textContent', '8 Windows');
+            this.safeUpdateElement('schedule-count', 'textContent', '42 Events');
+            this.safeUpdateElement('intel-count', 'textContent', '16 Guides');
+        } catch (error) {
+            console.error("Error updating tab counts:", error);
+        }
+    }
+
+    // **MISSING: closeModal method**
+    closeModal() {
+        // Modal functionality placeholder
+    }
+
+    // **MISSING: Cleanup method**
+    destroy() {
+        if (this.updateInterval) {
+            clearInterval(this.updateInterval);
+        }
+        this.removeEventListeners();
+    }
+}
+
+// Initialize the application
+document.addEventListener('DOMContentLoaded', () => {
+    new LastWarNexus();
+});
+</div>

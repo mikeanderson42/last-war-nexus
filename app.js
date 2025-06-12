@@ -338,6 +338,76 @@ if (window.innerWidth <= 768) {
         this.eventListeners = [];
     }
 
+updateCurrentStatus() {
+    try {
+        const { utcDay, utcHour, utcMinute } = this.getCurrentUTCInfo();
+        const currentVSDay = this.getVSDayData(utcDay);
+        const currentArmsPhase = this.getCurrentArmsPhase();
+        
+        // Check for active high priority alignment
+        const alignment = this.data.highpriorityalignments.find(a => 
+            a.vsday === utcDay && a.armsphase === currentArmsPhase.name
+        );
+
+        const activeNowElement = document.getElementById('active-now');
+        
+        if (alignment) {
+            // Show active alignment
+            if (activeNowElement) {
+                activeNowElement.style.display = 'flex';
+            }
+            this.safeUpdateElement('badge-label', 'textContent', 'PEAK EFFICIENCY ACTIVE');
+            this.safeUpdateElement('next-priority-event', 'textContent', `${currentArmsPhase.name} + ${currentVSDay.title}`);
+            this.safeUpdateElement('efficiency-level', 'textContent', 'High');
+            this.safeUpdateElement('current-action', 'textContent', `⚡ Use speedups now for maximum points`);
+            
+            const timeUntilPhaseEnd = this.calculateTimeUntilNextPhase();
+            this.safeUpdateElement('next-priority-time', 'textContent', timeUntilPhaseEnd || 'Active');
+            this.safeUpdateElement('countdown-label', 'textContent', 'PHASE ENDS IN');
+            
+        } else {
+            // Show next priority window
+            if (activeNowElement) {
+                activeNowElement.style.display = 'none';
+            }
+            
+            const nextWindow = this.getNextHighPriorityWindow();
+            if (nextWindow) {
+                this.safeUpdateElement('badge-label', 'textContent', 'NEXT HIGH PRIORITY');
+                this.safeUpdateElement('next-priority-event', 'textContent', `${nextWindow.armsPhase} + ${nextWindow.vsTitle}`);
+                this.safeUpdateElement('efficiency-level', 'textContent', 'High');
+                this.safeUpdateElement('current-action', 'textContent', `Save resources for upcoming high priority window`);
+                
+                const timeToNext = this.calculateTimeToWindow(nextWindow);
+                this.safeUpdateElement('next-priority-time', 'textContent', timeToNext || 'Calculating...');
+                this.safeUpdateElement('countdown-label', 'textContent', 'TIME REMAINING');
+            } else {
+                // Fallback when no windows found
+                this.safeUpdateElement('badge-label', 'textContent', 'NORMAL PHASE');
+                this.safeUpdateElement('next-priority-event', 'textContent', `${currentArmsPhase.name} Phase`);
+                this.safeUpdateElement('efficiency-level', 'textContent', 'Medium');
+                this.safeUpdateElement('current-action', 'textContent', `Focus on ${currentArmsPhase.activities[0]}`);
+                this.safeUpdateElement('next-priority-time', 'textContent', 'Check schedule');
+                this.safeUpdateElement('countdown-label', 'textContent', 'CURRENT PHASE');
+            }
+        }
+
+        // Update status footer
+        this.safeUpdateElement('current-vs-day', 'textContent', currentVSDay.title);
+        this.safeUpdateElement('arms-phase', 'textContent', currentArmsPhase.name);
+        
+        const nextChangeTime = this.calculateTimeUntilNextPhase();
+        this.safeUpdateElement('next-alignment-countdown', 'textContent', nextChangeTime || '0m');
+
+    } catch (error) {
+        console.error("Error updating current status:", error);
+        // Fallback to prevent crashes
+        this.safeUpdateElement('next-priority-time', 'textContent', 'Loading...');
+        this.safeUpdateElement('countdown-label', 'textContent', 'CALCULATING');
+    }
+}
+
+
     // Server management methods
     loadServerSettings() {
         try {
@@ -429,6 +499,11 @@ if (window.innerWidth <= 768) {
     getCurrentArmsPhaseData() {
         return this.data.armsracephases.find(phase => phase.name === this.currentArmsPhase) || this.data.armsracephases[1];
     }
+	
+	getCurrentArmsPhase() {
+    return this.getCurrentArmsPhaseData();
+}
+
 
     isCurrentManualPhase(schedulePhaseHour) {
         const schedulePhase = this.getArmsRacePhase(schedulePhaseHour);
@@ -744,7 +819,12 @@ if (window.innerWidth <= 768) {
 calculateTimeUntilNextPhase() {
     try {
         const now = this.getServerTime();
+        if (!now || isNaN(now.getTime())) {
+            return "0m";
+        }
+        
         const currentHour = now.getUTCHours();
+        const currentMinute = now.getUTCMinutes();
         
         // Find next 4-hour boundary
         const phaseStarts = [0, 4, 8, 12, 16, 20];
@@ -757,9 +837,9 @@ calculateTimeUntilNextPhase() {
             }
         }
         
-        // If no phase found today, use first phase tomorrow
+        // If no phase found today, use midnight tomorrow
         if (!nextPhaseStart) {
-            nextPhaseStart = 24; // Next day at 00:00
+            nextPhaseStart = 24;
         }
         
         const nextPhaseTime = new Date(now);
@@ -770,18 +850,27 @@ calculateTimeUntilNextPhase() {
             nextPhaseTime.setUTCHours(nextPhaseStart, 0, 0, 0);
         }
         
-        const timeDiff = nextPhaseTime - now;
+        const timeDiff = nextPhaseTime.getTime() - now.getTime();
+        if (timeDiff <= 0 || isNaN(timeDiff)) {
+            return "0m";
+        }
+        
         const hours = Math.floor(timeDiff / (1000 * 60 * 60));
         const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+        
+        if (isNaN(hours) || isNaN(minutes)) {
+            return "0m";
+        }
         
         if (hours > 0) {
             return `${hours}h ${minutes}m`;
         } else {
             return `${minutes}m`;
         }
+        
     } catch (error) {
         console.error("Error calculating time until next phase:", error);
-        return "Error";
+        return "0m";
     }
 }
 
@@ -1365,14 +1454,27 @@ calculateTimeUntilNextPhase() {
 
 calculateTimeToWindow(window) {
     try {
+        if (!window || !window.startTime) {
+            return "Unknown";
+        }
+        
         const now = this.getServerTime();
-        const timeDiff = window.startTime - now;
+        if (!now || isNaN(now.getTime())) {
+            return "Unknown";
+        }
+        
+        const timeDiff = window.startTime.getTime() - now.getTime();
         
         if (timeDiff <= 0) return "Starting now";
+        if (isNaN(timeDiff)) return "Unknown";
         
         const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
         const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+        
+        if (isNaN(days) || isNaN(hours) || isNaN(minutes)) {
+            return "Unknown";
+        }
         
         if (days > 0) {
             return `${days}d ${hours}h`;
@@ -1381,11 +1483,13 @@ calculateTimeToWindow(window) {
         } else {
             return `${minutes}m`;
         }
+        
     } catch (error) {
         console.error("Error calculating time to window:", error);
-        return "Error";
+        return "Unknown";
     }
 }
+
 
 
     getPhaseStartTime(hour, vsDay) {

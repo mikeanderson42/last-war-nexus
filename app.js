@@ -338,53 +338,41 @@ if (window.innerWidth <= 768) {
         this.eventListeners = [];
     }
 
-updateCurrentStatus() {
-    try {
-        const { utcDay, utcHour, utcMinute } = this.getCurrentUTCInfo();
-        const currentVSDay = this.getVSDayData(utcDay);
-        const currentArmsPhase = this.getCurrentArmsPhase();
+// Replace the "NEXT PRIORITY WINDOW" section (around line 350) with this:
+} else {
+    // NEXT PRIORITY WINDOW
+    if (activeNowElement) {
+        activeNowElement.style.display = 'none';
+    }
+    
+    const nextWindow = this.getNextHighPriorityWindow();
+    console.log("Next window result:", nextWindow); // Debug
+    
+    if (nextWindow && nextWindow.startTime && nextWindow.vsTitle && nextWindow.armsPhase) {
+        this.safeUpdateElement('badge-label', 'textContent', 'NEXT HIGH PRIORITY');
+        this.safeUpdateElement('next-priority-event', 'textContent', `${nextWindow.armsPhase} + ${nextWindow.vsTitle}`);
+        this.safeUpdateElement('efficiency-level', 'textContent', 'High');
+        this.safeUpdateElement('current-action', 'textContent', `Save resources for upcoming high priority window`);
         
-        if (!currentVSDay) {
-            console.error("Missing VS day data");
-            this.setFallbackStatus("Missing VS day data");
-            return;
-        }
+        const timeToNext = this.calculateTimeToWindow(nextWindow);
+        console.log("Time to next:", timeToNext); // Debug
+        this.safeUpdateElement('next-priority-time', 'textContent', timeToNext);
+        this.safeUpdateElement('countdown-label', 'textContent', 'TIME REMAINING');
+    } else {
+        // **ENHANCED FALLBACK** - Show meaningful current phase info
+        console.log("No valid priority windows found, showing current phase");
+        this.safeUpdateElement('badge-label', 'textContent', 'NORMAL PHASE');
+        this.safeUpdateElement('next-priority-event', 'textContent', `${currentArmsPhase.name} Phase`);
+        this.safeUpdateElement('efficiency-level', 'textContent', 'Medium');
+        this.safeUpdateElement('current-action', 'textContent', `Focus on ${currentArmsPhase.activities[0] || 'current activities'}`);
         
-        if (!currentArmsPhase) {
-            console.error("Missing arms phase data");
-            this.setFallbackStatus("Missing arms phase data");
-            return;
-        }
-        
-        console.log(`Current status: Day ${utcDay} (${currentVSDay.title}), Phase: ${currentArmsPhase.name}`);
-        
-        // Check for active alignment
-        const alignment = this.data.highpriorityalignments.find(a => 
-            a.vsday === utcDay && a.armsphase === currentArmsPhase.name
-        );
-
-        const activeNowElement = document.getElementById('active-now');
-        
-        if (alignment) {
-            console.log("Active alignment found:", alignment);
-            this.displayActiveAlignment(alignment, currentArmsPhase, currentVSDay, activeNowElement);
-        } else {
-            console.log("No active alignment, showing next window");
-            this.displayNextPriorityWindow(currentArmsPhase, activeNowElement);
-        }
-
-        // Update footer info with fallbacks
-        this.safeUpdateElement('current-vs-day', 'textContent', currentVSDay.title || 'Unknown');
-        this.safeUpdateElement('arms-phase', 'textContent', currentArmsPhase.name || 'Unknown');
-        
-        const nextChangeTime = this.calculateTimeUntilNextPhase();
-        this.safeUpdateElement('next-alignment-countdown', 'textContent', nextChangeTime || '0m');
-
-    } catch (error) {
-        console.error("Critical error in updateCurrentStatus:", error);
-        this.setFallbackStatus("System error - please refresh");
+        // Show time until next phase change instead
+        const timeUntilPhaseEnd = this.calculateTimeUntilNextPhase();
+        this.safeUpdateElement('next-priority-time', 'textContent', timeUntilPhaseEnd || '4h 0m');
+        this.safeUpdateElement('countdown-label', 'textContent', 'PHASE CHANGES IN');
     }
 }
+
 
 
 

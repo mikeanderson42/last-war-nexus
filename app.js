@@ -1,663 +1,533 @@
-// VS Points Optimizer - Last War Nexus
-// Production-ready JavaScript with 2-phase Arms Race selection and notifications
-
 class VSPointsOptimizer {
     constructor() {
         this.currentData = {
-            serverTime: new Date(),
-            timeOffset: 0,
-            currentArmsPhase: 'Tech Research',
-            nextArmsPhase: 'Drone Boost',
-            phaseTransitionTime: null,
-            vsDay: 'Wednesday',
-            timeFormat: 'utc'
+            serverTimeOffset: 0,
+            currentArmsPhase: 'auto',
+            timeFormat: 'utc',
+            notificationsEnabled: false,
+            lastArmsRaceCheck: null,
+            setupCompleted: false
         };
 
-        this.armsRacePhases = [
-            'Tech Research',
-            'Drone Boost', 
-            'Hero Advancement',
-            'City Building',
-            'Unit Progression'
-        ];
-
-        this.vsDays = [
-            'Monday', 'Tuesday', 'Wednesday', 'Thursday', 
-            'Friday', 'Saturday', 'Sunday'
-        ];
-
-        this.priorityWindows = [];
-        this.scheduleData = [];
-        this.intelligenceData = [];
+        this.isInitialized = false;
+        this.updateInterval = null;
+        this.notificationTimeouts = new Set();
         
+        this.priorityWindows = [];
+        this.scheduleEvents = [];
+        this.intelligenceGuides = [];
+
         this.init();
     }
 
-    init() {
-        this.loadSettings();
-        this.setupEventListeners();
-        this.calculatePhaseTransition();
-        this.generatePriorityWindows();
-        this.generateScheduleData();
-        this.generateIntelligenceData();
-        this.updateDisplay();
-        this.startUpdateLoop();
-        this.checkInitialSetup();
-    }
-
-    loadSettings() {
-        const saved = localStorage.getItem('vsPointsSettings');
-        if (saved) {
-            const settings = JSON.parse(saved);
-            this.currentData = { ...this.currentData, ...settings };
+    async init() {
+        console.log('🚀 Initializing VS Points Optimizer...');
+        
+        try {
+            await this.loadSettings();
+            this.setupEventListeners();
+            this.generatePriorityWindows();
+            this.generateScheduleEvents();
+            this.generateIntelligenceGuides();
+            
+            if (!this.currentData.setupCompleted) {
+                this.showSetupModal();
+            } else {
+                await this.checkArmsRacePhase();
+            }
+            
+            this.startUpdateCycle();
+            this.updateAllDisplays();
+            this.isInitialized = true;
+            
+            console.log('✅ VS Points Optimizer initialized successfully');
+        } catch (error) {
+            console.error('❌ Initialization failed:', error);
+            this.handleError('Failed to initialize VS Points Optimizer', error);
         }
     }
 
-    saveSettings() {
-        localStorage.setItem('vsPointsSettings', JSON.stringify(this.currentData));
-    }
-
-    checkInitialSetup() {
-        const hasSettings = localStorage.getItem('vsPointsSettings');
-        if (!hasSettings) {
-            this.showInitialSetupModal();
+    async loadSettings() {
+        try {
+            const settings = localStorage.getItem('vsPointsSettings');
+            if (settings) {
+                const parsed = JSON.parse(settings);
+                this.currentData = { ...this.currentData, ...parsed };
+            }
+        } catch (error) {
+            console.warn('⚠️ Failed to load settings from localStorage:', error);
         }
     }
 
-    showInitialSetupModal() {
-        // Initial setup modal logic can be added here
-        console.log('Initial setup required');
+    async saveSettings() {
+        try {
+            localStorage.setItem('vsPointsSettings', JSON.stringify(this.currentData));
+        } catch (error) {
+            console.warn('⚠️ Failed to save settings to localStorage:', error);
+        }
     }
 
     setupEventListeners() {
+        // Tab navigation
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab));
+        });
+
+        // Filter buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => this.filterPriorityWindows(e.target.dataset.filter));
+        });
+
         // Server settings dropdown
         const serverToggle = document.getElementById('server-toggle');
         const serverDropdown = document.getElementById('server-dropdown');
-        const settingsToggle = document.getElementById('settings-toggle');
-        const settingsDropdown = document.getElementById('settings-dropdown');
-
-        if (serverToggle) {
+        if (serverToggle && serverDropdown) {
             serverToggle.addEventListener('click', (e) => {
                 e.stopPropagation();
-                serverDropdown.classList.toggle('show');
-                settingsDropdown.classList.remove('show');
+                this.toggleDropdown('server');
             });
         }
 
-        if (settingsToggle) {
+        // Display settings dropdown
+        const settingsToggle = document.getElementById('settings-toggle');
+        const settingsDropdown = document.getElementById('settings-dropdown');
+        if (settingsToggle && settingsDropdown) {
             settingsToggle.addEventListener('click', (e) => {
                 e.stopPropagation();
-                settingsDropdown.classList.toggle('show');
-                serverDropdown.classList.remove('show');
+                this.toggleDropdown('settings');
             });
         }
 
         // Close dropdowns when clicking outside
         document.addEventListener('click', () => {
-            serverDropdown?.classList.remove('show');
-            settingsDropdown?.classList.remove('show');
+            this.closeAllDropdowns();
+        });
+
+        // Prevent dropdown content clicks from closing dropdown
+        document.querySelectorAll('.server-dropdown, .settings-dropdown').forEach(dropdown => {
+            dropdown.addEventListener('click', (e) => e.stopPropagation());
         });
 
         // Apply server settings
-        const applyBtn = document.getElementById('apply-server');
-        if (applyBtn) {
-            applyBtn.addEventListener('click', () => {
-                this.applyServerSettings();
-            });
+        const applyServerBtn = document.getElementById('apply-server');
+        if (applyServerBtn) {
+            applyServerBtn.addEventListener('click', () => this.applyServerSettings());
         }
 
-        // Arms Race phase selectors
-        const currentPhaseSelect = document.getElementById('current-arms-phase');
-        const nextPhaseSelect = document.getElementById('next-arms-phase');
-        const timeOffsetSelect = document.getElementById('time-offset');
-
-        if (currentPhaseSelect) {
-            currentPhaseSelect.value = this.currentData.currentArmsPhase;
-            currentPhaseSelect.addEventListener('change', (e) => {
-                this.currentData.currentArmsPhase = e.target.value;
-                this.updatePhaseDisplays();
-            });
-        }
-
-        if (nextPhaseSelect) {
-            nextPhaseSelect.value = this.currentData.nextArmsPhase;
-            nextPhaseSelect.addEventListener('change', (e) => {
-                this.currentData.nextArmsPhase = e.target.value;
-                this.updatePhaseDisplays();
-            });
-        }
-
-        if (timeOffsetSelect) {
-            timeOffsetSelect.value = this.currentData.timeOffset.toString();
-            timeOffsetSelect.addEventListener('change', (e) => {
-                this.currentData.timeOffset = parseInt(e.target.value);
-                this.updateOffsetDisplay();
-            });
-        }
-
-        // Time format selector
+        // Time format change
         const timeFormatSelect = document.getElementById('time-format-dropdown');
         if (timeFormatSelect) {
-            timeFormatSelect.value = this.currentData.timeFormat;
             timeFormatSelect.addEventListener('change', (e) => {
                 this.currentData.timeFormat = e.target.value;
-                this.updateDisplay();
+                this.saveSettings();
+                this.updateAllDisplays();
             });
         }
 
-        // Tab navigation
-        const tabBtns = document.querySelectorAll('.tab-btn');
-        tabBtns.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const tabName = e.currentTarget.dataset.tab;
-                this.switchTab(tabName);
-            });
-        });
+        // Setup modal handlers
+        this.setupModalHandlers();
 
-        // Filter buttons
-        const filterBtns = document.querySelectorAll('.filter-btn');
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const filter = e.currentTarget.dataset.filter;
-                this.applyFilter(filter);
+        // Events bar toggle
+        const eventsToggle = document.getElementById('events-toggle');
+        if (eventsToggle) {
+            eventsToggle.addEventListener('click', () => this.toggleEventsBar());
+        }
+    }
+
+    setupModalHandlers() {
+        // Setup modal
+        const setupCompleteBtn = document.getElementById('setup-complete');
+        if (setupCompleteBtn) {
+            setupCompleteBtn.addEventListener('click', () => this.completeSetup());
+        }
+
+        const enableNotificationsBtn = document.getElementById('enable-notifications');
+        if (enableNotificationsBtn) {
+            enableNotificationsBtn.addEventListener('click', () => this.requestNotificationPermission());
+        }
+
+        const setupTimeOffset = document.getElementById('setup-time-offset');
+        if (setupTimeOffset) {
+            setupTimeOffset.addEventListener('change', (e) => {
+                this.currentData.serverTimeOffset = parseInt(e.target.value);
+                this.updateSetupServerTime();
             });
-        });
+        }
+
+        // Arms Race modal
+        const armsRaceUpdateBtn = document.getElementById('arms-race-update');
+        const armsRaceCancelBtn = document.getElementById('arms-race-cancel');
+
+        if (armsRaceUpdateBtn) {
+            armsRaceUpdateBtn.addEventListener('click', () => this.updateArmsRacePhase());
+        }
+
+        if (armsRaceCancelBtn) {
+            armsRaceCancelBtn.addEventListener('click', () => this.closeArmsRaceModal());
+        }
+    }
+
+    showSetupModal() {
+        const modal = document.getElementById('setup-modal');
+        if (modal) {
+            modal.style.display = 'flex';
+            
+            // Set current offset in setup
+            const setupTimeOffset = document.getElementById('setup-time-offset');
+            if (setupTimeOffset) {
+                setupTimeOffset.value = this.currentData.serverTimeOffset.toString();
+            }
+            
+            this.updateSetupServerTime();
+        }
+    }
+
+    updateSetupServerTime() {
+        const serverTimeDisplay = document.getElementById('setup-server-time');
+        if (serverTimeDisplay) {
+            const serverTime = this.getServerTime();
+            serverTimeDisplay.textContent = `Server Time: ${this.formatTime(serverTime, 'utc')}`;
+        }
+    }
+
+    async requestNotificationPermission() {
+        const statusDiv = document.getElementById('notification-status');
+        const btn = document.getElementById('enable-notifications');
+        
+        if (!('Notification' in window)) {
+            if (statusDiv) statusDiv.textContent = 'Notifications not supported in this browser';
+            return;
+        }
+
+        try {
+            const permission = await Notification.requestPermission();
+            
+            if (permission === 'granted') {
+                this.currentData.notificationsEnabled = true;
+                if (statusDiv) statusDiv.textContent = '✅ Notifications enabled';
+                if (btn) btn.textContent = '✅ Notifications Enabled';
+            } else {
+                if (statusDiv) statusDiv.textContent = '❌ Notifications blocked';
+            }
+        } catch (error) {
+            console.error('Notification permission error:', error);
+            if (statusDiv) statusDiv.textContent = '❌ Failed to enable notifications';
+        }
+    }
+
+    completeSetup() {
+        this.currentData.setupCompleted = true;
+        this.saveSettings();
+        
+        const modal = document.getElementById('setup-modal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+        
+        this.checkArmsRacePhase();
+    }
+
+    async checkArmsRacePhase() {
+        const now = Date.now();
+        const oneHour = 60 * 60 * 1000;
+        
+        // Only check if it's been more than an hour since last check
+        if (this.currentData.lastArmsRaceCheck && (now - this.currentData.lastArmsRaceCheck) < oneHour) {
+            return;
+        }
+
+        if (this.currentData.currentArmsPhase === 'auto') {
+            const autoPhase = this.calculateCurrentArmsPhase();
+            this.currentData.currentArmsPhase = autoPhase;
+        }
+
+        // Show arms race modal for verification occasionally
+        const shouldShowModal = !this.currentData.lastArmsRaceCheck || 
+                               (now - this.currentData.lastArmsRaceCheck) > (4 * oneHour);
+        
+        if (shouldShowModal) {
+            this.showArmsRaceModal();
+        }
+        
+        this.currentData.lastArmsRaceCheck = now;
+        this.saveSettings();
+    }
+
+    showArmsRaceModal() {
+        const modal = document.getElementById('arms-race-modal');
+        const currentPhaseDisplay = document.getElementById('modal-current-phase');
+        const modalArmsPhase = document.getElementById('modal-arms-phase');
+        
+        if (modal && currentPhaseDisplay && modalArmsPhase) {
+            currentPhaseDisplay.textContent = this.currentData.currentArmsPhase;
+            modalArmsPhase.value = this.currentData.currentArmsPhase;
+            modal.style.display = 'flex';
+        }
+    }
+
+    updateArmsRacePhase() {
+        const modalArmsPhase = document.getElementById('modal-arms-phase');
+        if (modalArmsPhase) {
+            this.currentData.currentArmsPhase = modalArmsPhase.value;
+            this.saveSettings();
+            this.updateAllDisplays();
+        }
+        this.closeArmsRaceModal();
+    }
+
+    closeArmsRaceModal() {
+        const modal = document.getElementById('arms-race-modal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    calculateCurrentArmsPhase() {
+        const serverTime = this.getServerTime();
+        const phases = ['Tech Research', 'Drone Boost', 'Hero Advancement', 'City Building', 'Unit Progression'];
+        
+        // Calculate 4-hour blocks since midnight UTC
+        const utcHour = serverTime.getUTCHours();
+        const phaseIndex = Math.floor(utcHour / 4) % phases.length;
+        
+        return phases[phaseIndex];
+    }
+
+    toggleDropdown(type) {
+        const serverDropdown = document.getElementById('server-dropdown');
+        const settingsDropdown = document.getElementById('settings-dropdown');
+        
+        if (type === 'server') {
+            if (settingsDropdown) settingsDropdown.classList.remove('active');
+            if (serverDropdown) serverDropdown.classList.toggle('active');
+        } else if (type === 'settings') {
+            if (serverDropdown) serverDropdown.classList.remove('active');
+            if (settingsDropdown) settingsDropdown.classList.toggle('active');
+        }
+    }
+
+    closeAllDropdowns() {
+        const dropdowns = document.querySelectorAll('.server-dropdown, .settings-dropdown');
+        dropdowns.forEach(dropdown => dropdown.classList.remove('active'));
     }
 
     applyServerSettings() {
-        this.calculatePhaseTransition();
-        this.generatePriorityWindows();
-        this.generateScheduleData();
-        this.updateDisplay();
+        const timeOffsetSelect = document.getElementById('time-offset');
+        const armsPhaseSelect = document.getElementById('current-arms-phase');
+        
+        if (timeOffsetSelect) {
+            this.currentData.serverTimeOffset = parseInt(timeOffsetSelect.value);
+        }
+        
+        if (armsPhaseSelect) {
+            this.currentData.currentArmsPhase = armsPhaseSelect.value;
+        }
+        
         this.saveSettings();
+        this.updateServerInfo();
+        this.updateAllDisplays();
+        this.closeAllDropdowns();
         
-        // Close dropdown
-        document.getElementById('server-dropdown')?.classList.remove('show');
-        
-        // Show confirmation
-        this.showNotification('Server settings applied successfully', 'success');
+        // Show feedback
+        const applyBtn = document.getElementById('apply-server');
+        if (applyBtn) {
+            const originalText = applyBtn.textContent;
+            applyBtn.textContent = '✅ Applied';
+            setTimeout(() => {
+                applyBtn.textContent = originalText;
+            }, 2000);
+        }
     }
 
-    updatePhaseDisplays() {
-        const currentDisplay = document.getElementById('current-phase-display');
-        const nextDisplay = document.getElementById('next-phase-display');
-        
-        if (currentDisplay) currentDisplay.textContent = this.currentData.currentArmsPhase;
-        if (nextDisplay) nextDisplay.textContent = this.currentData.nextArmsPhase;
-    }
-
-    updateOffsetDisplay() {
+    updateServerInfo() {
+        const currentPhaseDisplay = document.getElementById('current-phase-display');
         const offsetDisplay = document.getElementById('offset-display');
+        
+        if (currentPhaseDisplay) {
+            currentPhaseDisplay.textContent = this.currentData.currentArmsPhase;
+        }
+        
         if (offsetDisplay) {
-            const sign = this.currentData.timeOffset >= 0 ? '+' : '';
-            offsetDisplay.textContent = `UTC ${sign}${this.currentData.timeOffset}`;
+            const offset = this.currentData.serverTimeOffset;
+            const sign = offset >= 0 ? '+' : '';
+            offsetDisplay.textContent = `UTC ${sign}${offset}`;
         }
     }
 
-    calculatePhaseTransition() {
-        // Calculate next phase transition based on current time and 4-hour blocks
+    getServerTime() {
         const now = new Date();
-        const serverTime = new Date(now.getTime() + (this.currentData.timeOffset * 60 * 60 * 1000));
+        const offsetMs = this.currentData.serverTimeOffset * 60 * 60 * 1000;
+        return new Date(now.getTime() + offsetMs);
+    }
+
+    formatTime(date, format = null) {
+        const useFormat = format || this.currentData.timeFormat;
         
-        // Find next 4-hour boundary (00:00, 04:00, 08:00, 12:00, 16:00, 20:00)
-        const hours = serverTime.getHours();
-        const nextTransitionHour = Math.ceil(hours / 4) * 4;
-        
-        const transitionTime = new Date(serverTime);
-        transitionTime.setHours(nextTransitionHour, 0, 0, 0);
-        
-        // If we've passed today's last transition, move to tomorrow
-        if (nextTransitionHour >= 24) {
-            transitionTime.setDate(transitionTime.getDate() + 1);
-            transitionTime.setHours(0, 0, 0, 0);
+        if (useFormat === 'local') {
+            return date.toLocaleTimeString('en-US', { 
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        } else {
+            // UTC format
+            return date.toISOString().substr(11, 8);
         }
+    }
+
+    formatDate(date, format = null) {
+        const useFormat = format || this.currentData.timeFormat;
         
-        this.currentData.phaseTransitionTime = transitionTime;
-        this.currentData.serverTime = serverTime;
+        if (useFormat === 'local') {
+            return date.toLocaleDateString('en-US', {
+                weekday: 'long',
+                month: 'short',
+                day: 'numeric'
+            });
+        } else {
+            // UTC format
+            return date.toLocaleDateString('en-US', {
+                weekday: 'long',
+                month: 'short', 
+                day: 'numeric',
+                timeZone: 'UTC'
+            });
+        }
     }
 
     generatePriorityWindows() {
         this.priorityWindows = [];
-        const startDate = new Date();
+        const serverTime = this.getServerTime();
+        const currentDay = serverTime.getDay(); // 0 = Sunday, 1 = Monday, etc.
         
-        // Generate 7 days of priority windows
-        for (let day = 0; day < 7; day++) {
-            const date = new Date(startDate);
-            date.setDate(date.getDate() + day);
-            
-            const dayName = this.vsDays[date.getDay()];
-            const armsPhase = this.getArmsPhaseForTime(date);
-            
-            // Check for high-priority alignments
-            const isHighPriority = this.isHighPriorityAlignment(dayName, armsPhase);
-            
-            if (isHighPriority) {
-                this.priorityWindows.push({
-                    id: `priority-${day}`,
-                    date: new Date(date),
-                    dayName: dayName,
-                    armsPhase: armsPhase,
-                    priority: 'high',
-                    efficiency: this.calculateEfficiency(dayName, armsPhase),
-                    activities: this.getOptimalActivities(dayName, armsPhase),
-                    startTime: new Date(date.setHours(0, 0, 0, 0)),
-                    endTime: new Date(date.setHours(23, 59, 59, 999))
-                });
-            }
-        }
-    }
-
-    getArmsPhaseForTime(date) {
-        // Calculate which arms race phase is active at given time
-        const hours = date.getHours();
-        const phaseIndex = Math.floor(hours / 4) % this.armsRacePhases.length;
-        
-        // Use current/next phase logic based on user selection
-        if (date.toDateString() === new Date().toDateString()) {
-            const currentHour = new Date().getHours();
-            const currentPhaseIndex = Math.floor(currentHour / 4) % this.armsRacePhases.length;
-            
-            if (phaseIndex === currentPhaseIndex) {
-                return this.currentData.currentArmsPhase;
-            } else if (phaseIndex === (currentPhaseIndex + 1) % this.armsRacePhases.length) {
-                return this.currentData.nextArmsPhase;
-            }
-        }
-        
-        return this.armsRacePhases[phaseIndex];
-    }
-
-    isHighPriorityAlignment(vsDay, armsPhase) {
-        const alignments = {
-            'Monday': ['Tech Research', 'Unit Progression'],
-            'Tuesday': ['Drone Boost', 'City Building'],
-            'Wednesday': ['Tech Research', 'Hero Advancement'],
-            'Thursday': ['City Building', 'Drone Boost'],
-            'Friday': ['Hero Advancement', 'Unit Progression'],
-            'Saturday': ['Unit Progression', 'Tech Research'],
-            'Sunday': ['City Building', 'Drone Boost']
-        };
-        
-        return alignments[vsDay]?.includes(armsPhase) || false;
-    }
-
-    calculateEfficiency(vsDay, armsPhase) {
-        if (this.isHighPriorityAlignment(vsDay, armsPhase)) {
-            return 'High';
-        }
-        
-        // Medium priority for partial alignments
-        const mediumAlignments = {
-            'Monday': ['Drone Boost', 'Hero Advancement'],
-            'Tuesday': ['Tech Research', 'Unit Progression'],
-            'Wednesday': ['City Building', 'Unit Progression'],
-            'Thursday': ['Tech Research', 'Hero Advancement'],
-            'Friday': ['Drone Boost', 'City Building'],
-            'Saturday': ['Hero Advancement', 'Drone Boost'],
-            'Sunday': ['Tech Research', 'Unit Progression']
-        };
-        
-        if (mediumAlignments[vsDay]?.includes(armsPhase)) {
-            return 'Medium';
-        }
-        
-        return 'Standard';
-    }
-
-    getOptimalActivities(vsDay, armsPhase) {
-        const activities = {
-            'Tech Research': ['Complete research projects', 'Use research speedups', 'Upgrade tech'],
-            'Drone Boost': ['Train drones', 'Upgrade drone facilities', 'Use drone parts'],
-            'Hero Advancement': ['Level up heroes', 'Upgrade hero skills', 'Use hero XP items'],
-            'City Building': ['Upgrade buildings', 'Use construction speedups', 'Complete city tasks'],
-            'Unit Progression': ['Train troops', 'Upgrade units', 'Use training speedups']
-        };
-        
-        return activities[armsPhase] || ['Focus on general activities'];
-    }
-
-    generateScheduleData() {
-        this.scheduleData = [];
-        const startDate = new Date();
-        
-        // Generate 7 days of complete schedule
-        for (let day = 0; day < 7; day++) {
-            const date = new Date(startDate);
-            date.setDate(date.getDate() + day);
-            
-            const dayName = this.vsDays[date.getDay()];
-            
-            // Generate 6 time slots per day (4-hour blocks)
-            for (let slot = 0; slot < 6; slot++) {
-                const startHour = slot * 4;
-                const startTime = new Date(date);
-                startTime.setHours(startHour, 0, 0, 0);
-                
-                const endTime = new Date(startTime);
-                endTime.setHours(startHour + 4, 0, 0, 0);
-                
-                const armsPhase = this.getArmsPhaseForTime(startTime);
-                const isHighPriority = this.isHighPriorityAlignment(dayName, armsPhase);
-                const efficiency = this.calculateEfficiency(dayName, armsPhase);
-                
-                this.scheduleData.push({
-                    id: `schedule-${day}-${slot}`,
-                    date: new Date(date),
-                    dayName: dayName,
-                    startTime: new Date(startTime),
-                    endTime: new Date(endTime),
-                    armsPhase: armsPhase,
-                    vsDay: dayName,
-                    priority: isHighPriority ? 'high' : 'normal',
-                    efficiency: efficiency,
-                    activities: this.getOptimalActivities(dayName, armsPhase)
-                });
-            }
-        }
-    }
-
-    generateIntelligenceData() {
-        this.intelligenceData = [
-            {
-                id: 'guide-1',
-                title: 'VS Points Maximization Strategy',
-                category: 'Optimization',
-                content: 'Focus on dual-event windows for maximum efficiency...',
-                priority: 'high'
-            },
-            {
-                id: 'guide-2', 
-                title: 'Arms Race Phase Planning',
-                category: 'Strategy',
-                content: 'Plan your weekly activities around phase rotations...',
-                priority: 'medium'
-            }
-            // Add more intelligence content as needed
+        // Define VS event schedule (Wed-Sat)
+        const vsEvents = [
+            { day: 3, name: 'Tech Research Wednesday', startHour: 12, endHour: 16, icon: '🔬', vsPoints: 2400, armsPoints: 1800, multiplier: 1.5 },
+            { day: 4, name: 'Drone Boost Thursday', startHour: 8, endHour: 12, icon: '🚁', vsPoints: 2800, armsPoints: 2100, multiplier: 1.7 },
+            { day: 4, name: 'Hero Advancement Thursday', startHour: 16, endHour: 20, icon: '⚔️', vsPoints: 3200, armsPoints: 2400, multiplier: 2.0 },
+            { day: 5, name: 'City Building Friday', startHour: 4, endHour: 8, icon: '🏗️', vsPoints: 2600, armsPoints: 1950, multiplier: 1.6 },
+            { day: 5, name: 'Unit Progression Friday', startHour: 12, endHour: 16, icon: '⚡', vsPoints: 3000, armsPoints: 2250, multiplier: 1.8 },
+            { day: 6, name: 'Final Push Saturday', startHour: 0, endHour: 4, icon: '🎯', vsPoints: 3600, armsPoints: 2700, multiplier: 2.2 },
+            { day: 6, name: 'Victory Sprint Saturday', startHour: 20, endHour: 24, icon: '🏆', vsPoints: 4000, armsPoints: 3000, multiplier: 2.5 }
         ];
-    }
 
-    updateDisplay() {
-        this.updateServerTime();
-        this.updatePhaseCountdown();
-        this.updatePriorityDisplay();
-        this.updateCurrentStrategy();
-        this.renderPriorityGrid();
-        this.renderScheduleGrid();
-        this.renderIntelligenceContent();
-    }
-
-    updateServerTime() {
-        const now = new Date();
-        const serverTime = new Date(now.getTime() + (this.currentData.timeOffset * 60 * 60 * 1000));
-        
-        const timeString = this.currentData.timeFormat === 'local' 
-            ? now.toLocaleTimeString('en-US', { hour12: false })
-            : serverTime.toLocaleTimeString('en-US', { hour12: false });
-            
-        const serverTimeElement = document.getElementById('server-time');
-        if (serverTimeElement) {
-            serverTimeElement.textContent = timeString;
-        }
-        
-        this.currentData.serverTime = serverTime;
-        this.currentData.vsDay = this.vsDays[serverTime.getDay()];
-    }
-
-    updatePhaseCountdown() {
-        if (!this.currentData.phaseTransitionTime) return;
-        
-        const now = new Date();
-        const timeToTransition = this.currentData.phaseTransitionTime.getTime() - now.getTime();
-        
-        if (timeToTransition <= 0) {
-            // Phase has changed, rotate to next phase
-            this.rotatePhases();
-            this.calculatePhaseTransition();
-            return;
-        }
-        
-        const hours = Math.floor(timeToTransition / (1000 * 60 * 60));
-        const minutes = Math.floor((timeToTransition % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((timeToTransition % (1000 * 60)) / 1000);
-        
-        const countdownText = hours > 0 
-            ? `${hours}h ${minutes}m ${seconds}s`
-            : `${minutes}m ${seconds}s`;
-            
-        const countdownElement = document.getElementById('countdown-timer');
-        if (countdownElement) {
-            countdownElement.textContent = countdownText;
-        }
-        
-        // Update progress bar
-        const totalPhaseTime = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
-        const elapsed = totalPhaseTime - timeToTransition;
-        const progress = Math.max(0, Math.min(100, (elapsed / totalPhaseTime) * 100));
-        
-        const progressFill = document.getElementById('progress-fill');
-        if (progressFill) {
-            progressFill.style.width = `${progress}%`;
-        }
-        
-        // Update event name and time
-        const eventName = document.getElementById('event-name');
-        const eventTime = document.getElementById('event-time');
-        
-        if (eventName) {
-            eventName.textContent = `${this.currentData.nextArmsPhase} Phase`;
-        }
-        
-        if (eventTime) {
-            const transitionTime = this.currentData.phaseTransitionTime;
-            const timeStr = transitionTime.toLocaleTimeString('en-US', { 
-                hour12: false, 
-                hour: '2-digit', 
-                minute: '2-digit' 
+        // Generate windows for current week and next week
+        for (let weekOffset = 0; weekOffset < 2; weekOffset++) {
+            vsEvents.forEach(event => {
+                const eventDate = new Date(serverTime);
+                const daysUntilEvent = (event.day - currentDay + 7 * weekOffset) % 7;
+                if (weekOffset === 0 && daysUntilEvent < 0) return; // Skip past events this week
+                
+                eventDate.setDate(eventDate.getDate() + daysUntilEvent);
+                eventDate.setUTCHours(event.startHour, 0, 0, 0);
+                
+                const endDate = new Date(eventDate);
+                endDate.setUTCHours(event.endHour, 0, 0, 0);
+                
+                const isActive = serverTime >= eventDate && serverTime <= endDate;
+                const timeUntil = eventDate.getTime() - serverTime.getTime();
+                const timeRemaining = endDate.getTime() - serverTime.getTime();
+                
+                // Determine if this aligns with current Arms Race phase
+                const eventPhase = this.getArmsPhaseForTime(eventDate);
+                const isHighPriority = this.isHighPriorityAlignment(event.name, eventPhase);
+                
+                this.priorityWindows.push({
+                    id: `${event.name.toLowerCase().replace(/\s+/g, '-')}-${weekOffset}`,
+                    name: event.name,
+                    icon: event.icon,
+                    startTime: eventDate,
+                    endTime: endDate,
+                    isActive,
+                    timeUntil,
+                    timeRemaining,
+                    isHighPriority,
+                    armsPhase: eventPhase,
+                    vsPoints: event.vsPoints,
+                    armsPoints: event.armsPoints,
+                    multiplier: event.multiplier,
+                    efficiency: this.calculateEfficiency(isHighPriority, event.multiplier),
+                    action: this.getActionForEvent(event.name, isHighPriority),
+                    benefits: this.getBenefitsForEvent(event.name, isHighPriority, event.vsPoints, event.armsPoints)
+                });
             });
-            eventTime.textContent = `${timeStr} Server Time`;
         }
+
+        // Sort by time until event (active first, then by time)
+        this.priorityWindows.sort((a, b) => {
+            if (a.isActive && !b.isActive) return -1;
+            if (!a.isActive && b.isActive) return 1;
+            return a.timeUntil - b.timeUntil;
+        });
     }
 
-    rotatePhases() {
-        // Move to next phase
-        this.currentData.currentArmsPhase = this.currentData.nextArmsPhase;
-        
-        // Calculate next phase after current next phase
-        const currentIndex = this.armsRacePhases.indexOf(this.currentData.nextArmsPhase);
-        const nextIndex = (currentIndex + 1) % this.armsRacePhases.length;
-        this.currentData.nextArmsPhase = this.armsRacePhases[nextIndex];
-        
-        // Update displays
-        this.updatePhaseDisplays();
-        
-        // Regenerate data
-        this.generatePriorityWindows();
-        this.generateScheduleData();
-        
-        // Save settings
-        this.saveSettings();
-        
-        // Show notification
-        this.showNotification(`Arms Race phase changed to ${this.currentData.currentArmsPhase}`, 'info');
+    getArmsPhaseForTime(eventTime) {
+        const phases = ['Tech Research', 'Drone Boost', 'Hero Advancement', 'City Building', 'Unit Progression'];
+        const utcHour = eventTime.getUTCHours();
+        const phaseIndex = Math.floor(utcHour / 4) % phases.length;
+        return phases[phaseIndex];
     }
 
-    updatePriorityDisplay() {
-        const nextPriorityWindow = this.getNextPriorityWindow();
+    isHighPriorityAlignment(eventName, armsPhase) {
+        const alignments = {
+            'Tech Research Wednesday': ['Tech Research'],
+            'Drone Boost Thursday': ['Drone Boost'],
+            'Hero Advancement Thursday': ['Hero Advancement'],
+            'City Building Friday': ['City Building'],
+            'Unit Progression Friday': ['Unit Progression'],
+            'Final Push Saturday': ['Tech Research', 'Hero Advancement'],
+            'Victory Sprint Saturday': ['City Building', 'Unit Progression']
+        };
         
-        if (nextPriorityWindow) {
-            const timeToWindow = nextPriorityWindow.startTime.getTime() - Date.now();
-            const hours = Math.floor(timeToWindow / (1000 * 60 * 60));
-            const minutes = Math.floor((timeToWindow % (1000 * 60 * 60)) / (1000 * 60));
-            
-            const timeString = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
-            
-            // Update priority display elements
-            const nextPriorityTime = document.getElementById('next-priority-time');
-            const nextPriorityEvent = document.getElementById('next-priority-event');
-            const eventDayGaming = document.getElementById('event-day-gaming');
-            const currentAction = document.getElementById('current-action');
-            const efficiencyLevel = document.getElementById('efficiency-level');
-            
-            if (nextPriorityTime) nextPriorityTime.textContent = timeString;
-            if (nextPriorityEvent) nextPriorityEvent.textContent = `${nextPriorityWindow.armsPhase} + ${nextPriorityWindow.dayName}`;
-            if (eventDayGaming) eventDayGaming.textContent = `${nextPriorityWindow.dayName} ${nextPriorityWindow.startTime.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' })} UTC`;
-            if (currentAction) currentAction.textContent = nextPriorityWindow.activities[0] || 'Optimize your activities';
-            if (efficiencyLevel) efficiencyLevel.textContent = nextPriorityWindow.efficiency;
+        return alignments[eventName]?.includes(armsPhase) || false;
+    }
+
+    calculateEfficiency(isHighPriority, baseMultiplier) {
+        if (isHighPriority) {
+            return Math.min(baseMultiplier * 1.5, 3.0); // Cap at 3x
         }
-        
-        // Update current VS day and arms phase
-        const currentVsDay = document.getElementById('current-vs-day');
-        const armsPhase = document.getElementById('arms-phase');
-        
-        if (currentVsDay) currentVsDay.textContent = this.currentData.vsDay;
-        if (armsPhase) armsPhase.textContent = this.currentData.currentArmsPhase;
+        return baseMultiplier;
     }
 
-    getNextPriorityWindow() {
-        const now = Date.now();
-        return this.priorityWindows.find(window => window.startTime.getTime() > now) || null;
+    getActionForEvent(eventName, isHighPriority) {
+        const actions = {
+            'Tech Research Wednesday': isHighPriority ? 
+                'Use ALL research speedups and focus on tech upgrades' : 
+                'Complete research projects for VS points',
+            'Drone Boost Thursday': isHighPriority ? 
+                'Maximize drone deployment with speedups' : 
+                'Deploy drones for steady point accumulation',
+            'Hero Advancement Thursday': isHighPriority ? 
+                'Use hero XP items and combat speedups' : 
+                'Focus on hero battles and upgrades',
+            'City Building Friday': isHighPriority ? 
+                'Use all building speedups for maximum points' : 
+                'Complete building upgrades and constructions',
+            'Unit Progression Friday': isHighPriority ? 
+                'Train units with speedups and focus on upgrades' : 
+                'Train troops and upgrade unit technologies',
+            'Final Push Saturday': isHighPriority ? 
+                'All-out resource usage for maximum points' : 
+                'Intensive activity push for VS points',
+            'Victory Sprint Saturday': isHighPriority ? 
+                'Final surge - use remaining speedups' : 
+                'Final opportunity for VS point accumulation'
+        };
+        
+        return actions[eventName] || 'Participate in VS event activities';
     }
 
-    updateCurrentStrategy() {
-        const currentVsDay = this.currentData.vsDay;
-        const currentArmsPhase = this.currentData.currentArmsPhase;
-        const efficiency = this.calculateEfficiency(currentVsDay, currentArmsPhase);
-        const isHighPriority = this.isHighPriorityAlignment(currentVsDay, currentArmsPhase);
-        
-        const actionText = document.getElementById('action-text');
-        const strategyRating = document.getElementById('strategy-rating');
-        const optimizationFocus = document.getElementById('optimization-focus');
-        const priorityLevel = document.getElementById('priority-level');
+    getBenefitsForEvent(eventName, isHighPriority, vsPoints, armsPoints) {
+        const base = [`${vsPoints.toLocaleString()} VS Points`, `${armsPoints.toLocaleString()} Arms Race Points`];
         
         if (isHighPriority) {
-            if (actionText) actionText.textContent = 'HIGH PRIORITY WINDOW ACTIVE! Focus on activities that earn points for both VS and Arms Race.';
-            if (strategyRating) strategyRating.textContent = 'S';
-            if (priorityLevel) priorityLevel.textContent = 'High';
+            base.push('Double Point Efficiency', 'Resource Optimization Window');
         } else {
-            if (actionText) actionText.textContent = 'Activities earn standard points. Save speedups for high priority windows.';
-            if (strategyRating) strategyRating.textContent = efficiency === 'Medium' ? 'B' : 'A';
-            if (priorityLevel) priorityLevel.textContent = efficiency;
+            base.push('Standard Point Rates');
         }
         
-        if (optimizationFocus) optimizationFocus.textContent = 'Dual Event Alignment';
-    }
-
-    renderPriorityGrid() {
-        const grid = document.getElementById('priority-grid');
-        if (!grid) return;
-        
-        if (this.priorityWindows.length === 0) {
-            grid.innerHTML = '<div class="no-priority-message">No high-priority windows in the next 7 days. Check back later!</div>';
-            return;
-        }
-        
-        const html = this.priorityWindows.map(window => {
-            const isActive = this.isWindowActive(window);
-            const timeUntil = this.getTimeUntilWindow(window);
-            
-            return `
-                <div class="priority-card ${isActive ? 'active' : ''}" data-id="${window.id}">
-                    <div class="priority-header">
-                        <div class="priority-badge ${window.efficiency.toLowerCase()}">${window.efficiency}</div>
-                        <div class="priority-time">${timeUntil}</div>
-                    </div>
-                    <div class="priority-content">
-                        <h3>${window.armsPhase} + ${window.dayName}</h3>
-                        <div class="priority-details">
-                            <p><strong>Duration:</strong> Full day optimization</p>
-                            <p><strong>Focus:</strong> ${window.activities.join(', ')}</p>
-                        </div>
-                    </div>
-                    ${isActive ? '<div class="active-indicator">ACTIVE NOW</div>' : ''}
-                </div>
-            `;
-        }).join('');
-        
-        grid.innerHTML = html;
-        
-        // Update priority count
-        const priorityCount = document.getElementById('priority-count');
-        if (priorityCount) {
-            priorityCount.textContent = `${this.priorityWindows.length} Windows`;
-        }
-    }
-
-    renderScheduleGrid() {
-        const grid = document.getElementById('schedule-grid');
-        if (!grid) return;
-        
-        const html = this.scheduleData.map(event => {
-            const isActive = this.isEventActive(event);
-            const isPriority = event.priority === 'high';
-            
-            return `
-                <div class="schedule-event ${isPriority ? 'priority' : ''} ${isActive ? 'current' : ''}" data-id="${event.id}">
-                    <div class="event-time">
-                        ${event.startTime.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' })} - 
-                        ${event.endTime.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' })}
-                    </div>
-                    <div class="event-title">${event.armsPhase}</div>
-                    <div class="event-day">${event.dayName}</div>
-                    <div class="event-efficiency">${event.efficiency}</div>
-                </div>
-            `;
-        }).join('');
-        
-        grid.innerHTML = html;
-    }
-
-    renderIntelligenceContent() {
-        const content = document.getElementById('intelligence-content');
-        if (!content) return;
-        
-        const html = this.intelligenceData.map(guide => `
-            <div class="intelligence-card" data-id="${guide.id}">
-                <div class="intel-header">
-                    <h3>${guide.title}</h3>
-                    <span class="intel-category">${guide.category}</span>
-                </div>
-                <div class="intel-content">
-                    <p>${guide.content}</p>
-                </div>
-            </div>
-        `).join('');
-        
-        content.innerHTML = html;
-    }
-
-    isWindowActive(window) {
-        const now = Date.now();
-        return now >= window.startTime.getTime() && now <= window.endTime.getTime();
-    }
-
-    isEventActive(event) {
-        const now = Date.now();
-        return now >= event.startTime.getTime() && now <= event.endTime.getTime();
-    }
-
-    getTimeUntilWindow(window) {
-        const now = Date.now();
-        const timeUntil = window.startTime.getTime() - now;
-        
-        if (timeUntil <= 0) {
-            if (this.isWindowActive(window)) {
-                return 'ACTIVE NOW';
-            } else {
-                return 'Completed';
-            }
-        }
-        
-        const days = Math.floor(timeUntil / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((timeUntil % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((timeUntil % (1000 * 60 * 60)) / (1000 * 60));
-        
-        if (days > 0) {
-            return `${days}d ${hours}h`;
-        } else if (hours > 0) {
-            return `${hours}h ${minutes}m`;
-        } else {
-            return `${minutes}m`;
-        }
+        return base;
     }
 
     switchTab(tabName) {
@@ -665,110 +535,517 @@ class VSPointsOptimizer {
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.classList.remove('active');
         });
-        document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+        document.querySelector(`[data-tab="${tabName}"]`)?.classList.add('active');
         
         // Update tab panels
         document.querySelectorAll('.tab-panel').forEach(panel => {
             panel.classList.remove('active');
         });
-        document.getElementById(`${tabName}-tab`).classList.add('active');
+        document.getElementById(`${tabName}-tab`)?.classList.add('active');
+        
+        // Update content based on tab
+        if (tabName === 'priority') {
+            this.updatePriorityGrid();
+        } else if (tabName === 'schedule') {
+            this.updateScheduleGrid();
+        } else if (tabName === 'intelligence') {
+            this.updateIntelligenceContent();
+        }
     }
 
-    applyFilter(filter) {
+    filterPriorityWindows(filter) {
         // Update filter buttons
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.classList.remove('active');
         });
-        document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
+        document.querySelector(`[data-filter="${filter}"]`)?.classList.add('active');
         
-        // Filter priority windows
-        const filteredWindows = this.filterPriorityWindows(filter);
-        this.renderFilteredPriorityGrid(filteredWindows);
+        // Filter and update grid
+        this.updatePriorityGrid(filter);
     }
 
-    filterPriorityWindows(filter) {
-        switch (filter) {
-            case 'active':
-                return this.priorityWindows.filter(window => this.isWindowActive(window));
-            case 'upcoming':
-                return this.priorityWindows.filter(window => window.startTime.getTime() > Date.now());
-            default:
-                return this.priorityWindows;
-        }
-    }
-
-    renderFilteredPriorityGrid(windows) {
+    updatePriorityGrid(filter = 'all') {
         const grid = document.getElementById('priority-grid');
         if (!grid) return;
+
+        let filteredWindows = [...this.priorityWindows];
         
-        if (windows.length === 0) {
-            grid.innerHTML = '<div class="no-priority-message">No windows match the current filter.</div>';
-            return;
+        if (filter === 'active') {
+            filteredWindows = filteredWindows.filter(window => window.isActive);
+        } else if (filter === 'upcoming') {
+            filteredWindows = filteredWindows.filter(window => !window.isActive && window.timeUntil > 0);
         }
+
+        // Take first 8 windows for display
+        filteredWindows = filteredWindows.slice(0, 8);
+
+        grid.innerHTML = filteredWindows.map(window => this.createPriorityCard(window)).join('');
         
-        const html = windows.map(window => {
-            const isActive = this.isWindowActive(window);
-            const timeUntil = this.getTimeUntilWindow(window);
+        // Update priority count
+        const countElement = document.getElementById('priority-count');
+        if (countElement) {
+            countElement.textContent = `${filteredWindows.length} Windows`;
+        }
+    }
+
+    createPriorityCard(window) {
+        const timeText = window.isActive ? 
+            `${this.formatDuration(window.timeRemaining)} remaining` :
+            `in ${this.formatDuration(window.timeUntil)}`;
             
-            return `
-                <div class="priority-card ${isActive ? 'active' : ''}" data-id="${window.id}">
-                    <div class="priority-header">
-                        <div class="priority-badge ${window.efficiency.toLowerCase()}">${window.efficiency}</div>
-                        <div class="priority-time">${timeUntil}</div>
+        const statusClass = window.isActive ? 'active' : 
+                           window.isHighPriority ? 'priority' : 'normal';
+        
+        const efficiencyText = window.isHighPriority ? `${window.efficiency}x Efficiency` : 'Standard Rate';
+        
+        return `
+            <div class="priority-card ${statusClass}">
+                <div class="priority-header">
+                    <div class="priority-icon">${window.icon}</div>
+                    <div class="priority-info">
+                        <div class="priority-name">${window.name}</div>
+                        <div class="priority-timing">${this.formatDate(window.startTime)} ${this.formatTime(window.startTime)}</div>
                     </div>
-                    <div class="priority-content">
-                        <h3>${window.armsPhase} + ${window.dayName}</h3>
-                        <div class="priority-details">
-                            <p><strong>Duration:</strong> Full day optimization</p>
-                            <p><strong>Focus:</strong> ${window.activities.join(', ')}</p>
+                    <div class="priority-badge ${window.isHighPriority ? 'high' : 'standard'}">
+                        ${window.isHighPriority ? 'HIGH' : 'STD'}
+                    </div>
+                </div>
+                
+                <div class="priority-content">
+                    <div class="priority-status">
+                        <span class="status-indicator ${statusClass}"></span>
+                        <span class="status-text">${window.isActive ? 'ACTIVE NOW' : timeText}</span>
+                    </div>
+                    
+                    <div class="priority-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Arms Phase:</span>
+                            <span class="detail-value">${window.armsPhase}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Efficiency:</span>
+                            <span class="detail-value efficiency">${efficiencyText}</span>
                         </div>
                     </div>
-                    ${isActive ? '<div class="active-indicator">ACTIVE NOW</div>' : ''}
+                    
+                    <div class="priority-action">
+                        <div class="action-text">${window.action}</div>
+                    </div>
+                    
+                    <div class="priority-benefits">
+                        ${window.benefits.map(benefit => `<span class="benefit-tag">${benefit}</span>`).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    formatDuration(ms) {
+        if (ms <= 0) return '0m';
+        
+        const hours = Math.floor(ms / (1000 * 60 * 60));
+        const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+        
+        if (hours > 0) {
+            return `${hours}h ${minutes}m`;
+        }
+        return `${minutes}m`;
+    }
+
+    generateScheduleEvents() {
+        this.scheduleEvents = [];
+        const serverTime = this.getServerTime();
+        
+        // Generate 7 days of Arms Race schedule
+        for (let day = 0; day < 7; day++) {
+            for (let hour = 0; hour < 24; hour += 4) {
+                const eventDate = new Date(serverTime);
+                eventDate.setDate(eventDate.getDate() + day);
+                eventDate.setUTCHours(hour, 0, 0, 0);
+                
+                const phase = this.getArmsPhaseForTime(eventDate);
+                const isActive = this.isTimeActive(eventDate, 4);
+                
+                this.scheduleEvents.push({
+                    time: eventDate,
+                    phase,
+                    isActive,
+                    duration: 4
+                });
+            }
+        }
+    }
+
+    isTimeActive(eventTime, durationHours) {
+        const serverTime = this.getServerTime();
+        const endTime = new Date(eventTime.getTime() + (durationHours * 60 * 60 * 1000));
+        return serverTime >= eventTime && serverTime <= endTime;
+    }
+
+    updateScheduleGrid() {
+        const grid = document.getElementById('schedule-grid');
+        if (!grid) return;
+
+        const scheduleHTML = this.scheduleEvents.map(event => {
+            const statusClass = event.isActive ? 'current' : 'normal';
+            const timeStr = this.formatTime(event.time);
+            const dateStr = this.formatDate(event.time);
+            
+            return `
+                <div class="schedule-item ${statusClass}">
+                    <div class="schedule-time">
+                        <div class="schedule-date">${dateStr}</div>
+                        <div class="schedule-hour">${timeStr}</div>
+                    </div>
+                    <div class="schedule-phase">
+                        <div class="phase-name">${event.phase}</div>
+                        <div class="phase-duration">${event.duration}h block</div>
+                    </div>
+                    ${event.isActive ? '<div class="active-indicator">ACTIVE</div>' : ''}
                 </div>
             `;
         }).join('');
-        
-        grid.innerHTML = html;
+
+        grid.innerHTML = scheduleHTML;
     }
 
-    showNotification(message, type = 'info') {
-        // Create notification element
-        const notification = document.createElement('div');
-        notification.className = `notification ${type}`;
-        notification.textContent = message;
-        
-        // Add to page
-        document.body.appendChild(notification);
-        
-        // Auto-remove after 3 seconds
-        setTimeout(() => {
-            notification.remove();
-        }, 3000);
+    generateIntelligenceGuides() {
+        this.intelligenceGuides = [
+            {
+                category: 'VS Points Strategy',
+                title: 'Maximum VS Points Guide',
+                content: 'Focus on dual-alignment windows when VS events overlap with matching Arms Race phases.',
+                priority: 'High'
+            },
+            {
+                category: 'Arms Race Optimization',
+                title: 'Phase Transition Timing',
+                content: 'Plan major activities 10-15 minutes before phase transitions for maximum overlap.',
+                priority: 'Medium'
+            },
+            {
+                category: 'Resource Management',
+                title: 'Speedup Conservation',
+                content: 'Save speedups for high-priority windows. Use during dual-alignment for 2-4x efficiency.',
+                priority: 'High'
+            },
+            {
+                category: 'Event Coordination',
+                title: 'Alliance Coordination',
+                content: 'Coordinate with alliance for simultaneous high-priority window participation.',
+                priority: 'Medium'
+            }
+        ];
     }
 
-    startUpdateLoop() {
-        // Update every second
-        setInterval(() => {
-            this.updateDisplay();
+    updateIntelligenceContent() {
+        const content = document.getElementById('intelligence-content');
+        if (!content) return;
+
+        const intelligenceHTML = this.intelligenceGuides.map(guide => {
+            return `
+                <div class="intelligence-card">
+                    <div class="intelligence-header">
+                        <div class="intelligence-category">${guide.category}</div>
+                        <div class="intelligence-priority ${guide.priority.toLowerCase()}">${guide.priority}</div>
+                    </div>
+                    <div class="intelligence-title">${guide.title}</div>
+                    <div class="intelligence-content-text">${guide.content}</div>
+                </div>
+            `;
+        }).join('');
+
+        content.innerHTML = intelligenceHTML;
+    }
+
+    startUpdateCycle() {
+        // Clear any existing interval
+        if (this.updateInterval) {
+            clearInterval(this.updateInterval);
+        }
+        
+        // Update every second for real-time countdown
+        this.updateInterval = setInterval(() => {
+            this.updateAllDisplays();
         }, 1000);
+    }
+
+    updateAllDisplays() {
+        this.updateServerTime();
+        this.updatePriorityHero();
+        this.updateCountdown();
+        this.updateCurrentStrategy();
+        this.updatePriorityGrid();
+        this.updateEventsBar();
+        this.updateServerInfo();
+    }
+
+    updateServerTime() {
+        const serverTime = this.getServerTime();
+        const timeElement = document.getElementById('server-time');
+        if (timeElement) {
+            timeElement.textContent = this.formatTime(serverTime);
+        }
+    }
+
+    updatePriorityHero() {
+        const nextWindow = this.priorityWindows.find(w => !w.isActive && w.timeUntil > 0) || this.priorityWindows[0];
+        const activeWindow = this.priorityWindows.find(w => w.isActive);
         
-        // Save settings every 5 minutes
-        setInterval(() => {
-            this.saveSettings();
-        }, 5 * 60 * 1000);
+        if (activeWindow) {
+            this.updateActiveWindow(activeWindow);
+        } else if (nextWindow) {
+            this.updateNextWindow(nextWindow);
+        }
+        
+        this.updateStatusFooter();
+    }
+
+    updateActiveWindow(window) {
+        const activeStrip = document.getElementById('active-now');
+        const activeAction = document.getElementById('active-action');
+        const badgeLabel = document.getElementById('badge-label');
+        const countdownMain = document.getElementById('next-priority-time');
+        const countdownLabel = document.getElementById('countdown-label');
+        
+        if (activeStrip) activeStrip.style.display = 'flex';
+        if (activeAction) activeAction.textContent = window.action;
+        if (badgeLabel) badgeLabel.textContent = 'ACTIVE HIGH PRIORITY';
+        if (countdownMain) countdownMain.textContent = this.formatDuration(window.timeRemaining);
+        if (countdownLabel) countdownLabel.textContent = 'TIME REMAINING';
+        
+        this.updateWindowDetails(window, true);
+    }
+
+    updateNextWindow(window) {
+        const activeStrip = document.getElementById('active-now');
+        const badgeLabel = document.getElementById('badge-label');
+        const countdownMain = document.getElementById('next-priority-time');
+        const countdownLabel = document.getElementById('countdown-label');
+        
+        if (activeStrip) activeStrip.style.display = 'none';
+        if (badgeLabel) badgeLabel.textContent = 'NEXT HIGH PRIORITY';
+        if (countdownMain) countdownMain.textContent = this.formatDuration(window.timeUntil);
+        if (countdownLabel) countdownLabel.textContent = 'TIME REMAINING';
+        
+        this.updateWindowDetails(window, false);
+    }
+
+    updateWindowDetails(window, isActive) {
+        const eventName = document.getElementById('next-priority-event');
+        const efficiencyLevel = document.getElementById('efficiency-level');
+        const eventDay = document.getElementById('event-day-gaming');
+        const currentAction = document.getElementById('current-action');
+        
+        if (eventName) eventName.textContent = window.name;
+        if (efficiencyLevel) {
+            efficiencyLevel.textContent = window.isHighPriority ? 'High' : 'Standard';
+            efficiencyLevel.className = `efficiency-badge ${window.isHighPriority ? 'high' : 'standard'}`;
+        }
+        if (eventDay) eventDay.textContent = `${this.formatDate(window.startTime)} ${this.formatTime(window.startTime)}`;
+        if (currentAction) currentAction.textContent = window.action;
+    }
+
+    updateStatusFooter() {
+        const currentVsDay = document.getElementById('current-vs-day');
+        const armsPhase = document.getElementById('arms-phase');
+        const nextAlignment = document.getElementById('next-alignment-countdown');
+        
+        const serverTime = this.getServerTime();
+        const dayName = serverTime.toLocaleDateString('en-US', { weekday: 'long', timeZone: 'UTC' });
+        
+        if (currentVsDay) currentVsDay.textContent = dayName;
+        if (armsPhase) armsPhase.textContent = this.currentData.currentArmsPhase;
+        
+        // Calculate time to next phase change (every 4 hours)
+        const currentHour = serverTime.getUTCHours();
+        const nextPhaseHour = Math.ceil((currentHour + 1) / 4) * 4;
+        const nextPhaseTime = new Date(serverTime);
+        nextPhaseTime.setUTCHours(nextPhaseHour, 0, 0, 0);
+        
+        if (nextPhaseHour >= 24) {
+            nextPhaseTime.setDate(nextPhaseTime.getDate() + 1);
+            nextPhaseTime.setUTCHours(0, 0, 0, 0);
+        }
+        
+        const timeToPhase = nextPhaseTime.getTime() - serverTime.getTime();
+        if (nextAlignment) nextAlignment.textContent = this.formatDuration(timeToPhase);
+    }
+
+    updateCountdown() {
+        const serverTime = this.getServerTime();
+        const phases = ['Tech Research', 'Drone Boost', 'Hero Advancement', 'City Building', 'Unit Progression'];
+        
+        // Calculate next phase transition
+        const currentHour = serverTime.getUTCHours();
+        const currentPhaseIndex = Math.floor(currentHour / 4) % phases.length;
+        const nextPhaseIndex = (currentPhaseIndex + 1) % phases.length;
+        const nextPhase = phases[nextPhaseIndex];
+        
+        const nextPhaseHour = Math.ceil((currentHour + 1) / 4) * 4;
+        const nextPhaseTime = new Date(serverTime);
+        
+        if (nextPhaseHour >= 24) {
+            nextPhaseTime.setDate(nextPhaseTime.getDate() + 1);
+            nextPhaseTime.setUTCHours(0, 0, 0, 0);
+        } else {
+            nextPhaseTime.setUTCHours(nextPhaseHour, 0, 0, 0);
+        }
+        
+        const timeUntilPhase = nextPhaseTime.getTime() - serverTime.getTime();
+        
+        // Update countdown elements
+        const countdownTimer = document.getElementById('countdown-timer');
+        const eventName = document.getElementById('event-name');
+        const eventTime = document.getElementById('event-time');
+        const progressFill = document.getElementById('progress-fill');
+        
+        if (countdownTimer) countdownTimer.textContent = this.formatDuration(timeUntilPhase);
+        if (eventName) eventName.textContent = `${nextPhase} Phase`;
+        if (eventTime) eventTime.textContent = this.formatTime(nextPhaseTime);
+        
+        // Update progress bar (4 hours = 100%)
+        if (progressFill) {
+            const fourHours = 4 * 60 * 60 * 1000;
+            const elapsed = fourHours - timeUntilPhase;
+            const progress = Math.max(0, Math.min(100, (elapsed / fourHours) * 100));
+            progressFill.style.width = `${progress}%`;
+        }
+    }
+
+    updateCurrentStrategy() {
+        const activeWindow = this.priorityWindows.find(w => w.isActive);
+        const nextWindow = this.priorityWindows.find(w => !w.isActive && w.timeUntil > 0);
+        
+        const strategyRating = document.getElementById('strategy-rating');
+        const actionText = document.getElementById('action-text');
+        const optimizationFocus = document.getElementById('optimization-focus');
+        const priorityLevel = document.getElementById('priority-level');
+        const timeRemaining = document.getElementById('time-remaining');
+        
+        if (activeWindow) {
+            if (strategyRating) strategyRating.textContent = activeWindow.isHighPriority ? 'S' : 'A';
+            if (actionText) actionText.textContent = activeWindow.action;
+            if (optimizationFocus) optimizationFocus.textContent = 'Active High Priority';
+            if (priorityLevel) {
+                priorityLevel.textContent = 'ACTIVE';
+                priorityLevel.className = 'priority-tag active';
+            }
+            if (timeRemaining) timeRemaining.textContent = this.formatDuration(activeWindow.timeRemaining);
+        } else if (nextWindow) {
+            if (strategyRating) strategyRating.textContent = nextWindow.isHighPriority ? 'A' : 'B';
+            if (actionText) actionText.textContent = 'Activities earn standard points. Save speedups for high priority windows.';
+            if (optimizationFocus) optimizationFocus.textContent = 'Dual Event Alignment';
+            if (priorityLevel) {
+                priorityLevel.textContent = nextWindow.isHighPriority ? 'High' : 'Medium';
+                priorityLevel.className = `priority-tag ${nextWindow.isHighPriority ? 'high' : 'medium'}`;
+            }
+            if (timeRemaining) timeRemaining.textContent = this.formatDuration(nextWindow.timeUntil);
+        }
+    }
+
+    toggleEventsBar() {
+        const eventsBar = document.getElementById('events-bar');
+        const toggleArrow = document.querySelector('.toggle-arrow');
+        
+        if (eventsBar && toggleArrow) {
+            eventsBar.classList.toggle('collapsed');
+            toggleArrow.textContent = eventsBar.classList.contains('collapsed') ? '▲' : '▼';
+        }
+    }
+
+    updateEventsBar() {
+        const eventsContent = document.getElementById('events-content');
+        if (!eventsContent) return;
+
+        const upcomingEvents = this.priorityWindows
+            .filter(w => !w.isActive && w.timeUntil > 0)
+            .slice(0, 3);
+
+        const eventsHTML = upcomingEvents.map(event => {
+            return `
+                <div class="event-item ${event.isHighPriority ? 'priority' : 'normal'}">
+                    <div class="event-icon">${event.icon}</div>
+                    <div class="event-details">
+                        <div class="event-name">${event.name}</div>
+                        <div class="event-time">in ${this.formatDuration(event.timeUntil)}</div>
+                    </div>
+                    <div class="event-badge ${event.isHighPriority ? 'high' : 'standard'}">
+                        ${event.isHighPriority ? 'HIGH' : 'STD'}
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        eventsContent.innerHTML = eventsHTML || '<div class="no-events">No upcoming events</div>';
+    }
+
+    scheduleNotification(window) {
+        if (!this.currentData.notificationsEnabled || !('Notification' in window) || Notification.permission !== 'granted') {
+            return;
+        }
+
+        const notifyTime = window.startTime.getTime() - (5 * 60 * 1000); // 5 minutes before
+        const now = Date.now();
+
+        if (notifyTime > now) {
+            const timeout = setTimeout(() => {
+                new Notification('VS Points Optimizer', {
+                    body: `${window.name} starts in 5 minutes! ${window.isHighPriority ? 'HIGH PRIORITY' : 'Standard'} window`,
+                    icon: '⚔️',
+                    tag: window.id
+                });
+            }, notifyTime - now);
+
+            this.notificationTimeouts.add(timeout);
+        }
+    }
+
+    handleError(message, error) {
+        console.error(message, error);
+        
+        // Show user-friendly error message
+        const errorDisplay = document.createElement('div');
+        errorDisplay.className = 'error-message';
+        errorDisplay.textContent = message;
+        errorDisplay.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #ff4444;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            z-index: 10000;
+            font-size: 14px;
+            max-width: 300px;
+        `;
+        
+        document.body.appendChild(errorDisplay);
+        
+        setTimeout(() => {
+            errorDisplay.remove();
+        }, 5000);
+    }
+
+    destroy() {
+        if (this.updateInterval) {
+            clearInterval(this.updateInterval);
+        }
+        
+        this.notificationTimeouts.forEach(timeout => clearTimeout(timeout));
+        this.notificationTimeouts.clear();
     }
 }
 
-// Initialize the application when DOM is loaded
+// Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     window.vsOptimizer = new VSPointsOptimizer();
 });
 
-// Handle page visibility changes
-document.addEventListener('visibilitychange', () => {
-    if (!document.hidden && window.vsOptimizer) {
-        // Recalculate when page becomes visible again
-        window.vsOptimizer.calculatePhaseTransition();
-        window.vsOptimizer.updateDisplay();
+// Handle page unload
+window.addEventListener('beforeunload', () => {
+    if (window.vsOptimizer) {
+        window.vsOptimizer.destroy();
     }
 });

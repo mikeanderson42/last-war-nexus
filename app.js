@@ -1154,6 +1154,169 @@ class LastWarNexus {
         }
     }
 
+// ADD THESE METHODS TO YOUR LastWarNexus CLASS
+
+setupBanner() {
+    try {
+        const bannerElement = document.getElementById('priority-banner');
+        const closeButton = document.getElementById('banner-close');
+        
+        if (closeButton) {
+            closeButton.addEventListener('click', () => {
+                this.hideBanner();
+                // Hide for 1 hour
+                localStorage.setItem('banner-hidden-until', Date.now() + (60 * 60 * 1000));
+            });
+        }
+        
+        // Check if banner should be hidden
+        const hiddenUntil = localStorage.getItem('banner-hidden-until');
+        if (hiddenUntil && Date.now() < parseInt(hiddenUntil)) {
+            this.hideBanner();
+        }
+        
+    } catch (error) {
+        console.error("Error setting up banner:", error);
+    }
+}
+
+updateBanner() {
+    try {
+        const banner = document.getElementById('priority-banner');
+        if (!banner) return;
+        
+        const activeAlignment = this.isCurrentlyHighPriority();
+        const nextWindow = this.findNextPriorityWindow();
+        
+        // Check if banner is manually hidden
+        const hiddenUntil = localStorage.getItem('banner-hidden-until');
+        if (hiddenUntil && Date.now() < parseInt(hiddenUntil)) {
+            this.hideBanner();
+            return;
+        }
+        
+        if (activeAlignment) {
+            // Show active high priority banner
+            const currentArmsPhase = this.getCurrentArmsPhaseInfo();
+            const currentVSDay = this.getCurrentVSDayInfo();
+            const timeRemaining = this.calculateTimeUntilPhaseEnd();
+            
+            this.safeUpdateElement('banner-title', 'textContent', 'Peak Efficiency Active!');
+            this.safeUpdateElement('banner-subtitle', 'textContent', `${currentArmsPhase.name} + ${currentVSDay.title} - Use speedups now!`);
+            this.safeUpdateElement('banner-time', 'textContent', timeRemaining);
+            
+            banner.className = 'priority-banner peak-priority show';
+            
+        } else if (nextWindow && nextWindow.timeDiffMs && nextWindow.timeDiffMs < (2 * 60 * 60 * 1000)) {
+            // Show upcoming priority banner (within 2 hours)
+            this.safeUpdateElement('banner-title', 'textContent', 'High Priority Soon');
+            this.safeUpdateElement('banner-subtitle', 'textContent', `${nextWindow.armsPhase} + ${nextWindow.vsTitle} starting soon`);
+            this.safeUpdateElement('banner-time', 'textContent', nextWindow.timeToWindow);
+            
+            banner.className = 'priority-banner high-priority show';
+            
+        } else {
+            // Hide banner when no priority events
+            this.hideBanner();
+        }
+        
+    } catch (error) {
+        console.error("Error updating banner:", error);
+    }
+}
+
+showBanner() {
+    try {
+        const banner = document.getElementById('priority-banner');
+        if (banner) {
+            banner.classList.add('show');
+            banner.classList.remove('hidden');
+        }
+    } catch (error) {
+        console.error("Error showing banner:", error);
+    }
+}
+
+hideBanner() {
+    try {
+        const banner = document.getElementById('priority-banner');
+        if (banner) {
+            banner.classList.remove('show');
+            banner.classList.add('hidden');
+        }
+    } catch (error) {
+        console.error("Error hiding banner:", error);
+    }
+}
+
+// UPDATE YOUR EXISTING init() METHOD TO INCLUDE:
+init() {
+    try {
+        this.initializationAttempts++;
+        console.log(`Initialization attempt ${this.initializationAttempts}`);
+        
+        if (!this.cacheElements()) {
+            if (this.initializationAttempts < this.maxInitAttempts) {
+                setTimeout(() => this.init(), 200);
+                return;
+            }
+        }
+        
+        this.loadServerSettings();
+        this.setupEventListeners();
+        this.setupTabNavigation();
+        this.setupBanner(); // ADD THIS LINE
+        this.populateAllSections();
+        this.updateAllDisplays();
+        this.startUpdateLoop();
+        this.isInitialized = true;
+        
+        console.log("Last War Nexus initialized successfully");
+    } catch (error) {
+        console.error("Initialization error:", error);
+    }
+}
+
+// UPDATE YOUR EXISTING updateAllDisplays() METHOD TO INCLUDE:
+updateAllDisplays() {
+    try {
+        this.updateServerTime();
+        this.updateCurrentStatus();
+        this.updateCountdown();
+        this.updateBanner(); // ADD THIS LINE
+    } catch (error) {
+        console.error("Error updating displays:", error);
+    }
+}
+
+// ADD 'priority-banner' TO YOUR cacheElements() METHOD:
+cacheElements() {
+    const elementIds = [
+        'server-time', 'current-vs-day', 'arms-phase', 'countdown-timer', 'event-name', 'event-time',
+        'progress-fill', 'strategy-rating', 'optimization-focus', 'time-remaining', 'priority-level', 
+        'settings-toggle', 'settings-dropdown', 'server-toggle', 'server-dropdown', 'apply-server',
+        'current-arms-phase', 'time-offset', 'current-phase-display', 'offset-display',
+        'badge-label', 'next-priority-event', 'efficiency-level', 'current-action', 
+        'next-priority-time', 'countdown-label', 'next-alignment-countdown', 'active-now', 'active-action',
+        'priority-grid', 'schedule-grid', 'intelligence-content', 'priority-count',
+        'priority-banner', 'banner-title', 'banner-subtitle', 'banner-time', 'banner-close' // ADD THESE
+    ];
+    
+    let foundCount = 0;
+    elementIds.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            this.elements[id] = element;
+            foundCount++;
+        }
+    });
+    
+    console.log(`Found ${foundCount}/${elementIds.length} elements`);
+    return foundCount >= 10;
+}
+
+
+
     // CORRECTED: Fixed countdown for 5-phase cycle
     updateCountdown() {
         try {

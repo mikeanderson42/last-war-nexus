@@ -5,11 +5,9 @@ class LastWarNexus {
         this.initializationAttempts = 0;
         this.maxInitAttempts = 5;
         
-        // Server configuration
         this.currentArmsPhase = "City Building";
         this.timeOffset = 0;
         
-        // Data structure
         this.data = {
             armsracephases: [
                 { id: 6, name: "Mixed Phase", icon: "🔄", activities: ["Check in-game calendar"], pointSources: ["Check calendar for current focus", "Mixed activities", "Various point sources", "Event-specific tasks", "General progression"] },
@@ -43,48 +41,17 @@ class LastWarNexus {
                 { vsday: 5, armsphase: "Tech Research", reason: "Research component of mobilization.", points: 4100 },
                 { vsday: 6, armsphase: "Unit Progression", reason: "Troop training for combat.", points: 3700 },
                 { vsday: 6, armsphase: "City Building", reason: "Construction speedups for defenses.", points: 3400 }
-            ],
-            
-            intelligence: {
-                guides: [
-                    { title: "Complete Squad Building Guide", content: "Master the art of squad composition with our comprehensive guide covering hero synergies, formation strategies, and power optimization. Learn how to build squads for different game modes including PvP, PvE, and special events.", link: "https://lastwartutorial.com/squad-building-guide" },
-                    { title: "VS Points Maximization Strategy", content: "Learn the proven strategies to maximize VS points: Get VS tech to 100% first, save speedups for alignment windows, stack radar missions, and coordinate with Arms Race phases. Focus on unlocking 3 chests daily rather than winning every Arms Race.", link: "https://lastwartutorial.com/vs-optimization" },
-                    { title: "Power Progression Optimization", content: "Maximize your base power efficiently with our detailed progression guide. Covers building priorities, research paths, hero development, and resource management strategies for rapid power growth.", link: "https://lastwartutorial.com/power-optimization" },
-                    { title: "Season 4 Evernight Isle Complete Guide", content: "Navigate Season 4's new content including Evernight Isle exploration, Copper War mechanics, lighthouse systems, and faction-based gameplay. Includes exclusive rewards and optimization strategies.", link: "https://lastwartutorial.com/season-4-guide" }
-                ],
-                tips: [
-                    { title: "VS Event Optimization Strategies", content: "Key strategies from top players: Save all speedups for VS days, get VS tech to 100% first, save radar missions for Days 1,3,5, save building gifts for Days 2,5, and coordinate with Arms Race phases for 2-4x efficiency. Don't use speedups outside VS periods.", link: "https://lastwartutorial.com/vs-optimization" },
-                    { title: "Resource Saving & Timing Guide", content: "Master resource management: Save construction speedups for Day 2 (Base Expansion), research speedups for Day 3 (Age of Science), training speedups for Day 5 (Total Mobilization). Stack activities the day before and execute during high-priority windows.", link: "https://lastwartutorial.com/resource-timing" },
-                    { title: "Arms Race Coordination Tips", content: "Synchronize with Arms Race phases: Use stamina during Drone Boost, apply hero EXP during Hero Advancement, complete buildings during City Building, finish research during Tech Research. This alignment can quadruple your point efficiency.", link: "https://lastwartutorial.com/arms-race-coordination" },
-                    { title: "Advanced VS Techniques", content: "Pro tips: Use survivor dispatch trick for higher unit training caps, refresh secret missions for legendary tasks, coordinate alliance for secretary roles on key days, and use valor badges strategically during Age of Science phase.", link: "https://lastwartutorial.com/advanced-vs-techniques" }
-                ],
-                season4: [
-                    { title: "Season 4 Copper War VS Integration", content: "How Season 4 changes VS strategy: New Copper War mechanics affect alliance coordination, Tesla Coil skills provide combat advantages during Enemy Buster day, and Evernight Isle resources can boost VS performance.", link: "https://lastwartutorial.com/season4-vs-integration" },
-                    { title: "New Hero Weapon VS Optimization", content: "Optimize Season 4 heroes for VS: Sarah's Legendary upgrade path maximizes Hero Advancement points, Lucius' Exclusive Weapon enhances combat effectiveness for Day 6, and Butler's Tesla Coil skills provide strategic advantages.", link: "https://lastwartutorial.com/season-4-heroes-vs" },
-                    { title: "Evernight Isle Resource Management", content: "Use Evernight Isle strategically: Lighthouse mechanics provide additional resources for VS preparation, fog navigation yields exclusive speedups, and coordinated exploration maximizes alliance benefits during VS periods.", link: "https://lastwartutorial.com/evernight-isle-vs" },
-                    { title: "Legacy Season VS Strategies", content: "Don't miss proven strategies from Seasons 1-3: Foundation building techniques from Season 1, expansion optimization from Season 2, and advanced combat systems from Season 3 that remain effective for current VS gameplay.", link: "https://lastwartutorial.com/legacy-vs-strategies" }
-                ]
-            }
+            ]
         };
         
-        this.settings = {
-            timeFormat: "utc",
-            detailLevel: "essential",
-            viewScope: "week"
-        };
-        
+        this.settings = { timeFormat: "utc", detailLevel: "essential", viewScope: "week" };
         this.activeTab = "priority";
         this.activeFilter = "all";
         this.updateInterval = null;
         this.dropdownOpen = false;
-        this.expandedDetails = {
-            vsDay: false,
-            armsRace: false
-        };
         this.elements = {};
         this.eventListeners = [];
         
-        // Make globally available for debugging
         if (typeof window !== 'undefined') {
             window.lastWarNexusInstance = this;
         }
@@ -109,55 +76,29 @@ class LastWarNexus {
                 if (this.initializationAttempts < this.maxInitAttempts) {
                     setTimeout(() => this.init(), 200);
                     return;
-                } else {
-                    console.error("Failed to initialize after maximum attempts");
-                    return;
                 }
             }
             
             this.loadServerSettings();
             this.setupEventListeners();
-            this.populateIntelligence();
-            this.updateTabCounts();
             this.updateAllDisplays();
-            this.updateContent();
             this.startUpdateLoop();
             this.isInitialized = true;
             
-            // Mobile: Collapse bottom priority cards by default
-            if (window.innerWidth <= 768) {
-                const bottomCards = document.querySelector('.bottom-priority-cards');
-                const minimizeBtn = this.elements['minimize-cards'];
-                if (bottomCards && minimizeBtn) {
-                    bottomCards.classList.add('collapsed');
-                    minimizeBtn.textContent = 'Show Priority Windows';
-                }
-            }
-
             console.log("Last War Nexus initialized successfully");
         } catch (error) {
             console.error("Initialization error:", error);
-            if (this.initializationAttempts < this.maxInitAttempts) {
-                setTimeout(() => this.init(), 500);
-            }
         }
     }
     
     cacheElements() {
         const elementIds = [
-            'server-time', 'current-vs-day', 'arms-phase', 'alignment-indicator', 'alignment-status',
-            'vs-day-details', 'arms-race-details', 'vs-day-content', 'arms-race-content',
-            'current-vs-status', 'current-arms-status', 'countdown-timer', 'event-name', 'event-time',
-            'progress-fill', 'progress-text', 'action-icon', 'action-text', 'strategy-rating',
-            'optimization-focus', 'time-remaining', 'priority-level', 'settings-toggle', 'settings-dropdown',
-            'priority-grid', 'schedule-grid', 'intelligence-content', 'priority-count', 'schedule-count',
-            'intel-count', 'event-modal', 'modal-title', 'modal-body', 'modal-close', 'modal-share',
-            'modal-remind', 'time-format-dropdown', 'detail-level-dropdown', 'view-scope-dropdown',
-            'bottom-priority-cards', 'bottom-priority-grid', 'minimize-cards', 'bottom-cards-content',
-            'server-toggle', 'server-dropdown', 'apply-server',
+            'server-time', 'current-vs-day', 'arms-phase', 'countdown-timer', 'event-name', 'event-time',
+            'progress-fill', 'strategy-rating', 'optimization-focus', 'time-remaining', 'priority-level', 
+            'settings-toggle', 'settings-dropdown', 'server-toggle', 'server-dropdown', 'apply-server',
             'current-arms-phase', 'time-offset', 'current-phase-display', 'offset-display',
-            'time-slots', 'today-date', 'badge-label', 'next-priority-event', 'efficiency-level',
-            'current-action', 'next-priority-time', 'countdown-label', 'next-alignment-countdown'
+            'badge-label', 'next-priority-event', 'efficiency-level', 'current-action', 
+            'next-priority-time', 'countdown-label', 'next-alignment-countdown', 'active-now', 'active-action'
         ];
         
         let foundCount = 0;
@@ -170,68 +111,43 @@ class LastWarNexus {
         });
         
         console.log(`Found ${foundCount}/${elementIds.length} elements`);
-        return foundCount >= (elementIds.length * 0.7);
+        return foundCount >= 10;
     }
 
     setupEventListeners() {
-        this.removeEventListeners();
         try {
-            // Tab navigation
-            this.addEventListener('.tab-btn', 'click', (e) => {
-                e.preventDefault();
-                const tabName = e.target.closest('.tab-btn')?.dataset?.tab;
-                if (tabName) this.switchTab(tabName);
-            });
-
-            // Filter buttons
-            this.addEventListener('.filter-btn', 'click', (e) => {
-                e.preventDefault();
-                const filter = e.target.dataset?.filter;
-                if (filter) this.setFilter(filter);
-            });
-
-            // Settings dropdown
-            if (this.elements['settings-toggle']) {
-                this.addEventListenerSingle(this.elements['settings-toggle'], 'click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    this.toggleDropdown('settings');
-                });
-            }
-
-            // Server dropdown
             if (this.elements['server-toggle']) {
-                this.addEventListenerSingle(this.elements['server-toggle'], 'click', (e) => {
+                this.elements['server-toggle'].addEventListener('click', (e) => {
                     e.preventDefault();
-                    e.stopPropagation();
                     this.toggleDropdown('server');
                 });
             }
 
-            // Apply server settings
+            if (this.elements['settings-toggle']) {
+                this.elements['settings-toggle'].addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.toggleDropdown('settings');
+                });
+            }
+
             if (this.elements['apply-server']) {
-                this.addEventListenerSingle(this.elements['apply-server'], 'click', (e) => {
+                this.elements['apply-server'].addEventListener('click', (e) => {
                     e.preventDefault();
                     this.applyServerSettings();
                 });
             }
 
-            // Arms Race Phase selector
             if (this.elements['current-arms-phase']) {
-                this.addEventListenerSingle(this.elements['current-arms-phase'], 'change', (e) => {
+                this.elements['current-arms-phase'].addEventListener('change', (e) => {
                     this.currentArmsPhase = e.target.value;
                     this.updateServerDisplay();
                     this.saveServerSettings();
                     this.updateAllDisplays();
-                    if (this.expandedDetails.armsRace) {
-                        this.updateExpandedDetails();
-                    }
                 });
             }
 
-            // Time offset selector
             if (this.elements['time-offset']) {
-                this.addEventListenerSingle(this.elements['time-offset'], 'change', (e) => {
+                this.elements['time-offset'].addEventListener('change', (e) => {
                     this.timeOffset = parseInt(e.target.value, 10);
                     this.updateServerDisplay();
                     this.saveServerSettings();
@@ -239,198 +155,255 @@ class LastWarNexus {
                 });
             }
 
-            // Display settings
-            ['time-format-dropdown', 'detail-level-dropdown', 'view-scope-dropdown'].forEach(id => {
-                if (this.elements[id]) {
-                    this.addEventListenerSingle(this.elements[id], 'change', (e) => {
-                        const settingKey = id.replace('-dropdown', '').replace('-', '');
-                        const mappedKey = settingKey === 'timeformat' ? 'timeFormat' : 
-                                        settingKey === 'detaillevel' ? 'detailLevel' : 
-                                        settingKey === 'viewscope' ? 'viewScope' : settingKey;
-                        this.settings[mappedKey] = e.target.value;
-                        this.updateContent();
-                        this.updateAllDisplays();
-                    });
-                }
-            });
-
-            // Global listeners
-            this.addEventListenerSingle(document, 'click', (e) => {
+            document.addEventListener('click', (e) => {
                 if (!e.target.closest('.settings-dropdown-container') && !e.target.closest('.server-dropdown-container')) {
                     this.closeDropdown();
                 }
             });
 
-            this.addEventListenerSingle(document, 'keydown', (e) => {
-                if (e.key === 'Escape') {
-                    this.closeModal();
-                    this.closeDropdown();
-                }
-                if (e.key === '1' && !e.target.matches('input, select, textarea')) this.switchTab('priority');
-                if (e.key === '2' && !e.target.matches('input, select, textarea')) this.switchTab('schedule');
-                if (e.key === '3' && !e.target.matches('input, select, textarea')) this.switchTab('intelligence');
-            });
-
-            console.log("Event listeners set up successfully");
         } catch (error) {
             console.error("Error setting up event listeners:", error);
         }
     }
 
-    addEventListener(selector, event, handler) {
-        const elements = document.querySelectorAll(selector);
-        elements.forEach(element => {
-            this.addEventListenerSingle(element, event, handler);
-        });
-    }
-
-    addEventListenerSingle(element, event, handler) {
-        if (element && typeof handler === 'function') {
-            element.addEventListener(event, handler);
-            this.eventListeners.push({ element, event, handler });
-        }
-    }
-
-    removeEventListeners() {
-        this.eventListeners.forEach(({ element, event, handler }) => {
-            if (element && element.removeEventListener) {
-                element.removeEventListener(event, handler);
-            }
-        });
-        this.eventListeners = [];
-    }
-
- updateCurrentStatus() {
-    try {
-        console.log("🚀 updateCurrentStatus started");
-        
-        const { utcDay, utcHour, utcMinute } = this.getCurrentUTCInfo();
-        const currentVSDay = this.getVSDayData(utcDay);
-        const currentArmsPhase = this.getCurrentArmsPhase();
-        
-        console.log(`📊 Current state: Day ${utcDay} (${currentVSDay?.title}), Phase: ${currentArmsPhase?.name}`);
-        
-        if (!currentVSDay || !currentArmsPhase) {
-            console.warn("⚠️ Missing basic data");
-            this.safeUpdateElement('next-priority-time', 'textContent', 'Loading...');
-            this.safeUpdateElement('next-priority-event', 'textContent', 'Initializing...');
-            return;
-        }
-        
-        // Check for active alignment with enhanced logging
-        const alignment = this.data.highpriorityalignments.find(a => {
-            const dayMatch = a.vsday === utcDay;
-            const phaseMatch = a.armsphase === currentArmsPhase.name;
-            console.log(`🔍 Checking alignment: vsday ${a.vsday} === ${utcDay} (${dayMatch}), armsphase "${a.armsphase}" === "${currentArmsPhase.name}" (${phaseMatch})`);
-            return dayMatch && phaseMatch;
-        });
-
-        console.log("🎯 Final alignment result:", alignment);
-
-        const activeNowElement = document.getElementById('active-now');
-        
-        if (alignment) {
-            console.log("✅ Active alignment found, displaying active state");
-            this.displayActiveAlignment(alignment, currentArmsPhase, currentVSDay, activeNowElement);
-        } else {
-            console.log("⚠️ No active alignment, showing next window");
-            this.displayNextPriorityWindow(currentArmsPhase, currentVSDay, activeNowElement);
-        }
-
-        // Update footer with guaranteed values
-        this.safeUpdateElement('current-vs-day', 'textContent', currentVSDay.title);
-        this.safeUpdateElement('arms-phase', 'textContent', currentArmsPhase.name);
-        
-        const nextChangeTime = this.calculateTimeUntilNextPhase();
-        this.safeUpdateElement('next-alignment-countdown', 'textContent', nextChangeTime);
-        
-        console.log("✅ updateCurrentStatus completed successfully");
-
-    } catch (error) {
-        console.error("❌ Critical error in updateCurrentStatus:", error);
-        this.safeUpdateElement('next-priority-time', 'textContent', 'Critical Error');
-        this.safeUpdateElement('next-priority-event', 'textContent', 'System Malfunction');
-    }
-}
-
-
-    displayActiveAlignment(alignment, currentArmsPhase, currentVSDay, activeNowElement) {
+    updateCurrentStatus() {
         try {
-            if (activeNowElement) {
-                activeNowElement.style.display = 'flex';
+            const now = this.getServerTime();
+            if (!now || isNaN(now.getTime())) {
+                this.setFallbackDisplay("Time Error");
+                return;
+            }
+
+            const utcDay = now.getUTCDay();
+            const utcHour = now.getUTCHours();
+            
+            const currentVSDay = this.data.vsdays.find(day => day.day === utcDay);
+            const currentArmsPhase = this.data.armsracephases.find(phase => phase.name === this.currentArmsPhase);
+            
+            if (!currentVSDay || !currentArmsPhase) {
+                this.setFallbackDisplay("Data Loading");
+                return;
             }
             
-            this.safeUpdateElement('badge-label', 'textContent', 'PEAK EFFICIENCY ACTIVE');
-            this.safeUpdateElement('next-priority-event', 'textContent', `${currentArmsPhase.name} + ${currentVSDay.title}`);
-            this.safeUpdateElement('efficiency-level', 'textContent', 'High');
-            this.safeUpdateElement('current-action', 'textContent', `⚡ Use speedups now - ${alignment.reason}`);
+            console.log(`Current: ${currentVSDay.title} + ${currentArmsPhase.name}`);
             
-            const timeUntilPhaseEnd = this.calculateTimeUntilNextPhase();
-            this.safeUpdateElement('next-priority-time', 'textContent', timeUntilPhaseEnd);
-            this.safeUpdateElement('countdown-label', 'textContent', 'PHASE ACTIVE');
-            
-            // Update active now strip if it exists
-            const activeActionElement = document.getElementById('active-action');
-            if (activeActionElement) {
-                activeActionElement.textContent = `Use ${currentArmsPhase.activities[0]} speedups now`;
+            const alignment = this.data.highpriorityalignments.find(a => 
+                a.vsday === utcDay && a.armsphase === currentArmsPhase.name
+            );
+
+            if (alignment) {
+                this.displayActiveAlignment(alignment, currentArmsPhase, currentVSDay);
+            } else {
+                this.displayNextWindow(currentArmsPhase, currentVSDay);
             }
+
+            this.updateBasicInfo(currentVSDay, currentArmsPhase);
+
+        } catch (error) {
+            console.error("Error in updateCurrentStatus:", error);
+            this.setFallbackDisplay("System Error");
+        }
+    }
+
+    displayActiveAlignment(alignment, armsPhase, vsDay) {
+        try {
+            this.updateElement('active-now', 'style', { display: 'flex' });
+            this.updateElement('badge-label', 'textContent', 'PEAK EFFICIENCY ACTIVE');
+            this.updateElement('next-priority-event', 'textContent', `${armsPhase.name} + ${vsDay.title}`);
+            this.updateElement('efficiency-level', 'textContent', 'High');
+            this.updateElement('current-action', 'textContent', `⚡ Use speedups now! ${alignment.reason}`);
             
+            const timeRemaining = this.calculatePhaseTimeRemaining();
+            this.updateElement('next-priority-time', 'textContent', timeRemaining);
+            this.updateElement('countdown-label', 'textContent', 'PHASE ENDS IN');
+            
+            if (this.elements['active-action']) {
+                this.elements['active-action'].textContent = `Use ${armsPhase.activities[0]} speedups now!`;
+            }
         } catch (error) {
             console.error("Error displaying active alignment:", error);
         }
     }
 
-displayNextPriorityWindow(currentArmsPhase, currentVSDay, activeNowElement) {
-    try {
-        console.log("🔍 Displaying next priority window logic started");
-        
-        if (activeNowElement) {
-            activeNowElement.style.display = 'none';
-        }
-        
-        const nextWindow = this.getNextHighPriorityWindow();
-        console.log("🎯 Next window result:", nextWindow);
-        
-        if (nextWindow && nextWindow.startTime && nextWindow.vsTitle && nextWindow.armsPhase) {
-            console.log("✅ Valid next window found, updating display");
-            this.safeUpdateElement('badge-label', 'textContent', 'NEXT HIGH PRIORITY');
-            this.safeUpdateElement('next-priority-event', 'textContent', `${nextWindow.armsPhase} + ${nextWindow.vsTitle}`);
-            this.safeUpdateElement('efficiency-level', 'textContent', 'High');
-            this.safeUpdateElement('current-action', 'textContent', `Save resources: ${nextWindow.reason}`);
+    displayNextWindow(armsPhase, vsDay) {
+        try {
+            this.updateElement('active-now', 'style', { display: 'none' });
             
-            const timeToNext = this.calculateTimeToWindow(nextWindow);
-            console.log("⏰ Time to next calculated:", timeToNext);
-            this.safeUpdateElement('next-priority-time', 'textContent', timeToNext);
-            this.safeUpdateElement('countdown-label', 'textContent', 'TIME REMAINING');
-        } else {
-            console.log("⚠️ No valid priority windows, showing current phase fallback");
-            this.safeUpdateElement('badge-label', 'textContent', 'NORMAL PHASE');
-            this.safeUpdateElement('next-priority-event', 'textContent', `${currentArmsPhase.name} Phase`);
-            this.safeUpdateElement('efficiency-level', 'textContent', 'Medium');
-            this.safeUpdateElement('current-action', 'textContent', `Focus on ${currentArmsPhase.activities[0]} activities`);
+            const nextWindow = this.findNextPriorityWindow();
             
-            const timeUntilPhaseEnd = this.calculateTimeUntilNextPhase();
-            this.safeUpdateElement('next-priority-time', 'textContent', timeUntilPhaseEnd);
-            this.safeUpdateElement('countdown-label', 'textContent', 'PHASE CHANGES IN');
+            if (nextWindow) {
+                this.updateElement('badge-label', 'textContent', 'NEXT HIGH PRIORITY');
+                this.updateElement('next-priority-event', 'textContent', `${nextWindow.armsPhase} + ${nextWindow.vsTitle}`);
+                this.updateElement('efficiency-level', 'textContent', 'High');
+                this.updateElement('current-action', 'textContent', `Save resources! ${nextWindow.reason}`);
+                this.updateElement('next-priority-time', 'textContent', nextWindow.timeToWindow);
+                this.updateElement('countdown-label', 'textContent', 'TIME REMAINING');
+            } else {
+                this.updateElement('badge-label', 'textContent', 'NORMAL PHASE');
+                this.updateElement('next-priority-event', 'textContent', `${armsPhase.name} Phase`);
+                this.updateElement('efficiency-level', 'textContent', 'Medium');
+                this.updateElement('current-action', 'textContent', `Focus on ${armsPhase.activities[0]} - Save speedups for priority windows`);
+                
+                const timeRemaining = this.calculatePhaseTimeRemaining();
+                this.updateElement('next-priority-time', 'textContent', timeRemaining);
+                this.updateElement('countdown-label', 'textContent', 'PHASE CHANGES IN');
+            }
+        } catch (error) {
+            console.error("Error displaying next window:", error);
         }
-        
-    } catch (error) {
-        console.error("❌ Critical error in displayNextPriorityWindow:", error);
-        // Emergency fallback
-        this.safeUpdateElement('next-priority-time', 'textContent', 'System Error');
-        this.safeUpdateElement('next-priority-event', 'textContent', 'Please Refresh Page');
-    }
-}
-
-    
     }
 
-    setErrorState(message) {
-        this.safeUpdateElement('next-priority-time', 'textContent', 'Error');
-        this.safeUpdateElement('countdown-label', 'textContent', 'SYSTEM ERROR');
-        this.safeUpdateElement('next-priority-event', 'textContent', message);
-        this.safeUpdateElement('current-action', 'textContent', 'Please refresh the page');
-        this.safeUpdateElement('efficiency-level', 'textContent', 'Error');
+    findNextPriorityWindow() {
+        try {
+            const now = this.getServerTime();
+            if (!now) return null;
+            
+            const currentUTCDay = now.getUTCDay();
+            let nearestWindow = null;
+            let minTimeDiff = Infinity;
+            
+            const phaseSchedule = {
+                "Mixed Phase": [0], "Drone Boost": [4], "City Building": [8],
+                "Tech Research": [12], "Hero Advancement": [16], "Unit Progression": [20]
+            };
+            
+            for (let dayOffset = 0; dayOffset < 14; dayOffset++) {
+                const checkDay = (currentUTCDay + dayOffset) % 7;
+                const vsDayData = this.data.vsdays.find(d => d.day === checkDay);
+                if (!vsDayData) continue;
+                
+                const dayAlignments = this.data.highpriorityalignments.filter(a => a.vsday === checkDay);
+                
+                for (const alignment of dayAlignments) {
+                    const phaseHours = phaseSchedule[alignment.armsphase];
+                    if (!phaseHours) continue;
+                    
+                    for (const hour of phaseHours) {
+                        const windowTime = new Date(now);
+                        windowTime.setUTCDate(now.getUTCDate() + dayOffset);
+                        windowTime.setUTCHours(hour, 0, 0, 0);
+                        
+                        const timeDiff = windowTime.getTime() - now.getTime();
+                        if (timeDiff > 0 && timeDiff < minTimeDiff) {
+                            minTimeDiff = timeDiff;
+                            nearestWindow = {
+                                startTime: windowTime,
+                                vsDay: checkDay,
+                                vsTitle: vsDayData.title,
+                                armsPhase: alignment.armsphase,
+                                reason: alignment.reason,
+                                timeToWindow: this.formatTime(timeDiff)
+                            };
+                        }
+                    }
+                }
+            }
+            
+            return nearestWindow;
+        } catch (error) {
+            console.error("Error finding next priority window:", error);
+            return null;
+        }
+    }
+
+    calculatePhaseTimeRemaining() {
+        try {
+            const now = this.getServerTime();
+            if (!now) return "0m";
+            
+            const currentHour = now.getUTCHours();
+            const currentMinute = now.getUTCMinutes();
+            
+            const phaseStarts = [0, 4, 8, 12, 16, 20];
+            let nextPhaseStart = 24;
+            
+            for (const start of phaseStarts) {
+                if (currentHour < start) {
+                    nextPhaseStart = start;
+                    break;
+                }
+            }
+            
+            let hoursToNext = nextPhaseStart - currentHour;
+            let minutesToNext = -currentMinute;
+            
+            if (minutesToNext < 0) {
+                minutesToNext += 60;
+                hoursToNext--;
+            }
+            
+            if (hoursToNext < 0) {
+                hoursToNext += 24;
+            }
+            
+            if (hoursToNext > 0) {
+                return `${hoursToNext}h ${minutesToNext}m`;
+            } else {
+                return `${Math.max(0, minutesToNext)}m`;
+            }
+        } catch (error) {
+            return "0m";
+        }
+    }
+
+    formatTime(timeDiffMs) {
+        try {
+            if (!timeDiffMs || timeDiffMs < 0) return "Starting Soon";
+            
+            const days = Math.floor(timeDiffMs / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeDiffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDiffMs % (1000 * 60 * 60)) / (1000 * 60));
+            
+            if (days > 0) return `${days}d ${hours}h`;
+            if (hours > 0) return `${hours}h ${minutes}m`;
+            return `${Math.max(1, minutes)}m`;
+        } catch (error) {
+            return "Time Error";
+        }
+    }
+
+    updateElement(elementId, property, value) {
+        try {
+            let element = this.elements[elementId] || document.getElementById(elementId);
+            if (!element) return;
+            
+            this.elements[elementId] = element;
+            
+            if (property === 'textContent') {
+                element.textContent = String(value || 'N/A');
+            } else if (property === 'style' && typeof value === 'object') {
+                Object.assign(element.style, value);
+            } else {
+                element[property] = value;
+            }
+        } catch (error) {
+            console.warn(`Error updating ${elementId}:`, error);
+        }
+    }
+
+    updateBasicInfo(vsDay, armsPhase) {
+        this.updateElement('current-vs-day', 'textContent', vsDay.title);
+        this.updateElement('arms-phase', 'textContent', armsPhase.name);
+        
+        const nextChangeTime = this.calculatePhaseTimeRemaining();
+        this.updateElement('next-alignment-countdown', 'textContent', nextChangeTime);
+    }
+
+    setFallbackDisplay(message) {
+        this.updateElement('next-priority-time', 'textContent', 'Loading');
+        this.updateElement('countdown-label', 'textContent', 'CALCULATING');
+        this.updateElement('next-priority-event', 'textContent', message);
+        this.updateElement('current-action', 'textContent', 'System initializing...');
+        this.updateElement('efficiency-level', 'textContent', 'Loading');
+    }
+
+    getServerTime() {
+        try {
+            const now = new Date();
+            return new Date(now.getTime() + (this.timeOffset * 60 * 60 * 1000));
+        } catch (error) {
+            return new Date();
+        }
     }
 
     loadServerSettings() {
@@ -440,13 +413,6 @@ displayNextPriorityWindow(currentArmsPhase, currentVSDay, activeNowElement) {
                 const settings = JSON.parse(saved);
                 this.currentArmsPhase = settings.currentArmsPhase || "City Building";
                 this.timeOffset = settings.timeOffset || 0;
-                
-                if (this.elements['current-arms-phase']) {
-                    this.elements['current-arms-phase'].value = this.currentArmsPhase;
-                }
-                if (this.elements['time-offset']) {
-                    this.elements['time-offset'].value = this.timeOffset.toString();
-                }
                 this.updateServerDisplay();
             }
         } catch (error) {
@@ -468,14 +434,16 @@ displayNextPriorityWindow(currentArmsPhase, currentVSDay, activeNowElement) {
 
     applyServerSettings() {
         try {
-            this.currentArmsPhase = this.elements['current-arms-phase']?.value || "City Building";
-            this.timeOffset = parseInt(this.elements['time-offset']?.value || '0', 10);
+            if (this.elements['current-arms-phase']) {
+                this.currentArmsPhase = this.elements['current-arms-phase'].value;
+            }
+            if (this.elements['time-offset']) {
+                this.timeOffset = parseInt(this.elements['time-offset'].value, 10);
+            }
             this.updateServerDisplay();
             this.saveServerSettings();
             this.closeDropdown();
             this.updateAllDisplays();
-            
-            console.log(`Settings applied - Phase: ${this.currentArmsPhase}, Offset: ${this.timeOffset}h`);
         } catch (error) {
             console.error("Error applying server settings:", error);
         }
@@ -497,303 +465,25 @@ displayNextPriorityWindow(currentArmsPhase, currentVSDay, activeNowElement) {
         }
     }
 
-    getCurrentUTCInfo() {
-        const now = new Date();
-        const serverTime = new Date(now.getTime() + (this.timeOffset * 60 * 60 * 1000));
-        return {
-            utcDay: serverTime.getUTCDay(),
-            utcHour: serverTime.getUTCHours(),
-            utcMinute: serverTime.getUTCMinutes()
-        };
-    }
-
-    getServerTime() {
-        const now = new Date();
-        return new Date(now.getTime() + (this.timeOffset * 60 * 60 * 1000));
-    }
-
-    getCurrentArmsPhaseData() {
-        return this.data.armsracephases.find(phase => phase.name === this.currentArmsPhase) || this.data.armsracephases[1];
-    }
-    
-    getCurrentArmsPhase() {
-        return this.getCurrentArmsPhaseData();
-    }
-
-    getArmsRacePhase(hour) {
-        const phaseIndex = Math.floor(hour / 4);
-        return this.data.armsracephases[phaseIndex] || this.data.armsracephases[0];
-    }
-
-    isCurrentManualPhase(schedulePhaseHour) {
-        const schedulePhase = this.getArmsRacePhase(schedulePhaseHour);
-        return schedulePhase.name === this.currentArmsPhase;
-    }
-
-    calculateTimeUntilNextPhase() {
-        try {
-            const now = this.getServerTime();
-            if (!now || isNaN(now.getTime())) {
-                return "0m";
-            }
-            
-            const currentHour = now.getUTCHours();
-            const currentMinute = now.getUTCMinutes();
-            
-            // Find next 4-hour boundary
-            const phaseStarts = [0, 4, 8, 12, 16, 20];
-            let nextPhaseStart = null;
-            
-            for (const start of phaseStarts) {
-                if (currentHour < start) {
-                    nextPhaseStart = start;
-                    break;
-                }
-            }
-            
-            // If no phase found today, use midnight tomorrow
-            if (!nextPhaseStart) {
-                nextPhaseStart = 24;
-            }
-            
-            const nextPhaseTime = new Date(now);
-            if (nextPhaseStart === 24) {
-                nextPhaseTime.setUTCDate(nextPhaseTime.getUTCDate() + 1);
-                nextPhaseTime.setUTCHours(0, 0, 0, 0);
-            } else {
-                nextPhaseTime.setUTCHours(nextPhaseStart, 0, 0, 0);
-            }
-            
-            const timeDiff = nextPhaseTime.getTime() - now.getTime();
-            if (timeDiff <= 0 || isNaN(timeDiff)) {
-                return "0m";
-            }
-            
-            const hours = Math.floor(timeDiff / (1000 * 60 * 60));
-            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-            
-            if (isNaN(hours) || isNaN(minutes)) {
-                return "0m";
-            }
-            
-            if (hours > 0) {
-                return `${hours}h ${minutes}m`;
-            } else {
-                return `${minutes}m`;
-            }
-            
-        } catch (error) {
-            console.error("Error calculating time until next phase:", error);
-            return "0m";
-        }
-    }
-
-    getNextHighPriorityWindow() {
-        try {
-            const now = this.getServerTime();
-            if (!now || isNaN(now.getTime())) {
-                console.warn("Invalid server time in getNextHighPriorityWindow");
-                return null;
-            }
-            
-            const currentUTCDay = now.getUTCDay();
-            const currentUTCHour = now.getUTCHours();
-            
-            console.log(`Finding windows from: Day ${currentUTCDay}, Hour ${currentUTCHour}`);
-            
-            let nearestWindow = null;
-            let minTimeDiff = Infinity;
-            
-            // Phase schedule mapping
-            const phaseSchedule = {
-                "Mixed Phase": [0],
-                "Drone Boost": [4], 
-                "City Building": [8],
-                "Tech Research": [12],
-                "Hero Advancement": [16],
-                "Unit Progression": [20]
-            };
-            
-            // Check next 14 days (2 full weeks)
-            for (let dayOffset = 0; dayOffset < 14; dayOffset++) {
-                const checkDay = (currentUTCDay + dayOffset) % 7;
-                const vsDayData = this.getVSDayData(checkDay);
-                
-                if (!vsDayData) {
-                    console.warn(`No VS day data for day ${checkDay}`);
-                    continue;
-                }
-                
-                // Get all alignments for this VS day
-                const dayAlignments = this.data.highpriorityalignments.filter(a => a.vsday === checkDay);
-                console.log(`Day ${checkDay} (${vsDayData.title}): ${dayAlignments.length} alignments`);
-                
-                dayAlignments.forEach(alignment => {
-                    const phaseHours = phaseSchedule[alignment.armsphase];
-                    if (!phaseHours) {
-                        console.warn(`Unknown arms phase: ${alignment.armsphase}`);
-                        return;
-                    }
-                    
-                    phaseHours.forEach(phaseHour => {
-                        const windowTime = new Date(now);
-                        windowTime.setUTCDate(now.getUTCDate() + dayOffset);
-                        windowTime.setUTCHours(phaseHour, 0, 0, 0);
-                        
-                        // Only skip windows that are more than 30 minutes in the past
-                        const timeDiff = windowTime.getTime() - now.getTime();
-                        if (timeDiff < -1800000) { // -30 minutes in milliseconds
-                            return; // Skip only truly past windows
-                        }
-                        
-                        if (timeDiff >= 0 && timeDiff < minTimeDiff) {
-                            minTimeDiff = timeDiff;
-                            nearestWindow = {
-                                startTime: windowTime,
-                                vsDay: checkDay,
-                                vsTitle: vsDayData.title,
-                                armsPhase: alignment.armsphase,
-                                hour: phaseHour,
-                                points: alignment.points,
-                                reason: alignment.reason
-                            };
-                            console.log(`Found nearer window: ${alignment.armsphase} on ${vsDayData.title} in ${Math.floor(timeDiff/60000)} minutes`);
-                        }
-                    });
-                });
-            }
-            
-            console.log("Final nearest window:", nearestWindow);
-            return nearestWindow;
-            
-        } catch (error) {
-            console.error("Error in getNextHighPriorityWindow:", error);
-            return null;
-        }
-    }
-
-    calculateTimeToWindow(window) {
-        try {
-            if (!window) {
-                console.warn("calculateTimeToWindow: window is null/undefined");
-                return "No window found";
-            }
-            
-            if (!window.startTime || !(window.startTime instanceof Date) || isNaN(window.startTime.getTime())) {
-                console.warn("calculateTimeToWindow: invalid startTime", window.startTime);
-                return "Invalid time data";
-            }
-            
-            const now = this.getServerTime();
-            if (!now || isNaN(now.getTime())) {
-                console.warn("calculateTimeToWindow: invalid server time");
-                return "Server time error";
-            }
-            
-            const timeDiff = window.startTime.getTime() - now.getTime();
-            
-            if (timeDiff <= 0) return "Starting now";
-            if (isNaN(timeDiff) || !isFinite(timeDiff)) {
-                console.warn("calculateTimeToWindow: invalid time difference");
-                return "Calculation error";
-            }
-            
-            const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-            
-            if (isNaN(days) || isNaN(hours) || isNaN(minutes)) {
-                console.warn("calculateTimeToWindow: NaN in time components", {days, hours, minutes});
-                return "Format error";
-            }
-            
-            if (days > 0) {
-                return `${days}d ${hours}h`;
-            } else if (hours > 0) {
-                return `${hours}h ${minutes}m`;
-            } else {
-                return `${Math.max(1, minutes)}m`;
-            }
-            
-        } catch (error) {
-            console.error("Error in calculateTimeToWindow:", error);
-            return "Error";
-        }
-    }
-
-    getVSDayData(dayIndex) {
-        try {
-            return this.data.vsdays.find(day => day.day === dayIndex) || this.data.vsdays[0];
-        } catch (error) {
-            console.error("Error getting VS day data:", error);
-            return { day: dayIndex, name: "Unknown", title: "Unknown Day", activities: [] };
-        }
-    }
-
-    safeUpdateElement(elementKey, property, value) {
-        try {
-            const element = this.elements[elementKey];
-            if (element) {
-                if (property === 'textContent') {
-                    element.textContent = value;
-                } else if (property === 'innerHTML') {
-                    element.innerHTML = value;
-                } else if (property === 'style') {
-                    Object.assign(element.style, value);
-                } else {
-                    element[property] = value;
-                }
-            }
-        } catch (error) {
-            console.warn(`Error updating element ${elementKey}:`, error);
-        }
-    }
-
-emergencyElementUpdate(elementKey, property, value) {
-    // Last resort: try to find element by any means
-    const selectors = [
-        `#${elementKey}`,
-        `.${elementKey}`,
-        `[data-id="${elementKey}"]`,
-        `[class*="${elementKey}"]`
-    ];
-    
-    for (const selector of selectors) {
-        const element = document.querySelector(selector);
-        if (element) {
-            console.log(`🚨 Emergency update found element with selector: ${selector}`);
-            if (property === 'textContent') {
-                element.textContent = String(value || 'Emergency Update');
-            }
-            this.elements[elementKey] = element; // Cache for future
-            break;
-        }
-    }
-}
-
-
     toggleDropdown(type) {
         try {
-            if (type === 'settings') {
-                this.dropdownOpen = !this.dropdownOpen;
-                if (this.elements['settings-dropdown'] && this.elements['settings-toggle']) {
-                    this.elements['settings-dropdown'].classList.toggle('show', this.dropdownOpen);
-                    this.elements['settings-toggle'].classList.toggle('active', this.dropdownOpen);
-                }
-            } else if (type === 'server') {
-                const serverDropdownOpen = this.elements['server-dropdown']?.classList.contains('show');
-                if (this.elements['server-dropdown'] && this.elements['server-toggle']) {
-                    this.elements['server-dropdown'].classList.toggle('show', !serverDropdownOpen);
-                    this.elements['server-toggle'].classList.toggle('active', !serverDropdownOpen);
+            if (type === 'server') {
+                const dropdown = this.elements['server-dropdown'];
+                const toggle = this.elements['server-toggle'];
+                if (dropdown && toggle) {
+                    const isOpen = dropdown.classList.contains('show');
+                    dropdown.classList.toggle('show', !isOpen);
+                    toggle.classList.toggle('active', !isOpen);
                 }
             }
-
-            if (type === 'settings' && this.elements['server-dropdown']) {
-                this.elements['server-dropdown'].classList.remove('show');
-                this.elements['server-toggle']?.classList.remove('active');
-            } else if (type === 'server' && this.elements['settings-dropdown']) {
-                this.elements['settings-dropdown'].classList.remove('show');
-                this.elements['settings-toggle']?.classList.remove('active');
+            if (type === 'settings') {
+                const dropdown = this.elements['settings-dropdown'];
+                const toggle = this.elements['settings-toggle'];
+                if (dropdown && toggle) {
+                    const isOpen = dropdown.classList.contains('show');
+                    dropdown.classList.toggle('show', !isOpen);
+                    toggle.classList.toggle('active', !isOpen);
+                }
             }
         } catch (error) {
             console.error("Error toggling dropdown:", error);
@@ -802,46 +492,18 @@ emergencyElementUpdate(elementKey, property, value) {
 
     closeDropdown() {
         try {
-            this.dropdownOpen = false;
-            if (this.elements['settings-dropdown'] && this.elements['settings-toggle']) {
-                this.elements['settings-dropdown'].classList.remove('show');
-                this.elements['settings-toggle'].classList.remove('active');
-            }
-            if (this.elements['server-dropdown'] && this.elements['server-toggle']) {
-                this.elements['server-dropdown'].classList.remove('show');
-                this.elements['server-toggle'].classList.remove('active');
-            }
+            ['server-dropdown', 'settings-dropdown'].forEach(id => {
+                if (this.elements[id]) {
+                    this.elements[id].classList.remove('show');
+                }
+            });
+            ['server-toggle', 'settings-toggle'].forEach(id => {
+                if (this.elements[id]) {
+                    this.elements[id].classList.remove('active');
+                }
+            });
         } catch (error) {
             console.error("Error closing dropdown:", error);
-        }
-    }
-
-    setFilter(filter) {
-        try {
-            this.activeFilter = filter;
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.filter === filter);
-            });
-            this.updateContent();
-        } catch (error) {
-            console.error("Error setting filter:", error);
-        }
-    }
-
-    switchTab(tabName) {
-        try {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            const activeBtn = document.querySelector(`[data-tab="${tabName}"]`);
-            if (activeBtn) activeBtn.classList.add('active');
-
-            document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
-            const activePanel = document.getElementById(`${tabName}-tab`);
-            if (activePanel) activePanel.classList.add('active');
-
-            this.activeTab = tabName;
-            this.updateContent();
-        } catch (error) {
-            console.error("Error switching tab:", error);
         }
     }
 
@@ -865,7 +527,6 @@ emergencyElementUpdate(elementKey, property, value) {
             this.updateServerTime();
             this.updateCurrentStatus();
             this.updateCountdown();
-            this.updateProgress();
         } catch (error) {
             console.error("Error updating displays:", error);
         }
@@ -874,10 +535,8 @@ emergencyElementUpdate(elementKey, property, value) {
     updateServerTime() {
         try {
             const serverTime = this.getServerTime();
-            const timeString = this.settings.timeFormat === 'utc'
-                ? serverTime.toUTCString().slice(17, 25)
-                : serverTime.toLocaleTimeString();
-            this.safeUpdateElement('server-time', 'textContent', timeString);
+            const timeString = serverTime.toUTCString().slice(17, 25);
+            this.updateElement('server-time', 'textContent', timeString);
         } catch (error) {
             console.error("Error updating server time:", error);
         }
@@ -888,9 +547,8 @@ emergencyElementUpdate(elementKey, property, value) {
             const now = this.getServerTime();
             const currentHour = now.getUTCHours();
             
-            // Calculate next phase change
             const phaseStarts = [0, 4, 8, 12, 16, 20];
-            let nextPhaseStart = 24; // Default to next day
+            let nextPhaseStart = 24;
             
             for (const start of phaseStarts) {
                 if (currentHour < start) {
@@ -901,7 +559,7 @@ emergencyElementUpdate(elementKey, property, value) {
             
             const nextPhaseTime = new Date(now);
             if (nextPhaseStart === 24) {
-                nextPhaseTime.setUTCDate(nextPhaseTime.getUTCDate() + 1);
+                nextPhaseTime.setUTCDate(now.getUTCDate() + 1);
                 nextPhaseTime.setUTCHours(0, 0, 0, 0);
             } else {
                 nextPhaseTime.setUTCHours(nextPhaseStart, 0, 0, 0);
@@ -913,137 +571,21 @@ emergencyElementUpdate(elementKey, property, value) {
             const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
             
             const countdownText = hours > 0 ? `${hours}h ${minutes}m ${seconds}s` : `${minutes}m ${seconds}s`;
-            this.safeUpdateElement('countdown-timer', 'textContent', countdownText);
+            this.updateElement('countdown-timer', 'textContent', countdownText);
             
-            // Update next phase name
             const nextPhaseIndex = Math.floor(nextPhaseStart / 4) % this.data.armsracephases.length;
             const nextPhase = this.data.armsracephases[nextPhaseIndex];
-            this.safeUpdateElement('event-name', 'textContent', `${nextPhase.name} Phase`);
+            this.updateElement('event-name', 'textContent', `${nextPhase.name} Phase`);
             
             const timeString = nextPhaseStart === 24 ? "00:00" : String(nextPhaseStart).padStart(2, '0') + ":00";
-            this.safeUpdateElement('event-time', 'textContent', `${timeString} Server Time`);
+            this.updateElement('event-time', 'textContent', `${timeString} Server Time`);
             
         } catch (error) {
             console.error("Error updating countdown:", error);
         }
     }
-
-    updateProgress() {
-        try {
-            const now = this.getServerTime();
-            const currentHour = now.getUTCHours();
-            const currentMinute = now.getUTCMinutes();
-            
-            // Calculate progress through current 4-hour phase
-            const phaseStartHour = Math.floor(currentHour / 4) * 4;
-            const minutesIntoPhase = (currentHour - phaseStartHour) * 60 + currentMinute;
-            const totalPhaseMinutes = 4 * 60;
-            const progressPercent = Math.min(100, (minutesIntoPhase / totalPhaseMinutes) * 100);
-            
-            this.safeUpdateElement('progress-fill', 'style', { width: `${progressPercent}%` });
-            
-            // Update priority progress bar
-            const nextWindow = this.getNextHighPriorityWindow();
-            if (nextWindow) {
-                const timeToWindow = nextWindow.startTime.getTime() - now.getTime();
-                const hoursToWindow = timeToWindow / (1000 * 60 * 60);
-                const priorityProgress = Math.max(0, Math.min(100, 100 - (hoursToWindow / 24) * 100));
-                this.safeUpdateElement('priority-progress-fill', 'style', { width: `${priorityProgress}%` });
-            }
-            
-        } catch (error) {
-            console.error("Error updating progress:", error);
-        }
-    }
-
-    updateContent() {
-        try {
-            if (this.activeTab === 'priority') {
-                this.updatePriorityContent();
-            } else if (this.activeTab === 'schedule') {
-                this.updateScheduleContent();
-            } else if (this.activeTab === 'intelligence') {
-                this.updateIntelligenceContent();
-            }
-        } catch (error) {
-            console.error("Error updating content:", error);
-        }
-    }
-
-    updatePriorityContent() {
-        try {
-            const priorityGrid = this.elements['priority-grid'];
-            if (!priorityGrid) return;
-            
-            priorityGrid.innerHTML = '<div class="loading-message">Priority windows calculated successfully</div>';
-        } catch (error) {
-            console.error("Error updating priority content:", error);
-        }
-    }
-
-    updateScheduleContent() {
-        try {
-            const scheduleGrid = this.elements['schedule-grid'];
-            if (!scheduleGrid) return;
-            
-            scheduleGrid.innerHTML = '<div class="loading-message">Schedule loaded successfully</div>';
-        } catch (error) {
-            console.error("Error updating schedule content:", error);
-        }
-    }
-
-    updateIntelligenceContent() {
-        // Content already populated in populateIntelligence()
-    }
-
-    populateIntelligence() {
-        try {
-            const content = this.elements['intelligence-content'];
-            if (!content) return;
-            
-            content.innerHTML = '<div class="loading-message">Intelligence loaded successfully</div>';
-        } catch (error) {
-            console.error("Error populating intelligence:", error);
-        }
-    }
-
-    updateTabCounts() {
-        try {
-            this.safeUpdateElement('priority-count', 'textContent', '8 Windows');
-            this.safeUpdateElement('schedule-count', 'textContent', '42 Events');
-            this.safeUpdateElement('intel-count', 'textContent', '16 Guides');
-        } catch (error) {
-            console.error("Error updating tab counts:", error);
-        }
-    }
-
-    closeModal() {
-        // Modal functionality placeholder
-    }
-
-    destroy() {
-        if (this.updateInterval) {
-            clearInterval(this.updateInterval);
-        }
-        this.removeEventListeners();
-    }
-	
-	debugElementStatus() {
-    console.log("🔧 DEBUG: Element Status Check");
-    const criticalElements = ['badge-label', 'next-priority-event', 'next-priority-time', 'countdown-label', 'current-action'];
-    
-    criticalElements.forEach(id => {
-        const element = document.getElementById(id);
-        console.log(`Element ${id}:`, element ? '✅ Found' : '❌ Missing', element);
-    });
-    
-    console.log("Current elements cache:", this.elements);
 }
 
-	
-}
-
-// Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
     new LastWarNexus();
 });

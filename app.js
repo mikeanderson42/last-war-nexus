@@ -101,7 +101,7 @@ class LastWarNexus {
             'current-arms-phase', 'time-offset', 'current-phase-display', 'offset-display',
             'badge-label', 'next-priority-event', 'efficiency-level', 'current-action', 
             'next-priority-time', 'countdown-label', 'next-alignment-countdown', 'active-now', 'active-action',
-            'priority-grid', 'schedule-grid', 'intelligence-content', 'priority-count',
+            'priority-grid', 'schedule-grid', 'guides-content', 'priority-count', 'guides-count',
             'priority-banner', 'banner-title', 'banner-subtitle', 'banner-time', 'banner-close'
         ];
         
@@ -111,9 +111,6 @@ class LastWarNexus {
             if (element) {
                 this.elements[id] = element;
                 foundCount++;
-                console.log(`Found element: ${id}`);
-            } else {
-                console.warn(`Element not found: ${id}`);
             }
         });
         
@@ -123,13 +120,10 @@ class LastWarNexus {
 
     setupEventListeners() {
         try {
-            console.log("Setting up event listeners...");
-            
             if (this.elements['server-toggle']) {
                 this.elements['server-toggle'].addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log("Server toggle clicked");
                     this.toggleDropdown('server');
                 });
             }
@@ -138,7 +132,6 @@ class LastWarNexus {
                 this.elements['settings-toggle'].addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log("Settings toggle clicked");
                     this.toggleDropdown('settings');
                 });
             }
@@ -174,8 +167,6 @@ class LastWarNexus {
                     this.closeAllDropdowns();
                 }
             });
-
-            console.log("Event listeners setup complete");
         } catch (error) {
             console.error("Error setting up event listeners:", error);
         }
@@ -183,34 +174,24 @@ class LastWarNexus {
 
     setupTabNavigation() {
         try {
-            console.log("Setting up tab navigation...");
-            
             const tabButtons = document.querySelectorAll('.tab-btn');
             const filterButtons = document.querySelectorAll('.filter-btn');
 
-            console.log(`Found ${tabButtons.length} tab buttons and ${filterButtons.length} filter buttons`);
-
-            tabButtons.forEach((button, index) => {
-                console.log(`Setting up tab button ${index}:`, button.getAttribute('data-tab'));
+            tabButtons.forEach((button) => {
                 button.addEventListener('click', (e) => {
                     e.preventDefault();
                     const targetTab = e.currentTarget.getAttribute('data-tab');
-                    console.log(`Tab clicked: ${targetTab}`);
                     this.switchTab(targetTab);
                 });
             });
 
-            filterButtons.forEach((button, index) => {
-                console.log(`Setting up filter button ${index}:`, button.getAttribute('data-filter'));
+            filterButtons.forEach((button) => {
                 button.addEventListener('click', (e) => {
                     e.preventDefault();
                     const filter = e.currentTarget.getAttribute('data-filter');
-                    console.log(`Filter clicked: ${filter}`);
                     this.setFilter(filter);
                 });
             });
-            
-            console.log("Tab navigation setup complete");
         } catch (error) {
             console.error("Error setting up tab navigation:", error);
         }
@@ -232,7 +213,6 @@ class LastWarNexus {
 
     switchTab(tabName) {
         try {
-            console.log(`Switching to tab: ${tabName}`);
             this.activeTab = tabName;
             
             document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -249,9 +229,6 @@ class LastWarNexus {
             const targetPanel = document.getElementById(`${tabName}-tab`);
             if (targetPanel) {
                 targetPanel.classList.add('active');
-                console.log(`Activated panel: ${tabName}-tab`);
-            } else {
-                console.error(`Panel not found: ${tabName}-tab`);
             }
         } catch (error) {
             console.error("Error switching tab:", error);
@@ -260,7 +237,6 @@ class LastWarNexus {
 
     setFilter(filter) {
         try {
-            console.log(`Setting filter: ${filter}`);
             this.activeFilter = filter;
             
             document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -278,17 +254,13 @@ class LastWarNexus {
 
     toggleDropdown(type) {
         try {
-            console.log(`Toggling dropdown: ${type}`);
-            
             if (type === 'server') {
                 const dropdown = this.elements['server-dropdown'];
                 const toggle = this.elements['server-toggle'];
                 
                 if (dropdown && toggle) {
                     const isOpen = dropdown.classList.contains('show');
-                    console.log(`Server dropdown is currently: ${isOpen ? 'open' : 'closed'}`);
                     
-                    // Close other dropdown first
                     if (this.elements['settings-dropdown']) {
                         this.elements['settings-dropdown'].classList.remove('show');
                     }
@@ -296,13 +268,8 @@ class LastWarNexus {
                         this.elements['settings-toggle'].classList.remove('active');
                     }
                     
-                    // Toggle server dropdown
                     dropdown.classList.toggle('show', !isOpen);
                     toggle.classList.toggle('active', !isOpen);
-                    
-                    console.log(`Server dropdown is now: ${!isOpen ? 'open' : 'closed'}`);
-                } else {
-                    console.error("Server dropdown elements not found");
                 }
             } else if (type === 'settings') {
                 const dropdown = this.elements['settings-dropdown'];
@@ -310,9 +277,7 @@ class LastWarNexus {
                 
                 if (dropdown && toggle) {
                     const isOpen = dropdown.classList.contains('show');
-                    console.log(`Settings dropdown is currently: ${isOpen ? 'open' : 'closed'}`);
                     
-                    // Close other dropdown first
                     if (this.elements['server-dropdown']) {
                         this.elements['server-dropdown'].classList.remove('show');
                     }
@@ -320,13 +285,8 @@ class LastWarNexus {
                         this.elements['server-toggle'].classList.remove('active');
                     }
                     
-                    // Toggle settings dropdown
                     dropdown.classList.toggle('show', !isOpen);
                     toggle.classList.toggle('active', !isOpen);
-                    
-                    console.log(`Settings dropdown is now: ${!isOpen ? 'open' : 'closed'}`);
-                } else {
-                    console.error("Settings dropdown elements not found");
                 }
             }
         } catch (error) {
@@ -336,8 +296,6 @@ class LastWarNexus {
 
     closeAllDropdowns() {
         try {
-            console.log("Closing all dropdowns");
-            
             ['server-dropdown', 'settings-dropdown'].forEach(id => {
                 if (this.elements[id]) {
                     this.elements[id].classList.remove('show');
@@ -357,12 +315,8 @@ class LastWarNexus {
     getServerTime() {
         try {
             const now = new Date();
-            if (!now || isNaN(now.getTime())) {
-                return new Date();
-            }
             const offset = Number(this.timeOffset) || 0;
-            const serverTime = new Date(now.getTime() + (offset * 60 * 60 * 1000));
-            return serverTime;
+            return new Date(now.getTime() + (offset * 60 * 60 * 1000));
         } catch (error) {
             return new Date();
         }
@@ -371,11 +325,6 @@ class LastWarNexus {
     getCurrentArmsPhaseInfo() {
         try {
             const now = this.getServerTime();
-            
-            if (!now || isNaN(now.getTime())) {
-                return { name: "City Building", index: 0, startHour: 0, nextStartHour: 4 };
-            }
-            
             const hour = now.getUTCHours();
             const phaseIndex = Math.floor(hour / 4) % 6;
             const phases = ["City Building", "Unit Progression", "Tech Research", "Drone Boost", "Hero Advancement", "Mixed Phase"];
@@ -403,7 +352,6 @@ class LastWarNexus {
                 nextStartHour: nextPhaseStartHour === 0 ? 24 : nextPhaseStartHour
             };
         } catch (error) {
-            console.error("Error getting current arms phase:", error);
             return { name: "City Building", index: 0, startHour: 0, nextStartHour: 4 };
         }
     }
@@ -411,17 +359,10 @@ class LastWarNexus {
     getCurrentVSDayInfo() {
         try {
             const now = this.getServerTime();
-            
-            if (!now || isNaN(now.getTime())) {
-                return { day: 0, name: "Sunday", title: "Preparation Day" };
-            }
-            
             const dayOfWeek = now.getUTCDay();
-            const vsDayData = this.data.vsdays.find(day => day.day === dayOfWeek);
-            
-            return vsDayData || { day: 0, name: "Sunday", title: "Preparation Day" };
+            return this.data.vsdays.find(day => day.day === dayOfWeek) || 
+                   { day: 0, name: "Sunday", title: "Preparation Day" };
         } catch (error) {
-            console.error("Error getting VS day:", error);
             return { day: 0, name: "Sunday", title: "Preparation Day" };
         }
     }
@@ -431,18 +372,11 @@ class LastWarNexus {
             const vsDayInfo = this.getCurrentVSDayInfo();
             const armsPhaseInfo = this.getCurrentArmsPhaseInfo();
             
-            if (!vsDayInfo || !armsPhaseInfo) {
-                return null;
-            }
-            
-            const alignment = this.data.highpriorityalignments.find(a => 
+            return this.data.highpriorityalignments.find(a => 
                 a.vsday === vsDayInfo.day && 
                 a.armsphase === armsPhaseInfo.name
-            );
-            
-            return alignment || null;
+            ) || null;
         } catch (error) {
-            console.error("Error checking priority status:", error);
             return null;
         }
     }
@@ -450,12 +384,6 @@ class LastWarNexus {
     findNextPriorityWindow() {
         try {
             const now = this.getServerTime();
-            
-            if (!now || isNaN(now.getTime())) {
-                console.error("Invalid server time in findNextPriorityWindow");
-                return null;
-            }
-            
             let nearestWindow = null;
             let minTimeDiff = Infinity;
             
@@ -469,75 +397,54 @@ class LastWarNexus {
             };
             
             for (let dayOffset = 0; dayOffset < 14; dayOffset++) {
-                try {
-                    const checkDate = new Date(now);
-                    checkDate.setUTCDate(now.getUTCDate() + dayOffset);
-                    checkDate.setUTCHours(0, 0, 0, 0);
+                const checkDate = new Date(now);
+                checkDate.setUTCDate(now.getUTCDate() + dayOffset);
+                checkDate.setUTCHours(0, 0, 0, 0);
+                
+                const checkDay = checkDate.getUTCDay();
+                const vsDayData = this.data.vsdays.find(day => day.day === checkDay);
+                
+                if (!vsDayData) continue;
+                
+                const dayAlignments = this.data.highpriorityalignments.filter(a => a.vsday === checkDay);
+                
+                for (const alignment of dayAlignments) {
+                    const phaseHours = phaseSchedule[alignment.armsphase] || [];
                     
-                    if (!checkDate || isNaN(checkDate.getTime())) {
-                        continue;
-                    }
-                    
-                    const checkDay = checkDate.getUTCDay();
-                    const vsDayData = this.data.vsdays.find(day => day.day === checkDay);
-                    
-                    if (!vsDayData) continue;
-                    
-                    const dayAlignments = this.data.highpriorityalignments.filter(a => a.vsday === checkDay);
-                    
-                    for (const alignment of dayAlignments) {
-                        const phaseHours = phaseSchedule[alignment.armsphase] || [];
+                    for (const hour of phaseHours) {
+                        const windowTime = new Date(checkDate);
+                        windowTime.setUTCHours(hour, 0, 0, 0);
                         
-                        for (const hour of phaseHours) {
-                            try {
-                                const windowTime = new Date(checkDate);
-                                windowTime.setUTCHours(hour, 0, 0, 0);
-                                
-                                if (!windowTime || isNaN(windowTime.getTime())) {
-                                    continue;
-                                }
-                                
-                                const timeDiff = windowTime.getTime() - now.getTime();
-                                
-                                if (timeDiff > 0 && isFinite(timeDiff) && timeDiff < minTimeDiff) {
-                                    minTimeDiff = timeDiff;
-                                    nearestWindow = {
-                                        startTime: windowTime,
-                                        vsDay: checkDay,
-                                        vsTitle: vsDayData.title,
-                                        armsPhase: alignment.armsphase,
-                                        reason: alignment.reason,
-                                        points: alignment.points,
-                                        timeToWindow: this.safeFormatTimeDifference(timeDiff),
-                                        timeDiffMs: timeDiff
-                                    };
-                                }
-                            } catch (innerError) {
-                                console.warn("Error processing window time:", innerError);
-                                continue;
-                            }
+                        const timeDiff = windowTime.getTime() - now.getTime();
+                        
+                        if (timeDiff > 0 && isFinite(timeDiff) && timeDiff < minTimeDiff) {
+                            minTimeDiff = timeDiff;
+                            nearestWindow = {
+                                startTime: windowTime,
+                                vsDay: checkDay,
+                                vsTitle: vsDayData.title,
+                                armsPhase: alignment.armsphase,
+                                reason: alignment.reason,
+                                points: alignment.points,
+                                timeToWindow: this.safeFormatTimeDifference(timeDiff),
+                                timeDiffMs: timeDiff
+                            };
                         }
                     }
-                } catch (dayError) {
-                    console.warn(`Error processing day offset ${dayOffset}:`, dayError);
-                    continue;
                 }
             }
             
             return nearestWindow;
         } catch (error) {
-            console.error("Error finding next priority window:", error);
             return null;
         }
     }
 
     populateAllSections() {
         try {
-            console.log("Populating all sections...");
             this.populatePriorityGrid();
             this.populateScheduleGrid();
-            this.populateIntelligenceHub();
-            console.log("All sections populated");
+            this.populateGuidesHub();
         } catch (error) {
             console.error("Error populating sections:", error);
         }
@@ -545,23 +452,16 @@ class LastWarNexus {
 
     populatePriorityGrid() {
         try {
-            console.log("Populating priority grid...");
             const grid = this.elements['priority-grid'];
-            if (!grid) {
-                console.error("Priority grid element not found");
-                return;
-            }
+            if (!grid) return;
 
             let priorityWindows = this.generatePriorityWindows();
-            console.log(`Generated ${priorityWindows.length} priority windows`);
             
             if (this.activeFilter === 'active') {
                 priorityWindows = priorityWindows.filter(w => w.isActive);
             } else if (this.activeFilter === 'upcoming') {
                 priorityWindows = priorityWindows.filter(w => !w.isActive && w.timeToStart > 0);
             }
-
-            console.log(`After filtering: ${priorityWindows.length} windows`);
 
             if (this.elements['priority-count']) {
                 this.elements['priority-count'].textContent = `${priorityWindows.length} Windows`;
@@ -593,33 +493,18 @@ class LastWarNexus {
                     </div>
                 </div>
             `).join('');
-
-            console.log("Priority grid populated successfully");
         } catch (error) {
             console.error("Error populating priority grid:", error);
-            if (this.elements['priority-grid']) {
-                this.elements['priority-grid'].innerHTML = '<div class="error-message">Error loading priority windows</div>';
-            }
         }
     }
 
     populateScheduleGrid() {
         try {
-            console.log("Populating schedule grid...");
             const grid = this.elements['schedule-grid'];
-            if (!grid) {
-                console.error("Schedule grid element not found");
-                return;
-            }
+            if (!grid) return;
 
             const scheduleData = this.generateWeeklySchedule();
-            console.log(`Generated schedule data for ${scheduleData.length} days`);
             
-            if (scheduleData.length === 0) {
-                grid.innerHTML = '<div class="error-message">No schedule data available</div>';
-                return;
-            }
-
             grid.innerHTML = `
                 <div class="schedule-week">
                     ${scheduleData.map(day => `
@@ -642,30 +527,25 @@ class LastWarNexus {
                     `).join('')}
                 </div>
             `;
-
-            console.log("Schedule grid populated successfully");
         } catch (error) {
             console.error("Error populating schedule grid:", error);
-            if (this.elements['schedule-grid']) {
-                this.elements['schedule-grid'].innerHTML = '<div class="error-message">Error loading schedule</div>';
-            }
         }
     }
 
-    populateIntelligenceHub() {
+    // CORRECTED: Accurate Last War: Survival guides
+    populateGuidesHub() {
         try {
-            console.log("Populating intelligence hub...");
-            const hub = this.elements['intelligence-content'];
-            if (!hub) {
-                console.error("Intelligence hub element not found");
-                return;
-            }
+            const hub = this.elements['guides-content'];
+            if (!hub) return;
 
-            const guides = this.generateIntelligenceGuides();
-            console.log(`Generated ${guides.length} intelligence guides`);
+            const guides = this.generateStrategyGuides();
+            
+            if (this.elements['guides-count']) {
+                this.elements['guides-count'].textContent = `${guides.length} Guides`;
+            }
             
             hub.innerHTML = `
-                <div class="intelligence-grid">
+                <div class="guides-grid">
                     ${guides.map(guide => `
                         <div class="guide-card ${guide.featured ? 'featured' : ''}">
                             <div class="guide-header">
@@ -674,14 +554,14 @@ class LastWarNexus {
                                     <h3 class="guide-title">${guide.title}</h3>
                                     <div class="guide-category">${guide.category}</div>
                                 </div>
-                                <div class="guide-rating">${guide.rating}</div>
+                                <div class="guide-rating">${guide.importance}</div>
                             </div>
                             <div class="guide-content">
                                 <p class="guide-description">${guide.description}</p>
                                 <div class="guide-stats">
-                                    <span class="stat">⚡ ${guide.efficiency}</span>
-                                    <span class="stat">🎯 ${guide.points}</span>
-                                    <span class="stat">⏱️ ${guide.timeframe}</span>
+                                    <span class="stat">📈 ${guide.benefit}</span>
+                                    <span class="stat">⏰ ${guide.timing}</span>
+                                    <span class="stat">🎯 ${guide.focus}</span>
                                 </div>
                             </div>
                             <div class="guide-footer">
@@ -693,14 +573,111 @@ class LastWarNexus {
                     `).join('')}
                 </div>
             `;
-
-            console.log("Intelligence hub populated successfully");
         } catch (error) {
-            console.error("Error populating intelligence hub:", error);
-            if (this.elements['intelligence-content']) {
-                this.elements['intelligence-content'].innerHTML = '<div class="error-message">Error loading guides</div>';
-            }
+            console.error("Error populating guides hub:", error);
         }
+    }
+
+    // VERIFIED: Accurate Last War: Survival strategy guides
+    generateStrategyGuides() {
+        return [
+            {
+                title: "Dual Event Optimization",
+                category: "Core Strategy",
+                icon: "🎯",
+                importance: "Essential",
+                featured: true,
+                description: "Time your activities when Arms Race phases align with Alliance Duel focus days. Complete building upgrades during City Building phase on Base Expansion Tuesday for maximum VS points.",
+                benefit: "Double Rewards",
+                timing: "4-hour windows",
+                focus: "Event Alignment",
+                tags: ["Core", "VS Points", "Arms Race"]
+            },
+            {
+                title: "Speedup Conservation",
+                category: "Resource Management",
+                icon: "⏱️",
+                importance: "Critical",
+                featured: false,
+                description: "Save construction speedups for Tuesday Base Expansion + City Building phase alignment. Save research speedups for Wednesday Age of Science + Tech Research phase.",
+                benefit: "Resource Efficiency",
+                timing: "Weekly Planning",
+                focus: "Speedup Management",
+                tags: ["Resources", "Planning", "Efficiency"]
+            },
+            {
+                title: "Server Time Mastery",
+                category: "Timing",
+                icon: "🕐",
+                importance: "Important",
+                featured: false,
+                description: "Understand your server's reset time and Arms Race rotation. Plan activities around the 5-minute post-reset window when Alliance Duel points are unavailable.",
+                benefit: "Perfect Timing",
+                timing: "Server Reset",
+                focus: "Time Management",
+                tags: ["Server", "Reset", "Timing"]
+            },
+            {
+                title: "Friday Total Mobilization",
+                category: "Peak Efficiency",
+                icon: "🚀",
+                importance: "High Priority",
+                featured: true,
+                description: "Use all saved speedups on Friday Total Mobilization day. Coordinate with Arms Race phases - City Building, Unit Progression, or Tech Research for triple benefits.",
+                benefit: "Maximum Output",
+                timing: "Friday Peak",
+                focus: "All Activities",
+                tags: ["Friday", "Speedups", "Maximum"]
+            },
+            {
+                title: "Alliance Coordination",
+                category: "Team Strategy",
+                icon: "🤝",
+                importance: "Valuable",
+                featured: false,
+                description: "Share high-priority window timings with alliance members. Coordinate Total Mobilization Friday activities and Alliance Duel participation for collective benefits.",
+                benefit: "Team Synergy",
+                timing: "Alliance Events",
+                focus: "Coordination",
+                tags: ["Alliance", "Team", "Communication"]
+            },
+            {
+                title: "Hero Day Optimization",
+                category: "Thursday Focus",
+                icon: "🦸",
+                importance: "Focused",
+                featured: false,
+                description: "Save recruitment tickets and hero EXP items for Thursday Train Heroes day. Time usage during Hero Advancement Arms Race phase for dual rewards.",
+                benefit: "Hero Efficiency",
+                timing: "Thursday",
+                focus: "Hero Development",
+                tags: ["Heroes", "Thursday", "Recruitment"]
+            },
+            {
+                title: "Research Valor Strategy",
+                category: "Wednesday Focus",
+                icon: "🔬",
+                importance: "Specialized",
+                featured: false,
+                description: "Use valor badges and research speedups on Wednesday Age of Science day during Tech Research Arms Race phase. Complete high-value research projects for maximum points.",
+                benefit: "Research Focus",
+                timing: "Wednesday",
+                focus: "Technology",
+                tags: ["Research", "Valor", "Wednesday"]
+            },
+            {
+                title: "Preparation Day Planning",
+                category: "Sunday Setup",
+                icon: "📋",
+                importance: "Foundation",
+                featured: false,
+                description: "Use Sunday to prepare for the week. Save radar missions for Monday, prepare building gifts for Tuesday, and organize resources for optimal weekly performance.",
+                benefit: "Week Preparation",
+                timing: "Sunday",
+                focus: "Weekly Planning",
+                tags: ["Sunday", "Preparation", "Planning"]
+            }
+        ];
     }
 
     generatePriorityWindows() {
@@ -751,7 +728,6 @@ class LastWarNexus {
             
             return windows.sort((a, b) => a.timeToStart - b.timeToStart);
         } catch (error) {
-            console.error("Error generating priority windows:", error);
             return [];
         }
     }
@@ -783,8 +759,6 @@ class LastWarNexus {
                         a.vsday === dayOfWeek && a.armsphase === phaseName
                     );
                     
-                    const phaseTime = new Date(checkDate);
-                    phaseTime.setUTCHours(hour, 0, 0, 0);
                     const isActive = isToday && now.getUTCHours() >= hour && now.getUTCHours() < nextHour;
                     
                     phases.push({
@@ -806,62 +780,8 @@ class LastWarNexus {
             
             return schedule;
         } catch (error) {
-            console.error("Error generating weekly schedule:", error);
             return [];
         }
-    }
-
-    generateIntelligenceGuides() {
-        return [
-            {
-                title: "Dual Event Optimization",
-                category: "VS Points Strategy",
-                icon: "🎯",
-                rating: "Essential",
-                featured: true,
-                description: "Maximize VS points by timing activities during Arms Race phases that align with Alliance Duel focus days. Complete building upgrades during City Building phase on Base Expansion day.",
-                efficiency: "Maximum",
-                points: "Dual Rewards",
-                timeframe: "4-hour windows",
-                tags: ["Core Strategy", "High Priority", "Timing"]
-            },
-            {
-                title: "Resource Conservation",
-                category: "Speedup Management",
-                icon: "⏱️",
-                rating: "Critical",
-                featured: false,
-                description: "Save speedups for high-priority alignment windows. Use construction speedups only during City Building + Base Expansion day, research speedups during Tech Research + Age of Science.",
-                efficiency: "Optimal",
-                points: "Resource Savings",
-                timeframe: "Weekly planning",
-                tags: ["Resource", "Planning", "Speedups"]
-            },
-            {
-                title: "Alliance Coordination",
-                category: "Team Strategy",
-                icon: "🤝",
-                rating: "Important",
-                featured: false,
-                description: "Coordinate with alliance members for Total Mobilization Friday. Share high-priority window timings and plan collective activities during peak alignment periods.",
-                efficiency: "Team-wide",
-                points: "Alliance Boost",
-                timeframe: "Alliance Events",
-                tags: ["Alliance", "Coordination", "Communication"]
-            },
-            {
-                title: "Phase Transition Strategy",
-                category: "Timing Mastery",
-                icon: "🔄",
-                rating: "Advanced",
-                featured: false,
-                description: "Learn to time activities around 4-hour phase changes. Start long activities (research/construction) 30 minutes before favorable phases begin to maximize overlap time.",
-                efficiency: "Precise",
-                points: "Extended Benefits",
-                timeframe: "Phase Changes",
-                tags: ["Timing", "Advanced", "Phases"]
-            }
-        ];
     }
 
     getPhaseHours(phaseName) {
@@ -899,8 +819,7 @@ class LastWarNexus {
             if (!isFinite(timeDiffMs) || timeDiffMs < 0) return "Starting Soon";
             const hours = Math.floor(timeDiffMs / (1000 * 60 * 60));
             const minutes = Math.floor((timeDiffMs % (1000 * 60 * 60)) / (1000 * 60));
-            if (hours > 0) return `${hours}h ${minutes}m`;
-            return `${Math.max(1, minutes)}m`;
+            return hours > 0 ? `${hours}h ${minutes}m` : `${Math.max(1, minutes)}m`;
         } catch (error) {
             return "Error";
         }
@@ -1030,10 +949,7 @@ class LastWarNexus {
             
             const nextWindow = this.findNextPriorityWindow();
             
-            if (nextWindow && nextWindow.timeToWindow && 
-                nextWindow.timeToWindow !== "Error" && 
-                nextWindow.timeToWindow !== "Starting Soon") {
-                
+            if (nextWindow && nextWindow.timeToWindow) {
                 this.safeUpdateElement('badge-label', 'textContent', 'NEXT HIGH PRIORITY');
                 this.safeUpdateElement('next-priority-event', 'textContent', `${nextWindow.armsPhase} + ${nextWindow.vsTitle}`);
                 this.safeUpdateElement('efficiency-level', 'textContent', 'High');

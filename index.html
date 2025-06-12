@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>VS Points Optimizer - Last War Nexus</title>
-    <meta name="description" content="Professional Last War Survival tracker for maximizing VS points during Alliance Duels">
+    <meta name="description" content="Professional Last War: Survival tracker for maximizing VS points during Alliance Duels">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -26,7 +26,6 @@
                     </div>
                 </div>
             </div>
-            <!-- FIXED: Side-by-side buttons with proper flex layout -->
             <div class="nav-actions">
                 <div class="server-dropdown-container">
                     <button class="server-btn" id="server-toggle" type="button">
@@ -126,10 +125,8 @@
     </nav>
 
     <div class="app-container">
-        <!-- REDESIGNED: Compact hero dashboard -->
         <section class="hero-dashboard-compact">
             <div class="dashboard-grid-compact">
-                <!-- Main priority card - larger and more prominent -->
                 <div class="priority-main-card">
                     <div class="card-header gaming-header">
                         <div class="header-left">
@@ -188,7 +185,6 @@
                     </div>
                 </div>
 
-                <!-- Side cards - smaller and stacked -->
                 <div class="side-cards">
                     <div class="countdown-card-compact">
                         <div class="card-header">
@@ -220,7 +216,6 @@
             </div>
         </section>
 
-        <!-- ENHANCED: Tab navigation with better design -->
         <div class="tab-navigation-enhanced">
             <div class="tab-container">
                 <button class="tab-btn active" data-tab="priority" type="button">
@@ -241,12 +236,12 @@
                         </div>
                     </div>
                 </button>
-                <button class="tab-btn" data-tab="intelligence" type="button">
+                <button class="tab-btn" data-tab="guides" type="button">
                     <div class="tab-content">
-                        <span class="tab-icon">🧠</span>
+                        <span class="tab-icon">📚</span>
                         <div class="tab-info">
-                            <span class="tab-label">Server Battle Strategies</span>
-                            <span class="tab-count" id="intel-count">16 Guides</span>
+                            <span class="tab-label">Strategy Guides</span>
+                            <span class="tab-count" id="guides-count">8 Guides</span>
                         </div>
                     </div>
                 </button>
@@ -302,34 +297,33 @@
                     </div>
                 </div>
 
-                <div id="intelligence-tab" class="tab-panel">
+                <div id="guides-tab" class="tab-panel">
                     <div class="section-header">
-                        <h2>Server Battle Strategies</h2>
-                        <p class="section-subtitle">Expert guides, pro tips, and comprehensive strategies</p>
-                        <div class="intel-stats">
-                            <div class="intel-stat">
+                        <h2>Last War: Survival Strategy Guides</h2>
+                        <p class="section-subtitle">Expert strategies and optimization tips for maximizing your VS points and Arms Race efficiency</p>
+                        <div class="guides-stats">
+                            <div class="guides-stat">
                                 <span class="stat-number">Dual</span>
                                 <span class="stat-label">Event Focus</span>
                             </div>
-                            <div class="intel-stat">
+                            <div class="guides-stat">
                                 <span class="stat-number">4hr</span>
                                 <span class="stat-label">Phase Cycles</span>
                             </div>
-                            <div class="intel-stat">
+                            <div class="guides-stat">
                                 <span class="stat-number">6</span>
                                 <span class="stat-label">VS Days</span>
                             </div>
                         </div>
                     </div>
-                    <div id="intelligence-content" class="intelligence-hub">
-                        <!-- Intelligence content will be populated here -->
+                    <div id="guides-content" class="guides-hub">
+                        <!-- Guides content will be populated here -->
                     </div>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- HIGH PRIORITY EVENTS BANNER -->
     <div class="priority-banner" id="priority-banner">
         <div class="banner-container">
             <div class="banner-content" id="banner-content">

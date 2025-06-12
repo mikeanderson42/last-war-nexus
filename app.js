@@ -7,7 +7,6 @@ class LastWarNexus {
         this.currentArmsPhase = "auto";
         this.timeOffset = 0;
         
-        // CORRECTED: Based on PDF - 6 phases in proper order
         this.data = {
             armsracephases: [
                 { id: 1, name: "City Building", icon: "🏗️", activities: ["Building upgrades", "Construction speedups"], pointSources: ["Complete building upgrades", "Use construction speedups", "Finish building projects", "Upgrade headquarters", "Construct new buildings"] },
@@ -112,19 +111,25 @@ class LastWarNexus {
             if (element) {
                 this.elements[id] = element;
                 foundCount++;
+                console.log(`Found element: ${id}`);
+            } else {
+                console.warn(`Element not found: ${id}`);
             }
         });
         
         console.log(`Found ${foundCount}/${elementIds.length} elements`);
-        return foundCount >= 15; // Reduced requirement
+        return foundCount >= 15;
     }
 
     setupEventListeners() {
         try {
-            // Server and settings dropdowns
+            console.log("Setting up event listeners...");
+            
             if (this.elements['server-toggle']) {
                 this.elements['server-toggle'].addEventListener('click', (e) => {
                     e.preventDefault();
+                    e.stopPropagation();
+                    console.log("Server toggle clicked");
                     this.toggleDropdown('server');
                 });
             }
@@ -132,6 +137,8 @@ class LastWarNexus {
             if (this.elements['settings-toggle']) {
                 this.elements['settings-toggle'].addEventListener('click', (e) => {
                     e.preventDefault();
+                    e.stopPropagation();
+                    console.log("Settings toggle clicked");
                     this.toggleDropdown('settings');
                 });
             }
@@ -162,11 +169,13 @@ class LastWarNexus {
             }
 
             document.addEventListener('click', (e) => {
-                if (!e.target.closest('.settings-dropdown-container') && !e.target.closest('.server-dropdown-container')) {
-                    this.closeDropdown();
+                if (!e.target.closest('.settings-dropdown-container') && 
+                    !e.target.closest('.server-dropdown-container')) {
+                    this.closeAllDropdowns();
                 }
             });
 
+            console.log("Event listeners setup complete");
         } catch (error) {
             console.error("Error setting up event listeners:", error);
         }
@@ -176,7 +185,6 @@ class LastWarNexus {
         try {
             console.log("Setting up tab navigation...");
             
-            // Get all tab buttons
             const tabButtons = document.querySelectorAll('.tab-btn');
             const filterButtons = document.querySelectorAll('.filter-btn');
 
@@ -208,12 +216,25 @@ class LastWarNexus {
         }
     }
 
+    setupBanner() {
+        try {
+            const closeButton = document.getElementById('banner-close');
+            if (closeButton) {
+                closeButton.addEventListener('click', () => {
+                    this.hideBanner();
+                    localStorage.setItem('banner-hidden-until', Date.now() + (60 * 60 * 1000));
+                });
+            }
+        } catch (error) {
+            console.error("Error setting up banner:", error);
+        }
+    }
+
     switchTab(tabName) {
         try {
             console.log(`Switching to tab: ${tabName}`);
             this.activeTab = tabName;
             
-            // Update tab buttons
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('active');
                 if (btn.getAttribute('data-tab') === tabName) {
@@ -221,7 +242,6 @@ class LastWarNexus {
                 }
             });
             
-            // Update tab panels
             document.querySelectorAll('.tab-panel').forEach(panel => {
                 panel.classList.remove('active');
             });
@@ -243,7 +263,6 @@ class LastWarNexus {
             console.log(`Setting filter: ${filter}`);
             this.activeFilter = filter;
             
-            // Update filter buttons
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 btn.classList.remove('active');
                 if (btn.getAttribute('data-filter') === filter) {
@@ -251,14 +270,104 @@ class LastWarNexus {
                 }
             });
             
-            // Re-populate priority grid with new filter
             this.populatePriorityGrid();
         } catch (error) {
             console.error("Error setting filter:", error);
         }
     }
 
-    // CORRECTED: 6-phase Arms Race logic as per PDF
+    toggleDropdown(type) {
+        try {
+            console.log(`Toggling dropdown: ${type}`);
+            
+            if (type === 'server') {
+                const dropdown = this.elements['server-dropdown'];
+                const toggle = this.elements['server-toggle'];
+                
+                if (dropdown && toggle) {
+                    const isOpen = dropdown.classList.contains('show');
+                    console.log(`Server dropdown is currently: ${isOpen ? 'open' : 'closed'}`);
+                    
+                    // Close other dropdown first
+                    if (this.elements['settings-dropdown']) {
+                        this.elements['settings-dropdown'].classList.remove('show');
+                    }
+                    if (this.elements['settings-toggle']) {
+                        this.elements['settings-toggle'].classList.remove('active');
+                    }
+                    
+                    // Toggle server dropdown
+                    dropdown.classList.toggle('show', !isOpen);
+                    toggle.classList.toggle('active', !isOpen);
+                    
+                    console.log(`Server dropdown is now: ${!isOpen ? 'open' : 'closed'}`);
+                } else {
+                    console.error("Server dropdown elements not found");
+                }
+            } else if (type === 'settings') {
+                const dropdown = this.elements['settings-dropdown'];
+                const toggle = this.elements['settings-toggle'];
+                
+                if (dropdown && toggle) {
+                    const isOpen = dropdown.classList.contains('show');
+                    console.log(`Settings dropdown is currently: ${isOpen ? 'open' : 'closed'}`);
+                    
+                    // Close other dropdown first
+                    if (this.elements['server-dropdown']) {
+                        this.elements['server-dropdown'].classList.remove('show');
+                    }
+                    if (this.elements['server-toggle']) {
+                        this.elements['server-toggle'].classList.remove('active');
+                    }
+                    
+                    // Toggle settings dropdown
+                    dropdown.classList.toggle('show', !isOpen);
+                    toggle.classList.toggle('active', !isOpen);
+                    
+                    console.log(`Settings dropdown is now: ${!isOpen ? 'open' : 'closed'}`);
+                } else {
+                    console.error("Settings dropdown elements not found");
+                }
+            }
+        } catch (error) {
+            console.error("Error toggling dropdown:", error);
+        }
+    }
+
+    closeAllDropdowns() {
+        try {
+            console.log("Closing all dropdowns");
+            
+            ['server-dropdown', 'settings-dropdown'].forEach(id => {
+                if (this.elements[id]) {
+                    this.elements[id].classList.remove('show');
+                }
+            });
+            
+            ['server-toggle', 'settings-toggle'].forEach(id => {
+                if (this.elements[id]) {
+                    this.elements[id].classList.remove('active');
+                }
+            });
+        } catch (error) {
+            console.error("Error closing dropdowns:", error);
+        }
+    }
+
+    getServerTime() {
+        try {
+            const now = new Date();
+            if (!now || isNaN(now.getTime())) {
+                return new Date();
+            }
+            const offset = Number(this.timeOffset) || 0;
+            const serverTime = new Date(now.getTime() + (offset * 60 * 60 * 1000));
+            return serverTime;
+        } catch (error) {
+            return new Date();
+        }
+    }
+
     getCurrentArmsPhaseInfo() {
         try {
             const now = this.getServerTime();
@@ -268,12 +377,9 @@ class LastWarNexus {
             }
             
             const hour = now.getUTCHours();
-            
-            // 6-phase cycle as per PDF: City Building, Unit Progression, Tech Research, Drone Boost, Hero Advancement, Mixed Phase
             const phaseIndex = Math.floor(hour / 4) % 6;
             const phases = ["City Building", "Unit Progression", "Tech Research", "Drone Boost", "Hero Advancement", "Mixed Phase"];
             
-            // Manual override if not auto
             if (this.currentArmsPhase !== "auto") {
                 const manualPhase = this.data.armsracephases.find(p => p.name === this.currentArmsPhase);
                 if (manualPhase) {
@@ -353,7 +459,6 @@ class LastWarNexus {
             let nearestWindow = null;
             let minTimeDiff = Infinity;
             
-            // 6-phase schedule
             const phaseSchedule = {
                 "City Building": [0],
                 "Unit Progression": [4],
@@ -450,7 +555,6 @@ class LastWarNexus {
             let priorityWindows = this.generatePriorityWindows();
             console.log(`Generated ${priorityWindows.length} priority windows`);
             
-            // Apply filter
             if (this.activeFilter === 'active') {
                 priorityWindows = priorityWindows.filter(w => w.isActive);
             } else if (this.activeFilter === 'upcoming') {
@@ -459,7 +563,6 @@ class LastWarNexus {
 
             console.log(`After filtering: ${priorityWindows.length} windows`);
 
-            // Update count
             if (this.elements['priority-count']) {
                 this.elements['priority-count'].textContent = `${priorityWindows.length} Windows`;
             }
@@ -791,21 +894,6 @@ class LastWarNexus {
         }
     }
 
-    // Additional methods for server time, formatting, etc. (shortened for space)
-    getServerTime() {
-        try {
-            const now = new Date();
-            if (!now || isNaN(now.getTime())) {
-                return new Date();
-            }
-            const offset = Number(this.timeOffset) || 0;
-            const serverTime = new Date(now.getTime() + (offset * 60 * 60 * 1000));
-            return serverTime;
-        } catch (error) {
-            return new Date();
-        }
-    }
-
     safeFormatTimeDifference(timeDiffMs) {
         try {
             if (!isFinite(timeDiffMs) || timeDiffMs < 0) return "Starting Soon";
@@ -850,23 +938,43 @@ class LastWarNexus {
         }
     }
 
-    // Banner methods (shortened)
-    setupBanner() {
+    updateBanner() {
         try {
-            const closeButton = document.getElementById('banner-close');
-            if (closeButton) {
-                closeButton.addEventListener('click', () => {
-                    this.hideBanner();
-                    localStorage.setItem('banner-hidden-until', Date.now() + (60 * 60 * 1000));
-                });
+            const banner = document.getElementById('priority-banner');
+            if (!banner) return;
+            
+            const activeAlignment = this.isCurrentlyHighPriority();
+            const nextWindow = this.findNextPriorityWindow();
+            
+            const hiddenUntil = localStorage.getItem('banner-hidden-until');
+            if (hiddenUntil && Date.now() < parseInt(hiddenUntil)) {
+                this.hideBanner();
+                return;
+            }
+            
+            if (activeAlignment) {
+                const currentArmsPhase = this.getCurrentArmsPhaseInfo();
+                const currentVSDay = this.getCurrentVSDayInfo();
+                const timeRemaining = this.calculateTimeUntilPhaseEnd();
+                
+                this.safeUpdateElement('banner-title', 'textContent', 'Peak Efficiency Active!');
+                this.safeUpdateElement('banner-subtitle', 'textContent', `${currentArmsPhase.name} + ${currentVSDay.title} - Use speedups now!`);
+                this.safeUpdateElement('banner-time', 'textContent', timeRemaining);
+                
+                banner.className = 'priority-banner peak-priority show';
+                
+            } else if (nextWindow && nextWindow.timeDiffMs && nextWindow.timeDiffMs < (2 * 60 * 60 * 1000)) {
+                this.safeUpdateElement('banner-title', 'textContent', 'High Priority Soon');
+                this.safeUpdateElement('banner-subtitle', 'textContent', `${nextWindow.armsPhase} + ${nextWindow.vsTitle} starting soon`);
+                this.safeUpdateElement('banner-time', 'textContent', nextWindow.timeToWindow);
+                
+                banner.className = 'priority-banner high-priority show';
+            } else {
+                this.hideBanner();
             }
         } catch (error) {
-            console.error("Error setting up banner:", error);
+            console.error("Error updating banner:", error);
         }
-    }
-
-    updateBanner() {
-        // Banner update logic (implementation details shortened for space)
     }
 
     showBanner() {
@@ -879,7 +987,6 @@ class LastWarNexus {
         if (banner) banner.classList.add('hidden');
     }
 
-    // Additional required methods (implementations shortened for space)
     updateCurrentStatus() {
         try {
             const currentVSDay = this.getCurrentVSDayInfo();
@@ -898,11 +1005,55 @@ class LastWarNexus {
     }
 
     displayActiveAlignment(alignment, armsPhase, vsDay) {
-        // Implementation details
+        try {
+            this.safeUpdateElement('active-now', 'style', { display: 'flex' });
+            this.safeUpdateElement('badge-label', 'textContent', 'PEAK EFFICIENCY ACTIVE');
+            this.safeUpdateElement('next-priority-event', 'textContent', `${armsPhase.name} + ${vsDay.title}`);
+            this.safeUpdateElement('efficiency-level', 'textContent', 'High');
+            this.safeUpdateElement('current-action', 'textContent', `⚡ Use speedups now! ${alignment.reason}`);
+            
+            const timeRemaining = this.calculateTimeUntilPhaseEnd();
+            this.safeUpdateElement('next-priority-time', 'textContent', timeRemaining);
+            this.safeUpdateElement('countdown-label', 'textContent', 'PHASE ENDS IN');
+            
+            if (this.elements['active-action']) {
+                this.elements['active-action'].textContent = `Use speedups now! Peak efficiency active.`;
+            }
+        } catch (error) {
+            console.error("Error displaying active alignment:", error);
+        }
     }
 
     displayNextWindow() {
-        // Implementation details
+        try {
+            this.safeUpdateElement('active-now', 'style', { display: 'none' });
+            
+            const nextWindow = this.findNextPriorityWindow();
+            
+            if (nextWindow && nextWindow.timeToWindow && 
+                nextWindow.timeToWindow !== "Error" && 
+                nextWindow.timeToWindow !== "Starting Soon") {
+                
+                this.safeUpdateElement('badge-label', 'textContent', 'NEXT HIGH PRIORITY');
+                this.safeUpdateElement('next-priority-event', 'textContent', `${nextWindow.armsPhase} + ${nextWindow.vsTitle}`);
+                this.safeUpdateElement('efficiency-level', 'textContent', 'High');
+                this.safeUpdateElement('current-action', 'textContent', `Save resources! ${nextWindow.reason}`);
+                this.safeUpdateElement('next-priority-time', 'textContent', nextWindow.timeToWindow);
+                this.safeUpdateElement('countdown-label', 'textContent', 'TIME REMAINING');
+            } else {
+                const currentArmsPhase = this.getCurrentArmsPhaseInfo();
+                this.safeUpdateElement('badge-label', 'textContent', 'NORMAL PHASE');
+                this.safeUpdateElement('next-priority-event', 'textContent', `${currentArmsPhase.name} Phase`);
+                this.safeUpdateElement('efficiency-level', 'textContent', 'Medium');
+                this.safeUpdateElement('current-action', 'textContent', 'Focus on daily activities - Save speedups for priority windows');
+                
+                const timeToNextPhase = this.calculateTimeUntilPhaseEnd();
+                this.safeUpdateElement('next-priority-time', 'textContent', timeToNextPhase);
+                this.safeUpdateElement('countdown-label', 'textContent', 'PHASE CHANGES IN');
+            }
+        } catch (error) {
+            console.error("Error displaying next window:", error);
+        }
     }
 
     safeUpdateElement(elementId, property, value) {
@@ -910,6 +1061,8 @@ class LastWarNexus {
             const element = this.elements[elementId] || document.getElementById(elementId);
             if (element && property === 'textContent') {
                 element.textContent = value || 'Loading...';
+            } else if (element && property === 'style' && typeof value === 'object') {
+                Object.assign(element.style, value);
             }
         } catch (error) {
             console.warn(`Error updating ${elementId}:`, error);
@@ -919,34 +1072,68 @@ class LastWarNexus {
     updateBasicInfo(vsDay, armsPhase) {
         this.safeUpdateElement('current-vs-day', 'textContent', vsDay.title);
         this.safeUpdateElement('arms-phase', 'textContent', armsPhase.name);
-    }
-
-    setFallbackDisplay(message) {
-        // Implementation details
+        const nextChangeTime = this.calculateTimeUntilPhaseEnd();
+        this.safeUpdateElement('next-alignment-countdown', 'textContent', nextChangeTime);
     }
 
     loadServerSettings() {
-        // Implementation details
+        try {
+            const saved = localStorage.getItem('lwn-server-settings');
+            if (saved) {
+                const settings = JSON.parse(saved);
+                this.currentArmsPhase = settings.currentArmsPhase || "auto";
+                this.timeOffset = Number(settings.timeOffset) || 0;
+                this.updateServerDisplay();
+            }
+        } catch (error) {
+            console.error("Error loading server settings:", error);
+        }
     }
 
     saveServerSettings() {
-        // Implementation details
+        try {
+            const settings = {
+                currentArmsPhase: this.currentArmsPhase,
+                timeOffset: Number(this.timeOffset) || 0
+            };
+            localStorage.setItem('lwn-server-settings', JSON.stringify(settings));
+        } catch (error) {
+            console.error("Error saving server settings:", error);
+        }
     }
 
     applyServerSettings() {
-        // Implementation details
+        try {
+            if (this.elements['current-arms-phase']) {
+                this.currentArmsPhase = this.elements['current-arms-phase'].value;
+            }
+            if (this.elements['time-offset']) {
+                this.timeOffset = parseInt(this.elements['time-offset'].value, 10) || 0;
+            }
+            this.updateServerDisplay();
+            this.saveServerSettings();
+            this.closeAllDropdowns();
+            this.updateAllDisplays();
+        } catch (error) {
+            console.error("Error applying server settings:", error);
+        }
     }
 
     updateServerDisplay() {
-        // Implementation details
-    }
-
-    toggleDropdown(type) {
-        // Implementation details
-    }
-
-    closeDropdown() {
-        // Implementation details
+        if (this.elements['current-arms-phase']) {
+            this.elements['current-arms-phase'].value = this.currentArmsPhase;
+        }
+        if (this.elements['time-offset']) {
+            this.elements['time-offset'].value = this.timeOffset.toString();
+        }
+        if (this.elements['current-phase-display']) {
+            const currentPhase = this.getCurrentArmsPhaseInfo();
+            this.elements['current-phase-display'].textContent = currentPhase.name;
+        }
+        if (this.elements['offset-display']) {
+            const offsetText = this.timeOffset >= 0 ? `UTC +${this.timeOffset}` : `UTC ${this.timeOffset}`;
+            this.elements['offset-display'].textContent = offsetText;
+        }
     }
 
     startUpdateLoop() {
@@ -1015,6 +1202,10 @@ class LastWarNexus {
                 
                 const countdownText = hours > 0 ? `${hours}h ${minutes}m ${seconds}s` : `${minutes}m ${seconds}s`;
                 this.safeUpdateElement('countdown-timer', 'textContent', countdownText);
+                
+                const nextPhaseIndex = Math.floor(nextPhaseStart / 4) % this.data.armsracephases.length;
+                const nextPhase = this.data.armsracephases[nextPhaseIndex];
+                this.safeUpdateElement('event-name', 'textContent', `${nextPhase.name} Phase`);
             }
         } catch (error) {
             console.error("Error updating countdown:", error);
@@ -1022,7 +1213,6 @@ class LastWarNexus {
     }
 }
 
-// Initialize when DOM loads
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DOM loaded, initializing Last War Nexus...");
     new LastWarNexus();

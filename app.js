@@ -5,19 +5,22 @@ class LastWarNexus {
         this.maxInitAttempts = 5;
         
         this.currentArmsPhase = "auto";
+        this.nextArmsPhase = "auto"; // Enhanced: Track next phase for rotation accuracy
         this.timeOffset = 0;
         this.isVisible = true;
         this.updateFrequency = 1000;
         this.notificationsEnabled = false;
+        this.notificationTiming = 15; // Enhanced: Configurable notification timing
         this.lastSelectedTab = localStorage.getItem('lwn-last-tab') || 'priority';
         this.lastNotifiedWindow = null;
-        this.generatedWindows = new Set(); // Prevent duplicates
-        this.notificationTimeouts = new Map(); // Enhanced notification scheduling
+        this.generatedWindows = new Set();
+        this.notificationTimeouts = new Map();
+        this.isFirstTime = !localStorage.getItem('lwn-setup-completed'); // Enhanced: First-time setup detection
         
         this.visibilityHandler = this.handleVisibilityChange.bind(this);
         this.keyboardHandler = this.handleKeyboard.bind(this);
         
-        // FIXED: Correct 5-phase Arms Race system as per requirements
+        // VERIFIED: Correct 5-phase Arms Race system
         this.data = {
             armsracephases: [
                 { id: 1, name: "Tech Research", icon: "🔬", activities: ["Research completion", "Research speedups"], pointSources: ["Complete research", "Use research speedups", "Unlock new technologies", "Upgrade existing tech", "Finish research projects"] },
@@ -37,7 +40,6 @@ class LastWarNexus {
                 { day: 6, name: "Saturday", title: "Enemy Buster", activities: ["Attack enemy bases", "Use healing speedups"], pointActivities: ["Attack enemy bases", "Use healing speedups", "Focus on combat", "Eliminate threats", "Use combat-related items"] }
             ],
             
-            // ENHANCED: High-priority alignments with efficiency ratings
             highpriorityalignments: [
                 { vsday: 1, armsphase: "Drone Boost", reason: "Stamina activities align with radar training day.", benefit: "Maximum Combat Efficiency", efficiency: 95 },
                 { vsday: 2, armsphase: "City Building", reason: "Building upgrades align perfectly with base expansion.", benefit: "Peak Building Efficiency", efficiency: 100 },
@@ -51,7 +53,12 @@ class LastWarNexus {
             ]
         };
         
-        this.settings = { timeFormat: "utc", detailLevel: "essential", viewScope: "week" };
+        this.settings = { 
+            timeFormat: "utc", 
+            detailLevel: "essential", 
+            viewScope: "week",
+            notificationTiming: 15 // Enhanced: Save notification preferences
+        };
         this.activeTab = this.lastSelectedTab;
         this.activeFilter = "all";
         this.updateInterval = null;
@@ -74,7 +81,6 @@ class LastWarNexus {
         }
     }
     
-    // Smart Updates - Only update visible elements
     handleVisibilityChange() {
         this.isVisible = !document.hidden;
         
@@ -91,7 +97,6 @@ class LastWarNexus {
         }
     }
     
-    // Performance Optimizations
     setupPerformanceOptimizations() {
         document.addEventListener('visibilitychange', this.visibilityHandler);
         this.setupCardAnimations();
@@ -131,7 +136,6 @@ class LastWarNexus {
         }, 100);
     }
     
-    // Enhanced Accessibility
     setupAccessibility() {
         document.addEventListener('keydown', this.keyboardHandler);
         this.setupScreenReaderAnnouncements();
@@ -231,24 +235,28 @@ class LastWarNexus {
                 }
             }
             
-            this.loadServerSettings();
+            this.loadAllSettings(); // Enhanced: Load all settings properly
             this.setupEventListeners();
             this.setupTabNavigation();
             this.setupBanner();
             this.handleOfflineState();
             
-            const savedNotificationPref = localStorage.getItem('lwn-notifications');
-            if (savedNotificationPref === 'true') {
-                this.notificationsEnabled = true;
-            } else if (savedNotificationPref === null) {
-                setTimeout(() => this.requestNotificationPermission(), 3000);
+            // Enhanced: Show setup modal for first-time users
+            if (this.isFirstTime) {
+                setTimeout(() => this.showSetupModal(), 1000);
+            } else {
+                // Load existing notification preference
+                const savedNotificationPref = localStorage.getItem('lwn-notifications');
+                if (savedNotificationPref === 'true') {
+                    this.notificationsEnabled = true;
+                    this.scheduleNotifications();
+                }
             }
             
             this.switchTab(this.activeTab);
             this.populateAllSections();
             this.updateAllDisplays();
             this.startUpdateLoop();
-            this.scheduleNotifications(); // Enhanced notification scheduling
             this.isInitialized = true;
             
             console.log("Last War Nexus initialized successfully with enhanced mechanics");
@@ -268,7 +276,8 @@ class LastWarNexus {
             'priority-grid', 'schedule-grid', 'guides-content', 'priority-count', 'guides-count',
             'priority-banner', 'banner-title', 'banner-subtitle', 'banner-time', 'banner-close',
             'local-time', 'sync-time', 'next-reset-countdown', 'current-phase-name', 'next-phase-name',
-            'phase-progress-fill', 'action-text', 'event-day-gaming'
+            'phase-progress-fill', 'action-text', 'event-day-gaming', 'time-format-dropdown', 'detail-level-dropdown',
+            'notification-timing-dropdown' // Enhanced: Cache additional elements
         ];
         
         let foundCount = 0;
@@ -286,18 +295,22 @@ class LastWarNexus {
 
     setupEventListeners() {
         try {
+            // Enhanced: Server dropdown with proper loading
             if (this.elements['server-toggle']) {
                 this.elements['server-toggle'].addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
+                    this.loadServerDropdownValues(); // Enhanced: Load current values when opening
                     this.toggleDropdown('server');
                 });
             }
 
+            // Enhanced: Settings dropdown with proper loading
             if (this.elements['settings-toggle']) {
                 this.elements['settings-toggle'].addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
+                    this.loadSettingsDropdownValues(); // Enhanced: Load current values when opening
                     this.toggleDropdown('settings');
                 });
             }
@@ -309,6 +322,7 @@ class LastWarNexus {
                 });
             }
 
+            // Enhanced: Real-time settings updates
             if (this.elements['current-arms-phase']) {
                 this.elements['current-arms-phase'].addEventListener('change', (e) => {
                     this.currentArmsPhase = e.target.value;
@@ -327,6 +341,32 @@ class LastWarNexus {
                 });
             }
 
+            // Enhanced: Settings dropdown handlers
+            if (this.elements['time-format-dropdown']) {
+                this.elements['time-format-dropdown'].addEventListener('change', (e) => {
+                    this.settings.timeFormat = e.target.value;
+                    this.saveSettings();
+                    this.updateAllDisplays();
+                });
+            }
+
+            if (this.elements['detail-level-dropdown']) {
+                this.elements['detail-level-dropdown'].addEventListener('change', (e) => {
+                    this.settings.detailLevel = e.target.value;
+                    this.saveSettings();
+                    this.updateAllDisplays();
+                });
+            }
+
+            if (this.elements['notification-timing-dropdown']) {
+                this.elements['notification-timing-dropdown'].addEventListener('change', (e) => {
+                    this.notificationTiming = parseInt(e.target.value);
+                    this.settings.notificationTiming = this.notificationTiming;
+                    this.saveSettings();
+                    this.scheduleNotifications(); // Reschedule with new timing
+                });
+            }
+
             if (this.elements['sync-time']) {
                 this.elements['sync-time'].addEventListener('click', (e) => {
                     e.preventDefault();
@@ -334,6 +374,7 @@ class LastWarNexus {
                 });
             }
 
+            // Enhanced: Click outside to close dropdowns
             document.addEventListener('click', (e) => {
                 if (!e.target.closest('.settings-dropdown-container') && 
                     !e.target.closest('.server-dropdown-container')) {
@@ -382,6 +423,119 @@ class LastWarNexus {
         } catch (error) {
             console.error("Error setting up banner:", error);
         }
+    }
+
+    // Enhanced: Comprehensive setup modal
+    showSetupModal() {
+        const modal = document.getElementById('setup-modal');
+        if (modal) {
+            modal.style.display = 'flex';
+            this.setupModalEventListeners();
+        }
+    }
+
+    setupModalEventListeners() {
+        // Setup modal buttons
+        const completeSetup = document.getElementById('complete-setup');
+        const skipSetup = document.getElementById('skip-setup');
+        const enableNotificationsSetup = document.getElementById('enable-notifications-setup');
+
+        if (completeSetup) {
+            completeSetup.onclick = () => this.completeSetup();
+        }
+
+        if (skipSetup) {
+            skipSetup.onclick = () => this.skipSetup();
+        }
+
+        if (enableNotificationsSetup) {
+            enableNotificationsSetup.onclick = () => this.requestNotificationPermissionSetup();
+        }
+    }
+
+    async completeSetup() {
+        try {
+            // Get values from setup form
+            const armsPhase = document.getElementById('setup-arms-phase')?.value || 'auto';
+            const timeOffset = parseInt(document.getElementById('setup-time-offset')?.value || '0');
+            const notificationTiming = parseInt(document.getElementById('setup-notification-timing')?.value || '15');
+
+            // Save settings
+            this.currentArmsPhase = armsPhase;
+            this.timeOffset = timeOffset;
+            this.notificationTiming = notificationTiming;
+            this.settings.notificationTiming = notificationTiming;
+
+            this.saveServerSettings();
+            this.saveSettings();
+            
+            // Mark setup as completed
+            localStorage.setItem('lwn-setup-completed', 'true');
+            
+            // Hide modal
+            document.getElementById('setup-modal').style.display = 'none';
+            
+            // Update displays and schedule notifications
+            this.updateAllDisplays();
+            if (this.notificationsEnabled) {
+                this.scheduleNotifications();
+            }
+            
+            // Show success message
+            this.showSuccessMessage('Setup completed! Your VS Points Optimizer is ready.');
+            
+        } catch (error) {
+            console.error('Error completing setup:', error);
+        }
+    }
+
+    skipSetup() {
+        localStorage.setItem('lwn-setup-completed', 'true');
+        document.getElementById('setup-modal').style.display = 'none';
+    }
+
+    async requestNotificationPermissionSetup() {
+        if ('Notification' in window) {
+            const permission = await Notification.requestPermission();
+            this.notificationsEnabled = permission === 'granted';
+            localStorage.setItem('lwn-notifications', this.notificationsEnabled);
+            
+            const button = document.getElementById('enable-notifications-setup');
+            if (button) {
+                if (this.notificationsEnabled) {
+                    button.textContent = '✓ Notifications Enabled';
+                    button.style.background = 'var(--gaming-primary)';
+                    button.disabled = true;
+                } else {
+                    button.textContent = 'Permission Denied';
+                    button.style.background = 'var(--gaming-danger)';
+                }
+            }
+        }
+    }
+
+    showSuccessMessage(message) {
+        // Create and show a temporary success message
+        const successDiv = document.createElement('div');
+        successDiv.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--gaming-primary);
+            color: var(--primary-bg);
+            padding: 16px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            z-index: 3000;
+            animation: slideIn 0.3s ease;
+        `;
+        successDiv.textContent = message;
+        document.body.appendChild(successDiv);
+        
+        setTimeout(() => {
+            successDiv.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => document.body.removeChild(successDiv), 300);
+        }, 3000);
     }
 
     switchTab(tabName) {
@@ -520,22 +674,23 @@ class LastWarNexus {
         }
     }
 
-    // ENHANCED: Accurate 5-phase Arms Race system
+    // Enhanced: Accurate Arms Race detection with user input
     getCurrentArmsPhaseInfo() {
         try {
             const now = this.getServerTime();
             const hour = now.getUTCHours();
-            const phaseIndex = Math.floor(hour / 4) % 5; // 5 phases: 0-3, 4-7, 8-11, 12-15, 16-19
+            const phaseIndex = Math.floor(hour / 4) % 5;
             const phases = ["Tech Research", "Drone Boost", "Hero Advancement", "City Building", "Unit Progression"];
             
             if (this.currentArmsPhase !== "auto") {
-                const manualPhase = this.data.armsracephases.find(p => p.name === this.currentArmsPhase);
-                if (manualPhase) {
+                // Use manual override
+                const manualPhaseIndex = phases.indexOf(this.currentArmsPhase);
+                if (manualPhaseIndex !== -1) {
                     return {
-                        name: manualPhase.name,
-                        index: phaseIndex,
-                        startHour: phaseIndex * 4,
-                        nextStartHour: ((phaseIndex + 1) % 5) * 4
+                        name: this.currentArmsPhase,
+                        index: manualPhaseIndex,
+                        startHour: manualPhaseIndex * 4,
+                        nextStartHour: ((manualPhaseIndex + 1) % 5) * 4
                     };
                 }
             }
@@ -544,9 +699,8 @@ class LastWarNexus {
             const phaseStartHour = phaseIndex * 4;
             let nextPhaseStartHour = ((phaseIndex + 1) % 5) * 4;
             
-            // Handle wrap-around: if next phase is 0 (00:00), it should be 20:00 end time
             if (nextPhaseStartHour === 0 && phaseIndex === 4) {
-                nextPhaseStartHour = 20; // Last phase ends at 20:00
+                nextPhaseStartHour = 20;
             }
             
             return {
@@ -585,14 +739,12 @@ class LastWarNexus {
         }
     }
 
-    // ENHANCED: Accurate priority window generation with deduplication
     findNextPriorityWindow() {
         try {
             const now = this.getServerTime();
             let nearestWindow = null;
             let minTimeDiff = Infinity;
             
-            // 5-phase schedule: Tech Research (0-3), Drone Boost (4-7), Hero Advancement (8-11), City Building (12-15), Unit Progression (16-19)
             const phaseSchedule = {
                 "Tech Research": [0],
                 "Drone Boost": [4],
@@ -601,7 +753,6 @@ class LastWarNexus {
                 "Unit Progression": [16]
             };
             
-            // Look ahead 14 days to find next priority window
             for (let dayOffset = 0; dayOffset < 14; dayOffset++) {
                 const checkDate = new Date(now);
                 checkDate.setUTCDate(now.getUTCDate() + dayOffset);
@@ -657,7 +808,6 @@ class LastWarNexus {
         }
     }
 
-    // ENHANCED: Deduplication and accurate priority window generation
     populatePriorityGrid() {
         try {
             const grid = this.elements['priority-grid'];
@@ -668,7 +818,6 @@ class LastWarNexus {
             if (this.activeFilter === 'active') {
                 priorityWindows = priorityWindows.filter(w => w.isActive);
                 
-                // If no active windows but banner shows high priority, create one
                 if (priorityWindows.length === 0) {
                     const currentAlignment = this.isCurrentlyHighPriority();
                     if (currentAlignment) {
@@ -911,12 +1060,11 @@ class LastWarNexus {
         ];
     }
 
-    // ENHANCED: Deduplication using Set for unique time windows
     generatePriorityWindows() {
         try {
             const now = this.getServerTime();
             const windows = [];
-            const uniqueWindows = new Set(); // Prevent duplicates
+            const uniqueWindows = new Set();
             
             for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
                 const checkDate = new Date(now);
@@ -937,11 +1085,10 @@ class LastWarNexus {
                         const windowTime = new Date(checkDate);
                         windowTime.setUTCHours(hour, 0, 0, 0);
                         
-                        // Create unique key for deduplication
                         const uniqueKey = `${windowTime.getTime()}-${alignment.armsphase}-${dayOfWeek}`;
                         
                         if (uniqueWindows.has(uniqueKey)) {
-                            continue; // Skip duplicate
+                            continue;
                         }
                         uniqueWindows.add(uniqueKey);
                         
@@ -988,12 +1135,12 @@ class LastWarNexus {
                 const isToday = dayOffset === 0;
                 
                 const phases = [];
-                const phaseHours = [0, 4, 8, 12, 16]; // 5 phases: 0-3, 4-7, 8-11, 12-15, 16-19
+                const phaseHours = [0, 4, 8, 12, 16];
                 const phaseNames = ["Tech Research", "Drone Boost", "Hero Advancement", "City Building", "Unit Progression"];
                 
                 for (let i = 0; i < phaseHours.length; i++) {
                     const hour = phaseHours[i];
-                    const nextHour = i === 4 ? 20 : phaseHours[i + 1]; // Last phase ends at 20:00
+                    const nextHour = i === 4 ? 20 : phaseHours[i + 1];
                     const phaseName = phaseNames[i];
                     const phase = this.data.armsracephases.find(p => p.name === phaseName);
                     
@@ -1066,7 +1213,6 @@ class LastWarNexus {
         }
     }
 
-    // ENHANCED: Accurate phase end calculation
     calculateTimeUntilPhaseEnd() {
         try {
             const now = this.getServerTime();
@@ -1074,10 +1220,10 @@ class LastWarNexus {
             const phaseIndex = Math.floor(currentHour / 4) % 5;
             
             let nextPhaseHour;
-            if (phaseIndex === 4) { // Last phase (16-19)
-                nextPhaseHour = 20; // Ends at 20:00
+            if (phaseIndex === 4) {
+                nextPhaseHour = 20;
             } else {
-                nextPhaseHour = (phaseIndex + 1) * 4; // Next phase starts
+                nextPhaseHour = (phaseIndex + 1) * 4;
             }
             
             let hoursToNext = nextPhaseHour - currentHour;
@@ -1089,7 +1235,7 @@ class LastWarNexus {
             }
             
             if (hoursToNext <= 0) {
-                hoursToNext += 24; // Next day
+                hoursToNext += 24;
             }
             
             return hoursToNext > 0 ? `${hoursToNext}h ${minutesToNext}m` : `${Math.max(0, minutesToNext)}m`;
@@ -1098,61 +1244,32 @@ class LastWarNexus {
         }
     }
 
-    // ENHANCED: Smart notifications with scheduling
-    async requestNotificationPermission() {
-        if ('Notification' in window && Notification.permission === 'default') {
-            const modal = document.getElementById('notification-modal');
-            if (modal) {
-                modal.style.display = 'flex';
-                
-                return new Promise((resolve) => {
-                    document.getElementById('enable-notifications').onclick = async () => {
-                        modal.style.display = 'none';
-                        const permission = await Notification.requestPermission();
-                        this.notificationsEnabled = permission === 'granted';
-                        localStorage.setItem('lwn-notifications', this.notificationsEnabled);
-                        if (this.notificationsEnabled) {
-                            this.scheduleNotifications();
-                        }
-                        resolve(this.notificationsEnabled);
-                    };
-                    
-                    document.getElementById('decline-notifications').onclick = () => {
-                        modal.style.display = 'none';
-                        localStorage.setItem('lwn-notifications', false);
-                        resolve(false);
-                    };
-                });
-            }
-        }
-        
-        return this.notificationsEnabled;
-    }
-    
+    // Enhanced: Comprehensive notification system
     scheduleNotifications() {
         if (!this.notificationsEnabled) return;
         
-        // Clear existing notifications
         this.notificationTimeouts.forEach(timeout => clearTimeout(timeout));
         this.notificationTimeouts.clear();
         
         const nextWindow = this.findNextPriorityWindow();
         if (nextWindow && nextWindow.timeDiffMs) {
-            // 15-minute warning
-            if (nextWindow.timeDiffMs > 15 * 60 * 1000) {
-                const timeout15 = setTimeout(() => {
+            const timingMinutes = this.notificationTiming || 15;
+            
+            // Configurable timing warning
+            if (nextWindow.timeDiffMs > timingMinutes * 60 * 1000) {
+                const timeoutWarning = setTimeout(() => {
                     this.showNotification(
-                        'Priority Window in 15 Minutes',
+                        `Priority Window in ${timingMinutes} Minutes`,
                         `${nextWindow.armsPhase} + ${nextWindow.vsTitle} starting soon`,
                         '⏰'
                     );
-                }, nextWindow.timeDiffMs - (15 * 60 * 1000));
+                }, nextWindow.timeDiffMs - (timingMinutes * 60 * 1000));
                 
-                this.notificationTimeouts.set('15min', timeout15);
+                this.notificationTimeouts.set(`${timingMinutes}min`, timeoutWarning);
             }
             
-            // 5-minute warning
-            if (nextWindow.timeDiffMs > 5 * 60 * 1000) {
+            // 5-minute warning (if different from main timing)
+            if (timingMinutes !== 5 && nextWindow.timeDiffMs > 5 * 60 * 1000) {
                 const timeout5 = setTimeout(() => {
                     this.showNotification(
                         'Priority Window in 5 Minutes',
@@ -1172,7 +1289,6 @@ class LastWarNexus {
                         `${nextWindow.armsPhase} + ${nextWindow.vsTitle} - Use speedups now!`,
                         '⚡'
                     );
-                    // Schedule next window notifications
                     setTimeout(() => this.scheduleNotifications(), 1000);
                 }, nextWindow.timeDiffMs);
                 
@@ -1183,23 +1299,39 @@ class LastWarNexus {
     
     showNotification(title, body, icon = '🎯') {
         if (this.notificationsEnabled && 'Notification' in window && Notification.permission === 'granted') {
-            const notification = new Notification(title, {
-                body: body,
-                icon: `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">${icon}</text></svg>`,
-                tag: 'lastwar-priority',
-                requireInteraction: false
-            });
-            
-            notification.onclick = () => {
-                window.focus();
-                notification.close();
-            };
-            
-            setTimeout(() => notification.close(), 5000);
+            try {
+                const notification = new Notification(title, {
+                    body: body,
+                    icon: `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">${icon}</text></svg>`,
+                    tag: 'lastwar-priority',
+                    requireInteraction: false,
+                    silent: false
+                });
+                
+                notification.onclick = () => {
+                    window.focus();
+                    notification.close();
+                };
+                
+                // Auto-close after 5 seconds
+                setTimeout(() => {
+                    try {
+                        notification.close();
+                    } catch (e) {
+                        // Notification might already be closed
+                    }
+                }, 5000);
+                
+                // Enhanced: Mobile vibration support
+                if (navigator.vibrate) {
+                    navigator.vibrate([200, 100, 200]);
+                }
+            } catch (error) {
+                console.error('Error showing notification:', error);
+            }
         }
     }
 
-    // ENHANCED: Real-time banner updates
     updateBanner() {
         try {
             const banner = document.getElementById('priority-banner');
@@ -1268,7 +1400,6 @@ class LastWarNexus {
         }
     }
 
-    // ENHANCED: Accurate phase progress tracking
     updatePhaseProgress() {
         try {
             const now = this.getServerTime();
@@ -1296,7 +1427,6 @@ class LastWarNexus {
         }
     }
 
-    // ENHANCED: Accurate time displays with synchronization
     updateTimeDisplays() {
         try {
             const serverTime = this.getServerTime();
@@ -1318,7 +1448,6 @@ class LastWarNexus {
                 const resetCountdown = this.safeFormatTimeDifference(timeToReset);
                 this.safeUpdateElement('next-reset-countdown', 'textContent', resetCountdown);
                 
-                // Update event day display
                 const nextWindow = this.findNextPriorityWindow();
                 if (nextWindow) {
                     const eventDay = nextWindow.startTime.toLocaleDateString('en-US', { 
@@ -1354,7 +1483,7 @@ class LastWarNexus {
             hideOfflineIndicator();
             this.announceToScreenReader('Connection restored');
             this.updateAllDisplays();
-            this.scheduleNotifications(); // Reschedule notifications
+            this.scheduleNotifications();
         });
         
         window.addEventListener('offline', () => {
@@ -1366,10 +1495,9 @@ class LastWarNexus {
     syncWithServer() {
         this.announceToScreenReader('Syncing time with server');
         this.updateAllDisplays();
-        this.scheduleNotifications(); // Reschedule after sync
+        this.scheduleNotifications();
     }
 
-    // ENHANCED: Current status with efficiency metrics
     updateCurrentStatus() {
         try {
             const currentVSDay = this.getCurrentVSDayInfo();
@@ -1403,7 +1531,6 @@ class LastWarNexus {
                 this.elements['active-action'].textContent = `Use speedups now! Peak efficiency active (${alignment.efficiency}%).`;
             }
             
-            // Update strategy rating based on efficiency
             const rating = alignment.efficiency >= 95 ? 'S' : alignment.efficiency >= 85 ? 'A' : 'B';
             this.safeUpdateElement('strategy-rating', 'textContent', rating);
             this.safeUpdateElement('action-text', 'textContent', `Peak efficiency window! Use all saved speedups for maximum VS points.`);
@@ -1427,7 +1554,6 @@ class LastWarNexus {
                 this.safeUpdateElement('next-priority-time', 'textContent', nextWindow.timeToWindow);
                 this.safeUpdateElement('countdown-label', 'textContent', 'TIME REMAINING');
                 
-                // Update strategy based on proximity to next window
                 const hoursUntil = nextWindow.timeDiffMs / (1000 * 60 * 60);
                 const rating = hoursUntil < 2 ? 'A' : hoursUntil < 6 ? 'B' : 'C';
                 this.safeUpdateElement('strategy-rating', 'textContent', rating);
@@ -1477,6 +1603,16 @@ class LastWarNexus {
         this.safeUpdateElement('next-alignment-countdown', 'textContent', nextChangeTime);
     }
 
+    // Enhanced: Proper settings loading and saving
+    loadAllSettings() {
+        try {
+            this.loadServerSettings();
+            this.loadSettings();
+        } catch (error) {
+            console.error("Error loading settings:", error);
+        }
+    }
+
     loadServerSettings() {
         try {
             const saved = localStorage.getItem('lwn-server-settings');
@@ -1488,6 +1624,19 @@ class LastWarNexus {
             }
         } catch (error) {
             console.error("Error loading server settings:", error);
+        }
+    }
+
+    loadSettings() {
+        try {
+            const saved = localStorage.getItem('lwn-settings');
+            if (saved) {
+                const settings = JSON.parse(saved);
+                this.settings = { ...this.settings, ...settings };
+                this.notificationTiming = this.settings.notificationTiming || 15;
+            }
+        } catch (error) {
+            console.error("Error loading settings:", error);
         }
     }
 
@@ -1503,6 +1652,37 @@ class LastWarNexus {
         }
     }
 
+    saveSettings() {
+        try {
+            localStorage.setItem('lwn-settings', JSON.stringify(this.settings));
+        } catch (error) {
+            console.error("Error saving settings:", error);
+        }
+    }
+
+    // Enhanced: Load current values when opening dropdowns
+    loadServerDropdownValues() {
+        if (this.elements['current-arms-phase']) {
+            this.elements['current-arms-phase'].value = this.currentArmsPhase;
+        }
+        if (this.elements['time-offset']) {
+            this.elements['time-offset'].value = this.timeOffset.toString();
+        }
+        this.updateServerDisplay();
+    }
+
+    loadSettingsDropdownValues() {
+        if (this.elements['time-format-dropdown']) {
+            this.elements['time-format-dropdown'].value = this.settings.timeFormat;
+        }
+        if (this.elements['detail-level-dropdown']) {
+            this.elements['detail-level-dropdown'].value = this.settings.detailLevel;
+        }
+        if (this.elements['notification-timing-dropdown']) {
+            this.elements['notification-timing-dropdown'].value = this.notificationTiming.toString();
+        }
+    }
+
     applyServerSettings() {
         try {
             if (this.elements['current-arms-phase']) {
@@ -1515,19 +1695,16 @@ class LastWarNexus {
             this.saveServerSettings();
             this.closeAllDropdowns();
             this.updateAllDisplays();
-            this.scheduleNotifications(); // Reschedule with new settings
+            this.scheduleNotifications();
+            
+            // Show success feedback
+            this.showSuccessMessage('Server settings updated successfully!');
         } catch (error) {
             console.error("Error applying server settings:", error);
         }
     }
 
     updateServerDisplay() {
-        if (this.elements['current-arms-phase']) {
-            this.elements['current-arms-phase'].value = this.currentArmsPhase;
-        }
-        if (this.elements['time-offset']) {
-            this.elements['time-offset'].value = this.timeOffset.toString();
-        }
         if (this.elements['current-phase-display']) {
             const currentPhase = this.getCurrentArmsPhaseInfo();
             this.elements['current-phase-display'].textContent = currentPhase.name;
@@ -1567,7 +1744,6 @@ class LastWarNexus {
         }
     }
 
-    // ENHANCED: Synchronized countdown with phase transitions
     updateCountdown() {
         try {
             const now = this.getServerTime();
@@ -1575,15 +1751,14 @@ class LastWarNexus {
             const phaseIndex = Math.floor(currentHour / 4) % 5;
             
             let nextPhaseStart;
-            if (phaseIndex === 4) { // Last phase (16-19)
-                nextPhaseStart = 20; // Ends at 20:00, next phase starts at 0:00 next day
+            if (phaseIndex === 4) {
+                nextPhaseStart = 20;
             } else {
                 nextPhaseStart = (phaseIndex + 1) * 4;
             }
             
             const nextPhaseTime = new Date(now);
             if (nextPhaseStart === 20) {
-                // Transition from last phase to first phase next day
                 nextPhaseTime.setUTCDate(now.getUTCDate() + 1);
                 nextPhaseTime.setUTCHours(0, 0, 0, 0);
             } else {
@@ -1621,7 +1796,6 @@ class LastWarNexus {
             this.cardObserver.disconnect();
         }
         
-        // Clear notification timeouts
         this.notificationTimeouts.forEach(timeout => clearTimeout(timeout));
         this.notificationTimeouts.clear();
     }
@@ -1629,6 +1803,6 @@ class LastWarNexus {
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("DOM loaded, initializing Last War Nexus with enhanced game mechanics...");
+    console.log("DOM loaded, initializing Last War Nexus with enhanced mechanics...");
     new LastWarNexus();
 });

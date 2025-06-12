@@ -38,18 +38,18 @@
                         </div>
                         <div class="dropdown-content">
                             <div class="setting-row">
-                                <label for="current-arms-phase">Arms Race Schedule</label>
+                                <label for="current-arms-phase">Current Arms Race Phase</label>
                                 <select id="current-arms-phase" class="dropdown-select" aria-describedby="phase-help">
-                                    <option value="auto" selected>Auto (4-Hour Blocks)</option>
-                                    <option value="Tech Research">Tech Research</option>
-                                    <option value="Drone Boost">Drone Boost</option>
-                                    <option value="Hero Advancement">Hero Advancement</option>
-                                    <option value="City Building">City Building</option>
-                                    <option value="Unit Progression">Unit Progression</option>
+                                    <option value="auto" selected>Auto Detection</option>
+                                    <option value="Tech Research">🔬 Tech Research</option>
+                                    <option value="Drone Boost">🚁 Drone Boost</option>
+                                    <option value="Hero Advancement">🦸 Hero Advancement</option>
+                                    <option value="City Building">🏗️ City Building</option>
+                                    <option value="Unit Progression">⚔️ Unit Progression</option>
                                 </select>
-                                <div id="phase-help" class="sr-only">Select your server's current Arms Race phase or use Auto for automatic detection</div>
+                                <div id="phase-help" class="setting-help">Select the current Arms Race phase active on your server for accurate rotation timing</div>
                             </div>
-                            <div class="setting-row" style="margin-top: 12px;">
+                            <div class="setting-row">
                                 <label for="time-offset">Server Time Offset</label>
                                 <select id="time-offset" class="dropdown-select" aria-describedby="offset-help">
                                     <option value="-12">UTC -12 hours</option>
@@ -78,7 +78,7 @@
                                     <option value="11">UTC +11 hours</option>
                                     <option value="12">UTC +12 hours</option>
                                 </select>
-                                <div id="offset-help" class="sr-only">Set your server's time offset from UTC</div>
+                                <div id="offset-help" class="setting-help">Set your server's time offset from UTC for accurate timing</div>
                             </div>
                             <div class="server-info" id="server-info">
                                 <div class="info-row">
@@ -101,7 +101,7 @@
                     </button>
                     <div class="settings-dropdown" id="settings-dropdown" role="menu" aria-labelledby="settings-toggle">
                         <div class="dropdown-header">
-                            <h3>Display Settings</h3>
+                            <h3>Display & Notification Settings</h3>
                         </div>
                         <div class="dropdown-content">
                             <div class="setting-row">
@@ -117,6 +117,16 @@
                                     <option value="essential" selected>Essential</option>
                                     <option value="comprehensive">Comprehensive</option>
                                 </select>
+                            </div>
+                            <div class="setting-row">
+                                <label for="notification-timing-dropdown">Notification Timing</label>
+                                <select id="notification-timing-dropdown" class="dropdown-select">
+                                    <option value="5">5 minutes before</option>
+                                    <option value="15" selected>15 minutes before</option>
+                                    <option value="30">30 minutes before</option>
+                                    <option value="60">1 hour before</option>
+                                </select>
+                                <div class="setting-help">Choose when to receive priority window notifications</div>
                             </div>
                         </div>
                     </div>
@@ -343,6 +353,88 @@
         </main>
     </div>
 
+    <!-- ENHANCED: Comprehensive Setup Modal -->
+    <div id="setup-modal" class="setup-modal" style="display: none;">
+        <div class="setup-overlay"></div>
+        <div class="setup-container">
+            <div class="setup-header">
+                <div class="setup-icon">🎯</div>
+                <h2>Welcome to Last War Nexus</h2>
+                <p>Set up your VS Points Optimizer for maximum efficiency</p>
+            </div>
+            
+            <div class="setup-content">
+                <div class="setup-section">
+                    <h3>📱 Notifications</h3>
+                    <p>Get notified when high-priority VS point windows become active</p>
+                    <button id="enable-notifications-setup" class="setup-btn notification-btn">Enable Notifications</button>
+                </div>
+
+                <div class="setup-section">
+                    <h3>🔬 Current Arms Race Phase</h3>
+                    <p>Select the Arms Race phase currently active on your server for accurate timing</p>
+                    <select id="setup-arms-phase" class="setup-select">
+                        <option value="auto">Auto Detection</option>
+                        <option value="Tech Research">🔬 Tech Research</option>
+                        <option value="Drone Boost">🚁 Drone Boost</option>
+                        <option value="Hero Advancement">🦸 Hero Advancement</option>
+                        <option value="City Building">🏗️ City Building</option>
+                        <option value="Unit Progression">⚔️ Unit Progression</option>
+                    </select>
+                </div>
+
+                <div class="setup-section">
+                    <h3>🕐 Server Time Zone</h3>
+                    <p>Set your server's time offset from UTC for accurate scheduling</p>
+                    <select id="setup-time-offset" class="setup-select">
+                        <option value="-12">UTC -12 hours</option>
+                        <option value="-11">UTC -11 hours</option>
+                        <option value="-10">UTC -10 hours</option>
+                        <option value="-9">UTC -9 hours</option>
+                        <option value="-8">UTC -8 hours</option>
+                        <option value="-7">UTC -7 hours</option>
+                        <option value="-6">UTC -6 hours</option>
+                        <option value="-5">UTC -5 hours</option>
+                        <option value="-4">UTC -4 hours</option>
+                        <option value="-3">UTC -3 hours</option>
+                        <option value="-2">UTC -2 hours</option>
+                        <option value="-1">UTC -1 hour</option>
+                        <option value="0" selected>UTC +0 hours</option>
+                        <option value="1">UTC +1 hour</option>
+                        <option value="2">UTC +2 hours</option>
+                        <option value="3">UTC +3 hours</option>
+                        <option value="4">UTC +4 hours</option>
+                        <option value="5">UTC +5 hours</option>
+                        <option value="6">UTC +6 hours</option>
+                        <option value="7">UTC +7 hours</option>
+                        <option value="8">UTC +8 hours</option>
+                        <option value="9">UTC +9 hours</option>
+                        <option value="10">UTC +10 hours</option>
+                        <option value="11">UTC +11 hours</option>
+                        <option value="12">UTC +12 hours</option>
+                    </select>
+                </div>
+
+                <div class="setup-section">
+                    <h3>⏰ Notification Timing</h3>
+                    <p>Choose when you want to receive priority window alerts</p>
+                    <select id="setup-notification-timing" class="setup-select">
+                        <option value="5">5 minutes before</option>
+                        <option value="15" selected>15 minutes before</option>
+                        <option value="30">30 minutes before</option>
+                        <option value="60">1 hour before</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="setup-actions">
+                <button id="complete-setup" class="setup-btn primary">Complete Setup</button>
+                <button id="skip-setup" class="setup-btn secondary">Skip for Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Priority Banner -->
     <div class="priority-banner" id="priority-banner" role="alert" aria-live="assertive">
         <div class="banner-container">
             <div class="banner-content" id="banner-content">
@@ -357,6 +449,7 @@
         </div>
     </div>
 
+    <!-- Legacy Notification Modal (kept for compatibility) -->
     <div id="notification-modal" class="notification-modal" style="display: none;">
         <div class="modal-content">
             <h3>Enable Notifications?</h3>

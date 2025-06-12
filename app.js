@@ -121,6 +121,17 @@ class LastWarNexus {
             this.updateContent();
             this.startUpdateLoop();
             this.isInitialized = true;
+			
+			// Mobile: Collapse bottom priority cards by default
+if (window.innerWidth <= 768) {
+    const bottomCards = document.querySelector('.bottom-priority-cards');
+    const minimizeBtn = this.elements['minimize-cards'];
+    if (bottomCards && minimizeBtn) {
+        bottomCards.classList.add('collapsed');
+        minimizeBtn.textContent = 'Show Priority Windows';
+    }
+}
+
             
             console.log("Last War Nexus initialized successfully");
         } catch (error) {

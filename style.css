@@ -1234,6 +1234,23 @@ body {
     color: var(--bg-primary);
 }
 
+/* Mobile Bottom Cards Collapsed State */
+@media (max-width: 768px) {
+    .bottom-priority-cards.collapsed .bottom-cards-content {
+        display: none;
+    }
+    
+    .bottom-priority-cards.collapsed {
+        min-height: auto;
+        height: auto;
+    }
+    
+    .bottom-priority-cards.collapsed .minimize-cards {
+        margin-bottom: 0;
+    }
+}
+
+
 /* Schedule Legend */
 .schedule-legend {
     display: flex;

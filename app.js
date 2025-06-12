@@ -655,11 +655,19 @@ class LastWarNexus {
 
             let priorityWindows = this.generatePriorityWindows();
             
-            if (this.activeFilter === 'active') {
-                priorityWindows = priorityWindows.filter(w => w.isActive);
-            } else if (this.activeFilter === 'upcoming') {
-                priorityWindows = priorityWindows.filter(w => !w.isActive && w.timeToStart > 0);
-            }
+if (this.activeFilter === 'active') {
+    priorityWindows = priorityWindows.filter(w => w.isActive);
+    // If no active windows, show the next upcoming window
+    if (priorityWindows.length === 0) {
+        const nextWindow = this.generatePriorityWindows().find(w => w.timeToStart > 0);
+        if (nextWindow) {
+            priorityWindows = [nextWindow];
+        }
+    }
+} else if (this.activeFilter === 'upcoming') {
+    priorityWindows = priorityWindows.filter(w => !w.isActive && w.timeToStart > 0);
+}
+
 
             if (this.elements['priority-count']) {
                 this.elements['priority-count'].textContent = `${priorityWindows.length} Windows`;
@@ -901,7 +909,7 @@ class LastWarNexus {
                         windowTime.setUTCHours(hour, 0, 0, 0);
                         
                         const timeDiff = windowTime.getTime() - now.getTime();
-                        const isActive = Math.abs(timeDiff) < (4 * 60 * 60 * 1000) && timeDiff > -(4 * 60 * 60 * 1000);
+                        const isActive = timeDiff <= 0 && timeDiff > -(4 * 60 * 60 * 1000);
                         
                         windows.push({
                             time: windowTime,

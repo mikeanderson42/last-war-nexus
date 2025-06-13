@@ -709,8 +709,13 @@ class VSPointsOptimizer {
     }
 
     getServerTime() {
-        const now = new Date();
-        return new Date(now.getTime() + (this.timeOffset * 60 * 60 * 1000));
+        try {
+            const now = new Date();
+            return new Date(now.getTime() + (this.timeOffset * 60 * 60 * 1000));
+        } catch (error) {
+            console.error('Server time calculation error:', error);
+            return new Date(); // Fallback to local time
+        }
     }
 
     // Calculate current Arms Race phase (6-position system with user override)
@@ -1481,21 +1486,68 @@ class VSPointsOptimizer {
     }
 }
 
-// Initialize the application
-document.addEventListener('DOMContentLoaded', () => {
+// Initialize the application with proper error handling
+document.addEventListener('DOMContentLoaded', async () => {
     try {
         console.log("Last War Nexus initializing with corrected 6-position Arms Race system...");
-        new VSPointsOptimizer();
+        const app = new VSPointsOptimizer();
+        await app.init();
+        
+        // Make app globally available for debugging
+        window.lastWarNexus = app;
+        
     } catch (error) {
         console.error('Application initialization failed:', error);
+        
+        // Show fallback error message
+        const errorHtml = `
+            <div style="
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: var(--bg-elevated);
+                border: 1px solid var(--accent-error);
+                border-radius: 12px;
+                padding: 24px;
+                text-align: center;
+                z-index: 9999;
+                max-width: 400px;
+            ">
+                <h2 style="color: var(--accent-error); margin-bottom: 16px;">Initialization Error</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 16px;">
+                    Failed to start Last War Nexus. Please refresh the page and try again.
+                </p>
+                <button onclick="window.location.reload()" style="
+                    background: var(--accent-primary);
+                    color: white;
+                    border: none;
+                    padding: 8px 16px;
+                    border-radius: 6px;
+                    cursor: pointer;
+                ">Refresh Page</button>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', errorHtml);
     }
 });
 
 // Global error handling
 window.addEventListener('error', (event) => {
     console.error('Global error:', event.error);
+    
+    // Only log, don't disrupt user experience
+    if (window.lastWarNexus && typeof window.lastWarNexus.handleError === 'function') {
+        window.lastWarNexus.handleError('An unexpected error occurred');
+    }
 });
 
 window.addEventListener('unhandledrejection', (event) => {
     console.error('Unhandled promise rejection:', event.reason);
+    
+    // Only log, don't disrupt user experience
+    if (window.lastWarNexus && typeof window.lastWarNexus.handleError === 'function') {
+        window.lastWarNexus.handleError('A network or processing error occurred');
+    }
 });

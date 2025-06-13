@@ -737,13 +737,13 @@ button:focus-visible, .tab-btn:focus-visible, .filter-btn:focus-visible, select:
     border: 1px solid var(--border-secondary);
     border-radius: var(--border-radius-lg);
     overflow: hidden;
-    transition: all var(--transition-normal);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
     position: relative;
 }
 
 .priority-window-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.3);
+    border-color: var(--border-primary);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
 }
 
 .priority-window-card.active {

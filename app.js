@@ -8,9 +8,13 @@ class VSPointsOptimizer {
         this.timeOffset = 0;
         this.isVisible = true;
         this.updateInterval = null;
+        this.setupTimeInterval = null;
         this.activeTab = 'priority';
-        this.notificationsEnabled = true;
+        this.notificationsEnabled = false;
         this.lastNotifiedWindow = null;
+        this.isSetupComplete = false;
+        this.currentPhaseOverride = null;
+        this.nextPhaseOverride = null;
 
         // Corrected 6-position Arms Race system (PDF verified)
         // 5 unique phases cycling through 6 positions (0-5) every 4 hours
@@ -188,9 +192,14 @@ class VSPointsOptimizer {
         try {
             this.setupEventListeners();
             this.loadSettings();
-            this.updateAllDisplays();
-            this.startUpdateLoop();
-            this.requestNotificationPermission();
+            
+            // Check if setup is needed
+            if (!this.isSetupComplete) {
+                this.showSetupModal();
+            } else {
+                this.updateAllDisplays();
+                this.startUpdateLoop();
+            }
         } catch (error) {
             console.error('Initialization error:', error);
             this.handleError('Failed to initialize application');
@@ -231,10 +240,41 @@ class VSPointsOptimizer {
             const notificationsToggle = document.getElementById('notifications-toggle');
             if (notificationsToggle) {
                 notificationsToggle.addEventListener('change', (e) => {
-                    this.notificationsEnabled = e.target.value === 'enabled';
-                    this.saveSettings();
+                    const enabled = e.target.value === 'enabled';
+                    this.setNotifications(enabled);
                 });
             }
+
+            // Current phase override
+            const currentPhaseSelect = document.getElementById('current-phase-select');
+            if (currentPhaseSelect) {
+                currentPhaseSelect.addEventListener('change', (e) => {
+                    this.currentPhaseOverride = e.target.value;
+                    this.saveSettings();
+                    this.updateAllDisplays();
+                });
+            }
+
+            // Next phase override
+            const nextPhaseSelect = document.getElementById('next-phase-select');
+            if (nextPhaseSelect) {
+                nextPhaseSelect.addEventListener('change', (e) => {
+                    this.nextPhaseOverride = e.target.value;
+                    this.saveSettings();
+                    this.updateAllDisplays();
+                });
+            }
+
+            // Setup button
+            const setupButton = document.getElementById('setup-button');
+            if (setupButton) {
+                setupButton.addEventListener('click', () => {
+                    this.showSetupModal();
+                });
+            }
+
+            // Setup modal events
+            this.setupSetupModalEvents();
 
             // Tab navigation
             document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -270,6 +310,12 @@ class VSPointsOptimizer {
                 }
             });
 
+            // Window resize handling
+            window.addEventListener('resize', this.debounce(() => {
+                this.closeAllDropdowns();
+                this.updateAllDisplays();
+            }, 250));
+
             // Keyboard shortcuts
             document.addEventListener('keydown', (e) => {
                 if (e.altKey) {
@@ -288,12 +334,284 @@ class VSPointsOptimizer {
                             break;
                     }
                 }
+                
+                // Close dropdowns on Escape
+                if (e.key === 'Escape') {
+                    this.closeAllDropdowns();
+                }
             });
 
         } catch (error) {
             console.error('Event listener setup error:', error);
         }
     }
+
+    // Utility function for debouncing resize events
+    debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    // Setup Modal Methods
+    showSetupModal() {
+        const modal = document.getElementById('setup-modal');
+        if (modal) {
+            modal.classList.add('show');
+            this.startSetupTimeUpdate();
+            this.populateSetupDefaults();
+        }
+    }
+
+    hideSetupModal() {
+        const modal = document.getElementById('setup-modal');
+        if (modal) {
+            modal.classList.remove('show');
+            this.stopSetupTimeUpdate();
+        }
+    }
+
+    setupSetupModalEvents() {
+        try {
+            // Setup time offset change
+            const setupTimeOffset = document.getElementById('setup-time-offset');
+            if (setupTimeOffset) {
+                setupTimeOffset.addEventListener('change', (e) => {
+                    this.timeOffset = parseInt(e.target.value, 10);
+                    this.updateSetupTimezone();
+                });
+            }
+
+            // Setup complete button
+            const setupComplete = document.getElementById('setup-complete');
+            if (setupComplete) {
+                setupComplete.addEventListener('click', () => {
+                    this.completeSetup();
+                });
+            }
+
+            // Setup skip button
+            const setupSkip = document.getElementById('setup-skip');
+            if (setupSkip) {
+                setupSkip.addEventListener('click', () => {
+                    this.skipSetup();
+                });
+            }
+
+            // Next phase auto-update based on current phase
+            const setupCurrentPhase = document.getElementById('setup-current-phase');
+            if (setupCurrentPhase) {
+                setupCurrentPhase.addEventListener('change', (e) => {
+                    this.updateNextPhaseOptions(e.target.value);
+                });
+            }
+
+            // Modal backdrop click to close
+            const backdrop = document.querySelector('.setup-modal-backdrop');
+            if (backdrop) {
+                backdrop.addEventListener('click', () => {
+                    this.skipSetup();
+                });
+            }
+
+        } catch (error) {
+            console.error('Setup modal events error:', error);
+        }
+    }
+
+    populateSetupDefaults() {
+        try {
+            // Set current time offset
+            const setupTimeOffset = document.getElementById('setup-time-offset');
+            if (setupTimeOffset) {
+                setupTimeOffset.value = this.timeOffset.toString();
+            }
+
+            // Auto-detect current phase based on time (as fallback)
+            const autoPhase = this.getCurrentArmsPhase();
+            const setupCurrentPhase = document.getElementById('setup-current-phase');
+            if (setupCurrentPhase && !this.currentPhaseOverride) {
+                setupCurrentPhase.value = autoPhase.id;
+            }
+
+            // Set next phase based on current
+            this.updateNextPhaseOptions(setupCurrentPhase?.value || autoPhase.id);
+
+            this.updateSetupTimezone();
+        } catch (error) {
+            console.error('Setup defaults error:', error);
+        }
+    }
+
+    updateNextPhaseOptions(currentPhaseId) {
+        try {
+            const setupNextPhase = document.getElementById('setup-next-phase');
+            if (!setupNextPhase) return;
+
+            const currentIndex = this.data.armsRacePhases.findIndex(p => p.id === currentPhaseId);
+            const nextIndex = (currentIndex + 1) % this.data.armsRacePhases.length;
+            const nextPhase = this.data.armsRacePhases[nextIndex];
+
+            setupNextPhase.value = nextPhase.id;
+        } catch (error) {
+            console.error('Next phase options error:', error);
+        }
+    }
+
+    updateSetupTimezone() {
+        const offsetElement = document.getElementById('setup-timezone-offset');
+        if (offsetElement) {
+            const sign = this.timeOffset >= 0 ? '+' : '';
+            offsetElement.textContent = `${sign}${this.timeOffset}`;
+        }
+    }
+
+    startSetupTimeUpdate() {
+        this.stopSetupTimeUpdate();
+        this.updateSetupTime();
+        this.setupTimeInterval = setInterval(() => {
+            this.updateSetupTime();
+        }, 1000);
+    }
+
+    stopSetupTimeUpdate() {
+        if (this.setupTimeInterval) {
+            clearInterval(this.setupTimeInterval);
+            this.setupTimeInterval = null;
+        }
+    }
+
+    updateSetupTime() {
+        try {
+            const serverTime = this.getServerTime();
+            const timeString = serverTime.toUTCString().slice(17, 25);
+            
+            const timeElement = document.getElementById('setup-server-time');
+            if (timeElement) {
+                timeElement.textContent = timeString;
+            }
+        } catch (error) {
+            console.error('Setup time update error:', error);
+        }
+    }
+
+    async completeSetup() {
+        try {
+            // Get setup values
+            const setupTimeOffset = document.getElementById('setup-time-offset');
+            const setupCurrentPhase = document.getElementById('setup-current-phase');
+            const setupNextPhase = document.getElementById('setup-next-phase');
+            const notificationRadios = document.querySelectorAll('input[name="notifications"]');
+
+            // Apply settings
+            this.timeOffset = parseInt(setupTimeOffset?.value || '0', 10);
+            this.currentPhaseOverride = setupCurrentPhase?.value || null;
+            this.nextPhaseOverride = setupNextPhase?.value || null;
+
+            // Handle notifications
+            const notificationChoice = Array.from(notificationRadios).find(r => r.checked)?.value;
+            const wantsNotifications = notificationChoice === 'enabled';
+
+            if (wantsNotifications) {
+                await this.requestNotificationPermission();
+            } else {
+                this.notificationsEnabled = false;
+            }
+
+            // Mark setup as complete
+            this.isSetupComplete = true;
+
+            // Save all settings
+            this.saveSettings();
+
+            // Update UI
+            this.syncSettingsToUI();
+
+            // Hide modal and start app
+            this.hideSetupModal();
+            this.updateAllDisplays();
+            this.startUpdateLoop();
+
+            this.announceToScreenReader('Setup completed successfully');
+
+        } catch (error) {
+            console.error('Setup completion error:', error);
+            this.handleError('Failed to complete setup');
+        }
+    }
+
+    skipSetup() {
+        try {
+            // Use default settings
+            this.timeOffset = 0;
+            this.currentPhaseOverride = null;
+            this.nextPhaseOverride = null;
+            this.notificationsEnabled = false;
+            this.isSetupComplete = true;
+
+            // Save settings
+            this.saveSettings();
+
+            // Update UI
+            this.syncSettingsToUI();
+
+            // Hide modal and start app
+            this.hideSetupModal();
+            this.updateAllDisplays();
+            this.startUpdateLoop();
+
+            this.announceToScreenReader('Setup skipped, using default settings');
+
+        } catch (error) {
+            console.error('Setup skip error:', error);
+        }
+    }
+
+    async setNotifications(enabled) {
+        try {
+            if (enabled) {
+                const permission = await this.requestNotificationPermission();
+                this.notificationsEnabled = permission;
+            } else {
+                this.notificationsEnabled = false;
+            }
+            
+            this.saveSettings();
+            this.syncSettingsToUI();
+            
+        } catch (error) {
+            console.error('Notification setting error:', error);
+        }
+    }
+
+    syncSettingsToUI() {
+        try {
+            // Update dropdowns
+            const timeOffsetSelect = document.getElementById('time-offset');
+            if (timeOffsetSelect) timeOffsetSelect.value = this.timeOffset.toString();
+
+            const notificationsToggle = document.getElementById('notifications-toggle');
+            if (notificationsToggle) notificationsToggle.value = this.notificationsEnabled ? 'enabled' : 'disabled';
+
+            const currentPhaseSelect = document.getElementById('current-phase-select');
+            if (currentPhaseSelect && this.currentPhaseOverride) {
+                currentPhaseSelect.value = this.currentPhaseOverride;
+            }
+
+            const nextPhaseSelect = document.getElementById('next-phase-select');
+            if (nextPhaseSelect && this.nextPhaseOverride) {
+                nextPhaseSelect.value = this.nextPhaseOverride;
+            }
+
+        } catch (error) {
+            console.error('UI sync error:', error);
+        }
 
     toggleDropdown(type) {
         const dropdown = document.getElementById(`${type}-dropdown`);
@@ -306,13 +624,48 @@ class VSPointsOptimizer {
             if (!isOpen) {
                 dropdown.classList.add('show');
                 toggle.classList.add('active');
+                
+                // Ensure dropdown stays within viewport
+                this.positionDropdown(dropdown, toggle);
             }
+        }
+    }
+
+    positionDropdown(dropdown, toggle) {
+        try {
+            // Wait for next frame to ensure styles are applied
+            requestAnimationFrame(() => {
+                const dropdownRect = dropdown.getBoundingClientRect();
+                const toggleRect = toggle.getBoundingClientRect();
+                const viewportWidth = window.innerWidth;
+                const viewportHeight = window.innerHeight;
+                
+                // Adjust horizontal position if dropdown goes off-screen
+                if (dropdownRect.right > viewportWidth) {
+                    const overflow = dropdownRect.right - viewportWidth;
+                    dropdown.style.right = `${overflow + 8}px`;
+                }
+                
+                // Adjust vertical position if dropdown goes off-screen
+                if (dropdownRect.bottom > viewportHeight) {
+                    dropdown.style.top = 'auto';
+                    dropdown.style.bottom = '100%';
+                    dropdown.style.transform = 'translateY(10px)';
+                }
+            });
+        } catch (error) {
+            console.error('Dropdown positioning error:', error);
         }
     }
 
     closeAllDropdowns() {
         document.querySelectorAll('.server-dropdown, .settings-dropdown').forEach(dropdown => {
             dropdown.classList.remove('show');
+            // Reset positioning styles
+            dropdown.style.right = '';
+            dropdown.style.top = '';
+            dropdown.style.bottom = '';
+            dropdown.style.transform = '';
         });
         document.querySelectorAll('.server-btn, .settings-btn').forEach(btn => {
             btn.classList.remove('active');
@@ -360,9 +713,29 @@ class VSPointsOptimizer {
         return new Date(now.getTime() + (this.timeOffset * 60 * 60 * 1000));
     }
 
-    // Calculate current Arms Race phase (6-position system)
+    // Calculate current Arms Race phase (6-position system with user override)
     getCurrentArmsPhase() {
         try {
+            // Use override if available
+            if (this.currentPhaseOverride) {
+                const overridePhase = this.data.armsRacePhases.find(p => p.id === this.currentPhaseOverride);
+                if (overridePhase) {
+                    const serverTime = this.getServerTime();
+                    const hour = serverTime.getUTCHours();
+                    
+                    return {
+                        ...overridePhase,
+                        position: Math.floor(hour / 4) % 6,
+                        startHour: Math.floor(hour / 4) * 4,
+                        endHour: (Math.floor(hour / 4) * 4 + 4) % 24,
+                        hoursRemaining: 4 - (hour % 4),
+                        minutesRemaining: 60 - serverTime.getUTCMinutes(),
+                        isOverride: true
+                    };
+                }
+            }
+
+            // Default automatic calculation
             const serverTime = this.getServerTime();
             const hour = serverTime.getUTCHours();
             
@@ -379,10 +752,39 @@ class VSPointsOptimizer {
                 startHour: Math.floor(hour / 4) * 4,
                 endHour: (Math.floor(hour / 4) * 4 + 4) % 24,
                 hoursRemaining: 4 - (hour % 4),
-                minutesRemaining: 60 - serverTime.getUTCMinutes()
+                minutesRemaining: 60 - serverTime.getUTCMinutes(),
+                isOverride: false
             };
         } catch (error) {
             console.error('Arms phase calculation error:', error);
+            return this.data.armsRacePhases[0];
+        }
+    }
+
+    getNextArmsPhase() {
+        try {
+            // Use override if available
+            if (this.nextPhaseOverride) {
+                const overridePhase = this.data.armsRacePhases.find(p => p.id === this.nextPhaseOverride);
+                if (overridePhase) {
+                    return {
+                        ...overridePhase,
+                        isOverride: true
+                    };
+                }
+            }
+
+            // Calculate next phase automatically
+            const currentPhase = this.getCurrentArmsPhase();
+            const currentIndex = this.data.armsRacePhases.findIndex(p => p.id === currentPhase.id);
+            const nextIndex = (currentIndex + 1) % this.data.armsRacePhases.length;
+            
+            return {
+                ...this.data.armsRacePhases[nextIndex],
+                isOverride: false
+            };
+        } catch (error) {
+            console.error('Next phase calculation error:', error);
             return this.data.armsRacePhases[0];
         }
     }
@@ -961,13 +1363,17 @@ class VSPointsOptimizer {
 
     async requestNotificationPermission() {
         try {
-            if ('Notification' in window && Notification.permission === 'default') {
+            if ('Notification' in window) {
                 const permission = await Notification.requestPermission();
-                this.notificationsEnabled = this.notificationsEnabled && permission === 'granted';
+                const granted = permission === 'granted';
+                this.notificationsEnabled = granted;
                 this.saveSettings();
+                return granted;
             }
+            return false;
         } catch (error) {
             console.error('Notification permission error:', error);
+            return false;
         }
     }
 
@@ -1012,14 +1418,13 @@ class VSPointsOptimizer {
             if (saved) {
                 const settings = JSON.parse(saved);
                 this.timeOffset = settings.timeOffset || 0;
-                this.notificationsEnabled = settings.notificationsEnabled !== false;
+                this.notificationsEnabled = settings.notificationsEnabled || false;
+                this.isSetupComplete = settings.isSetupComplete || false;
+                this.currentPhaseOverride = settings.currentPhaseOverride || null;
+                this.nextPhaseOverride = settings.nextPhaseOverride || null;
                 
-                // Update UI
-                const offsetSelect = document.getElementById('time-offset');
-                if (offsetSelect) offsetSelect.value = this.timeOffset.toString();
-                
-                const notificationsSelect = document.getElementById('notifications-toggle');
-                if (notificationsSelect) notificationsSelect.value = this.notificationsEnabled ? 'enabled' : 'disabled';
+                // Sync to UI
+                this.syncSettingsToUI();
             }
         } catch (error) {
             console.error('Settings load error:', error);
@@ -1030,7 +1435,10 @@ class VSPointsOptimizer {
         try {
             const settings = {
                 timeOffset: this.timeOffset,
-                notificationsEnabled: this.notificationsEnabled
+                notificationsEnabled: this.notificationsEnabled,
+                isSetupComplete: this.isSetupComplete,
+                currentPhaseOverride: this.currentPhaseOverride,
+                nextPhaseOverride: this.nextPhaseOverride
             };
             localStorage.setItem('lwn-settings', JSON.stringify(settings));
         } catch (error) {
@@ -1063,6 +1471,9 @@ class VSPointsOptimizer {
         try {
             if (this.updateInterval) {
                 clearInterval(this.updateInterval);
+            }
+            if (this.setupTimeInterval) {
+                clearInterval(this.setupTimeInterval);
             }
         } catch (error) {
             console.error('Cleanup error:', error);

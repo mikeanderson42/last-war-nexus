@@ -81,11 +81,34 @@
                         </div>
                         <div class="dropdown-content">
                             <div class="setting-row">
+                                <label for="current-phase-select">Current Arms Race Phase</label>
+                                <select id="current-phase-select" class="dropdown-select">
+                                    <option value="city_building">🏗️ City Building</option>
+                                    <option value="unit_progression">⚔️ Unit Progression</option>
+                                    <option value="tech_research">🔬 Tech Research</option>
+                                    <option value="drone_boost">🚁 Drone Boost</option>
+                                    <option value="hero_advancement">🦸 Hero Advancement</option>
+                                </select>
+                            </div>
+                            <div class="setting-row">
+                                <label for="next-phase-select">Next Arms Race Phase</label>
+                                <select id="next-phase-select" class="dropdown-select">
+                                    <option value="city_building">🏗️ City Building</option>
+                                    <option value="unit_progression">⚔️ Unit Progression</option>
+                                    <option value="tech_research">🔬 Tech Research</option>
+                                    <option value="drone_boost">🚁 Drone Boost</option>
+                                    <option value="hero_advancement">🦸 Hero Advancement</option>
+                                </select>
+                            </div>
+                            <div class="setting-row">
                                 <label for="notifications-toggle">Priority Notifications</label>
                                 <select id="notifications-toggle" class="dropdown-select">
                                     <option value="disabled">Disabled</option>
-                                    <option value="enabled" selected>Enabled</option>
+                                    <option value="enabled">Enabled</option>
                                 </select>
+                            </div>
+                            <div class="setting-row">
+                                <button id="setup-button" class="setup-button">Run Initial Setup</button>
                             </div>
                         </div>
                     </div>
@@ -242,6 +265,105 @@
     </div>
 
     <div class="sr-only" aria-live="polite" id="status-announcements"></div>
+
+    <!-- Setup Modal -->
+    <div class="setup-modal" id="setup-modal">
+        <div class="setup-modal-backdrop"></div>
+        <div class="setup-modal-content">
+            <div class="setup-header">
+                <div class="setup-icon">🎯</div>
+                <h2>Welcome to Last War Nexus</h2>
+                <p>Let's set up your VS Points optimizer for maximum efficiency</p>
+            </div>
+            
+            <div class="setup-body">
+                <div class="setup-section">
+                    <h3>Current Server Time</h3>
+                    <div class="server-time-display">
+                        <div id="setup-server-time" class="setup-time">Loading...</div>
+                        <div class="setup-timezone">UTC <span id="setup-timezone-offset">+0</span></div>
+                    </div>
+                </div>
+
+                <div class="setup-section">
+                    <h3>Server Time Offset</h3>
+                    <select id="setup-time-offset" class="setup-select">
+                        <option value="-12">UTC -12 hours</option>
+                        <option value="-11">UTC -11 hours</option>
+                        <option value="-10">UTC -10 hours</option>
+                        <option value="-9">UTC -9 hours</option>
+                        <option value="-8">UTC -8 hours</option>
+                        <option value="-7">UTC -7 hours</option>
+                        <option value="-6">UTC -6 hours</option>
+                        <option value="-5">UTC -5 hours</option>
+                        <option value="-4">UTC -4 hours</option>
+                        <option value="-3">UTC -3 hours</option>
+                        <option value="-2">UTC -2 hours</option>
+                        <option value="-1">UTC -1 hour</option>
+                        <option value="0" selected>UTC +0 hours</option>
+                        <option value="1">UTC +1 hour</option>
+                        <option value="2">UTC +2 hours</option>
+                        <option value="3">UTC +3 hours</option>
+                        <option value="4">UTC +4 hours</option>
+                        <option value="5">UTC +5 hours</option>
+                        <option value="6">UTC +6 hours</option>
+                        <option value="7">UTC +7 hours</option>
+                        <option value="8">UTC +8 hours</option>
+                        <option value="9">UTC +9 hours</option>
+                        <option value="10">UTC +10 hours</option>
+                        <option value="11">UTC +11 hours</option>
+                        <option value="12">UTC +12 hours</option>
+                    </select>
+                </div>
+
+                <div class="setup-section">
+                    <h3>Current Arms Race Phase</h3>
+                    <p class="setup-help">What Arms Race phase is currently active on your server?</p>
+                    <select id="setup-current-phase" class="setup-select">
+                        <option value="city_building">🏗️ City Building</option>
+                        <option value="unit_progression">⚔️ Unit Progression</option>
+                        <option value="tech_research">🔬 Tech Research</option>
+                        <option value="drone_boost">🚁 Drone Boost</option>
+                        <option value="hero_advancement">🦸 Hero Advancement</option>
+                    </select>
+                </div>
+
+                <div class="setup-section">
+                    <h3>Next Arms Race Phase</h3>
+                    <p class="setup-help">What phase will be active next (in about 4 hours)?</p>
+                    <select id="setup-next-phase" class="setup-select">
+                        <option value="city_building">🏗️ City Building</option>
+                        <option value="unit_progression">⚔️ Unit Progression</option>
+                        <option value="tech_research">🔬 Tech Research</option>
+                        <option value="drone_boost">🚁 Drone Boost</option>
+                        <option value="hero_advancement">🦸 Hero Advancement</option>
+                    </select>
+                </div>
+
+                <div class="setup-section">
+                    <h3>Priority Notifications</h3>
+                    <p class="setup-help">Get notified when high-priority VS point windows are active</p>
+                    <div class="notification-options">
+                        <label class="notification-option">
+                            <input type="radio" name="notifications" value="enabled" checked>
+                            <span class="radio-custom"></span>
+                            <span class="option-text">Enable Notifications</span>
+                        </label>
+                        <label class="notification-option">
+                            <input type="radio" name="notifications" value="disabled">
+                            <span class="radio-custom"></span>
+                            <span class="option-text">Skip for Now</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="setup-footer">
+                <button id="setup-skip" class="setup-btn setup-btn-secondary">Skip Setup</button>
+                <button id="setup-complete" class="setup-btn setup-btn-primary">Complete Setup</button>
+            </div>
+        </div>
+    </div>
 
     <script src="app.js"></script>
 </body>

@@ -10,6 +10,80 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎯</text></svg>">
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* IMPROVED: Setup modal styling - no ugly scrollbar */
+        .setup-modal-content {
+            max-height: 90vh;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-primary) var(--bg-tertiary);
+        }
+        
+        .setup-modal-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .setup-modal-content::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+            border-radius: 3px;
+        }
+        
+        .setup-modal-content::-webkit-scrollbar-thumb {
+            background: var(--accent-primary);
+            border-radius: 3px;
+        }
+        
+        .setup-modal-content::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-primary-dark);
+        }
+
+        /* FIXED: Settings dropdown max-height to prevent scrollbar issues */
+        .settings-dropdown {
+            max-height: min(500px, calc(100vh - 120px));
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-primary) var(--bg-tertiary);
+        }
+        
+        .settings-dropdown::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .settings-dropdown::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+            border-radius: 3px;
+        }
+        
+        .settings-dropdown::-webkit-scrollbar-thumb {
+            background: var(--accent-primary);
+            border-radius: 3px;
+        }
+
+        /* IMPROVED: Save button styling */
+        .save-settings-btn {
+            width: 100%;
+            background: var(--accent-primary);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 8px;
+        }
+
+        .save-settings-btn:hover {
+            background: var(--accent-primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+        }
+
+        .save-settings-btn:active {
+            transform: translateY(0);
+        }
+    </style>
 </head>
 <body>
     <nav class="main-nav" role="navigation" aria-label="Main navigation">
@@ -27,59 +101,55 @@
                 </div>
             </div>
             <div class="nav-actions">
-                <div class="server-dropdown-container">
-                    <button class="server-btn" id="server-toggle" type="button" aria-label="Server settings">
-                        <span class="server-icon" aria-hidden="true">⚙️</span>
-                        <span class="server-label">Server</span>
-                    </button>
-                    <div class="server-dropdown" id="server-dropdown">
-                        <div class="dropdown-header">
-                            <h3>Server Settings</h3>
-                        </div>
-                        <div class="dropdown-content">
-                            <div class="setting-row">
-                                <label for="time-offset">Server Time Offset</label>
-                                <select id="time-offset" class="dropdown-select">
-                                    <option value="-10">UTC -10 (Hawaii)</option>
-                                    <option value="-9">UTC -9 (Alaska)</option>
-                                    <option value="-8">UTC -8 (Pacific Time)</option>
-                                    <option value="-7">UTC -7 (Mountain Time)</option>
-                                    <option value="-6">UTC -6 (Central Time)</option>
-                                    <option value="-5">UTC -5 (Eastern Time)</option>
-                                    <option value="-4">UTC -4 (Atlantic)</option>
-                                    <option value="-3">UTC -3 (Brazil)</option>
-                                    <option value="0" selected>UTC +0 (GMT/London)</option>
-                                    <option value="1">UTC +1 (Central Europe)</option>
-                                    <option value="2">UTC +2 (Eastern Europe)</option>
-                                    <option value="3">UTC +3 (Moscow/Turkey)</option>
-                                    <option value="4">UTC +4 (Gulf/UAE)</option>
-                                    <option value="5">UTC +5 (Pakistan)</option>
-                                    <option value="5.5">UTC +5:30 (India)</option>
-                                    <option value="6">UTC +6 (Bangladesh)</option>
-                                    <option value="7">UTC +7 (Thailand/Vietnam)</option>
-                                    <option value="8">UTC +8 (China/Singapore)</option>
-                                    <option value="9">UTC +9 (Japan/Korea)</option>
-                                    <option value="10">UTC +10 (Australia East)</option>
-                                    <option value="11">UTC +11 (Solomon Islands)</option>
-                                    <option value="12">UTC +12 (New Zealand)</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!-- CONSOLIDATED: Single System Settings dropdown -->
                 <div class="settings-dropdown-container">
-                    <button class="settings-btn" id="settings-toggle" type="button" aria-label="Display settings">
-                        <span class="settings-icon" aria-hidden="true">🎮</span>
-                        <span class="settings-label">Display</span>
+                    <button class="settings-btn" id="settings-toggle" type="button" aria-label="System settings">
+                        <span class="settings-icon" aria-hidden="true">⚙️</span>
+                        <span class="settings-label">System Settings</span>
                     </button>
                     <div class="settings-dropdown" id="settings-dropdown">
                         <div class="dropdown-header">
-                            <h3>Display Settings</h3>
+                            <h3>System Settings</h3>
                         </div>
                         <div class="dropdown-content">
+                            <!-- Server Time Section -->
+                            <div class="setting-row">
+                                <label for="time-offset">Server Time Adjustment</label>
+                                <select id="time-offset" class="dropdown-select">
+                                    <option value="-12">UTC -12 hours</option>
+                                    <option value="-11">UTC -11 hours</option>
+                                    <option value="-10">UTC -10 hours</option>
+                                    <option value="-9">UTC -9 hours</option>
+                                    <option value="-8">UTC -8 hours</option>
+                                    <option value="-7">UTC -7 hours</option>
+                                    <option value="-6">UTC -6 hours</option>
+                                    <option value="-5">UTC -5 hours</option>
+                                    <option value="-4">UTC -4 hours</option>
+                                    <option value="-3">UTC -3 hours</option>
+                                    <option value="-2">UTC -2 hours</option>
+                                    <option value="-1">UTC -1 hour</option>
+                                    <option value="0" selected>UTC +0 hours</option>
+                                    <option value="1">UTC +1 hour</option>
+                                    <option value="2">UTC +2 hours</option>
+                                    <option value="3">UTC +3 hours</option>
+                                    <option value="4">UTC +4 hours</option>
+                                    <option value="5">UTC +5 hours</option>
+                                    <option value="5.5">UTC +5.5 hours</option>
+                                    <option value="6">UTC +6 hours</option>
+                                    <option value="7">UTC +7 hours</option>
+                                    <option value="8">UTC +8 hours</option>
+                                    <option value="9">UTC +9 hours</option>
+                                    <option value="10">UTC +10 hours</option>
+                                    <option value="11">UTC +11 hours</option>
+                                    <option value="12">UTC +12 hours</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Arms Race Phase Overrides -->
                             <div class="setting-row">
                                 <label for="current-phase-select">Current Arms Race Phase</label>
                                 <select id="current-phase-select" class="dropdown-select">
+                                    <option value="">Auto-detect from server time</option>
                                     <option value="city_building">🏗️ City Building</option>
                                     <option value="unit_progression">⚔️ Unit Progression</option>
                                     <option value="tech_research">🔬 Tech Research</option>
@@ -88,9 +158,11 @@
                                     <option value="equipment_enhancement">⚒️ Equipment Enhancement</option>
                                 </select>
                             </div>
+                            
                             <div class="setting-row">
                                 <label for="next-phase-select">Next Arms Race Phase</label>
                                 <select id="next-phase-select" class="dropdown-select">
+                                    <option value="">Auto-detect from current phase</option>
                                     <option value="city_building">🏗️ City Building</option>
                                     <option value="unit_progression">⚔️ Unit Progression</option>
                                     <option value="tech_research">🔬 Tech Research</option>
@@ -99,6 +171,8 @@
                                     <option value="equipment_enhancement">⚒️ Equipment Enhancement</option>
                                 </select>
                             </div>
+                            
+                            <!-- Notifications -->
                             <div class="setting-row">
                                 <label for="notifications-toggle">Priority Notifications</label>
                                 <select id="notifications-toggle" class="dropdown-select">
@@ -106,8 +180,14 @@
                                     <option value="enabled">Enabled</option>
                                 </select>
                             </div>
+                            
+                            <!-- Action Buttons -->
                             <div class="setting-row">
-                                <button id="setup-button" class="setup-button">Run Initial Setup</button>
+                                <button id="save-settings" class="save-settings-btn">💾 Save Settings</button>
+                            </div>
+                            
+                            <div class="setting-row">
+                                <button id="setup-button" class="setup-button">🎯 Run Initial Setup</button>
                             </div>
                         </div>
                     </div>
@@ -230,7 +310,7 @@
                 <div id="schedule-tab" class="tab-panel">
                     <div class="section-header">
                         <h2>Complete Event Schedule</h2>
-                        <p class="section-subtitle">Full weekly schedule showing Arms Race phases and Alliance Duel days</p>
+                        <p class="section-subtitle">Full weekly schedule showing Arms Race phases and Alliance Duel days with predictable 4-hour rotations</p>
                     </div>
                     <div id="schedule-content" class="priority-grid">
                         <div class="loading-message">Loading schedule...</div>
@@ -240,7 +320,7 @@
                 <div id="guides-tab" class="tab-panel">
                     <div class="section-header">
                         <h2>Strategy Guides</h2>
-                        <p class="section-subtitle">Expert tips for maximizing VS points and Arms Race efficiency</p>
+                        <p class="section-subtitle">Expert tips for maximizing VS points and Arms Race efficiency with 6-phase system</p>
                     </div>
                     <div id="guides-content" class="priority-grid">
                         <div class="loading-message">Loading guides...</div>
@@ -265,14 +345,14 @@
 
     <div class="sr-only" aria-live="polite" id="status-announcements"></div>
 
-    <!-- Setup Modal -->
+    <!-- IMPROVED: Setup Modal with better styling -->
     <div class="setup-modal" id="setup-modal">
         <div class="setup-modal-backdrop"></div>
         <div class="setup-modal-content">
             <div class="setup-header">
                 <div class="setup-icon">🎯</div>
                 <h2>Welcome to Last War Nexus</h2>
-                <p>Let's set up your VS Points optimizer for maximum efficiency with accurate 6-phase Arms Race system</p>
+                <p>Configure your VS Points optimizer for maximum efficiency with accurate 6-phase Arms Race system</p>
             </div>
             
             <div class="setup-body">
@@ -285,37 +365,41 @@
                 </div>
 
                 <div class="setup-section">
-                    <h3>Server Time Offset</h3>
-                    <p class="setup-help">Match your game server's time zone for accurate phase tracking</p>
+                    <h3>Server Time Adjustment</h3>
+                    <p class="setup-help">Adjust UTC time to match your Last War server's time zone</p>
                     <select id="setup-time-offset" class="setup-select">
-                        <option value="-10">UTC -10 (Hawaii)</option>
-                        <option value="-9">UTC -9 (Alaska)</option>
-                        <option value="-8">UTC -8 (Pacific Time)</option>
-                        <option value="-7">UTC -7 (Mountain Time)</option>
-                        <option value="-6">UTC -6 (Central Time)</option>
-                        <option value="-5">UTC -5 (Eastern Time)</option>
-                        <option value="-4">UTC -4 (Atlantic)</option>
-                        <option value="-3">UTC -3 (Brazil)</option>
-                        <option value="0" selected>UTC +0 (GMT/London)</option>
-                        <option value="1">UTC +1 (Central Europe)</option>
-                        <option value="2">UTC +2 (Eastern Europe)</option>
-                        <option value="3">UTC +3 (Moscow/Turkey)</option>
-                        <option value="4">UTC +4 (Gulf/UAE)</option>
-                        <option value="5">UTC +5 (Pakistan)</option>
-                        <option value="5.5">UTC +5:30 (India)</option>
-                        <option value="6">UTC +6 (Bangladesh)</option>
-                        <option value="7">UTC +7 (Thailand/Vietnam)</option>
-                        <option value="8">UTC +8 (China/Singapore)</option>
-                        <option value="9">UTC +9 (Japan/Korea)</option>
-                        <option value="10">UTC +10 (Australia East)</option>
-                        <option value="11">UTC +11 (Solomon Islands)</option>
-                        <option value="12">UTC +12 (New Zealand)</option>
+                        <option value="-12">UTC -12 hours</option>
+                        <option value="-11">UTC -11 hours</option>
+                        <option value="-10">UTC -10 hours</option>
+                        <option value="-9">UTC -9 hours</option>
+                        <option value="-8">UTC -8 hours</option>
+                        <option value="-7">UTC -7 hours</option>
+                        <option value="-6">UTC -6 hours</option>
+                        <option value="-5">UTC -5 hours</option>
+                        <option value="-4">UTC -4 hours</option>
+                        <option value="-3">UTC -3 hours</option>
+                        <option value="-2">UTC -2 hours</option>
+                        <option value="-1">UTC -1 hour</option>
+                        <option value="0" selected>UTC +0 hours</option>
+                        <option value="1">UTC +1 hour</option>
+                        <option value="2">UTC +2 hours</option>
+                        <option value="3">UTC +3 hours</option>
+                        <option value="4">UTC +4 hours</option>
+                        <option value="5">UTC +5 hours</option>
+                        <option value="5.5">UTC +5.5 hours</option>
+                        <option value="6">UTC +6 hours</option>
+                        <option value="7">UTC +7 hours</option>
+                        <option value="8">UTC +8 hours</option>
+                        <option value="9">UTC +9 hours</option>
+                        <option value="10">UTC +10 hours</option>
+                        <option value="11">UTC +11 hours</option>
+                        <option value="12">UTC +12 hours</option>
                     </select>
                 </div>
 
                 <div class="setup-section">
                     <h3>Current Arms Race Phase</h3>
-                    <p class="setup-help">What Arms Race phase is currently active on your server? (Check in-game)</p>
+                    <p class="setup-help">What Arms Race phase is currently active on your server? (Check in-game Arms Race event)</p>
                     <select id="setup-current-phase" class="setup-select">
                         <option value="city_building">🏗️ City Building (00:00-04:00)</option>
                         <option value="unit_progression">⚔️ Unit Progression (04:00-08:00)</option>

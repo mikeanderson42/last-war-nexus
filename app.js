@@ -785,12 +785,53 @@
             updateTimeDisplay() {
                 try {
                     const serverTime = this.getServerTime();
-                    const timeString = serverTime.toUTCString().slice(17, 25);
+                    const localTime = new Date();
+                    const serverTimeString = serverTime.toUTCString().slice(17, 25);
                     
+                    // Legacy server time display
                     const timeElement = document.getElementById('server-time');
                     if (timeElement) {
-                        timeElement.textContent = timeString;
+                        timeElement.textContent = serverTimeString;
                     }
+
+                    // Enhanced time displays for main cards
+                    const currentDisplayTime = document.getElementById('current-display-time');
+                    if (currentDisplayTime) {
+                        currentDisplayTime.textContent = localTime.toLocaleTimeString('en-US', { 
+                            hour12: false, 
+                            hour: '2-digit', 
+                            minute: '2-digit',
+                            second: '2-digit'
+                        });
+                    }
+
+                    const serverDisplayTime = document.getElementById('server-display-time');
+                    if (serverDisplayTime) {
+                        serverDisplayTime.textContent = serverTimeString;
+                    }
+
+                    // Phase end time
+                    const phaseEndTime = document.getElementById('phase-end-time');
+                    if (phaseEndTime) {
+                        const currentPhase = this.getCurrentArmsPhase();
+                        const phaseEndMs = (currentPhase.hoursRemaining * 60 * 60 * 1000) + 
+                                         (currentPhase.minutesRemaining * 60 * 1000);
+                        const phaseEndDate = new Date(Date.now() + phaseEndMs);
+                        
+                        phaseEndTime.textContent = phaseEndDate.toLocaleTimeString('en-US', { 
+                            hour12: false, 
+                            hour: '2-digit', 
+                            minute: '2-digit'
+                        });
+                    }
+
+                    // Next phase preview
+                    const nextPhasePreview = document.getElementById('next-phase-preview');
+                    if (nextPhasePreview) {
+                        const nextPhase = this.getNextArmsPhase();
+                        nextPhasePreview.textContent = `${nextPhase.icon} ${nextPhase.name}`;
+                    }
+
                 } catch (error) {
                     console.error('Time display error:', error);
                 }

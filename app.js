@@ -23,31 +23,56 @@ class VSPointsOptimizer {
                     id: 'city_building', 
                     name: "City Building", 
                     icon: "🏗️", 
-                    activities: ["Building upgrades", "Construction speedups", "Base expansion", "Power increases"] 
+                    activities: ["Building upgrades", "Construction speedups", "Base expansion", "Power increases"],
+                    bestSpending: [
+                        { item: "Construction Speedups", value: "high" },
+                        { item: "Building Upgrades", value: "high" },
+                        { item: "Legendary Trucks", value: "high" }
+                    ]
                 },
                 { 
                     id: 'unit_progression', 
                     name: "Unit Progression", 
                     icon: "⚔️", 
-                    activities: ["Troop training", "Training speedups", "Unit upgrades", "Military expansion"] 
+                    activities: ["Troop training", "Training speedups", "Unit upgrades", "Military expansion"],
+                    bestSpending: [
+                        { item: "Training Speedups", value: "high" },
+                        { item: "Troop Training", value: "high" },
+                        { item: "Unit Upgrades", value: "high" }
+                    ]
                 },
                 { 
                     id: 'tech_research', 
                     name: "Tech Research", 
                     icon: "🔬", 
-                    activities: ["Research completion", "Research speedups", "Tech advancement", "Innovation points"] 
+                    activities: ["Research completion", "Research speedups", "Tech advancement", "Innovation points"],
+                    bestSpending: [
+                        { item: "Research Speedups", value: "high" },
+                        { item: "Tech Upgrades", value: "high" },
+                        { item: "Valor Badges", value: "high" }
+                    ]
                 },
                 { 
                     id: 'drone_boost', 
                     name: "Drone Boost", 
                     icon: "🚁", 
-                    activities: ["Stamina usage", "Drone missions", "Radar activities", "Drone Combat Data"] 
+                    activities: ["Stamina usage", "Drone missions", "Radar activities", "Drone Combat Data"],
+                    bestSpending: [
+                        { item: "Stamina Items", value: "high" },
+                        { item: "Drone Missions", value: "high" },
+                        { item: "Radar Activities", value: "high" }
+                    ]
                 },
                 { 
                     id: 'hero_advancement', 
                     name: "Hero Advancement", 
                     icon: "🦸", 
-                    activities: ["Hero recruitment", "Hero EXP", "Skill medals", "Legendary tickets"] 
+                    activities: ["Hero recruitment", "Hero EXP", "Skill medals", "Legendary tickets"],
+                    bestSpending: [
+                        { item: "Hero Recruitment", value: "high" },
+                        { item: "Skill Medals", value: "high" },
+                        { item: "Legendary Tickets", value: "high" }
+                    ]
                 }
             ],
             
@@ -75,6 +100,18 @@ class VSPointsOptimizer {
         };
 
         this.init();
+    }
+
+    getBestSpendingForPhase(phaseId) {
+        const phase = this.data.armsRacePhases.find(p => p.id === phaseId);
+        if (!phase || !phase.bestSpending) {
+            return [
+                { item: "Diamond Store Items", value: "high" },
+                { item: "VIP Store Items", value: "high" },
+                { item: "Speed-ups", value: "medium" }
+            ];
+        }
+        return phase.bestSpending;
     }
 
     init() {
@@ -816,6 +853,13 @@ class VSPointsOptimizer {
                 currentPhaseElement.textContent = `${currentArmsPhase.name} Active`;
             }
             
+            // Update next phase preview
+            const nextPhasePreviewElement = document.getElementById('next-phase-preview');
+            if (nextPhasePreviewElement) {
+                const nextPhase = this.getNextArmsPhase();
+                nextPhasePreviewElement.textContent = `${nextPhase.icon} ${nextPhase.name}`;
+            }
+            
         } catch (error) {
             console.error('Status update error:', error);
         }
@@ -854,6 +898,17 @@ class VSPointsOptimizer {
                 if (eventIconElement) eventIconElement.textContent = nextWindow.phase.icon;
                 if (countdownLabelElement) countdownLabelElement.textContent = 'TIME REMAINING';
                 if (efficiencyElement) efficiencyElement.textContent = nextWindow.alignment.benefit;
+            }
+            
+            // Update spending recommendations
+            const spendingItemsElement = document.getElementById('spending-items');
+            if (spendingItemsElement && nextWindow) {
+                const phase = nextWindow.phase;
+                const bestSpending = this.getBestSpendingForPhase(phase.id);
+                const spendingHTML = bestSpending.slice(0, 3).map(item => 
+                    `<span class="spending-item" style="background: var(--bg-surface); padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; color: var(--text-secondary);">${item.item}</span>`
+                ).join('');
+                spendingItemsElement.innerHTML = spendingHTML;
             }
         } catch (error) {
             console.error('Priority display error:', error);
@@ -1301,6 +1356,24 @@ class VSPointsOptimizer {
 
     handleError(message) {
         console.error('Application error:', message);
+        
+        // Show user-friendly error message
+        const statusElement = document.getElementById('status-announcements');
+        if (statusElement) {
+            statusElement.textContent = `Error: ${message}. Retrying automatically...`;
+        }
+        
+        // Auto-retry after 10 seconds
+        setTimeout(() => {
+            try {
+                this.updateAllDisplays();
+                if (statusElement) {
+                    statusElement.textContent = '';
+                }
+            } catch (retryError) {
+                console.error('Retry failed:', retryError);
+            }
+        }, 10000);
     }
 
     destroy() {

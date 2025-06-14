@@ -3,8 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VS Points Optimizer - Last War Nexus</title>
-    <meta name="description" content="Professional Last War: Survival tracker for maximizing VS points during Alliance Duels and Arms Race events with accurate 5-phase system">
+    <title>Last War Nexus - VS Points Optimizer for Last War: Survival</title>
+    <meta name="description" content="Professional VS Points optimizer for Last War: Survival. Track Arms Race phases and Alliance Duels to maximize efficiency during perfect alignment windows. Free tool with accurate 5-phase system.">
+    <meta name="keywords" content="Last War Survival, VS Points, Arms Race, Alliance Duel, optimizer, tracker, game tool">
+    <meta name="author" content="Last War Nexus">
+    <meta property="og:title" content="Last War Nexus - VS Points Optimizer">
+    <meta property="og:description" content="Maximize your VS Points in Last War: Survival with our professional optimizer. Track Arms Race phases and find perfect alignment windows.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary">
+    <meta name="robots" content="index, follow">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -1475,6 +1482,9 @@
                                     <div class="spending-items" id="spending-items">
                                         <span class="spending-item">Loading...</span>
                                     </div>
+                                    <div class="diamond-reminder" style="margin-top: var(--spacing-sm); font-size: 0.75rem; color: var(--accent-warning); opacity: 0.8;">
+                                        💎 Reminder: Diamond purchases award points in ALL phases
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1484,22 +1494,28 @@
                 <div class="side-cards">
                     <div class="countdown-card-compact">
                         <div class="card-header">
-                            <h3>Phase Transition</h3>
+                            <h3>⏰ Phase Transition</h3>
                         </div>
                         <div class="card-content">
                             <div id="countdown-timer" class="countdown-value">Loading...</div>
                             <div id="current-phase" class="current-phase">Loading...</div>
+                            <div class="next-phase-preview" style="margin-top: var(--spacing-sm); font-size: 0.8rem; color: var(--text-tertiary);">
+                                <strong>Next:</strong> <span id="next-phase-preview">Loading...</span>
+                            </div>
                         </div>
                     </div>
 
                     <div class="strategy-card-compact">
                         <div class="card-header">
-                            <h3>Current Status</h3>
+                            <h3>🎯 Current Status</h3>
                         </div>
                         <div class="card-content">
-                            <div><strong>VS Day:</strong> <span id="current-vs-day">Loading...</span></div>
-                            <div><strong>Arms Race:</strong> <span id="arms-phase">Loading...</span></div>
-                            <div><strong>Priority:</strong> <span id="priority-level">Loading...</span></div>
+                            <div style="margin-bottom: var(--spacing-xs);"><strong>VS Day:</strong> <span id="current-vs-day">Loading...</span></div>
+                            <div style="margin-bottom: var(--spacing-xs);"><strong>Arms Race:</strong> <span id="arms-phase">Loading...</span></div>
+                            <div style="margin-bottom: var(--spacing-xs);"><strong>Priority:</strong> <span id="priority-level">Loading...</span></div>
+                            <div class="vip-tip" style="margin-top: var(--spacing-sm); font-size: 0.75rem; color: var(--accent-success); opacity: 0.9;">
+                                💡 Tip: VIP Store offers better diamond value than regular store
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1532,7 +1548,7 @@
                         <span class="tab-icon">📚</span>
                         <div class="tab-info">
                             <span class="tab-label">Strategy</span>
-                            <span class="tab-count">8 Guides</span>
+                            <span class="tab-count">7 Guides</span>
                         </div>
                     </div>
                 </button>
@@ -1592,9 +1608,16 @@
         <div class="setup-modal-backdrop"></div>
         <div class="setup-modal-content">
             <div class="setup-header">
-                <div class="setup-icon">🎯</div>
-                <h2>Setup Last War Nexus</h2>
-                <p>Configure your VS Points optimizer for maximum efficiency</p>
+                <div class="brand" style="margin-bottom: var(--spacing-lg);">
+                    <div class="brand-icon-container">
+                        <span class="brand-icon" aria-hidden="true">🎯</span>
+                    </div>
+                    <div class="brand-info">
+                        <span class="brand-text">Last War Nexus</span>
+                        <span class="brand-subtitle">VS Points Optimizer</span>
+                    </div>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: var(--spacing-sm);">Configure your server time to maximize VS points efficiency</p>
             </div>
             
             <div class="setup-body">
@@ -1668,14 +1691,14 @@
                 <div class="setup-section">
                     <h3>Priority Notifications</h3>
                     <p class="setup-help">Get notified when high-priority VS point windows are active</p>
-                    <div style="display: flex; flex-direction: column; gap: var(--spacing-md);">
-                        <label style="display: flex; align-items: center; gap: var(--spacing-md); cursor: pointer; padding: var(--spacing-md); border: 1px solid var(--border-primary); border-radius: var(--border-radius); background: var(--bg-surface); transition: all var(--transition-normal);" onmouseover="this.style.borderColor='var(--accent-primary)'" onmouseout="this.style.borderColor='var(--border-primary)'">
+                    <div style="display: flex; flex-direction: column; gap: var(--spacing-sm);">
+                        <label style="display: flex; align-items: center; gap: var(--spacing-sm); cursor: pointer; padding: var(--spacing-sm); border: 1px solid var(--border-primary); border-radius: var(--border-radius-sm); background: var(--bg-surface); transition: all var(--transition-normal);" onmouseover="this.style.borderColor='var(--accent-primary)'" onmouseout="this.style.borderColor='var(--border-primary)'">
                             <input type="radio" name="notifications" value="enabled" checked style="accent-color: var(--accent-primary);">
-                            <span style="font-size: 0.9rem; font-weight: 500; color: var(--text-primary);">Enable Notifications</span>
+                            <span style="font-size: 0.85rem; font-weight: 500; color: var(--text-primary);">Enable Notifications</span>
                         </label>
-                        <label style="display: flex; align-items: center; gap: var(--spacing-md); cursor: pointer; padding: var(--spacing-md); border: 1px solid var(--border-primary); border-radius: var(--border-radius); background: var(--bg-surface); transition: all var(--transition-normal);" onmouseover="this.style.borderColor='var(--accent-primary)'" onmouseout="this.style.borderColor='var(--border-primary)'">
+                        <label style="display: flex; align-items: center; gap: var(--spacing-sm); cursor: pointer; padding: var(--spacing-sm); border: 1px solid var(--border-primary); border-radius: var(--border-radius-sm); background: var(--bg-surface); transition: all var(--transition-normal);" onmouseover="this.style.borderColor='var(--accent-primary)'" onmouseout="this.style.borderColor='var(--border-primary)'">
                             <input type="radio" name="notifications" value="disabled" style="accent-color: var(--accent-primary);">
-                            <span style="font-size: 0.9rem; font-weight: 500; color: var(--text-primary);">Skip for Now</span>
+                            <span style="font-size: 0.85rem; font-weight: 500; color: var(--text-primary);">Skip for Now</span>
                         </label>
                     </div>
                 </div>

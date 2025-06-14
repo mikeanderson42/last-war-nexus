@@ -34,7 +34,7 @@
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
     
     <!-- PWA Manifest -->
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="manifest.json">
     
     <!-- Apple PWA Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -45,104 +45,11 @@
     <meta name="msapplication-TileColor" content="#0ea5e9">
     <meta name="msapplication-tap-highlight" content="no">
     
-    <!-- Preconnect to optimize font loading -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    
-    <!-- Critical CSS - inline for performance -->
-    <style>
-        /* Critical above-the-fold styles */
-        :root {
-            --bg-primary: #0f172a;
-            --bg-secondary: #1e293b;
-            --text-primary: #f8fafc;
-            --text-secondary: #cbd5e1;
-            --accent-primary: #0ea5e9;
-            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: var(--font-family);
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            line-height: 1.6;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
-        
-        .loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--bg-primary);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            transition: opacity 0.3s ease;
-        }
-        
-        .loading-icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            animation: pulse 2s ease-in-out infinite;
-        }
-        
-        .loading-text {
-            color: var(--text-secondary);
-            font-size: 1.125rem;
-            font-weight: 500;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.8; }
-        }
-        
-        .loading-screen.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-        
-        /* Hide main content until loaded */
-        .app-container {
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        
-        .app-container.loaded {
-            opacity: 1;
-        }
-    </style>
-    
-    <!-- Load CSS files asynchronously -->
-    <link rel="preload" href="/css/variables.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <link rel="preload" href="/css/base.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <link rel="preload" href="/css/components.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <link rel="preload" href="/css/mobile.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    
-    <!-- Fallback for browsers without preload support -->
-    <noscript>
-        <link rel="stylesheet" href="/css/variables.css">
-        <link rel="stylesheet" href="/css/base.css">
-        <link rel="stylesheet" href="/css/components.css">
-        <link rel="stylesheet" href="/css/mobile.css">
-    </noscript>
-    
-    <!-- Preload critical JavaScript -->
-    <link rel="modulepreload" href="/js/config.js">
-    <link rel="modulepreload" href="/js/core.js">
-    <link rel="modulepreload" href="/js/ui.js">
-    <link rel="modulepreload" href="/js/app.js">
+    <!-- Load CSS files -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/mobile.css">
     
     <!-- Structured Data for SEO -->
     <script type="application/ld+json">
@@ -171,12 +78,6 @@
 <body>
     <!-- Skip Link for Accessibility -->
     <a href="#main-content" class="skip-link">Skip to main content</a>
-    
-    <!-- Loading Screen -->
-    <div class="loading-screen" id="loading-screen">
-        <div class="loading-icon">🎯</div>
-        <div class="loading-text">Loading Last War Nexus...</div>
-    </div>
     
     <!-- Main Application Container -->
     <div class="app-container" id="app-container">
@@ -530,65 +431,14 @@
         </div>
     </div>
 
-    <!-- Error Boundary -->
-    <div id="error-boundary" class="error-boundary" style="display: none;">
-        <div class="error-content">
-            <h2>Something went wrong</h2>
-            <p>Last War Nexus encountered an unexpected error. Please refresh the page to try again.</p>
-            <button onclick="window.location.reload()" class="btn btn-primary">Refresh Page</button>
-        </div>
-    </div>
-
-    <!-- NoScript Fallback -->
-    <noscript>
-        <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; color: #f8fafc; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; font-family: system-ui, sans-serif;">
-            <div style="text-align: center; max-width: 400px; padding: 2rem;">
-                <h1 style="font-size: 3rem; margin-bottom: 1rem;">🎯</h1>
-                <h2 style="margin-bottom: 1rem;">JavaScript Required</h2>
-                <p style="margin-bottom: 2rem; line-height: 1.6;">Last War Nexus requires JavaScript to function. Please enable JavaScript in your browser and refresh the page.</p>
-                <button onclick="window.location.reload()" style="background: #0ea5e9; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 1rem;">Refresh Page</button>
-            </div>
-        </div>
-    </noscript>
-
-    <!-- Load JavaScript Modules -->
-    <script type="module">
-        // Initialize application
-        import('/js/app.js').then(module => {
-            // Hide loading screen once app is loaded
-            const loadingScreen = document.getElementById('loading-screen');
-            const appContainer = document.getElementById('app-container');
-            
-            setTimeout(() => {
-                loadingScreen.classList.add('hidden');
-                appContainer.classList.add('loaded');
-                
-                // Remove loading screen after transition
-                setTimeout(() => {
-                    loadingScreen.remove();
-                }, 300);
-            }, 1000); // Minimum loading time for better UX
-        }).catch(error => {
-            console.error('Failed to load application:', error);
-            
-            // Show error state
-            const loadingScreen = document.getElementById('loading-screen');
-            loadingScreen.innerHTML = `
-                <div style="text-align: center;">
-                    <div style="font-size: 3rem; margin-bottom: 1rem;">⚠️</div>
-                    <div style="font-size: 1.25rem; margin-bottom: 1rem; color: #ef4444;">Loading Error</div>
-                    <div style="margin-bottom: 2rem;">Failed to load Last War Nexus. Please check your connection and try again.</div>
-                    <button onclick="window.location.reload()" style="background: #0ea5e9; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer;">Retry</button>
-                </div>
-            `;
-        });
-    </script>
+    <!-- Load the original working JavaScript -->
+    <script src="app.js"></script>
 
     <!-- Register Service Worker -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
+                navigator.serviceWorker.register('service-worker.js')
                     .then(registration => {
                         console.log('SW registered: ', registration);
                     })

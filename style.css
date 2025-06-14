@@ -1,5 +1,81 @@
 /* Last War Nexus - Production CSS */
 
+/* Dashboard Layout Styles */
+.dashboard-section {
+    padding: var(--spacing-lg);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.dashboard-grid-compact {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: var(--spacing-xl);
+    margin-bottom: var(--spacing-xl);
+}
+
+.main-cards {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.side-cards {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.current-status-card,
+.countdown-card-compact,
+.strategy-card-compact {
+    background: var(--gradient-card);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+    min-height: 200px;
+}
+
+.priority-window-card {
+    background: var(--gradient-card);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+    margin-bottom: var(--spacing-md);
+    min-height: 250px;
+}
+
+.priority-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-lg);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .dashboard-grid-compact {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+    
+    .side-cards {
+        flex-direction: row;
+    }
+}
+
+@media (max-width: 768px) {
+    .side-cards {
+        flex-direction: column;
+    }
+    
+    .priority-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* CSS Variables */
 :root {
     --bg-primary: #1a1a1f;

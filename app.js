@@ -16,7 +16,7 @@ class VSPointsOptimizer {
         this.currentPhaseOverride = null;
         this.nextPhaseOverride = null;
 
-        // CORRECTED: 6 distinct Arms Race phases (each 4 hours, predictable schedule)
+        // VERIFIED: 5 distinct Arms Race phases (each 4 hours, 20-hour cycle)
         this.data = {
             armsRacePhases: [
                 { 
@@ -48,12 +48,6 @@ class VSPointsOptimizer {
                     name: "Hero Advancement", 
                     icon: "🦸", 
                     activities: ["Hero recruitment", "Hero EXP", "Skill medals", "Legendary tickets"] 
-                },
-                { 
-                    id: 'equipment_enhancement', 
-                    name: "Equipment Enhancement", 
-                    icon: "⚒️", 
-                    activities: ["Gear crafting", "Equipment upgrades", "Chip enhancement", "Material processing"] 
                 }
             ],
             
@@ -75,9 +69,8 @@ class VSPointsOptimizer {
                 { vsDay: 5, armsPhase: "Unit Progression", reason: "Training component of mobilization", benefit: "High Impact" },
                 { vsDay: 5, armsPhase: "Tech Research", reason: "Research component of mobilization", benefit: "Maximum Impact" },
                 { vsDay: 5, armsPhase: "Hero Advancement", reason: "Hero component of mobilization", benefit: "High Impact" },
-                { vsDay: 5, armsPhase: "Equipment Enhancement", reason: "Gear enhancement component of mobilization", benefit: "High Impact" },
-                { vsDay: 6, armsPhase: "Unit Progression", reason: "Troop training supports combat preparation", benefit: "Strong Synergy" },
-                { vsDay: 6, armsPhase: "Equipment Enhancement", reason: "Gear upgrades enhance combat effectiveness", benefit: "Combat Ready" }
+                { vsDay: 5, armsPhase: "Drone Boost", reason: "Stamina and radar component of mobilization", benefit: "High Impact" },
+                { vsDay: 6, armsPhase: "Unit Progression", reason: "Troop training supports combat preparation", benefit: "Strong Synergy" }
             ]
         };
 
@@ -537,38 +530,63 @@ class VSPointsOptimizer {
 
     getCurrentArmsPhase() {
         try {
-            if (this.currentPhaseOverride) {
-                const overridePhase = this.data.armsRacePhases.find(p => p.id === this.currentPhaseOverride);
-                if (overridePhase) {
-                    const serverTime = this.getServerTime();
-                    const hour = serverTime.getUTCHours();
-                    
-                    return {
-                        ...overridePhase,
-                        position: Math.floor(hour / 4),
-                        startHour: Math.floor(hour / 4) * 4,
-                        endHour: (Math.floor(hour / 4) * 4 + 4) % 24,
-                        hoursRemaining: 4 - (hour % 4),
-                        minutesRemaining: 60 - serverTime.getUTCMinutes(),
-                        isOverride: true
-                    };
-                }
-            }
-
             const serverTime = this.getServerTime();
             const hour = serverTime.getUTCHours();
             
-            const phaseIndex = Math.floor(hour / 4);
+            // 5-phase system with 20-hour cycle
+            // 00:00-03:59 = City Building (phase 0)
+            // 04:00-07:59 = Unit Progression (phase 1)
+            // 08:00-11:59 = Tech Research (phase 2)
+            // 12:00-15:59 = Drone Boost (phase 3)
+            // 16:00-19:59 = Hero Advancement (phase 4)
+            // 20:00-23:59 = City Building (phase 0, cycle restarts)
+            
+            let phaseIndex;
+            if (hour >= 20) {
+                phaseIndex = 0; // City Building restarts at 20:00
+            } else {
+                phaseIndex = Math.floor(hour / 4);
+            }
+            
+            // Handle override if set
+            if (this.currentPhaseOverride) {
+                const overridePhase = this.data.armsRacePhases.find(p => p.id === this.currentPhaseOverride);
+                if (overridePhase) {
+                    phaseIndex = this.data.armsRacePhases.indexOf(overridePhase);
+                }
+            }
+            
             const phase = this.data.armsRacePhases[phaseIndex];
+            
+            // Calculate time remaining in current phase
+            let hoursRemaining, minutesRemaining;
+            if (hour >= 20) {
+                // Special case: City Building from 20:00-23:59
+                hoursRemaining = 24 - hour - 1;
+                minutesRemaining = 60 - serverTime.getUTCMinutes();
+            } else {
+                hoursRemaining = 4 - (hour % 4) - 1;
+                minutesRemaining = 60 - serverTime.getUTCMinutes();
+            }
+            
+            // Calculate start and end hours for display
+            let startHour, endHour;
+            if (phaseIndex === 0 && hour >= 20) {
+                startHour = 20;
+                endHour = 24;
+            } else {
+                startHour = phaseIndex * 4;
+                endHour = (phaseIndex * 4 + 4);
+            }
             
             return {
                 ...phase,
                 position: phaseIndex,
-                startHour: phaseIndex * 4,
-                endHour: (phaseIndex * 4 + 4) % 24,
-                hoursRemaining: 4 - (hour % 4),
-                minutesRemaining: 60 - serverTime.getUTCMinutes(),
-                isOverride: false
+                startHour: startHour,
+                endHour: endHour % 24,
+                hoursRemaining: hoursRemaining,
+                minutesRemaining: minutesRemaining,
+                isOverride: !!this.currentPhaseOverride
             };
         } catch (error) {
             console.error('Arms phase calculation error:', error);
@@ -672,21 +690,45 @@ class VSPointsOptimizer {
                     if (!phase) continue;
                     
                     const phaseIndex = this.data.armsRacePhases.findIndex(p => p.name === phase.name);
-                    const windowTime = new Date(checkDate);
-                    windowTime.setUTCHours(phaseIndex * 4, 0, 0, 0);
                     
-                    const timeDiff = windowTime.getTime() - now.getTime();
+                    // Calculate when this phase occurs on the check date
+                    // Due to 20-hour cycle, phases shift by 4 hours each day
+                    const daysSinceStart = dayOffset;
+                    const totalHoursShift = (daysSinceStart * 4) % 20;
                     
-                    if (timeDiff > 0 && timeDiff < minTimeDiff) {
-                        minTimeDiff = timeDiff;
-                        nextWindow = {
-                            isActive: false,
-                            timeRemaining: timeDiff,
-                            alignment: alignment,
-                            phase: phase,
-                            vsDay: vsDay,
-                            startTime: windowTime
-                        };
+                    // Find when this phase occurs today
+                    let phaseStartHours = [];
+                    for (let hour = 0; hour < 24; hour += 4) {
+                        const cycleHour = hour % 20;
+                        const currentPhaseAtHour = Math.floor(cycleHour / 4);
+                        
+                        // Special case for City Building at 20:00-23:59
+                        if (hour >= 20 && phaseIndex === 0) {
+                            phaseStartHours.push(20);
+                            break;
+                        } else if (hour < 20 && currentPhaseAtHour === phaseIndex) {
+                            phaseStartHours.push(hour);
+                        }
+                    }
+                    
+                    // Check each occurrence of this phase on the check date
+                    for (const startHour of phaseStartHours) {
+                        const windowTime = new Date(checkDate);
+                        windowTime.setUTCHours(startHour, 0, 0, 0);
+                        
+                        const timeDiff = windowTime.getTime() - now.getTime();
+                        
+                        if (timeDiff > 0 && timeDiff < minTimeDiff) {
+                            minTimeDiff = timeDiff;
+                            nextWindow = {
+                                isActive: false,
+                                timeRemaining: timeDiff,
+                                alignment: alignment,
+                                phase: phase,
+                                vsDay: vsDay,
+                                startTime: windowTime
+                            };
+                        }
                     }
                 }
             }
@@ -897,27 +939,51 @@ class VSPointsOptimizer {
                     if (!phase) continue;
                     
                     const phaseIndex = this.data.armsRacePhases.findIndex(p => p.name === phase.name);
-                    const startTime = new Date(checkDate);
-                    startTime.setUTCHours(phaseIndex * 4, 0, 0, 0);
                     
-                    const endTime = new Date(startTime);
-                    endTime.setUTCHours(startTime.getUTCHours() + 4);
+                    // Find when this phase occurs on the check date
+                    let phaseOccurrences = [];
                     
-                    const timeDiff = startTime.getTime() - now.getTime();
-                    const isActive = now >= startTime && now < endTime;
-                    const isPeak = alignment.benefit.includes('Perfect') || alignment.benefit.includes('Maximum');
+                    // Check regular phase times (0-19 hours)
+                    if (phaseIndex * 4 < 20) {
+                        const startTime = new Date(checkDate);
+                        startTime.setUTCHours(phaseIndex * 4, 0, 0, 0);
+                        phaseOccurrences.push(startTime);
+                    }
                     
-                    windows.push({
-                        startTime,
-                        endTime,
-                        timeDiff,
-                        isActive,
-                        isPeak,
-                        phase,
-                        vsDay,
-                        alignment,
-                        timeDisplay: isActive ? 'Active Now' : timeDiff > 0 ? `in ${this.formatTime(timeDiff)}` : 'Completed'
-                    });
+                    // Special case: City Building also occurs at 20:00-00:00
+                    if (phaseIndex === 0) {
+                        const eveningStart = new Date(checkDate);
+                        eveningStart.setUTCHours(20, 0, 0, 0);
+                        phaseOccurrences.push(eveningStart);
+                    }
+                    
+                    // Add each occurrence as a priority window
+                    for (const startTime of phaseOccurrences) {
+                        const endTime = new Date(startTime);
+                        if (startTime.getUTCHours() === 20) {
+                            // City Building evening session ends at midnight
+                            endTime.setUTCDate(endTime.getUTCDate() + 1);
+                            endTime.setUTCHours(0, 0, 0, 0);
+                        } else {
+                            endTime.setUTCHours(startTime.getUTCHours() + 4);
+                        }
+                        
+                        const timeDiff = startTime.getTime() - now.getTime();
+                        const isActive = now >= startTime && now < endTime;
+                        const isPeak = alignment.benefit.includes('Perfect') || alignment.benefit.includes('Maximum');
+                        
+                        windows.push({
+                            startTime,
+                            endTime,
+                            timeDiff,
+                            isActive,
+                            isPeak,
+                            phase,
+                            vsDay,
+                            alignment,
+                            timeDisplay: isActive ? 'Active Now' : timeDiff > 0 ? `in ${this.formatTime(timeDiff)}` : 'Completed'
+                        });
+                    }
                 }
             }
             
@@ -988,7 +1054,8 @@ class VSPointsOptimizer {
                              { name: "Sunday", title: "Preparation Day", focus: "Prepare for the week" };
                 
                 const phases = [];
-                for (let phaseIndex = 0; phaseIndex < 6; phaseIndex++) {
+                // Handle the 5-phase system with 20-hour cycle
+                for (let phaseIndex = 0; phaseIndex < 5; phaseIndex++) {
                     const phase = this.data.armsRacePhases[phaseIndex];
                     
                     const isPriority = this.data.priorityAlignments.some(a => 
@@ -996,10 +1063,10 @@ class VSPointsOptimizer {
                     );
                     
                     const startHour = phaseIndex * 4;
-                    const endHour = (phaseIndex * 4 + 4) % 24;
+                    const endHour = (phaseIndex * 4 + 4);
                     const isActive = isToday && 
                         now.getUTCHours() >= startHour && 
-                        now.getUTCHours() < (startHour + 4);
+                        now.getUTCHours() < endHour;
                     
                     phases.push({
                         ...phase,
@@ -1009,6 +1076,18 @@ class VSPointsOptimizer {
                         timeRange: `${String(startHour).padStart(2, '0')}:00-${String(endHour).padStart(2, '0')}:00`
                     });
                 }
+                
+                // Add the City Building phase that runs from 20:00-00:00
+                const cityBuildingRepeat = {
+                    ...this.data.armsRacePhases[0],
+                    position: 5,
+                    isPriority: this.data.priorityAlignments.some(a => 
+                        a.vsDay === dayOfWeek && a.armsPhase === "City Building"
+                    ),
+                    isActive: isToday && now.getUTCHours() >= 20,
+                    timeRange: "20:00-00:00"
+                };
+                phases.push(cityBuildingRepeat);
                 
                 schedule.push({
                     vsDay,
@@ -1053,11 +1132,11 @@ class VSPointsOptimizer {
             
             const guides = [
                 {
-                    title: "6 Distinct Arms Race Phases",
+                    title: "5 Distinct Arms Race Phases",
                     category: "Core Mechanics",
                     icon: "🔄",
-                    description: "Arms Race runs 6 distinct phases, each lasting 4 hours in a predictable 24-hour cycle. Master this schedule for optimal planning.",
-                    tips: ["Each phase lasts exactly 4 hours", "Schedule repeats daily", "Plan activities around phase rotation", "Predictable timing allows advance planning"]
+                    description: "Arms Race runs 5 distinct phases, each lasting 4 hours in a 20-hour cycle that restarts at 20:00. Master this schedule for optimal planning.",
+                    tips: ["Each phase lasts exactly 4 hours", "20-hour cycle (5 phases × 4 hours)", "Cycle restarts at 20:00 server time", "Same phase appears at different times each day"]
                 },
                 {
                     title: "Perfect Alignment Windows",
@@ -1065,13 +1144,6 @@ class VSPointsOptimizer {
                     icon: "🎯",
                     description: "Time activities when Arms Race phases perfectly match Alliance VS focus days for maximum dual rewards.",
                     tips: ["Tech Research + Age of Science = Perfect", "City Building + Base Expansion = Maximum", "Hero Advancement + Train Heroes = Ideal", "Friday offers multiple alignments"]
-                },
-                {
-                    title: "Equipment Enhancement Phase",
-                    category: "6th Phase Guide",
-                    icon: "⚒️",
-                    description: "The 6th Arms Race phase (20:00-00:00) focuses on gear crafting and equipment upgrades. Perfect for Saturday Enemy Buster alignment.",
-                    tips: ["20:00-00:00 server time", "Craft and upgrade gear", "Focus on combat equipment", "Aligns with Enemy Buster events"]
                 },
                 {
                     title: "Friday Total Mobilization",
@@ -1085,7 +1157,7 @@ class VSPointsOptimizer {
                     category: "Timing Strategy",
                     icon: "🕐",
                     description: "Master your server's predictable 4-hour Arms Race rotation. The schedule is completely consistent once you know the server time.",
-                    tips: ["Know exact server time", "4-hour phases are predictable", "Plan days in advance", "Account for server reset timing"]
+                    tips: ["Know exact server time", "5-phase × 4-hour cycle", "Cycle restarts at 20:00 daily", "Plan with 20-hour rotation in mind"]
                 },
                 {
                     title: "Dual Event Synergy",

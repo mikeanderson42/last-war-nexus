@@ -1343,6 +1343,12 @@
                 </div>
             </div>
             <div class="nav-actions">
+                <div class="time-toggle-container">
+                    <button class="time-toggle-btn" id="time-toggle-btn" type="button" aria-label="Toggle between server and local time">
+                        <span class="time-toggle-icon" aria-hidden="true">🕐</span>
+                        <span class="time-toggle-label" id="time-toggle-label">Local Time</span>
+                    </button>
+                </div>
                 <div class="settings-dropdown-container">
                     <button class="settings-btn" id="settings-toggle" type="button" aria-label="System settings">
                         <span class="settings-icon" aria-hidden="true">⚙️</span>
@@ -1386,9 +1392,9 @@
                             </div>
                             
                             <div class="setting-row">
-                                <label for="current-phase-select">Current Arms Race Phase</label>
+                                <label for="current-phase-select">Current Arms Race Phase Override</label>
                                 <select id="current-phase-select" class="dropdown-select">
-                                    <option value="">Auto-detect from server time</option>
+                                    <option value="">Use server time calculation</option>
                                     <option value="city_building">🏗️ City Building</option>
                                     <option value="unit_progression">⚔️ Unit Progression</option>
                                     <option value="tech_research">🔬 Tech Research</option>
@@ -1398,9 +1404,9 @@
                             </div>
                             
                             <div class="setting-row">
-                                <label for="next-phase-select">Next Arms Race Phase</label>
+                                <label for="next-phase-select">Next Arms Race Phase Override</label>
                                 <select id="next-phase-select" class="dropdown-select">
-                                    <option value="">Auto-detect from current phase</option>
+                                    <option value="">Use calculated next phase</option>
                                     <option value="city_building">🏗️ City Building</option>
                                     <option value="unit_progression">⚔️ Unit Progression</option>
                                     <option value="tech_research">🔬 Tech Research</option>
@@ -1495,10 +1501,27 @@
                     <div class="countdown-card-compact">
                         <div class="card-header">
                             <h3>⏰ Phase Transition</h3>
+                            <div class="time-mode-indicator" id="time-mode-indicator" style="font-size: 0.7rem; color: var(--text-secondary); opacity: 0.8;">
+                                <span id="time-mode-label">Local Time</span>
+                            </div>
                         </div>
                         <div class="card-content">
                             <div id="countdown-timer" class="countdown-value">Loading...</div>
                             <div id="current-phase" class="current-phase">Loading...</div>
+                            <div class="time-details" style="margin-top: var(--spacing-sm); padding: var(--spacing-xs); background: var(--bg-elevated); border-radius: var(--border-radius); border: 1px solid var(--border-primary);">
+                                <div class="time-row" style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 2px;">
+                                    <span style="color: var(--text-secondary);">Current Time:</span>
+                                    <span id="current-display-time" style="color: var(--text-primary); font-family: var(--font-mono);">Loading...</span>
+                                </div>
+                                <div class="time-row" style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 2px;">
+                                    <span style="color: var(--text-secondary);">Server Time:</span>
+                                    <span id="server-display-time" style="color: var(--accent-primary); font-family: var(--font-mono);">Loading...</span>
+                                </div>
+                                <div class="time-row" style="display: flex; justify-content: space-between; font-size: 0.75rem;">
+                                    <span style="color: var(--text-secondary);">Phase Ends:</span>
+                                    <span id="phase-end-time" style="color: var(--text-primary); font-family: var(--font-mono);">Loading...</span>
+                                </div>
+                            </div>
                             <div class="next-phase-preview" style="margin-top: var(--spacing-sm); font-size: 0.8rem; color: var(--text-tertiary);">
                                 <strong>Next:</strong> <span id="next-phase-preview">Loading...</span>
                             </div>
@@ -1508,11 +1531,18 @@
                     <div class="strategy-card-compact">
                         <div class="card-header">
                             <h3>🎯 Current Status</h3>
+                            <div class="priority-status" id="priority-status-indicator" style="font-size: 0.7rem; padding: 2px 6px; border-radius: 3px; font-weight: 600;">
+                                Loading...
+                            </div>
                         </div>
                         <div class="card-content">
                             <div style="margin-bottom: var(--spacing-xs);"><strong>VS Day:</strong> <span id="current-vs-day">Loading...</span></div>
                             <div style="margin-bottom: var(--spacing-xs);"><strong>Arms Race:</strong> <span id="arms-phase">Loading...</span></div>
                             <div style="margin-bottom: var(--spacing-xs);"><strong>Priority:</strong> <span id="priority-level">Loading...</span></div>
+                            <div class="event-timing" style="margin-top: var(--spacing-sm); padding: var(--spacing-xs); background: var(--bg-elevated); border-radius: var(--border-radius); border: 1px solid var(--border-primary);">
+                                <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 4px; font-weight: 600;">Next Priority Window:</div>
+                                <div id="next-priority-info" style="font-size: 0.75rem; color: var(--accent-warning); font-family: var(--font-mono);">Loading...</div>
+                            </div>
                             <div class="vip-tip" style="margin-top: var(--spacing-sm); font-size: 0.75rem; color: var(--accent-success); opacity: 0.9;">
                                 💡 Tip: VIP Store offers better diamond value than regular store
                             </div>
@@ -1522,38 +1552,47 @@
             </div>
         </section>
 
-        <!-- FIXED: Enhanced Tab Navigation -->
-        <div class="tab-navigation">
+        <!-- Enhanced Integrated Tab Navigation -->
+        <nav class="tab-navigation" role="navigation" aria-label="Main sections">
             <div class="tab-container" role="tablist">
                 <button class="tab-btn active" data-tab="priority" type="button" role="tab" aria-selected="true">
                     <div class="tab-content-item">
-                        <span class="tab-icon">⚡</span>
+                        <div class="tab-icon-wrapper">
+                            <span class="tab-icon">🎯</span>
+                        </div>
                         <div class="tab-info">
                             <span class="tab-label">Priority Windows</span>
+                            <span class="tab-description">High-value alignments</span>
                             <span class="tab-count" id="priority-count">Loading</span>
                         </div>
                     </div>
                 </button>
                 <button class="tab-btn" data-tab="schedule" type="button" role="tab" aria-selected="false">
                     <div class="tab-content-item">
-                        <span class="tab-icon">📅</span>
+                        <div class="tab-icon-wrapper">
+                            <span class="tab-icon">🗓️</span>
+                        </div>
                         <div class="tab-info">
-                            <span class="tab-label">Schedule</span>
+                            <span class="tab-label">Event Schedule</span>
+                            <span class="tab-description">Complete weekly view</span>
                             <span class="tab-count">7 Days</span>
                         </div>
                     </div>
                 </button>
                 <button class="tab-btn" data-tab="guides" type="button" role="tab" aria-selected="false">
                     <div class="tab-content-item">
-                        <span class="tab-icon">📚</span>
+                        <div class="tab-icon-wrapper">
+                            <span class="tab-icon">📖</span>
+                        </div>
                         <div class="tab-info">
-                            <span class="tab-label">Strategy</span>
+                            <span class="tab-label">Strategy Hub</span>
+                            <span class="tab-description">Tips & seasonal guides</span>
                             <span class="tab-count">7 Guides</span>
                         </div>
                     </div>
                 </button>
             </div>
-        </div>
+        </nav>
 
         <main class="main-content">
             <div class="tab-content">
@@ -1582,6 +1621,22 @@
                         <h2>Strategy Guides</h2>
                         <p class="section-subtitle">Expert tips for maximizing VS points and Arms Race efficiency</p>
                     </div>
+                    
+                    <!-- Guide Type Navigation -->
+                    <div class="guide-nav-container">
+                        <div class="guide-nav">
+                            <button class="guide-nav-btn active" data-guide-type="tips" type="button">
+                                <span class="guide-nav-icon">💡</span>
+                                <span class="guide-nav-label">General Tips</span>
+                            </button>
+                            <button class="guide-nav-btn" data-guide-type="seasonal" type="button">
+                                <span class="guide-nav-icon">📅</span>
+                                <span class="guide-nav-label">Seasonal Guides</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Guide Content -->
                     <div id="guides-content" class="priority-grid">
                         <div class="loading-message">Loading guides...</div>
                     </div>
@@ -1712,6 +1767,25 @@
     </div>
 
     <div class="sr-only" aria-live="polite" id="status-announcements"></div>
+
+    <!-- High Priority Events Banner -->
+    <div class="priority-events-banner" id="priority-events-banner">
+        <div class="banner-header" id="banner-toggle">
+            <div class="banner-title">
+                <span class="banner-icon">⚡</span>
+                <span class="banner-text">High Priority Events</span>
+                <span class="banner-count" id="banner-count">Loading...</span>
+            </div>
+            <button class="banner-toggle-btn" id="banner-toggle-btn" aria-label="Toggle priority events banner">
+                <span class="toggle-icon">▲</span>
+            </button>
+        </div>
+        <div class="banner-content" id="banner-content">
+            <div class="banner-events-grid" id="banner-events-grid">
+                <div class="banner-loading">Loading priority events...</div>
+            </div>
+        </div>
+    </div>
 
     <script>
         /**

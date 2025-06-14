@@ -15,6 +15,9 @@ class VSPointsOptimizer {
         this.isSetupComplete = false;
         this.currentPhaseOverride = null;
         this.nextPhaseOverride = null;
+        this.bannerExpanded = !this.isMobile();
+        this.showLocalTime = true; // Default to local time
+        this.activeGuideType = 'tips'; // Default to general tips
 
         // VERIFIED: 5 distinct Arms Race phases (each 4 hours, 20-hour cycle)
         this.data = {
@@ -114,6 +117,10 @@ class VSPointsOptimizer {
         return phase.bestSpending;
     }
 
+    isMobile() {
+        return window.innerWidth <= 768;
+    }
+
     init() {
         try {
             this.loadSettings();
@@ -136,6 +143,12 @@ class VSPointsOptimizer {
             // Setup modal event listeners
             this.setupSetupModalEvents();
             
+            // Setup banner event listeners
+            this.setupBannerEvents();
+            
+            // Setup time toggle event listener
+            this.setupTimeToggle();
+            
             // Main navigation - CONSOLIDATED SETTINGS
             const settingsToggle = document.getElementById('settings-toggle');
             if (settingsToggle) {
@@ -151,6 +164,16 @@ class VSPointsOptimizer {
                     const tab = e.currentTarget.getAttribute('data-tab');
                     if (tab) {
                         this.switchTab(tab);
+                    }
+                });
+            });
+
+            // Guide navigation
+            document.querySelectorAll('.guide-nav-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const guideType = e.currentTarget.getAttribute('data-guide-type');
+                    if (guideType) {
+                        this.switchGuideType(guideType);
                     }
                 });
             });
@@ -274,6 +297,88 @@ class VSPointsOptimizer {
 
         } catch (error) {
             console.error('Setup modal events error:', error);
+        }
+    }
+
+    setupBannerEvents() {
+        try {
+            const bannerToggle = document.getElementById('banner-toggle');
+            const bannerToggleBtn = document.getElementById('banner-toggle-btn');
+            const banner = document.getElementById('priority-events-banner');
+
+            if (bannerToggle && banner) {
+                bannerToggle.addEventListener('click', () => {
+                    this.toggleBanner();
+                });
+            }
+
+            if (bannerToggleBtn && banner) {
+                bannerToggleBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.toggleBanner();
+                });
+            }
+
+            // Initialize banner state
+            this.initializeBanner();
+
+        } catch (error) {
+            console.error('Banner events setup error:', error);
+        }
+    }
+
+    initializeBanner() {
+        const banner = document.getElementById('priority-events-banner');
+        if (!banner) return;
+
+        if (this.isMobile()) {
+            banner.classList.add('collapsed');
+        } else {
+            banner.classList.remove('collapsed');
+        }
+    }
+
+    toggleBanner() {
+        const banner = document.getElementById('priority-events-banner');
+        if (!banner) return;
+
+        if (this.isMobile()) {
+            banner.classList.toggle('expanded');
+        } else {
+            banner.classList.toggle('collapsed');
+        }
+        
+        this.bannerExpanded = !banner.classList.contains('collapsed');
+    }
+
+    setupTimeToggle() {
+        try {
+            const timeToggleBtn = document.getElementById('time-toggle-btn');
+            
+            if (timeToggleBtn) {
+                timeToggleBtn.addEventListener('click', () => {
+                    this.toggleTimeMode();
+                });
+            }
+
+            // Initialize the toggle label
+            this.updateTimeToggleLabel();
+
+        } catch (error) {
+            console.error('Time toggle setup error:', error);
+        }
+    }
+
+    toggleTimeMode() {
+        this.showLocalTime = !this.showLocalTime;
+        this.updateTimeToggleLabel();
+        this.updateAllDisplays(); // Refresh all time displays
+    }
+
+    updateTimeToggleLabel() {
+        const label = document.getElementById('time-toggle-label');
+        if (label) {
+            label.textContent = this.showLocalTime ? 'Local Time' : 'Server Time';
         }
     }
 
@@ -555,6 +660,29 @@ class VSPointsOptimizer {
         }
     }
 
+    switchGuideType(guideType) {
+        try {
+            this.activeGuideType = guideType;
+            
+            document.querySelectorAll('.guide-nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            const activeBtn = document.querySelector(`[data-guide-type="${guideType}"]`);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            }
+            
+            // Repopulate guides with the new type
+            if (this.activeTab === 'guides') {
+                this.populateGuides();
+            }
+            
+        } catch (error) {
+            console.error('Guide type switch error:', error);
+        }
+    }
+
     getServerTime() {
         try {
             const now = new Date();
@@ -797,6 +925,7 @@ class VSPointsOptimizer {
             this.updateCurrentStatus();
             this.updatePriorityDisplay();
             this.updateBanner();
+            this.updatePriorityEventsBanner();
             if (this.activeTab) {
                 this.populateTabContent(this.activeTab);
             }
@@ -808,12 +937,60 @@ class VSPointsOptimizer {
     updateTimeDisplay() {
         try {
             const serverTime = this.getServerTime();
-            const timeString = serverTime.toUTCString().slice(17, 25);
+            const localTime = new Date();
+            const serverTimeString = serverTime.toUTCString().slice(17, 25);
             
+            // Legacy server time display
             const timeElement = document.getElementById('server-time');
             if (timeElement) {
-                timeElement.textContent = timeString;
+                timeElement.textContent = serverTimeString;
             }
+
+            // Enhanced time displays for main cards
+            const timeModeLabel = document.getElementById('time-mode-label');
+            if (timeModeLabel) {
+                timeModeLabel.textContent = this.showLocalTime ? 'Local Time' : 'Server Time';
+            }
+
+            const currentDisplayTime = document.getElementById('current-display-time');
+            if (currentDisplayTime) {
+                if (this.showLocalTime) {
+                    currentDisplayTime.textContent = localTime.toLocaleTimeString('en-US', { 
+                        hour12: false, 
+                        hour: '2-digit', 
+                        minute: '2-digit',
+                        second: '2-digit'
+                    });
+                } else {
+                    currentDisplayTime.textContent = serverTimeString;
+                }
+            }
+
+            const serverDisplayTime = document.getElementById('server-display-time');
+            if (serverDisplayTime) {
+                serverDisplayTime.textContent = serverTimeString;
+            }
+
+            // Phase end time
+            const phaseEndTime = document.getElementById('phase-end-time');
+            if (phaseEndTime) {
+                const currentPhase = this.getCurrentArmsPhase();
+                const phaseEndMs = (currentPhase.hoursRemaining * 60 * 60 * 1000) + 
+                                 (currentPhase.minutesRemaining * 60 * 1000);
+                const phaseEndDate = new Date(Date.now() + phaseEndMs);
+                
+                if (this.showLocalTime) {
+                    phaseEndTime.textContent = phaseEndDate.toLocaleTimeString('en-US', { 
+                        hour12: false, 
+                        hour: '2-digit', 
+                        minute: '2-digit'
+                    });
+                } else {
+                    const serverPhaseEnd = new Date(serverTime.getTime() + phaseEndMs);
+                    phaseEndTime.textContent = serverPhaseEnd.toUTCString().slice(17, 22);
+                }
+            }
+
         } catch (error) {
             console.error('Time display error:', error);
         }
@@ -858,6 +1035,40 @@ class VSPointsOptimizer {
             if (nextPhasePreviewElement) {
                 const nextPhase = this.getNextArmsPhase();
                 nextPhasePreviewElement.textContent = `${nextPhase.icon} ${nextPhase.name}`;
+            }
+
+            // Update priority status indicator
+            const priorityStatusIndicator = document.getElementById('priority-status-indicator');
+            if (priorityStatusIndicator) {
+                if (isHighPriority) {
+                    priorityStatusIndicator.textContent = 'HIGH PRIORITY';
+                    priorityStatusIndicator.style.background = 'var(--accent-success)';
+                    priorityStatusIndicator.style.color = 'white';
+                } else {
+                    priorityStatusIndicator.textContent = 'NORMAL';
+                    priorityStatusIndicator.style.background = 'var(--bg-surface)';
+                    priorityStatusIndicator.style.color = 'var(--text-secondary)';
+                }
+            }
+
+            // Update next priority info
+            const nextPriorityInfo = document.getElementById('next-priority-info');
+            if (nextPriorityInfo) {
+                const nextWindow = this.findNextPriorityWindow();
+                if (nextWindow) {
+                    if (nextWindow.isActive) {
+                        nextPriorityInfo.textContent = `ACTIVE NOW - ${this.formatTime(nextWindow.timeRemaining)} remaining`;
+                        nextPriorityInfo.style.color = 'var(--accent-success)';
+                    } else {
+                        const timeText = this.formatTime(nextWindow.timeRemaining);
+                        const phaseText = `${nextWindow.phase.name} + ${nextWindow.vsDay.title}`;
+                        nextPriorityInfo.innerHTML = `${timeText}<br><span style="font-size: 0.7rem; opacity: 0.8;">${phaseText}</span>`;
+                        nextPriorityInfo.style.color = 'var(--accent-warning)';
+                    }
+                } else {
+                    nextPriorityInfo.textContent = 'No upcoming priority windows';
+                    nextPriorityInfo.style.color = 'var(--text-secondary)';
+                }
             }
             
         } catch (error) {
@@ -949,6 +1160,137 @@ class VSPointsOptimizer {
             }
         } catch (error) {
             console.error('Banner update error:', error);
+        }
+    }
+
+    updatePriorityEventsBanner() {
+        try {
+            const bannerGrid = document.getElementById('banner-events-grid');
+            const bannerCount = document.getElementById('banner-count');
+            
+            if (!bannerGrid || !bannerCount) return;
+
+            // Get the next 6 priority events
+            const upcomingEvents = this.getUpcomingPriorityEvents(6);
+            
+            bannerCount.textContent = `${upcomingEvents.length} upcoming`;
+
+            if (upcomingEvents.length === 0) {
+                bannerGrid.innerHTML = '<div class="banner-loading">No upcoming priority events</div>';
+                return;
+            }
+
+            const eventCards = upcomingEvents.map(event => {
+                const startTime = new Date(event.startTime);
+                
+                let timeString;
+                if (this.showLocalTime) {
+                    timeString = startTime.toLocaleDateString('en-US', { 
+                        weekday: 'short', 
+                        month: 'short', 
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                } else {
+                    // Show server time
+                    const serverTime = new Date(startTime.getTime() - (this.timeOffset * 60 * 60 * 1000));
+                    timeString = serverTime.toLocaleDateString('en-US', { 
+                        weekday: 'short', 
+                        month: 'short', 
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        timeZone: 'UTC'
+                    }) + ' (Server)';
+                }
+
+                return `
+                    <div class="banner-event-card">
+                        <div class="banner-event-header">
+                            <span class="banner-event-icon">${event.phase.icon}</span>
+                            <span class="banner-event-title">${event.phase.name} + ${event.vsDay.title}</span>
+                        </div>
+                        <div class="banner-event-time">${timeString}</div>
+                        <div class="banner-event-countdown">${this.formatTime(event.timeRemaining)}</div>
+                    </div>
+                `;
+            }).join('');
+
+            bannerGrid.innerHTML = eventCards;
+
+        } catch (error) {
+            console.error('Priority events banner update error:', error);
+        }
+    }
+
+    getUpcomingPriorityEvents(limit = 6) {
+        try {
+            const now = this.getServerTime();
+            const events = [];
+            
+            // Look ahead for the next 14 days to find priority events
+            for (let dayOffset = 0; dayOffset < 14 && events.length < limit; dayOffset++) {
+                const checkDate = new Date(now);
+                checkDate.setUTCDate(now.getUTCDate() + dayOffset);
+                const dayOfWeek = checkDate.getUTCDay();
+                
+                const vsDay = this.data.vsDays.find(day => day.day === dayOfWeek);
+                if (!vsDay) continue;
+                
+                const dayAlignments = this.data.priorityAlignments.filter(a => a.vsDay === dayOfWeek);
+                
+                for (const alignment of dayAlignments) {
+                    if (events.length >= limit) break;
+                    
+                    const phase = this.data.armsRacePhases.find(p => p.name === alignment.armsPhase);
+                    if (!phase) continue;
+                    
+                    const phaseIndex = this.data.armsRacePhases.findIndex(p => p.name === phase.name);
+                    
+                    // Calculate when this phase occurs
+                    let phaseOccurrences = [];
+                    
+                    // Regular phase times (0-19 hours)
+                    if (phaseIndex * 4 < 20) {
+                        const startTime = new Date(checkDate);
+                        startTime.setUTCHours(phaseIndex * 4, 0, 0, 0);
+                        phaseOccurrences.push(startTime);
+                    }
+                    
+                    // Special case: City Building also occurs at 20:00-00:00
+                    if (phaseIndex === 0) {
+                        const eveningStart = new Date(checkDate);
+                        eveningStart.setUTCHours(20, 0, 0, 0);
+                        phaseOccurrences.push(eveningStart);
+                    }
+                    
+                    for (const startTime of phaseOccurrences) {
+                        if (events.length >= limit) break;
+                        
+                        const timeDiff = startTime.getTime() - now.getTime();
+                        
+                        if (timeDiff > 0) {
+                            events.push({
+                                startTime,
+                                timeRemaining: timeDiff,
+                                phase,
+                                vsDay,
+                                alignment
+                            });
+                        }
+                    }
+                }
+            }
+            
+            // Sort by time remaining
+            events.sort((a, b) => a.timeRemaining - b.timeRemaining);
+            
+            return events.slice(0, limit);
+            
+        } catch (error) {
+            console.error('Get upcoming priority events error:', error);
+            return [];
         }
     }
 
@@ -1056,11 +1398,57 @@ class VSPointsOptimizer {
                 countElement.textContent = `${activeCount + upcomingCount} Windows`;
             }
             
-            const html = uniqueWindows.slice(0, 12).map(window => `
+            const html = uniqueWindows.slice(0, 12).map(window => {
+                // Enhanced time display
+                const startTime = new Date(window.startTime);
+                const isDistant = window.timeDiff > (69 * 60 * 60 * 1000); // More than 69 hours
+                
+                let primaryTime, secondaryTime;
+                if (this.showLocalTime) {
+                    primaryTime = startTime.toLocaleDateString('en-US', { 
+                        weekday: 'short', 
+                        month: 'short', 
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    // Show server time as secondary for distant events
+                    if (isDistant) {
+                        const serverTime = new Date(startTime.getTime() - (this.timeOffset * 60 * 60 * 1000));
+                        secondaryTime = serverTime.toLocaleDateString('en-US', { 
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            timeZone: 'UTC'
+                        }) + ' Server';
+                    }
+                } else {
+                    const serverTime = new Date(startTime.getTime() - (this.timeOffset * 60 * 60 * 1000));
+                    primaryTime = serverTime.toLocaleDateString('en-US', { 
+                        weekday: 'short', 
+                        month: 'short', 
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        timeZone: 'UTC'
+                    }) + ' Server';
+                    // Show local time as secondary for distant events
+                    if (isDistant) {
+                        secondaryTime = startTime.toLocaleDateString('en-US', { 
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        }) + ' Local';
+                    }
+                }
+
+                return `
                 <div class="priority-window-card ${window.isActive ? 'active' : ''} ${window.isPeak ? 'peak' : ''}">
-                    <div style="background: var(--bg-tertiary); padding: 12px; border-bottom: 1px solid var(--border-primary); display: flex; justify-content: space-between; align-items: center;">
-                        <div style="font-family: var(--font-mono); font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">${window.timeDisplay}</div>
-                        <div style="padding: 3px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; background: ${window.isActive ? 'var(--accent-success)' : 'var(--accent-warning)'}; color: white;">
+                    <div class="priority-window-header">
+                        <div class="time-display-section">
+                            <div class="primary-time">${primaryTime}</div>
+                            ${secondaryTime ? `<div class="secondary-time">${secondaryTime}</div>` : ''}
+                            <div class="countdown-time">${window.timeDisplay}</div>
+                        </div>
+                        <div class="status-badge ${window.isActive ? 'active' : 'upcoming'}">
                             ${window.isActive ? 'ACTIVE NOW' : 'UPCOMING'}
                         </div>
                     </div>
@@ -1179,63 +1567,98 @@ class VSPointsOptimizer {
         }
     }
 
-    // RESTORED: Complete Guides
+    // RESTORED: Complete Guides with Seasonal Support
     populateGuides() {
         try {
             const grid = document.getElementById('guides-content');
             if (!grid) return;
             
-            const guides = [
-                {
-                    title: "5 Distinct Arms Race Phases",
-                    category: "Core Mechanics",
-                    icon: "🔄",
-                    description: "Arms Race runs 5 distinct phases, each lasting 4 hours in a 20-hour cycle that restarts at 20:00. Master this schedule for optimal planning.",
-                    tips: ["Each phase lasts exactly 4 hours", "20-hour cycle (5 phases × 4 hours)", "Cycle restarts at 20:00 server time", "Same phase appears at different times each day"]
-                },
-                {
-                    title: "Perfect Alignment Windows",
-                    category: "Peak Efficiency",
-                    icon: "🎯",
-                    description: "Time activities when Arms Race phases perfectly match Alliance VS focus days for maximum dual rewards.",
-                    tips: ["Tech Research + Age of Science = Perfect", "City Building + Base Expansion = Maximum", "Hero Advancement + Train Heroes = Ideal", "Friday offers multiple alignments"]
-                },
-                {
-                    title: "Friday Total Mobilization",
-                    category: "Weekly Peak",
-                    icon: "🚀",
-                    description: "Friday offers multiple high-priority windows since Total Mobilization accepts all activity types across all phases.",
-                    tips: ["Save speedups for Friday", "Multiple Arms Race alignments possible", "Highest daily point potential", "All phases can be high priority"]
-                },
-                {
-                    title: "Server Time Mastery",
-                    category: "Timing Strategy",
-                    icon: "🕐",
-                    description: "Master your server's predictable 4-hour Arms Race rotation. The schedule is completely consistent once you know the server time.",
-                    tips: ["Know exact server time", "5-phase × 4-hour cycle", "Cycle restarts at 20:00 daily", "Plan with 20-hour rotation in mind"]
-                },
-                {
-                    title: "Dual Event Synergy",
-                    category: "Advanced Strategy",
-                    icon: "⚡",
-                    description: "Maximize efficiency by focusing on activities that benefit both Arms Race and Alliance VS simultaneously.",
-                    tips: ["Hero EXP works for both events", "Construction speedups double-count", "Research activities align perfectly", "Drone activities overlap on Monday"]
-                },
-                {
-                    title: "Resource Conservation",
-                    category: "Planning Strategy",
-                    icon: "💎",
-                    description: "Save premium resources for high-priority alignment windows rather than using them during low-synergy periods.",
-                    tips: ["Hoard speedups for perfect alignments", "Use basic resources during normal time", "Track upcoming priority windows", "Plan resource usage in advance"]
-                },
-                {
-                    title: "Mobile Optimization",
-                    category: "Practical Tips",
-                    icon: "📱",
-                    description: "Set up notifications and quick-access strategies for managing events while mobile gaming with predictable schedules.",
-                    tips: ["Use browser notifications", "Bookmark priority times", "Set phone alarms for peak windows", "Use predictable schedule for planning"]
-                }
-            ];
+            let guides = [];
+            
+            if (this.activeGuideType === 'tips') {
+                guides = [
+                    {
+                        title: "5 Distinct Arms Race Phases",
+                        category: "Core Mechanics",
+                        icon: "🔄",
+                        description: "Arms Race runs 5 distinct phases, each lasting 4 hours in a 20-hour cycle that restarts at 20:00. Master this schedule for optimal planning.",
+                        tips: ["Each phase lasts exactly 4 hours", "20-hour cycle (5 phases × 4 hours)", "Cycle restarts at 20:00 server time", "Same phase appears at different times each day"]
+                    },
+                    {
+                        title: "Perfect Alignment Windows",
+                        category: "Peak Efficiency",
+                        icon: "🎯",
+                        description: "Time activities when Arms Race phases perfectly match Alliance VS focus days for maximum dual rewards.",
+                        tips: ["Tech Research + Age of Science = Perfect", "City Building + Base Expansion = Maximum", "Hero Advancement + Train Heroes = Ideal", "Friday offers multiple alignments"]
+                    },
+                    {
+                        title: "Friday Total Mobilization",
+                        category: "Weekly Peak",
+                        icon: "🚀",
+                        description: "Friday offers multiple high-priority windows since Total Mobilization accepts all activity types across all phases.",
+                        tips: ["Save speedups for Friday", "Multiple Arms Race alignments possible", "Highest daily point potential", "All phases can be high priority"]
+                    },
+                    {
+                        title: "Server Time Mastery",
+                        category: "Timing Strategy",
+                        icon: "🕐",
+                        description: "Master your server's predictable 4-hour Arms Race rotation. The schedule is completely consistent once you know the server time.",
+                        tips: ["Know exact server time", "5-phase × 4-hour cycle", "Cycle restarts at 20:00 daily", "Plan with 20-hour rotation in mind"]
+                    },
+                    {
+                        title: "Dual Event Synergy",
+                        category: "Advanced Strategy",
+                        icon: "⚡",
+                        description: "Maximize efficiency by focusing on activities that benefit both Arms Race and Alliance VS simultaneously.",
+                        tips: ["Hero EXP works for both events", "Construction speedups double-count", "Research activities align perfectly", "Drone activities overlap on Monday"]
+                    },
+                    {
+                        title: "Resource Conservation",
+                        category: "Planning Strategy",
+                        icon: "💎",
+                        description: "Save premium resources for high-priority alignment windows rather than using them during low-synergy periods.",
+                        tips: ["Hoard speedups for perfect alignments", "Use basic resources during normal time", "Track upcoming priority windows", "Plan resource usage in advance"]
+                    },
+                    {
+                        title: "Mobile Optimization",
+                        category: "Practical Tips",
+                        icon: "📱",
+                        description: "Set up notifications and quick-access strategies for managing events while mobile gaming with predictable schedules.",
+                        tips: ["Use browser notifications", "Bookmark priority times", "Set phone alarms for peak windows", "Use predictable schedule for planning"]
+                    }
+                ];
+            } else if (this.activeGuideType === 'seasonal') {
+                guides = [
+                    {
+                        title: "Season 1: Foundation",
+                        category: "Early Game Focus",
+                        icon: "🌱",
+                        description: "Focus on base development and understanding core mechanics. Establish strong fundamentals for resource generation and troop training.",
+                        tips: ["Prioritize base building upgrades", "Complete daily missions consistently", "Join active alliance early", "Focus on march size increases", "Save diamonds for commanders"]
+                    },
+                    {
+                        title: "Season 2: Expansion",
+                        category: "Mid Game Growth",
+                        icon: "🏗️",
+                        description: "Expand your power through research and advanced base upgrades. Begin participating in larger alliance activities.",
+                        tips: ["Rush Research Lab upgrades", "Focus on economic research", "Participate in alliance events", "Start building T3 troops", "Upgrade resource production"]
+                    },
+                    {
+                        title: "Season 3: Competition",
+                        category: "PvP Preparation",
+                        icon: "⚔️",
+                        description: "Prepare for competitive play with optimized builds and strategic resource management. Focus on combat effectiveness.",
+                        tips: ["Specialize in combat research", "Build hospital capacity", "Focus on T4 troop training", "Learn rally mechanics", "Optimize gear sets"]
+                    },
+                    {
+                        title: "Season 4: Mastery",
+                        category: "Late Game Excellence",
+                        icon: "👑",
+                        description: "Master advanced strategies, lead alliance operations, and optimize for maximum efficiency in all activities.",
+                        tips: ["Master rally timing", "Optimize resource management", "Lead alliance strategies", "Focus on T5 research", "Maximize event participation", "Coordinate cross-server activities"]
+                    }
+                ];
+            }
             
             const html = guides.map(guide => `
                 <div class="priority-window-card">

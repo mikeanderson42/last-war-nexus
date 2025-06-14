@@ -123,12 +123,17 @@ class VSPointsOptimizer {
 
     init() {
         try {
+            console.log('Last War Nexus: Starting initialization...');
             this.loadSettings();
+            console.log('Settings loaded. Setup complete:', this.isSetupComplete);
             this.setupEventListeners();
+            console.log('Event listeners setup complete');
             
             if (!this.isSetupComplete) {
+                console.log('Showing setup modal...');
                 this.showSetupModal();
             } else {
+                console.log('Setup complete, updating displays...');
                 this.updateAllDisplays();
                 this.startUpdateLoop();
             }
@@ -419,11 +424,16 @@ class VSPointsOptimizer {
     }
 
     showSetupModal() {
+        console.log('showSetupModal called');
         const modal = document.getElementById('setup-modal');
+        console.log('Setup modal element found:', !!modal);
         if (modal) {
             modal.classList.add('show');
+            console.log('Added show class to modal');
             this.startSetupTimeUpdate();
             this.populateSetupDefaults();
+        } else {
+            console.error('Setup modal element not found!');
         }
     }
 
@@ -1750,7 +1760,8 @@ class VSPointsOptimizer {
                 const settings = JSON.parse(saved);
                 this.timeOffset = settings.timeOffset || 0;
                 this.notificationsEnabled = settings.notificationsEnabled || false;
-                this.isSetupComplete = settings.isSetupComplete || false;
+                // Temporarily force setup to appear for testing
+                this.isSetupComplete = false; // settings.isSetupComplete || false;
                 this.currentPhaseOverride = settings.currentPhaseOverride || null;
                 this.nextPhaseOverride = settings.nextPhaseOverride || null;
                 

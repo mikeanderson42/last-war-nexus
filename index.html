@@ -442,8 +442,32 @@
                         <label for="setup-time-offset">Time Zone Adjustment</label>
                         <p class="setup-help">Adjust to match your server's time zone</p>
                         <select id="setup-time-offset" class="form-select" required>
-                            <option value="0">UTC +0 hours</option>
-                            <!-- Options populated by JavaScript -->
+                            <option value="-12">UTC -12 hours</option>
+                            <option value="-11">UTC -11 hours</option>
+                            <option value="-10">UTC -10 hours</option>
+                            <option value="-9">UTC -9 hours</option>
+                            <option value="-8">UTC -8 hours</option>
+                            <option value="-7">UTC -7 hours</option>
+                            <option value="-6">UTC -6 hours</option>
+                            <option value="-5">UTC -5 hours</option>
+                            <option value="-4">UTC -4 hours</option>
+                            <option value="-3">UTC -3 hours</option>
+                            <option value="-2">UTC -2 hours</option>
+                            <option value="-1">UTC -1 hour</option>
+                            <option value="0" selected>UTC +0 hours</option>
+                            <option value="1">UTC +1 hour</option>
+                            <option value="2">UTC +2 hours</option>
+                            <option value="3">UTC +3 hours</option>
+                            <option value="4">UTC +4 hours</option>
+                            <option value="5">UTC +5 hours</option>
+                            <option value="5.5">UTC +5.5 hours</option>
+                            <option value="6">UTC +6 hours</option>
+                            <option value="7">UTC +7 hours</option>
+                            <option value="8">UTC +8 hours</option>
+                            <option value="9">UTC +9 hours</option>
+                            <option value="10">UTC +10 hours</option>
+                            <option value="11">UTC +11 hours</option>
+                            <option value="12">UTC +12 hours</option>
                         </select>
                     </div>
 
@@ -452,7 +476,11 @@
                         <p class="setup-help">Override if auto-detection is incorrect</p>
                         <select id="setup-current-phase" class="form-select">
                             <option value="">Auto-detect (recommended)</option>
-                            <!-- Options populated by JavaScript -->
+                            <option value="city_building">🏗️ City Building</option>
+                            <option value="unit_progression">⚔️ Unit Progression</option>
+                            <option value="tech_research">🔬 Tech Research</option>
+                            <option value="drone_boost">🚁 Drone Boost</option>
+                            <option value="hero_advancement">🦸 Hero Advancement</option>
                         </select>
                     </div>
 
@@ -461,15 +489,19 @@
                         <p class="setup-help">For testing or manual verification</p>
                         <select id="setup-next-phase" class="form-select">
                             <option value="">Auto-detect (recommended)</option>
-                            <!-- Options populated by JavaScript -->
+                            <option value="city_building">🏗️ City Building</option>
+                            <option value="unit_progression">⚔️ Unit Progression</option>
+                            <option value="tech_research">🔬 Tech Research</option>
+                            <option value="drone_boost">🚁 Drone Boost</option>
+                            <option value="hero_advancement">🦸 Hero Advancement</option>
                         </select>
                     </div>
 
                     <div class="setup-actions">
-                        <button type="button" class="btn btn-primary" data-action="complete-setup">
+                        <button type="button" class="btn btn-primary" id="setup-complete">
                             Complete Setup
                         </button>
-                        <button type="button" class="btn btn-secondary" data-action="close-modal">
+                        <button type="button" class="btn btn-secondary" id="setup-skip">
                             Skip for Now
                         </button>
                     </div>

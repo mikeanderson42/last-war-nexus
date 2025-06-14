@@ -149,6 +149,9 @@ class VSPointsOptimizer {
             // Setup time toggle event listener
             this.setupTimeToggle();
             
+            // Setup card time toggle
+            this.setupCardTimeToggle();
+            
             // Main navigation - CONSOLIDATED SETTINGS
             const settingsToggle = document.getElementById('settings-toggle');
             if (settingsToggle) {
@@ -168,14 +171,15 @@ class VSPointsOptimizer {
                 });
             });
 
-            // Guide navigation
-            document.querySelectorAll('.guide-nav-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const guideType = e.currentTarget.getAttribute('data-guide-type');
+            // Guide navigation - using event delegation since buttons are created dynamically
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('.guide-nav-btn')) {
+                    const btn = e.target.closest('.guide-nav-btn');
+                    const guideType = btn.getAttribute('data-guide-type');
                     if (guideType) {
                         this.switchGuideType(guideType);
                     }
-                });
+                }
             });
 
             // Settings dropdown changes
@@ -234,13 +238,6 @@ class VSPointsOptimizer {
                 }
             });
 
-            // Banner close
-            const bannerClose = document.getElementById('banner-close');
-            if (bannerClose) {
-                bannerClose.addEventListener('click', () => {
-                    this.hideBanner();
-                });
-            }
 
             // Visibility change handling
             document.addEventListener('visibilitychange', () => {
@@ -379,6 +376,45 @@ class VSPointsOptimizer {
         const label = document.getElementById('time-toggle-label');
         if (label) {
             label.textContent = this.showLocalTime ? 'Local Time' : 'Server Time';
+        }
+        
+        // Update card toggle
+        this.updateCardTimeToggle();
+    }
+
+    setupCardTimeToggle() {
+        try {
+            const cardToggle = document.getElementById('card-time-toggle');
+            
+            if (cardToggle) {
+                cardToggle.addEventListener('click', () => {
+                    this.toggleTimeMode();
+                });
+            }
+
+            // Initialize the card toggle
+            this.updateCardTimeToggle();
+
+        } catch (error) {
+            console.error('Card time toggle setup error:', error);
+        }
+    }
+
+    updateCardTimeToggle() {
+        const cardToggle = document.getElementById('card-time-toggle');
+        const localLabel = document.getElementById('toggle-label-local');
+        const serverLabel = document.getElementById('toggle-label-server');
+        
+        if (cardToggle) {
+            if (this.showLocalTime) {
+                cardToggle.classList.remove('active');
+                if (localLabel) localLabel.classList.add('active');
+                if (serverLabel) serverLabel.classList.remove('active');
+            } else {
+                cardToggle.classList.add('active');
+                if (localLabel) localLabel.classList.remove('active');
+                if (serverLabel) serverLabel.classList.add('active');
+            }
         }
     }
 
@@ -924,7 +960,6 @@ class VSPointsOptimizer {
             this.updateTimeDisplay();
             this.updateCurrentStatus();
             this.updatePriorityDisplay();
-            this.updateBanner();
             this.updatePriorityEventsBanner();
             if (this.activeTab) {
                 this.populateTabContent(this.activeTab);
@@ -991,8 +1026,30 @@ class VSPointsOptimizer {
                 }
             }
 
+            // Update progress bar
+            this.updateProgressBar();
+
         } catch (error) {
             console.error('Time display error:', error);
+        }
+    }
+
+    updateProgressBar() {
+        try {
+            const progressFill = document.getElementById('countdown-progress-fill');
+            if (!progressFill) return;
+
+            const currentPhase = this.getCurrentArmsPhase();
+            const totalPhaseTime = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
+            const remainingTime = (currentPhase.hoursRemaining * 60 * 60 * 1000) + 
+                                 (currentPhase.minutesRemaining * 60 * 1000);
+            const elapsed = totalPhaseTime - remainingTime;
+            const progressPercent = (elapsed / totalPhaseTime) * 100;
+
+            progressFill.style.width = `${Math.max(0, Math.min(100, progressPercent))}%`;
+
+        } catch (error) {
+            console.error('Progress bar update error:', error);
         }
     }
 
@@ -1126,42 +1183,6 @@ class VSPointsOptimizer {
         }
     }
 
-    updateBanner() {
-        try {
-            const banner = document.getElementById('priority-banner');
-            if (!banner) return;
-            
-            const nextWindow = this.findNextPriorityWindow();
-            
-            if (nextWindow && nextWindow.isActive) {
-                const titleElement = document.getElementById('banner-title');
-                const timeElement = document.getElementById('banner-time');
-                
-                if (titleElement) titleElement.textContent = 'Peak Efficiency Active!';
-                if (timeElement) timeElement.textContent = this.formatTime(nextWindow.timeRemaining);
-                
-                banner.classList.add('peak-priority', 'show');
-                
-                if (this.notificationsEnabled && this.lastNotifiedWindow !== nextWindow.alignment.reason) {
-                    this.showNotification('High Priority Active!', `${nextWindow.phase.name} + ${nextWindow.vsDay.title}`);
-                    this.lastNotifiedWindow = nextWindow.alignment.reason;
-                }
-            } else if (nextWindow && nextWindow.timeRemaining < 2 * 60 * 60 * 1000) {
-                const titleElement = document.getElementById('banner-title');
-                const timeElement = document.getElementById('banner-time');
-                
-                if (titleElement) titleElement.textContent = 'High Priority Soon';
-                if (timeElement) timeElement.textContent = this.formatTime(nextWindow.timeRemaining);
-                
-                banner.classList.remove('peak-priority');
-                banner.classList.add('show');
-            } else {
-                this.hideBanner();
-            }
-        } catch (error) {
-            console.error('Banner update error:', error);
-        }
-    }
 
     updatePriorityEventsBanner() {
         try {
@@ -1684,12 +1705,6 @@ class VSPointsOptimizer {
         }
     }
 
-    hideBanner() {
-        const banner = document.getElementById('priority-banner');
-        if (banner) {
-            banner.classList.remove('show', 'peak-priority');
-        }
-    }
 
     async requestNotificationPermission() {
         try {

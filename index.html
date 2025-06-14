@@ -1501,13 +1501,31 @@
                     <div class="countdown-card-compact">
                         <div class="card-header">
                             <h3>⏰ Phase Transition</h3>
-                            <div class="time-mode-indicator" id="time-mode-indicator" style="font-size: 0.7rem; color: var(--text-secondary); opacity: 0.8;">
-                                <span id="time-mode-label">Local Time</span>
+                            <div class="time-mode-toggle">
+                                <span class="toggle-label" id="toggle-label-local">Local</span>
+                                <div class="toggle-switch" id="card-time-toggle">
+                                    <div class="toggle-slider"></div>
+                                </div>
+                                <span class="toggle-label" id="toggle-label-server">Server</span>
                             </div>
                         </div>
                         <div class="card-content">
                             <div id="countdown-timer" class="countdown-value">Loading...</div>
                             <div id="current-phase" class="current-phase">Loading...</div>
+                            
+                            <!-- Countdown Progress Bar -->
+                            <div class="countdown-progress-section">
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar" id="countdown-progress">
+                                        <div class="progress-fill" id="countdown-progress-fill"></div>
+                                        <div class="progress-glow" id="countdown-progress-glow"></div>
+                                    </div>
+                                </div>
+                                <div class="progress-labels">
+                                    <span class="progress-label-start">Phase Start</span>
+                                    <span class="progress-label-end">Phase End</span>
+                                </div>
+                            </div>
                             <div class="time-details" style="margin-top: var(--spacing-sm); padding: var(--spacing-xs); background: var(--bg-elevated); border-radius: var(--border-radius); border: 1px solid var(--border-primary);">
                                 <div class="time-row" style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 2px;">
                                     <span style="color: var(--text-secondary);">Current Time:</span>
@@ -1645,18 +1663,6 @@
         </main>
     </div>
 
-    <div class="priority-banner" id="priority-banner" role="alert">
-        <div class="banner-container">
-            <div class="banner-content">
-                <div class="banner-icon">⚡</div>
-                <div class="banner-text">
-                    <div class="banner-title" id="banner-title">High Priority Active</div>
-                </div>
-                <div class="banner-time" id="banner-time">Loading...</div>
-                <button class="banner-close" id="banner-close" type="button" aria-label="Close notification">×</button>
-            </div>
-        </div>
-    </div>
 
     <!-- Setup Modal -->
     <div class="setup-modal" id="setup-modal">
@@ -1719,9 +1725,8 @@
 
                 <div class="setup-section">
                     <h3>Current Arms Race Phase</h3>
-                    <p class="setup-help">Check in-game Arms Race event (optional)</p>
+                    <p class="setup-help">Select the phase currently active in-game</p>
                     <select id="setup-current-phase" class="setup-select">
-                        <option value="">Auto-detect from server time</option>
                         <option value="city_building">🏗️ City Building</option>
                         <option value="unit_progression">⚔️ Unit Progression</option>
                         <option value="tech_research">🔬 Tech Research</option>
@@ -1734,7 +1739,6 @@
                     <h3>Next Arms Race Phase</h3>
                     <p class="setup-help">What phase will be active next (in about 4 hours)?</p>
                     <select id="setup-next-phase" class="setup-select">
-                        <option value="">Auto-detect from current phase</option>
                         <option value="city_building">🏗️ City Building</option>
                         <option value="unit_progression">⚔️ Unit Progression</option>
                         <option value="tech_research">🔬 Tech Research</option>

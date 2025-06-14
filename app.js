@@ -1761,7 +1761,7 @@ class VSPointsOptimizer {
                 this.timeOffset = settings.timeOffset || 0;
                 this.notificationsEnabled = settings.notificationsEnabled || false;
                 // Temporarily force setup to appear for testing
-                this.isSetupComplete = false; // settings.isSetupComplete || false;
+                this.isSetupComplete = false; /* settings.isSetupComplete || false; */
                 this.currentPhaseOverride = settings.currentPhaseOverride || null;
                 this.nextPhaseOverride = settings.nextPhaseOverride || null;
                 

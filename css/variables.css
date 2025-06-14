@@ -1,0 +1,217 @@
+/*!
+ * Last War Nexus - Design System Variables
+ * Centralized design tokens for consistent theming
+ */
+
+:root {
+  /* ========================================
+   * COLOR PALETTE
+   * Core colors for the gaming-themed UI
+   * ======================================== */
+  
+  /* Background Colors */
+  --bg-primary: #0f172a;     /* Dark blue-gray - main background */
+  --bg-secondary: #1e293b;   /* Lighter dark - secondary surfaces */
+  --bg-tertiary: #334155;    /* Mid gray - tertiary elements */
+  --bg-card: #1e293b;        /* Card backgrounds */
+  --bg-elevated: #334155;    /* Elevated surfaces (modals, dropdowns) */
+  --bg-surface: #475569;     /* Surface elements */
+
+  /* Text Colors */
+  --text-primary: #f8fafc;   /* Primary text - high contrast */
+  --text-secondary: #cbd5e1; /* Secondary text - medium contrast */
+  --text-tertiary: #94a3b8;  /* Tertiary text - lower contrast */
+  --text-muted: #64748b;     /* Muted text - subtle information */
+
+  /* Border Colors */
+  --border-primary: #475569;   /* Primary borders */
+  --border-secondary: #64748b; /* Secondary borders */
+
+  /* Accent Colors */
+  --accent-primary: #0ea5e9;     /* Sky blue - primary actions */
+  --accent-primary-dark: #0284c7; /* Darker blue - hover states */
+  --accent-secondary: #8b5cf6;    /* Purple - secondary actions */
+  --accent-success: #10b981;      /* Green - success states */
+  --accent-warning: #f59e0b;      /* Orange - warning states */
+  --accent-error: #ef4444;        /* Red - error states */
+
+  /* ========================================
+   * GRADIENTS
+   * Modern gradient combinations
+   * ======================================== */
+  
+  --gradient-primary: linear-gradient(135deg, var(--accent-primary), var(--accent-primary-dark));
+  --gradient-secondary: linear-gradient(135deg, var(--accent-secondary), #7c3aed);
+  --gradient-elevated: linear-gradient(135deg, var(--bg-elevated), var(--bg-surface));
+  --gradient-gaming: linear-gradient(135deg, #0ea5e9, #8b5cf6);
+
+  /* ========================================
+   * TYPOGRAPHY SYSTEM
+   * Comprehensive font scale and weights
+   * ======================================== */
+  
+  /* Font Families */
+  --font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+
+  /* Font Sizes */
+  --font-size-xs: 0.75rem;    /* 12px */
+  --font-size-sm: 0.875rem;   /* 14px */
+  --font-size-base: 1rem;     /* 16px */
+  --font-size-lg: 1.125rem;   /* 18px */
+  --font-size-xl: 1.25rem;    /* 20px */
+  --font-size-2xl: 1.5rem;    /* 24px */
+  --font-size-3xl: 1.875rem;  /* 30px */
+  --font-size-4xl: 2.25rem;   /* 36px */
+  --font-size-5xl: 3rem;      /* 48px */
+
+  /* Font Weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  /* Line Heights */
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.625;
+  --line-height-loose: 2;
+
+  /* ========================================
+   * SPACING SCALE
+   * Consistent spacing for layouts
+   * ======================================== */
+  
+  --spacing-xs: 0.25rem;   /* 4px */
+  --spacing-sm: 0.5rem;    /* 8px */
+  --spacing-md: 1rem;      /* 16px */
+  --spacing-lg: 1.5rem;    /* 24px */
+  --spacing-xl: 2rem;      /* 32px */
+  --spacing-2xl: 2.5rem;   /* 40px */
+  --spacing-3xl: 3rem;     /* 48px */
+  --spacing-4xl: 4rem;     /* 64px */
+
+  /* ========================================
+   * BORDER RADIUS
+   * Consistent rounded corners
+   * ======================================== */
+  
+  --border-radius-sm: 0.25rem;  /* 4px */
+  --border-radius: 0.5rem;      /* 8px */
+  --border-radius-md: 0.75rem;  /* 12px */
+  --border-radius-lg: 1rem;     /* 16px */
+  --border-radius-xl: 1.5rem;   /* 24px */
+  --border-radius-full: 9999px; /* Full rounded */
+
+  /* ========================================
+   * SHADOWS
+   * Depth and elevation system
+   * ======================================== */
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --shadow-gaming: 0 8px 32px rgba(14, 165, 233, 0.2);
+
+  /* ========================================
+   * TRANSITIONS & ANIMATIONS
+   * Smooth interactions and timing
+   * ======================================== */
+  
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+  --transition-spring: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  /* Animation Durations */
+  --duration-fast: 150ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+
+  /* Easing Functions */
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ========================================
+   * Z-INDEX SCALE
+   * Layering system for proper stacking
+   * ======================================== */
+  
+  --z-dropdown: 1000;
+  --z-modal: 2000;
+  --z-notification: 3000;
+  --z-tooltip: 4000;
+  --z-maximum: 9999;
+
+  /* ========================================
+   * BREAKPOINTS
+   * Responsive design system
+   * ======================================== */
+  
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  /* ========================================
+   * COMPONENT VARIABLES
+   * Specific component sizing and spacing
+   * ======================================== */
+  
+  /* Header */
+  --header-height: 64px;
+  
+  /* Tab Navigation */
+  --tab-height: 80px;
+  
+  /* Cards */
+  --card-padding: var(--spacing-lg);
+  --card-border-radius: var(--border-radius-lg);
+  
+  /* Buttons */
+  --button-height: 40px;
+  --button-padding: var(--spacing-sm) var(--spacing-md);
+  
+  /* Form Elements */
+  --input-height: 40px;
+  --input-padding: var(--spacing-sm) var(--spacing-md);
+}
+
+/* ========================================
+ * ACCESSIBILITY & THEME SUPPORT
+ * Respect user preferences
+ * ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition-fast: 0s;
+    --transition-normal: 0s;
+    --transition-slow: 0s;
+    --transition-spring: 0s;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --text-primary: #ffffff;
+    --text-secondary: #e2e8f0;
+    --border-primary: #64748b;
+    --border-secondary: #94a3b8;
+  }
+}
+
+/* Dark theme is default - light theme can be added later */
+[data-theme="light"] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-tertiary: #f1f5f9;
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-tertiary: #64748b;
+}

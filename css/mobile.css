@@ -1,0 +1,471 @@
+/*!
+ * Last War Nexus - Mobile Optimizations
+ * Responsive design and mobile-specific styles
+ */
+
+/* ========================================
+ * MOBILE-FIRST RESPONSIVE DESIGN
+ * ======================================== */
+
+/* Prevent horizontal overflow on mobile */
+* {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: hidden;
+}
+
+body {
+  overflow-x: hidden;
+  max-width: 100vw;
+  position: relative;
+}
+
+/* ========================================
+ * CONTAINER CONSTRAINTS
+ * ======================================== */
+
+.nav-container,
+.dashboard-grid-compact,
+.tab-container,
+.tab-content,
+.banner-container {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Text overflow prevention */
+.event-name-gaming,
+.event-action-gaming,
+.banner-title,
+.tab-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Flexible containers */
+.event-details-gaming,
+.banner-text {
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+/* Icon constraints */
+.brand-icon,
+.event-icon-large,
+.tab-icon,
+.banner-icon {
+  flex-shrink: 0;
+  max-width: none;
+}
+
+/* ========================================
+ * MOBILE BREAKPOINTS
+ * ======================================== */
+
+/* Small Mobile (320px - 479px) */
+@media (max-width: 479px) {
+  .nav-container {
+    padding: 0 var(--spacing-md);
+  }
+  
+  .brand-text {
+    font-size: var(--font-size-sm);
+  }
+  
+  .brand-subtitle {
+    display: none;
+  }
+  
+  .nav-actions {
+    gap: var(--spacing-xs);
+  }
+  
+  .time-toggle-btn {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    min-width: 60px;
+  }
+  
+  .time-toggle-label {
+    display: none;
+  }
+  
+  .tab-btn {
+    min-width: 150px;
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+  
+  .tab-description {
+    display: none;
+  }
+  
+  .tab-count {
+    display: none;
+  }
+  
+  .priority-window-header {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    align-items: flex-start;
+  }
+  
+  .primary-time {
+    font-size: var(--font-size-base);
+  }
+  
+  .banner-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Mobile (480px - 767px) */
+@media (max-width: 767px) {
+  .main-nav {
+    padding: var(--spacing-xs) 0;
+  }
+  
+  .nav-container {
+    padding: 0 var(--spacing-md);
+  }
+  
+  .brand {
+    gap: var(--spacing-xs);
+  }
+  
+  .nav-actions {
+    gap: var(--spacing-xs);
+  }
+  
+  .tab-container {
+    padding: 0 var(--spacing-md);
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  
+  .tab-container::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .tab-btn {
+    min-width: 180px;
+    flex-shrink: 0;
+  }
+  
+  .dashboard-grid-compact {
+    padding: var(--spacing-md);
+    gap: var(--spacing-md);
+  }
+  
+  .main-content {
+    padding: var(--spacing-md);
+  }
+  
+  .priority-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+  
+  .banner-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+  
+  .priority-events-banner.collapsed {
+    transform: translateY(calc(100% - 48px));
+  }
+  
+  .banner-header {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+  
+  .banner-content {
+    padding: var(--spacing-md);
+  }
+}
+
+/* ========================================
+ * TABLET STYLES
+ * ======================================== */
+
+/* Tablet Portrait (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .tab-container {
+    padding: 0 var(--spacing-lg);
+  }
+  
+  .dashboard-grid-compact {
+    grid-template-columns: 1fr 300px;
+    padding: var(--spacing-lg);
+  }
+  
+  .priority-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+  
+  .banner-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+}
+
+/* ========================================
+ * LARGE SCREEN OPTIMIZATIONS
+ * ======================================== */
+
+/* Desktop (1024px+) */
+@media (min-width: 1024px) {
+  .dashboard-grid-compact {
+    grid-template-columns: 1fr 350px;
+    padding: var(--spacing-xl);
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .priority-grid {
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  }
+  
+  .banner-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+  
+  .main-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--spacing-xl);
+  }
+}
+
+/* Extra Large Screens (1280px+) */
+@media (min-width: 1280px) {
+  .priority-grid {
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  }
+}
+
+/* ========================================
+ * TOUCH OPTIMIZATIONS
+ * ======================================== */
+
+/* Increase touch targets on mobile */
+@media (max-width: 767px) {
+  .tab-btn,
+  .btn,
+  button,
+  .settings-btn,
+  .time-toggle-btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  .toggle-switch {
+    min-width: 48px;
+    min-height: 28px;
+  }
+  
+  .banner-header {
+    min-height: 48px;
+  }
+  
+  /* Increase text size for better readability */
+  .tab-label {
+    font-size: var(--font-size-base);
+  }
+  
+  .primary-time {
+    font-size: var(--font-size-xl);
+  }
+  
+  .status-badge {
+    font-size: var(--font-size-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+}
+
+/* ========================================
+ * SWIPE GESTURES (CSS-only hints)
+ * ======================================== */
+
+@media (max-width: 767px) {
+  .tab-container {
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+  }
+  
+  .tab-btn {
+    scroll-snap-align: start;
+  }
+  
+  /* Add visual indicator for horizontal scroll */
+  .tab-container::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 20px;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, var(--accent-primary));
+    border-radius: 2px;
+    opacity: 0.5;
+  }
+}
+
+/* ========================================
+ * ORIENTATION HANDLING
+ * ======================================== */
+
+/* Landscape mode on mobile */
+@media (max-width: 767px) and (orientation: landscape) {
+  .main-nav {
+    padding: 4px 0;
+    min-height: 48px;
+  }
+  
+  .brand-icon {
+    font-size: 1.4rem;
+  }
+  
+  .brand-text {
+    font-size: var(--font-size-sm);
+  }
+  
+  .tab-navigation {
+    padding: var(--spacing-sm) 0;
+  }
+  
+  .dashboard-grid-compact {
+    gap: var(--spacing-sm);
+  }
+  
+  .priority-events-banner.collapsed {
+    transform: translateY(calc(100% - 40px));
+  }
+}
+
+/* ========================================
+ * ACCESSIBILITY IMPROVEMENTS
+ * ======================================== */
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .tab-container {
+    scroll-behavior: auto;
+  }
+  
+  .gentle-glow,
+  .progress-shimmer {
+    animation: none;
+  }
+  
+  .loading-spinner {
+    animation: none;
+    border-top-color: var(--accent-primary);
+  }
+}
+
+/* High contrast mode improvements */
+@media (prefers-contrast: high) {
+  .tab-btn {
+    border-width: 2px;
+  }
+  
+  .priority-window-card {
+    border-width: 2px;
+  }
+  
+  .btn {
+    border-width: 2px;
+  }
+}
+
+/* ========================================
+ * DARK MODE OPTIMIZATIONS
+ * ======================================== */
+
+@media (prefers-color-scheme: dark) {
+  /* Additional dark mode optimizations */
+  .tab-btn:hover {
+    background: var(--bg-surface);
+  }
+  
+  .priority-window-card:hover {
+    background: linear-gradient(145deg, var(--bg-elevated), var(--bg-card));
+  }
+}
+
+/* ========================================
+ * PRINT STYLES
+ * ======================================== */
+
+@media print {
+  .main-nav,
+  .tab-navigation,
+  .priority-events-banner,
+  .banner-header,
+  .nav-actions {
+    display: none;
+  }
+  
+  .main-content {
+    padding: 0;
+    margin: 0;
+  }
+  
+  .priority-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .priority-window-card {
+    break-inside: avoid;
+    margin-bottom: 1rem;
+  }
+  
+  body {
+    background: white;
+    color: black;
+  }
+}
+
+/* ========================================
+ * PERFORMANCE OPTIMIZATIONS
+ * ======================================== */
+
+/* GPU acceleration for smooth animations */
+.tab-btn,
+.priority-window-card,
+.btn,
+.toggle-switch,
+.progress-fill {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Remove GPU acceleration after animations */
+.tab-btn:not(:hover),
+.priority-window-card:not(:hover),
+.btn:not(:hover) {
+  will-change: auto;
+}
+
+/* Optimize for mobile rendering */
+@media (max-width: 767px) {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  body {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+  }
+  
+  input,
+  textarea,
+  select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+}

@@ -2,95 +2,71 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Last War Nexus - VS Points Optimizer for Last War: Survival</title>
-    <meta name="description" content="Professional VS Points optimizer for Last War: Survival. Track Arms Race phases and Alliance Duels to maximize efficiency during perfect alignment windows. Free tool with accurate 5-phase system.">
-    <meta name="keywords" content="Last War Survival, VS Points, Arms Race, Alliance Duel, optimizer, tracker, game tool">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0ea5e9">
+    <meta name="color-scheme" content="dark light">
+    
+    <!-- Primary Meta Tags -->
+    <title>Last War Nexus - VS Points & Arms Race Optimizer</title>
+    <meta name="title" content="Last War Nexus - VS Points & Arms Race Optimizer">
+    <meta name="description" content="Maximize VS points efficiency by tracking Arms Race phases and Alliance Duel alignment windows for Last War: Survival players.">
+    <meta name="keywords" content="Last War Survival, VS Points, Arms Race, Alliance Duel, optimization, strategy, gaming">
     <meta name="author" content="Last War Nexus">
-    <meta property="og:title" content="Last War Nexus - VS Points Optimizer">
-    <meta property="og:description" content="Maximize your VS Points in Last War: Survival with our professional optimizer. Track Arms Race phases and find perfect alignment windows.">
-    <meta property="og:type" content="website">
-    <meta name="twitter:card" content="summary">
     <meta name="robots" content="index, follow">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://lastwar-nexus.com/">
+    <meta property="og:title" content="Last War Nexus - VS Points Optimizer">
+    <meta property="og:description" content="Maximize VS points efficiency by tracking Arms Race phases and Alliance Duel alignment windows for Last War: Survival players.">
+    <meta property="og:image" content="https://lastwar-nexus.com/og-image.png">
+    <meta property="og:site_name" content="Last War Nexus">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://lastwar-nexus.com/">
+    <meta property="twitter:title" content="Last War Nexus - VS Points Optimizer">
+    <meta property="twitter:description" content="Maximize VS points efficiency by tracking Arms Race phases and Alliance Duel alignment windows for Last War: Survival players.">
+    <meta property="twitter:image" content="https://lastwar-nexus.com/og-image.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Apple PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="LW Nexus">
+    
+    <!-- Microsoft PWA Meta Tags -->
+    <meta name="msapplication-TileColor" content="#0ea5e9">
+    <meta name="msapplication-tap-highlight" content="no">
+    
+    <!-- Preconnect to optimize font loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎯</text></svg>">
+    
+    <!-- Critical CSS - inline for performance -->
     <style>
-        /* Last War Nexus - Production CSS - Enhanced Design */
-
-        /* ENHANCED: CSS Variables with better contrast and design */
+        /* Critical above-the-fold styles */
         :root {
-            --bg-primary: #0a0a0f;
-            --bg-secondary: #12121a;
-            --bg-tertiary: #1a1a26;
-            --bg-card: #1f1f2e;
-            --bg-elevated: #252538;
-            --bg-surface: #2a2a42;
-            
-            --text-primary: #ffffff;
-            --text-secondary: #e1e1ea;
-            --text-tertiary: #b8b8cc;
-            --text-muted: #8a8a9e;
-            
-            --border-primary: #3a3a52;
-            --border-secondary: #4a4a62;
-            --border-accent: #5a5a72;
-            
-            /* FIXED: Better contrast colors */
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
             --accent-primary: #0ea5e9;
-            --accent-primary-dark: #0284c7;
-            --accent-primary-light: #38bdf8;
-            --accent-secondary: #f97316;
-            --accent-success: #22c55e;
-            --accent-warning: #f59e0b;
-            --accent-error: #ef4444;
-            --accent-purple: #8b5cf6;
-            
-            --gradient-primary: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
-            --gradient-secondary: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
-            --gradient-success: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-            --gradient-card: linear-gradient(145deg, rgba(31, 31, 46, 0.95), rgba(26, 26, 38, 0.9));
-            --gradient-elevated: linear-gradient(145deg, rgba(37, 37, 56, 0.95), rgba(31, 31, 46, 0.9));
-            
-            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.15);
-            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.2);
-            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.25);
-            --shadow-xl: 0 12px 48px rgba(0, 0, 0, 0.3);
-            
-            --border-radius-sm: 6px;
-            --border-radius: 10px;
-            --border-radius-lg: 16px;
-            --border-radius-xl: 24px;
-            
-            --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-slow: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-            
             --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            --font-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New';
-            
-            --spacing-xs: 4px;
-            --spacing-sm: 8px;
-            --spacing-md: 12px;
-            --spacing-lg: 16px;
-            --spacing-xl: 24px;
-            --spacing-2xl: 32px;
         }
-
-        /* ENHANCED: Global Styles */
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
-        html {
-            font-size: 16px;
-            scroll-behavior: smooth;
-            overflow-x: hidden;
-        }
-
+        
         body {
             font-family: var(--font-family);
             background: var(--bg-primary);
@@ -98,1406 +74,209 @@
             line-height: 1.6;
             overflow-x: hidden;
             min-height: 100vh;
-            font-feature-settings: 'kern' 1, 'liga' 1;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
         }
-
-        /* ENHANCED: Typography Scale */
-        .text-xs { font-size: 0.75rem; line-height: 1.5; }
-        .text-sm { font-size: 0.875rem; line-height: 1.5; }
-        .text-base { font-size: 1rem; line-height: 1.6; }
-        .text-lg { font-size: 1.125rem; line-height: 1.6; }
-        .text-xl { font-size: 1.25rem; line-height: 1.5; }
-        .text-2xl { font-size: 1.5rem; line-height: 1.4; }
-        .text-3xl { font-size: 1.875rem; line-height: 1.3; }
-
-        .font-medium { font-weight: 500; }
-        .font-semibold { font-weight: 600; }
-        .font-bold { font-weight: 700; }
-        .font-extrabold { font-weight: 800; }
-
-        /* Screen Reader Only */
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border: 0;
-        }
-
-        /* ENHANCED: Interactive Elements */
-        button, .btn, .tab-btn {
-            transition: all var(--transition-fast);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            border: none;
-            outline: none;
-        }
-
-        button:focus-visible, .tab-btn:focus-visible, select:focus-visible {
-            outline: 2px solid var(--accent-primary);
-            outline-offset: 2px;
-            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.2);
-        }
-
-        button:active, .btn:active, .tab-btn:active {
-            transform: scale(0.98);
-        }
-
-        /* ENHANCED: Header with better typography */
-        .main-nav {
-            background: rgba(18, 18, 26, 0.95);
-            border-bottom: 1px solid var(--border-primary);
-            box-shadow: var(--shadow-md);
-            backdrop-filter: blur(20px);
-            position: sticky;
+        
+        .loading-screen {
+            position: fixed;
             top: 0;
-            z-index: 100;
-            padding: var(--spacing-md) 0;
-        }
-
-        .nav-container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 var(--spacing-xl);
-            max-width: 1200px;
-            margin: 0 auto;
+            left: 0;
             width: 100%;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-md);
-        }
-
-        .brand-icon-container {
-            position: relative;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .brand-icon {
-            font-size: 1.75rem;
-            filter: drop-shadow(0 0 12px rgba(255, 170, 0, 0.5));
-            animation: gentle-glow 4s ease-in-out infinite;
-        }
-
-        @keyframes gentle-glow {
-            0%, 100% { 
-                filter: drop-shadow(0 0 12px rgba(255, 170, 0, 0.5));
-                transform: scale(1);
-            }
-            50% { 
-                filter: drop-shadow(0 0 20px rgba(255, 170, 0, 0.7));
-                transform: scale(1.05);
-            }
-        }
-
-        .brand-info {
+            height: 100%;
+            background: var(--bg-primary);
             display: flex;
             flex-direction: column;
-            gap: 2px;
-        }
-
-        .brand-text {
-            font-size: 1.125rem;
-            font-weight: 800;
-            color: var(--text-primary);
-            line-height: 1.1;
-            letter-spacing: -0.025em;
-        }
-
-        .brand-subtitle {
-            font-size: 0.75rem;
-            color: var(--text-tertiary);
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-
-        /* ENHANCED: Settings Dropdown */
-        .nav-actions {
-            display: flex;
-            gap: var(--spacing-md);
             align-items: center;
-        }
-
-        .settings-dropdown-container {
-            position: relative;
-        }
-
-        .settings-btn {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            padding: var(--spacing-sm) var(--spacing-md);
-            background: var(--gradient-elevated);
-            border: 1px solid var(--border-secondary);
-            border-radius: var(--border-radius);
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all var(--transition-normal);
-            min-width: 120px;
             justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.3s ease;
         }
-
-        .settings-btn:hover {
-            background: var(--gradient-primary);
-            color: white;
-            border-color: var(--accent-primary);
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .settings-btn.active {
-            background: var(--gradient-primary);
-            color: white;
-            border-color: var(--accent-primary);
-            box-shadow: 0 0 20px rgba(14, 165, 233, 0.3);
-        }
-
-        /* ENHANCED: Settings Dropdown */
-        .settings-dropdown {
-            position: absolute;
-            top: calc(100% + 8px);
-            right: 0;
-            width: 320px;
-            max-width: calc(100vw - 32px);
-            background: var(--bg-elevated);
-            border: 1px solid var(--border-secondary);
-            border-radius: var(--border-radius-lg);
-            box-shadow: var(--shadow-xl);
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px) scale(0.95);
-            transition: all var(--transition-normal);
-            backdrop-filter: blur(20px);
-        }
-
-        .settings-dropdown.show {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0) scale(1);
-        }
-
-        .dropdown-header {
-            padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-md) var(--spacing-lg);
-            border-bottom: 1px solid var(--border-primary);
-            background: var(--gradient-elevated);
-            border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
-        }
-
-        .dropdown-header h3 {
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin: 0;
-        }
-
-        .dropdown-content {
-            padding: var(--spacing-lg);
-        }
-
-        .setting-row {
-            margin-bottom: var(--spacing-lg);
-        }
-
-        .setting-row:last-child {
-            margin-bottom: 0;
-        }
-
-        .setting-row label {
-            display: block;
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            font-weight: 600;
-            margin-bottom: var(--spacing-sm);
-        }
-
-        .dropdown-select {
-            width: 100%;
-            background: var(--bg-surface);
-            border: 1px solid var(--border-secondary);
-            color: var(--text-primary);
-            padding: var(--spacing-md);
-            border-radius: var(--border-radius);
-            font-size: 0.875rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all var(--transition-normal);
-        }
-
-        .dropdown-select:focus {
-            outline: none;
-            border-color: var(--accent-primary);
-            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
-            background: var(--bg-elevated);
-        }
-
-        .dropdown-select:hover {
-            border-color: var(--border-accent);
-        }
-
-        /* ENHANCED: Action Buttons */
-        .save-settings-btn {
-            width: 100%;
-            background: var(--gradient-success);
-            color: white;
-            border: none;
-            padding: var(--spacing-md) var(--spacing-lg);
-            border-radius: var(--border-radius);
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all var(--transition-normal);
-            margin-top: var(--spacing-sm);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .save-settings-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .setup-button {
-            width: 100%;
-            background: var(--bg-surface);
-            color: var(--text-secondary);
-            border: 1px solid var(--border-secondary);
-            padding: var(--spacing-sm) var(--spacing-md);
-            border-radius: var(--border-radius);
-            font-size: 0.8rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all var(--transition-normal);
-        }
-
-        .setup-button:hover {
-            background: var(--bg-elevated);
-            color: var(--text-primary);
-            border-color: var(--border-accent);
-        }
-
-        /* ENHANCED: Server Time Display in Settings */
-        .settings-server-time {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-primary);
-            border-radius: var(--border-radius);
-            padding: var(--spacing-md);
-            text-align: center;
-            margin-top: var(--spacing-lg);
-        }
-
-        .settings-time-label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-bottom: var(--spacing-xs);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            font-weight: 600;
-        }
-
-        .settings-time-value {
-            font-family: var(--font-mono);
-            font-size: 1.125rem;
-            font-weight: 700;
-            color: var(--accent-primary);
-        }
-
-        /* ENHANCED: Main Content Layout */
-        .app-container {
-            width: 100%;
-            min-height: calc(100vh - 80px);
-        }
-
-        .hero-dashboard-compact {
-            background: var(--bg-secondary);
-            padding: var(--spacing-xl) 0 var(--spacing-2xl) 0;
-        }
-
-        .dashboard-grid-compact {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 var(--spacing-xl);
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: var(--spacing-xl);
-            align-items: start;
-        }
-
-        /* ENHANCED: Priority Cards */
-        .priority-main-card {
-            background: var(--gradient-card);
-            border: 1px solid var(--border-secondary);
-            border-radius: var(--border-radius-lg);
-            box-shadow: var(--shadow-lg);
-            overflow: hidden;
-            transition: all var(--transition-normal);
-        }
-
-        .priority-main-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-xl);
-        }
-
-        .side-cards {
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-lg);
-            height: fit-content;
-        }
-
-        .countdown-card-compact, .strategy-card-compact {
-            background: var(--gradient-card);
-            border: 1px solid var(--border-secondary);
-            border-radius: var(--border-radius-lg);
-            box-shadow: var(--shadow-md);
-            overflow: hidden;
-            transition: all var(--transition-normal);
-        }
-
-        .countdown-card-compact:hover, .strategy-card-compact:hover {
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .card-header {
-            background: var(--bg-surface);
-            border-bottom: 1px solid var(--border-primary);
-            padding: var(--spacing-lg);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-md);
-        }
-
-        .header-left h2 {
-            font-size: 1.125rem;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-
-        .header-left h3 {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .live-indicator-small {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-xs);
-            background: rgba(34, 197, 94, 0.15);
-            border: 1px solid rgba(34, 197, 94, 0.3);
-            border-radius: 12px;
-            padding: 4px var(--spacing-sm);
-            font-size: 0.7rem;
-            font-weight: 700;
-            color: var(--accent-success);
-        }
-
-        .pulse-dot-mini {
-            width: 6px;
-            height: 6px;
-            background: var(--accent-success);
-            border-radius: 50%;
+        
+        .loading-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
             animation: pulse 2s ease-in-out infinite;
         }
-
-        .server-time-gaming {
-            font-family: var(--font-mono);
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--accent-primary);
-        }
-
-        .card-content {
-            padding: var(--spacing-lg);
-        }
-
-        /* ENHANCED: Priority Hero Section */
-        .priority-gaming-hero {
-            margin-bottom: var(--spacing-lg);
-        }
-
-        .active-now-strip {
-            background: var(--gradient-success);
-            border: none;
-            border-radius: var(--border-radius);
-            padding: var(--spacing-md);
-            margin-bottom: var(--spacing-md);
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-md);
-            color: white;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .active-badge {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 4px var(--spacing-sm);
-            border-radius: var(--border-radius-sm);
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .hero-badge {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: var(--spacing-md);
-            margin-bottom: var(--spacing-md);
-        }
-
-        .badge-icon {
-            font-size: 1.5rem;
-            color: var(--accent-warning);
-        }
-
-        .badge-label {
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: var(--text-tertiary);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-
-        .countdown-gaming-display {
-            text-align: center;
-            margin-bottom: var(--spacing-lg);
-        }
-
-        .countdown-main-gaming {
-            font-family: var(--font-mono);
-            font-size: 2.5rem;
-            font-weight: 800;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            line-height: 1;
-            margin-bottom: var(--spacing-xs);
-            text-shadow: 0 0 30px rgba(14, 165, 233, 0.5);
-        }
-
-        .countdown-label {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            font-weight: 600;
-        }
-
-        .countdown-value {
-            font-family: var(--font-mono);
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--accent-primary);
-            margin-bottom: var(--spacing-sm);
-        }
-
-        .current-phase {
-            font-size: 0.875rem;
-            color: var(--text-tertiary);
-            font-weight: 500;
-        }
-
-        /* ENHANCED: Event Card with More Details */
-        .event-gaming-card {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-primary);
-            border-radius: var(--border-radius-lg);
-            padding: var(--spacing-lg);
-            margin-bottom: var(--spacing-lg);
-            transition: all var(--transition-normal);
-        }
-
-        .event-gaming-card:hover {
-            border-color: var(--border-accent);
-            box-shadow: var(--shadow-md);
-        }
-
-        .event-card-header {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-md);
-            margin-bottom: var(--spacing-lg);
-        }
-
-        .event-icon-large {
-            font-size: 2rem;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            flex-shrink: 0;
-        }
-
-        .event-details-gaming {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .event-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: var(--spacing-sm);
-        }
-
-        .event-name-gaming {
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            line-height: 1.3;
-        }
-
-        .efficiency-badge {
-            background: var(--gradient-secondary);
-            color: white;
-            padding: 4px var(--spacing-sm);
-            border-radius: var(--border-radius-sm);
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .event-action-gaming {
-            font-size: 0.875rem;
-            color: var(--text-tertiary);
-            line-height: 1.5;
-            margin-bottom: var(--spacing-md);
-        }
-
-        /* ENHANCED: Spending Details */
-        .spending-details {
-            background: var(--bg-tertiary);
-            border-radius: var(--border-radius);
-            padding: var(--spacing-md);
-            margin-top: var(--spacing-md);
-        }
-
-        .spending-title {
-            font-size: 0.8rem;
-            font-weight: 600;
+        
+        .loading-text {
             color: var(--text-secondary);
-            margin-bottom: var(--spacing-sm);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .spending-items {
-            display: flex;
-            flex-wrap: wrap;
-            gap: var(--spacing-xs);
-        }
-
-        .spending-item {
-            background: var(--bg-elevated);
-            color: var(--text-secondary);
-            padding: 4px var(--spacing-sm);
-            border-radius: var(--border-radius-sm);
-            font-size: 0.75rem;
-            font-weight: 500;
-            border: 1px solid var(--border-primary);
-        }
-
-        .spending-item.high-value {
-            background: var(--gradient-secondary);
-            color: white;
-            border: none;
-        }
-
-        /* FIXED: Tab Navigation - Better Styling and Functionality */
-        .tab-navigation {
-            background: var(--bg-tertiary);
-            border-top: 1px solid var(--border-primary);
-            border-bottom: 3px solid var(--accent-primary);
-            padding: var(--spacing-lg) 0;
-            box-shadow: var(--shadow-md);
-            position: relative;
-            z-index: 50;
-        }
-
-        .tab-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 var(--spacing-xl);
-            display: flex;
-            gap: var(--spacing-sm);
-            overflow-x: auto;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-        }
-
-        .tab-container::-webkit-scrollbar {
-            display: none;
-        }
-
-        .tab-btn {
-            flex: 1;
-            min-width: 200px;
-            background: var(--bg-surface);
-            border: 1px solid var(--border-secondary);
-            border-radius: var(--border-radius-lg);
-            color: var(--text-secondary);
-            padding: var(--spacing-lg);
-            cursor: pointer;
-            transition: all var(--transition-normal);
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
-        }
-
-        .tab-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: var(--gradient-primary);
-            opacity: 0;
-            transition: opacity var(--transition-normal);
-            z-index: -1;
-        }
-
-        .tab-btn:hover {
-            color: var(--text-primary);
-            border-color: var(--accent-primary);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .tab-btn:hover::before {
-            opacity: 0.1;
-        }
-
-        .tab-btn.active {
-            background: var(--gradient-primary);
-            color: white;
-            border-color: var(--accent-primary);
-            box-shadow: 0 0 30px rgba(14, 165, 233, 0.4);
-            transform: translateY(-2px);
-        }
-
-        .tab-btn.active::before {
-            opacity: 0;
-        }
-
-        .tab-content-item {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-md);
-        }
-
-        .tab-icon {
-            font-size: 1.5rem;
-            flex-shrink: 0;
-        }
-
-        .tab-info {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            flex: 1;
-        }
-
-        .tab-label {
-            font-size: 0.95rem;
-            font-weight: 700;
-            line-height: 1.2;
-            margin-bottom: 2px;
-        }
-
-        .tab-count {
-            font-size: 0.75rem;
-            opacity: 0.8;
-            font-weight: 500;
-        }
-
-        /* Main Content */
-        .main-content {
-            background: var(--bg-secondary);
-            min-height: 60vh;
-            padding-bottom: var(--spacing-2xl);
-        }
-
-        .tab-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: var(--spacing-2xl) var(--spacing-xl);
-        }
-
-        .tab-panel {
-            display: none;
-        }
-
-        .tab-panel.active {
-            display: block;
-            animation: fadeIn 0.3s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ENHANCED: Section Headers */
-        .section-header {
-            margin-bottom: var(--spacing-2xl);
-            text-align: center;
-        }
-
-        .section-header h2 {
-            font-size: 2rem;
-            font-weight: 800;
-            color: var(--text-primary);
-            margin-bottom: var(--spacing-md);
-            letter-spacing: -0.025em;
-        }
-
-        .section-subtitle {
-            font-size: 1rem;
-            color: var(--text-tertiary);
-            margin-bottom: var(--spacing-xl);
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            line-height: 1.6;
-        }
-
-        /* ENHANCED: Priority Grid */
-        .priority-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: var(--spacing-xl);
-            margin-bottom: var(--spacing-2xl);
-        }
-
-        .priority-window-card {
-            background: var(--gradient-card);
-            border: 1px solid var(--border-secondary);
-            border-radius: var(--border-radius-lg);
-            overflow: hidden;
-            transition: all var(--transition-normal);
-            position: relative;
-        }
-
-        .priority-window-card:hover {
-            border-color: var(--border-accent);
-            box-shadow: var(--shadow-lg);
-            transform: translateY(-2px);
-        }
-
-        .priority-window-card.active {
-            border-color: var(--accent-success);
-            box-shadow: 0 0 30px rgba(34, 197, 94, 0.3);
-        }
-
-        .priority-window-card.peak {
-            border-color: var(--accent-warning);
-            box-shadow: 0 0 30px rgba(245, 158, 11, 0.3);
-        }
-
-        /* Loading States */
-        .loading-message {
-            text-align: center;
-            padding: var(--spacing-2xl);
-            color: var(--text-tertiary);
-            font-size: 1rem;
-            background: var(--bg-card);
-            border-radius: var(--border-radius-lg);
-            border: 1px solid var(--border-primary);
-        }
-
-        /* ENHANCED: Setup Modal */
-        .setup-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 2000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: all var(--transition-normal);
-            padding: var(--spacing-xl);
-        }
-
-        .setup-modal.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .setup-modal-backdrop {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(10, 10, 15, 0.8);
-            backdrop-filter: blur(8px);
-        }
-
-        .setup-modal-content {
-            position: relative;
-            background: var(--bg-elevated);
-            border: 1px solid var(--border-secondary);
-            border-radius: var(--border-radius-xl);
-            box-shadow: var(--shadow-xl);
-            width: 100%;
-            max-width: 500px;
-            max-height: 85vh;
-            transform: scale(0.9);
-            transition: transform var(--transition-normal);
-            overflow: hidden;
-        }
-
-        .setup-modal.show .setup-modal-content {
-            transform: scale(1);
-        }
-
-        .setup-header {
-            background: var(--gradient-elevated);
-            border-bottom: 1px solid var(--border-primary);
-            padding: var(--spacing-2xl);
-            text-align: center;
-        }
-
-        .setup-icon {
-            font-size: 3rem;
-            margin-bottom: var(--spacing-lg);
-            filter: drop-shadow(0 0 20px rgba(255, 170, 0, 0.6));
-        }
-
-        .setup-header h2 {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--text-primary);
-            margin-bottom: var(--spacing-sm);
-        }
-
-        .setup-header p {
-            font-size: 0.9rem;
-            color: var(--text-tertiary);
-            line-height: 1.5;
-        }
-
-        .setup-body {
-            padding: var(--spacing-xl);
-            max-height: calc(85vh - 200px);
-            overflow-y: auto;
-        }
-
-        .setup-section {
-            margin-bottom: var(--spacing-xl);
-        }
-
-        .setup-section:last-child {
-            margin-bottom: 0;
-        }
-
-        .setup-section h3 {
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: var(--spacing-sm);
-        }
-
-        .setup-help {
-            font-size: 0.8rem;
-            color: var(--text-tertiary);
-            margin-bottom: var(--spacing-md);
-            line-height: 1.4;
-        }
-
-        .server-time-display {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-primary);
-            border-radius: var(--border-radius-lg);
-            padding: var(--spacing-lg);
-            text-align: center;
-            margin-bottom: var(--spacing-md);
-        }
-
-        .setup-time {
-            font-family: var(--font-mono);
-            font-size: 1.75rem;
-            font-weight: 800;
-            color: var(--accent-primary);
-            margin-bottom: var(--spacing-xs);
-        }
-
-        .setup-timezone {
-            font-size: 0.8rem;
-            color: var(--text-tertiary);
-            font-weight: 500;
-        }
-
-        .setup-select {
-            width: 100%;
-            background: var(--bg-surface);
-            border: 1px solid var(--border-secondary);
-            color: var(--text-primary);
-            padding: var(--spacing-md);
-            border-radius: var(--border-radius);
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all var(--transition-normal);
-        }
-
-        .setup-select:focus {
-            outline: none;
-            border-color: var(--accent-primary);
-            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
-        }
-
-        .setup-footer {
-            background: var(--bg-surface);
-            border-top: 1px solid var(--border-primary);
-            padding: var(--spacing-xl);
-            display: flex;
-            gap: var(--spacing-md);
-            justify-content: flex-end;
-        }
-
-        .setup-btn {
-            padding: var(--spacing-md) var(--spacing-xl);
-            border: none;
-            border-radius: var(--border-radius);
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all var(--transition-normal);
-            min-width: 100px;
-        }
-
-        .setup-btn-secondary {
-            background: var(--bg-elevated);
-            color: var(--text-secondary);
-            border: 1px solid var(--border-secondary);
-        }
-
-        .setup-btn-secondary:hover {
-            background: var(--bg-surface);
-            color: var(--text-primary);
-            border-color: var(--border-accent);
-        }
-
-        .setup-btn-primary {
-            background: var(--gradient-primary);
-            color: white;
-            box-shadow: var(--shadow-md);
-        }
-
-        .setup-btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        /* Priority Banner */
-        .priority-banner {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            background: var(--gradient-secondary);
-            backdrop-filter: blur(20px);
-            border-top: 2px solid rgba(255, 255, 255, 0.1);
-            box-shadow: var(--shadow-xl);
-            transform: translateY(100%);
-            transition: transform var(--transition-normal);
-        }
-
-        .priority-banner.show {
-            transform: translateY(0);
-        }
-
-        .priority-banner.peak-priority {
-            background: var(--gradient-success);
-        }
-
-        .banner-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 var(--spacing-lg);
-        }
-
-        .banner-content {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-lg);
-            padding: var(--spacing-lg) 0;
-            color: white;
-            min-height: 60px;
-        }
-
-        .banner-icon {
-            font-size: 1.5rem;
-            animation: pulse-glow 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse-glow {
-            0%, 100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 0.8;
-                transform: scale(1.1);
-            }
-        }
-
-        .banner-text {
-            flex: 1;
-        }
-
-        .banner-title {
-            font-size: 1rem;
-            font-weight: 700;
-            margin-bottom: 2px;
-        }
-
-        .banner-time {
-            font-family: var(--font-mono);
             font-size: 1.125rem;
-            font-weight: 700;
-            background: rgba(255, 255, 255, 0.2);
-            padding: var(--spacing-sm) var(--spacing-md);
-            border-radius: var(--border-radius);
-            min-width: 80px;
-            text-align: center;
+            font-weight: 500;
         }
-
-        .banner-close {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.25rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all var(--transition-fast);
-        }
-
-        .banner-close:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(1.1);
-        }
-
-        /* Animations */
+        
         @keyframes pulse {
-            0%, 100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 0.6;
-                transform: scale(1.05);
-            }
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
         }
-
-        /* ENHANCED: Responsive Design */
-        @media (max-width: 768px) {
-            :root {
-                --spacing-xl: 16px;
-                --spacing-2xl: 24px;
-            }
-
-            .nav-container {
-                padding: 0 var(--spacing-lg);
-            }
-            
-            .dashboard-grid-compact {
-                grid-template-columns: 1fr;
-                gap: var(--spacing-lg);
-                padding: 0 var(--spacing-lg);
-            }
-            
-            .side-cards {
-                flex-direction: row;
-                gap: var(--spacing-md);
-            }
-            
-            .countdown-card-compact, .strategy-card-compact {
-                flex: 1;
-            }
-            
-            .tab-content {
-                padding: var(--spacing-xl) var(--spacing-lg);
-            }
-            
-            .priority-grid {
-                grid-template-columns: 1fr;
-                gap: var(--spacing-lg);
-            }
-            
-            .tab-container {
-                padding: 0 var(--spacing-lg);
-                gap: var(--spacing-sm);
-            }
-            
-            .tab-btn {
-                min-width: 160px;
-                padding: var(--spacing-md);
-            }
-
-            .countdown-main-gaming {
-                font-size: 2rem;
-            }
-
-            .settings-dropdown {
-                width: 300px;
-            }
+        
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
         }
-
-        @media (max-width: 480px) {
-            .brand-subtitle {
-                display: none;
-            }
-            
-            .side-cards {
-                flex-direction: column;
-                gap: var(--spacing-md);
-            }
-            
-            .nav-container {
-                padding: 0 var(--spacing-md);
-            }
-            
-            .dashboard-grid-compact {
-                padding: 0 var(--spacing-md);
-            }
-            
-            .tab-content {
-                padding: var(--spacing-lg) var(--spacing-md);
-            }
-            
-            .countdown-main-gaming {
-                font-size: 1.75rem;
-            }
-
-            .settings-dropdown {
-                width: 280px;
-                right: -8px;
-            }
-
-            .setup-modal {
-                padding: var(--spacing-md);
-            }
-
-            .setup-footer {
-                flex-direction: column-reverse;
-            }
-
-            .setup-btn {
-                width: 100%;
-            }
+        
+        /* Hide main content until loaded */
+        .app-container {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .app-container.loaded {
+            opacity: 1;
         }
     </style>
+    
+    <!-- Load CSS files asynchronously -->
+    <link rel="preload" href="/css/variables.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="/css/base.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="/css/components.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="/css/mobile.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    
+    <!-- Fallback for browsers without preload support -->
+    <noscript>
+        <link rel="stylesheet" href="/css/variables.css">
+        <link rel="stylesheet" href="/css/base.css">
+        <link rel="stylesheet" href="/css/components.css">
+        <link rel="stylesheet" href="/css/mobile.css">
+    </noscript>
+    
+    <!-- Preload critical JavaScript -->
+    <link rel="modulepreload" href="/js/config.js">
+    <link rel="modulepreload" href="/js/core.js">
+    <link rel="modulepreload" href="/js/ui.js">
+    <link rel="modulepreload" href="/js/app.js">
+    
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Last War Nexus",
+        "description": "VS Points & Arms Race optimization tool for Last War: Survival players",
+        "url": "https://lastwar-nexus.com",
+        "applicationCategory": "GameApplication",
+        "operatingSystem": "Web Browser",
+        "browserRequirements": "Requires JavaScript. Requires HTML5.",
+        "softwareVersion": "1.0.0",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "author": {
+            "@type": "Organization",
+            "name": "Last War Nexus"
+        }
+    }
+    </script>
 </head>
 <body>
-    <nav class="main-nav" role="navigation" aria-label="Main navigation">
-        <div class="nav-container">
-            <div class="brand-section">
+    <!-- Skip Link for Accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loading-screen">
+        <div class="loading-icon">🎯</div>
+        <div class="loading-text">Loading Last War Nexus...</div>
+    </div>
+    
+    <!-- Main Application Container -->
+    <div class="app-container" id="app-container">
+        <!-- Header Navigation -->
+        <header class="main-nav" role="banner">
+            <nav class="nav-container" role="navigation" aria-label="Main navigation">
                 <div class="brand">
                     <div class="brand-icon-container">
                         <span class="brand-icon" aria-hidden="true">🎯</span>
+                        <div class="brand-glow" aria-hidden="true"></div>
                     </div>
                     <div class="brand-info">
                         <span class="brand-text">Last War Nexus</span>
-                        <span class="brand-subtitle">VS Points & Arms Race Optimization</span>
+                        <span class="brand-subtitle">VS Points Optimizer</span>
                     </div>
                 </div>
-            </div>
-            <div class="nav-actions">
-                <div class="time-toggle-container">
-                    <button class="time-toggle-btn" id="time-toggle-btn" type="button" aria-label="Toggle between server and local time">
+                
+                <div class="nav-actions">
+                    <!-- Time Toggle Button -->
+                    <button class="time-toggle-btn" type="button" aria-label="Toggle between local and server time">
                         <span class="time-toggle-icon" aria-hidden="true">🕐</span>
-                        <span class="time-toggle-label" id="time-toggle-label">Local Time</span>
+                        <span class="time-toggle-label">Local Time</span>
                     </button>
-                </div>
-                <div class="settings-dropdown-container">
-                    <button class="settings-btn" id="settings-toggle" type="button" aria-label="System settings">
-                        <span class="settings-icon" aria-hidden="true">⚙️</span>
-                        <span class="settings-label">System Settings</span>
-                    </button>
-                    <div class="settings-dropdown" id="settings-dropdown">
-                        <div class="dropdown-header">
-                            <h3>System Settings</h3>
-                        </div>
-                        <div class="dropdown-content">
-                            <div class="setting-row">
-                                <label for="time-offset">Server Time Adjustment</label>
-                                <select id="time-offset" class="dropdown-select">
-                                    <option value="-12">UTC -12 hours</option>
-                                    <option value="-11">UTC -11 hours</option>
-                                    <option value="-10">UTC -10 hours</option>
-                                    <option value="-9">UTC -9 hours</option>
-                                    <option value="-8">UTC -8 hours</option>
-                                    <option value="-7">UTC -7 hours</option>
-                                    <option value="-6">UTC -6 hours</option>
-                                    <option value="-5">UTC -5 hours</option>
-                                    <option value="-4">UTC -4 hours</option>
-                                    <option value="-3">UTC -3 hours</option>
-                                    <option value="-2">UTC -2 hours</option>
-                                    <option value="-1">UTC -1 hour</option>
-                                    <option value="0" selected>UTC +0 hours</option>
-                                    <option value="1">UTC +1 hour</option>
-                                    <option value="2">UTC +2 hours</option>
-                                    <option value="3">UTC +3 hours</option>
-                                    <option value="4">UTC +4 hours</option>
-                                    <option value="5">UTC +5 hours</option>
-                                    <option value="5.5">UTC +5.5 hours</option>
-                                    <option value="6">UTC +6 hours</option>
-                                    <option value="7">UTC +7 hours</option>
-                                    <option value="8">UTC +8 hours</option>
-                                    <option value="9">UTC +9 hours</option>
-                                    <option value="10">UTC +10 hours</option>
-                                    <option value="11">UTC +11 hours</option>
-                                    <option value="12">UTC +12 hours</option>
-                                </select>
+                    
+                    <!-- Settings Dropdown -->
+                    <div class="settings-dropdown-container">
+                        <button class="settings-btn" type="button" aria-label="Open settings" aria-expanded="false">
+                            <span aria-hidden="true">⚙️</span>
+                            Settings
+                        </button>
+                        
+                        <div class="settings-dropdown" role="menu" aria-label="Settings menu">
+                            <div class="dropdown-header">
+                                <h3>Settings & Configuration</h3>
+                                <p>Adjust timezone and phase settings for accurate calculations</p>
                             </div>
-                            
-                            <div class="setting-row">
-                                <label for="current-phase-select">Current Arms Race Phase Override</label>
-                                <select id="current-phase-select" class="dropdown-select">
-                                    <option value="">Use server time calculation</option>
-                                    <option value="city_building">🏗️ City Building</option>
-                                    <option value="unit_progression">⚔️ Unit Progression</option>
-                                    <option value="tech_research">🔬 Tech Research</option>
-                                    <option value="drone_boost">🚁 Drone Boost</option>
-                                    <option value="hero_advancement">🦸 Hero Advancement</option>
-                                </select>
-                            </div>
-                            
-                            <div class="setting-row">
-                                <label for="next-phase-select">Next Arms Race Phase Override</label>
-                                <select id="next-phase-select" class="dropdown-select">
-                                    <option value="">Use calculated next phase</option>
-                                    <option value="city_building">🏗️ City Building</option>
-                                    <option value="unit_progression">⚔️ Unit Progression</option>
-                                    <option value="tech_research">🔬 Tech Research</option>
-                                    <option value="drone_boost">🚁 Drone Boost</option>
-                                    <option value="hero_advancement">🦸 Hero Advancement</option>
-                                </select>
-                            </div>
-                            
-                            <div class="setting-row">
-                                <label for="notifications-toggle">Priority Notifications</label>
-                                <select id="notifications-toggle" class="dropdown-select">
-                                    <option value="disabled">Disabled</option>
-                                    <option value="enabled">Enabled</option>
-                                </select>
-                            </div>
-                            
-                            <div class="setting-row">
-                                <button id="save-settings" class="save-settings-btn">💾 Save Settings</button>
-                            </div>
-                            
-                            <div class="setting-row">
-                                <button id="setup-button" class="setup-button">🎯 Run Setup</button>
-                            </div>
-                            
-                            <!-- ADDED: Server Time Display -->
-                            <div class="settings-server-time">
-                                <div class="settings-time-label">Current Server Time</div>
-                                <div class="settings-time-value" id="settings-server-time">Loading...</div>
+                            <div class="dropdown-content">
+                                <div class="setting-item">
+                                    <label for="settings-timezone">Server Timezone</label>
+                                    <select id="settings-timezone" class="form-select">
+                                        <option value="0">UTC +0 hours</option>
+                                        <!-- Options populated by JavaScript -->
+                                    </select>
+                                </div>
+                                <div class="setting-item">
+                                    <label for="settings-notifications">
+                                        <input type="checkbox" id="settings-notifications">
+                                        Enable Priority Notifications
+                                    </label>
+                                </div>
+                                <div class="setting-actions">
+                                    <button type="button" class="btn btn-secondary" data-action="reset-settings">
+                                        Reset to Defaults
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </nav>
+            </nav>
+        </header>
 
-    <div class="app-container">
-        <section class="hero-dashboard-compact">
+        <!-- Dashboard Section -->
+        <section class="dashboard-section" id="main-content">
             <div class="dashboard-grid-compact">
-                <div class="priority-main-card">
-                    <div class="card-header">
-                        <div class="header-left">
-                            <h2>VS Points Optimizer</h2>
-                            <div class="live-indicator-small">
-                                <div class="pulse-dot-mini"></div>
-                                <span>LIVE</span>
+                <div class="main-cards">
+                    <div class="current-status-card">
+                        <div class="card-header">
+                            <h2>🎯 Current Priority Status</h2>
+                            <div class="status-indicator" id="status-indicator">
+                                <span class="status-dot"></span>
+                                <span class="status-text">Loading...</span>
                             </div>
                         </div>
-                        <div id="server-time" class="server-time-gaming">Loading...</div>
-                    </div>
-                    <div class="card-content">
-                        <div class="priority-gaming-hero">
-                            <div class="active-now-strip" id="active-now" style="display: none;">
-                                <span class="active-badge">ACTIVE</span>
-                                <span id="active-action">Use speedups now!</span>
-                            </div>
-                            <div class="hero-badge">
-                                <div class="badge-icon">⚡</div>
-                                <div id="badge-label" class="badge-label">NEXT HIGH PRIORITY</div>
-                            </div>
-                            <div class="countdown-gaming-display">
-                                <div id="next-priority-time" class="countdown-main-gaming">Loading...</div>
-                                <div id="countdown-label" class="countdown-label">TIME REMAINING</div>
-                            </div>
-                            <div class="event-gaming-card">
-                                <div class="event-card-header">
-                                    <div class="event-icon-large" id="event-icon">🔬</div>
-                                    <div class="event-details-gaming">
-                                        <div class="event-row">
-                                            <div id="next-priority-event" class="event-name-gaming">Loading...</div>
-                                            <div id="efficiency-level" class="efficiency-badge">High</div>
-                                        </div>
-                                        <div id="current-action" class="event-action-gaming">Loading recommendations...</div>
-                                    </div>
+                        <div class="card-content">
+                            <div class="status-grid">
+                                <div class="status-item">
+                                    <span class="status-label">VS Day:</span>
+                                    <span class="status-value" id="current-vs-day">Loading...</span>
                                 </div>
-                                <!-- ENHANCED: Detailed Spending Information -->
-                                <div class="spending-details" id="spending-details">
-                                    <div class="spending-title">Best Spending For Maximum Points</div>
-                                    <div class="spending-items" id="spending-items">
-                                        <span class="spending-item">Loading...</span>
-                                    </div>
-                                    <div class="diamond-reminder" style="margin-top: var(--spacing-sm); font-size: 0.75rem; color: var(--accent-warning); opacity: 0.8;">
-                                        💎 Reminder: Diamond purchases award points in ALL phases
-                                    </div>
+                                <div class="status-item">
+                                    <span class="status-label">Arms Race:</span>
+                                    <span class="status-value" id="arms-phase">Loading...</span>
                                 </div>
+                                <div class="status-item">
+                                    <span class="status-label">Priority:</span>
+                                    <span class="status-value" id="priority-level">Loading...</span>
+                                </div>
+                            </div>
+                            
+                            <div class="next-priority-section">
+                                <h4>Next Priority Window</h4>
+                                <div class="next-priority-info" id="next-priority-info">Loading...</div>
                             </div>
                         </div>
                     </div>
                 </div>
-
+                
                 <div class="side-cards">
+                    <!-- Phase Countdown Card -->
                     <div class="countdown-card-compact">
                         <div class="card-header">
                             <h3>⏰ Phase Transition</h3>
@@ -1526,43 +305,42 @@
                                     <span class="progress-label-end">Phase End</span>
                                 </div>
                             </div>
-                            <div class="time-details" style="margin-top: var(--spacing-sm); padding: var(--spacing-xs); background: var(--bg-elevated); border-radius: var(--border-radius); border: 1px solid var(--border-primary);">
-                                <div class="time-row" style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 2px;">
-                                    <span style="color: var(--text-secondary);">Current Time:</span>
-                                    <span id="current-display-time" style="color: var(--text-primary); font-family: var(--font-mono);">Loading...</span>
+                            
+                            <div class="time-details">
+                                <div class="time-row">
+                                    <span class="time-label">Current Time:</span>
+                                    <span id="current-display-time" class="time-value">Loading...</span>
                                 </div>
-                                <div class="time-row" style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 2px;">
-                                    <span style="color: var(--text-secondary);">Server Time:</span>
-                                    <span id="server-display-time" style="color: var(--accent-primary); font-family: var(--font-mono);">Loading...</span>
+                                <div class="time-row">
+                                    <span class="time-label">Server Time:</span>
+                                    <span id="server-display-time" class="time-value">Loading...</span>
                                 </div>
-                                <div class="time-row" style="display: flex; justify-content: space-between; font-size: 0.75rem;">
-                                    <span style="color: var(--text-secondary);">Phase Ends:</span>
-                                    <span id="phase-end-time" style="color: var(--text-primary); font-family: var(--font-mono);">Loading...</span>
+                                <div class="time-row">
+                                    <span class="time-label">Phase Ends:</span>
+                                    <span id="phase-end-time" class="time-value">Loading...</span>
                                 </div>
                             </div>
-                            <div class="next-phase-preview" style="margin-top: var(--spacing-sm); font-size: 0.8rem; color: var(--text-tertiary);">
+                            
+                            <div class="next-phase-preview">
                                 <strong>Next:</strong> <span id="next-phase-preview">Loading...</span>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Strategy Tips Card -->
                     <div class="strategy-card-compact">
                         <div class="card-header">
-                            <h3>🎯 Current Status</h3>
-                            <div class="priority-status" id="priority-status-indicator" style="font-size: 0.7rem; padding: 2px 6px; border-radius: 3px; font-weight: 600;">
-                                Loading...
-                            </div>
+                            <h3>💡 Quick Tips</h3>
                         </div>
                         <div class="card-content">
-                            <div style="margin-bottom: var(--spacing-xs);"><strong>VS Day:</strong> <span id="current-vs-day">Loading...</span></div>
-                            <div style="margin-bottom: var(--spacing-xs);"><strong>Arms Race:</strong> <span id="arms-phase">Loading...</span></div>
-                            <div style="margin-bottom: var(--spacing-xs);"><strong>Priority:</strong> <span id="priority-level">Loading...</span></div>
-                            <div class="event-timing" style="margin-top: var(--spacing-sm); padding: var(--spacing-xs); background: var(--bg-elevated); border-radius: var(--border-radius); border: 1px solid var(--border-primary);">
-                                <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 4px; font-weight: 600;">Next Priority Window:</div>
-                                <div id="next-priority-info" style="font-size: 0.75rem; color: var(--accent-warning); font-family: var(--font-mono);">Loading...</div>
+                            <div class="tip-item">
+                                <strong>VIP Store Value:</strong> VIP Store offers better diamond value than regular store
                             </div>
-                            <div class="vip-tip" style="margin-top: var(--spacing-sm); font-size: 0.75rem; color: var(--accent-success); opacity: 0.9;">
-                                💡 Tip: VIP Store offers better diamond value than regular store
+                            <div class="tip-item">
+                                <strong>Friday Focus:</strong> Total Mobilization accepts all activity types - save speedups!
+                            </div>
+                            <div class="tip-item">
+                                <strong>Perfect Timing:</strong> Tech Research + Age of Science = maximum efficiency
                             </div>
                         </div>
                     </div>
@@ -1570,13 +348,13 @@
             </div>
         </section>
 
-        <!-- Enhanced Integrated Tab Navigation -->
+        <!-- Tab Navigation -->
         <nav class="tab-navigation" role="navigation" aria-label="Main sections">
             <div class="tab-container" role="tablist">
-                <button class="tab-btn active" data-tab="priority" type="button" role="tab" aria-selected="true">
+                <button class="tab-btn active" data-tab="priority" type="button" role="tab" aria-selected="true" id="priority-tab-btn">
                     <div class="tab-content-item">
                         <div class="tab-icon-wrapper">
-                            <span class="tab-icon">🎯</span>
+                            <span class="tab-icon" aria-hidden="true">🎯</span>
                         </div>
                         <div class="tab-info">
                             <span class="tab-label">Priority Windows</span>
@@ -1585,10 +363,10 @@
                         </div>
                     </div>
                 </button>
-                <button class="tab-btn" data-tab="schedule" type="button" role="tab" aria-selected="false">
+                <button class="tab-btn" data-tab="schedule" type="button" role="tab" aria-selected="false" id="schedule-tab-btn">
                     <div class="tab-content-item">
                         <div class="tab-icon-wrapper">
-                            <span class="tab-icon">🗓️</span>
+                            <span class="tab-icon" aria-hidden="true">🗓️</span>
                         </div>
                         <div class="tab-info">
                             <span class="tab-label">Event Schedule</span>
@@ -1597,10 +375,10 @@
                         </div>
                     </div>
                 </button>
-                <button class="tab-btn" data-tab="guides" type="button" role="tab" aria-selected="false">
+                <button class="tab-btn" data-tab="guides" type="button" role="tab" aria-selected="false" id="guides-tab-btn">
                     <div class="tab-content-item">
                         <div class="tab-icon-wrapper">
-                            <span class="tab-icon">📖</span>
+                            <span class="tab-icon" aria-hidden="true">📖</span>
                         </div>
                         <div class="tab-info">
                             <span class="tab-label">Strategy Hub</span>
@@ -1612,9 +390,11 @@
             </div>
         </nav>
 
+        <!-- Main Content Area -->
         <main class="main-content">
             <div class="tab-content">
-                <div id="priority-tab" class="tab-panel active">
+                <!-- Priority Windows Tab -->
+                <div id="priority-tab" class="tab-panel active" role="tabpanel" aria-labelledby="priority-tab-btn">
                     <div class="section-header">
                         <h2>High Priority VS Points Windows</h2>
                         <p class="section-subtitle">Optimal timing when Arms Race phases align with Alliance Duel days for maximum efficiency</p>
@@ -1624,7 +404,8 @@
                     </div>
                 </div>
 
-                <div id="schedule-tab" class="tab-panel">
+                <!-- Schedule Tab -->
+                <div id="schedule-tab" class="tab-panel" role="tabpanel" aria-labelledby="schedule-tab-btn">
                     <div class="section-header">
                         <h2>Complete Event Schedule</h2>
                         <p class="section-subtitle">Full weekly schedule showing Arms Race phases and Alliance Duel days</p>
@@ -1634,7 +415,8 @@
                     </div>
                 </div>
 
-                <div id="guides-tab" class="tab-panel">
+                <!-- Guides Tab -->
+                <div id="guides-tab" class="tab-panel" role="tabpanel" aria-labelledby="guides-tab-btn">
                     <div class="section-header">
                         <h2>Strategy Guides</h2>
                         <p class="section-subtitle">Expert tips for maximizing VS points and Arms Race efficiency</p>
@@ -1642,13 +424,13 @@
                     
                     <!-- Guide Type Navigation -->
                     <div class="guide-nav-container">
-                        <div class="guide-nav">
-                            <button class="guide-nav-btn active" data-guide-type="tips" type="button">
-                                <span class="guide-nav-icon">💡</span>
+                        <div class="guide-nav" role="tablist" aria-label="Guide categories">
+                            <button class="guide-nav-btn active" data-guide-type="tips" type="button" role="tab" aria-selected="true">
+                                <span class="guide-nav-icon" aria-hidden="true">💡</span>
                                 <span class="guide-nav-label">General Tips</span>
                             </button>
-                            <button class="guide-nav-btn" data-guide-type="seasonal" type="button">
-                                <span class="guide-nav-icon">📅</span>
+                            <button class="guide-nav-btn" data-guide-type="seasonal" type="button" role="tab" aria-selected="false">
+                                <span class="guide-nav-icon" aria-hidden="true">📅</span>
                                 <span class="guide-nav-label">Seasonal Guides</span>
                             </button>
                         </div>
@@ -1663,13 +445,29 @@
         </main>
     </div>
 
+    <!-- Priority Events Banner -->
+    <aside class="priority-events-banner collapsed" id="priority-events-banner" role="complementary" aria-label="Upcoming priority events">
+        <div class="banner-header" role="button" tabindex="0" aria-expanded="false" aria-controls="banner-content">
+            <div class="banner-title">
+                <span class="banner-icon" aria-hidden="true">⚡</span>
+                <span class="banner-text">High Priority Events</span>
+                <span class="banner-count" id="banner-count">0</span>
+            </div>
+            <div class="banner-toggle" id="banner-toggle" aria-hidden="true">▼</div>
+        </div>
+        <div class="banner-content" id="banner-content">
+            <div class="banner-grid" id="banner-grid">
+                <div class="banner-loading">Loading upcoming events...</div>
+            </div>
+        </div>
+    </aside>
 
     <!-- Setup Modal -->
-    <div class="setup-modal" id="setup-modal">
+    <div class="setup-modal" id="setup-modal" role="dialog" aria-labelledby="setup-modal-title" aria-hidden="true">
         <div class="setup-modal-backdrop"></div>
         <div class="setup-modal-content">
             <div class="setup-header">
-                <div class="brand" style="margin-bottom: var(--spacing-lg);">
+                <div class="brand">
                     <div class="brand-icon-container">
                         <span class="brand-icon" aria-hidden="true">🎯</span>
                     </div>
@@ -1678,7 +476,8 @@
                         <span class="brand-subtitle">VS Points Optimizer</span>
                     </div>
                 </div>
-                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: var(--spacing-sm);">Configure your server time to maximize VS points efficiency</p>
+                <h2 id="setup-modal-title">Welcome to Last War Nexus</h2>
+                <p>Configure your server time to maximize VS points efficiency</p>
             </div>
             
             <div class="setup-body">
@@ -1690,1507 +489,114 @@
                     </div>
                 </div>
 
-                <div class="setup-section">
-                    <h3>Time Zone Adjustment</h3>
-                    <p class="setup-help">Adjust to match your server's time zone</p>
-                    <select id="setup-time-offset" class="setup-select">
-                        <option value="-12">UTC -12 hours</option>
-                        <option value="-11">UTC -11 hours</option>
-                        <option value="-10">UTC -10 hours</option>
-                        <option value="-9">UTC -9 hours</option>
-                        <option value="-8">UTC -8 hours</option>
-                        <option value="-7">UTC -7 hours</option>
-                        <option value="-6">UTC -6 hours</option>
-                        <option value="-5">UTC -5 hours</option>
-                        <option value="-4">UTC -4 hours</option>
-                        <option value="-3">UTC -3 hours</option>
-                        <option value="-2">UTC -2 hours</option>
-                        <option value="-1">UTC -1 hour</option>
-                        <option value="0" selected>UTC +0 hours</option>
-                        <option value="1">UTC +1 hour</option>
-                        <option value="2">UTC +2 hours</option>
-                        <option value="3">UTC +3 hours</option>
-                        <option value="4">UTC +4 hours</option>
-                        <option value="5">UTC +5 hours</option>
-                        <option value="5.5">UTC +5.5 hours</option>
-                        <option value="6">UTC +6 hours</option>
-                        <option value="7">UTC +7 hours</option>
-                        <option value="8">UTC +8 hours</option>
-                        <option value="9">UTC +9 hours</option>
-                        <option value="10">UTC +10 hours</option>
-                        <option value="11">UTC +11 hours</option>
-                        <option value="12">UTC +12 hours</option>
-                    </select>
-                </div>
-
-                <div class="setup-section">
-                    <h3>Current Arms Race Phase</h3>
-                    <p class="setup-help">Select the phase currently active in-game</p>
-                    <select id="setup-current-phase" class="setup-select">
-                        <option value="city_building">🏗️ City Building</option>
-                        <option value="unit_progression">⚔️ Unit Progression</option>
-                        <option value="tech_research">🔬 Tech Research</option>
-                        <option value="drone_boost">🚁 Drone Boost</option>
-                        <option value="hero_advancement">🦸 Hero Advancement</option>
-                    </select>
-                </div>
-
-                <div class="setup-section">
-                    <h3>Next Arms Race Phase</h3>
-                    <p class="setup-help">What phase will be active next (in about 4 hours)?</p>
-                    <select id="setup-next-phase" class="setup-select">
-                        <option value="city_building">🏗️ City Building</option>
-                        <option value="unit_progression">⚔️ Unit Progression</option>
-                        <option value="tech_research">🔬 Tech Research</option>
-                        <option value="drone_boost">🚁 Drone Boost</option>
-                        <option value="hero_advancement">🦸 Hero Advancement</option>
-                    </select>
-                </div>
-
-                <div class="setup-section">
-                    <h3>Priority Notifications</h3>
-                    <p class="setup-help">Get notified when high-priority VS point windows are active</p>
-                    <div style="display: flex; flex-direction: column; gap: var(--spacing-sm);">
-                        <label style="display: flex; align-items: center; gap: var(--spacing-sm); cursor: pointer; padding: var(--spacing-sm); border: 1px solid var(--border-primary); border-radius: var(--border-radius-sm); background: var(--bg-surface); transition: all var(--transition-normal);" onmouseover="this.style.borderColor='var(--accent-primary)'" onmouseout="this.style.borderColor='var(--border-primary)'">
-                            <input type="radio" name="notifications" value="enabled" checked style="accent-color: var(--accent-primary);">
-                            <span style="font-size: 0.85rem; font-weight: 500; color: var(--text-primary);">Enable Notifications</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: var(--spacing-sm); cursor: pointer; padding: var(--spacing-sm); border: 1px solid var(--border-primary); border-radius: var(--border-radius-sm); background: var(--bg-surface); transition: all var(--transition-normal);" onmouseover="this.style.borderColor='var(--accent-primary)'" onmouseout="this.style.borderColor='var(--border-primary)'">
-                            <input type="radio" name="notifications" value="disabled" style="accent-color: var(--accent-primary);">
-                            <span style="font-size: 0.85rem; font-weight: 500; color: var(--text-primary);">Skip for Now</span>
-                        </label>
+                <form class="setup-form" id="setup-form">
+                    <div class="setup-section">
+                        <label for="setup-time-offset">Time Zone Adjustment</label>
+                        <p class="setup-help">Adjust to match your server's time zone</p>
+                        <select id="setup-time-offset" class="form-select" required>
+                            <option value="0">UTC +0 hours</option>
+                            <!-- Options populated by JavaScript -->
+                        </select>
                     </div>
-                </div>
-            </div>
 
-            <div class="setup-footer">
-                <button id="setup-skip" class="setup-btn setup-btn-secondary">Skip</button>
-                <button id="setup-complete" class="setup-btn setup-btn-primary">Complete</button>
+                    <div class="setup-section">
+                        <label for="setup-current-phase">Current Arms Race Phase (Optional)</label>
+                        <p class="setup-help">Override if auto-detection is incorrect</p>
+                        <select id="setup-current-phase" class="form-select">
+                            <option value="">Auto-detect (recommended)</option>
+                            <!-- Options populated by JavaScript -->
+                        </select>
+                    </div>
+
+                    <div class="setup-section">
+                        <label for="setup-next-phase">Next Phase Override (Optional)</label>
+                        <p class="setup-help">For testing or manual verification</p>
+                        <select id="setup-next-phase" class="form-select">
+                            <option value="">Auto-detect (recommended)</option>
+                            <!-- Options populated by JavaScript -->
+                        </select>
+                    </div>
+
+                    <div class="setup-actions">
+                        <button type="button" class="btn btn-primary" data-action="complete-setup">
+                            Complete Setup
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-action="close-modal">
+                            Skip for Now
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
-    <div class="sr-only" aria-live="polite" id="status-announcements"></div>
-
-    <!-- High Priority Events Banner -->
-    <div class="priority-events-banner" id="priority-events-banner">
-        <div class="banner-header" id="banner-toggle">
-            <div class="banner-title">
-                <span class="banner-icon">⚡</span>
-                <span class="banner-text">High Priority Events</span>
-                <span class="banner-count" id="banner-count">Loading...</span>
-            </div>
-            <button class="banner-toggle-btn" id="banner-toggle-btn" aria-label="Toggle priority events banner">
-                <span class="toggle-icon">▲</span>
-            </button>
-        </div>
-        <div class="banner-content" id="banner-content">
-            <div class="banner-events-grid" id="banner-events-grid">
-                <div class="banner-loading">Loading priority events...</div>
-            </div>
+    <!-- Error Boundary -->
+    <div id="error-boundary" class="error-boundary" style="display: none;">
+        <div class="error-content">
+            <h2>Something went wrong</h2>
+            <p>Last War Nexus encountered an unexpected error. Please refresh the page to try again.</p>
+            <button onclick="window.location.reload()" class="btn btn-primary">Refresh Page</button>
         </div>
     </div>
 
-    <script>
-        /**
-         * Last War Nexus - VS Points & Arms Race Optimizer
-         * PRODUCTION READY VERSION - Enhanced Design & Functionality
-         */
+    <!-- NoScript Fallback -->
+    <noscript>
+        <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; color: #f8fafc; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; font-family: system-ui, sans-serif;">
+            <div style="text-align: center; max-width: 400px; padding: 2rem;">
+                <h1 style="font-size: 3rem; margin-bottom: 1rem;">🎯</h1>
+                <h2 style="margin-bottom: 1rem;">JavaScript Required</h2>
+                <p style="margin-bottom: 2rem; line-height: 1.6;">Last War Nexus requires JavaScript to function. Please enable JavaScript in your browser and refresh the page.</p>
+                <button onclick="window.location.reload()" style="background: #0ea5e9; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 1rem;">Refresh Page</button>
+            </div>
+        </div>
+    </noscript>
 
-        class VSPointsOptimizer {
-            constructor() {
-                this.timeOffset = 0;
-                this.isVisible = true;
-                this.updateInterval = null;
-                this.setupTimeInterval = null;
-                this.activeTab = 'priority';
-                this.notificationsEnabled = false;
-                this.lastNotifiedWindow = null;
-                this.isSetupComplete = false;
-                this.currentPhaseOverride = null;
-                this.nextPhaseOverride = null;
-
-                // ENHANCED: Detailed spending information for each phase
-                this.data = {
-                    armsRacePhases: [
-                        { 
-                            id: 'city_building', 
-                            name: "City Building", 
-                            icon: "🏗️", 
-                            activities: ["Building upgrades", "Construction speedups", "Base expansion", "Power increases"],
-                            bestSpending: [
-                                { item: "Construction Speedups", value: "high" },
-                                { item: "Building Upgrades", value: "high" },
-                                { item: "Legendary Trucks", value: "high" },
-                                { item: "Base Expansion", value: "medium" },
-                                { item: "Research Speedups", value: "low" }
-                            ]
-                        },
-                        { 
-                            id: 'unit_progression', 
-                            name: "Unit Progression", 
-                            icon: "⚔️", 
-                            activities: ["Troop training", "Training speedups", "Unit upgrades", "Military expansion"],
-                            bestSpending: [
-                                { item: "Training Speedups", value: "high" },
-                                { item: "Troop Training", value: "high" },
-                                { item: "Unit Upgrades", value: "high" },
-                                { item: "Healing Speedups", value: "medium" },
-                                { item: "Construction Speedups", value: "low" }
-                            ]
-                        },
-                        { 
-                            id: 'tech_research', 
-                            name: "Tech Research", 
-                            icon: "🔬", 
-                            activities: ["Research completion", "Research speedups", "Tech advancement", "Innovation points"],
-                            bestSpending: [
-                                { item: "Research Speedups", value: "high" },
-                                { item: "Tech Upgrades", value: "high" },
-                                { item: "Valor Badges", value: "high" },
-                                { item: "Innovation Points", value: "medium" },
-                                { item: "Training Speedups", value: "low" }
-                            ]
-                        },
-                        { 
-                            id: 'drone_boost', 
-                            name: "Drone Boost", 
-                            icon: "🚁", 
-                            activities: ["Stamina usage", "Drone missions", "Radar activities", "Drone Combat Data"],
-                            bestSpending: [
-                                { item: "Stamina Usage", value: "high" },
-                                { item: "Drone Missions", value: "high" },
-                                { item: "Radar Activities", value: "high" },
-                                { item: "Hero EXP", value: "medium" },
-                                { item: "Combat Data", value: "medium" }
-                            ]
-                        },
-                        { 
-                            id: 'hero_advancement', 
-                            name: "Hero Advancement", 
-                            icon: "🦸", 
-                            activities: ["Hero recruitment", "Hero EXP", "Skill medals", "Legendary tickets"],
-                            bestSpending: [
-                                { item: "Hero EXP", value: "high" },
-                                { item: "Hero Recruitment", value: "high" },
-                                { item: "Skill Medals", value: "high" },
-                                { item: "Legendary Tickets", value: "medium" },
-                                { item: "Hero Shards", value: "medium" }
-                            ]
-                        }
-                    ],
-                    
-                    vsDays: [
-                        { day: 1, name: "Monday", title: "Radar Training", focus: "Radar missions, stamina use, hero EXP, drone data" },
-                        { day: 2, name: "Tuesday", title: "Base Expansion", focus: "Construction speedups, building power, legendary trucks" },
-                        { day: 3, name: "Wednesday", title: "Age of Science", focus: "Research speedups, tech power, valor badges" },
-                        { day: 4, name: "Thursday", title: "Train Heroes", focus: "Hero recruitment, EXP, shards, skill medals" },
-                        { day: 5, name: "Friday", title: "Total Mobilization", focus: "All speedups, radar missions, comprehensive activities" },
-                        { day: 6, name: "Saturday", title: "Enemy Buster", focus: "Combat focus, troop elimination, healing speedups" }
-                    ],
-                    
-                    priorityAlignments: [
-                        { vsDay: 1, armsPhase: "Drone Boost", reason: "Stamina & radar activities align perfectly", benefit: "Maximum Efficiency" },
-                        { vsDay: 2, armsPhase: "City Building", reason: "Construction activities align perfectly", benefit: "Perfect Match" },
-                        { vsDay: 3, armsPhase: "Tech Research", reason: "Research activities align perfectly", benefit: "Perfect Alignment" },
-                        { vsDay: 4, armsPhase: "Hero Advancement", reason: "Hero activities align perfectly", benefit: "Perfect Match" },
-                        { vsDay: 5, armsPhase: "City Building", reason: "Construction component of total mobilization", benefit: "Peak Efficiency" },
-                        { vsDay: 5, armsPhase: "Unit Progression", reason: "Training component of mobilization", benefit: "High Impact" },
-                        { vsDay: 5, armsPhase: "Tech Research", reason: "Research component of mobilization", benefit: "Maximum Impact" },
-                        { vsDay: 5, armsPhase: "Hero Advancement", reason: "Hero component of mobilization", benefit: "High Impact" },
-                        { vsDay: 5, armsPhase: "Drone Boost", reason: "Stamina and radar component of mobilization", benefit: "High Impact" },
-                        { vsDay: 6, armsPhase: "Unit Progression", reason: "Troop training supports combat preparation", benefit: "Strong Synergy" }
-                    ]
-                };
-
-                this.init();
-            }
-
-            init() {
-                try {
-                    this.loadSettings();
-                    this.setupEventListeners();
-                    
-                    if (!this.isSetupComplete) {
-                        this.showSetupModal();
-                    } else {
-                        this.updateAllDisplays();
-                        this.startUpdateLoop();
-                    }
-                } catch (error) {
-                    console.error('Initialization error:', error);
-                    this.handleError('Failed to initialize application');
-                }
-            }
-
-            setupEventListeners() {
-                try {
-                    this.setupSetupModalEvents();
-                    
-                    // Settings dropdown
-                    const settingsToggle = document.getElementById('settings-toggle');
-                    if (settingsToggle) {
-                        settingsToggle.addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            this.toggleDropdown('settings');
-                        });
-                    }
-
-                    // FIXED: Tab navigation with proper event handling
-                    document.querySelectorAll('.tab-btn').forEach(btn => {
-                        btn.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            const tab = e.currentTarget.getAttribute('data-tab');
-                            if (tab) {
-                                this.switchTab(tab);
-                            }
-                        });
-                    });
-
-                    // Settings changes
-                    const timeOffsetSelect = document.getElementById('time-offset');
-                    if (timeOffsetSelect) {
-                        timeOffsetSelect.addEventListener('change', (e) => {
-                            this.timeOffset = parseFloat(e.target.value);
-                            this.updateAllDisplays();
-                        });
-                    }
-
-                    const notificationsToggle = document.getElementById('notifications-toggle');
-                    if (notificationsToggle) {
-                        notificationsToggle.addEventListener('change', (e) => {
-                            const enabled = e.target.value === 'enabled';
-                            this.setNotifications(enabled);
-                        });
-                    }
-
-                    const currentPhaseSelect = document.getElementById('current-phase-select');
-                    if (currentPhaseSelect) {
-                        currentPhaseSelect.addEventListener('change', (e) => {
-                            this.currentPhaseOverride = e.target.value;
-                            this.updateAllDisplays();
-                        });
-                    }
-
-                    const nextPhaseSelect = document.getElementById('next-phase-select');
-                    if (nextPhaseSelect) {
-                        nextPhaseSelect.addEventListener('change', (e) => {
-                            this.nextPhaseOverride = e.target.value;
-                            this.updateAllDisplays();
-                        });
-                    }
-
-                    // Save button
-                    const saveButton = document.getElementById('save-settings');
-                    if (saveButton) {
-                        saveButton.addEventListener('click', () => {
-                            this.saveAllSettings();
-                        });
-                    }
-
-                    // Setup button
-                    const setupButton = document.getElementById('setup-button');
-                    if (setupButton) {
-                        setupButton.addEventListener('click', () => {
-                            this.showSetupModal();
-                        });
-                    }
-
-                    // Close dropdowns on outside click
-                    document.addEventListener('click', (e) => {
-                        if (!e.target.closest('.settings-dropdown-container')) {
-                            this.closeAllDropdowns();
-                        }
-                    });
-
-                    // Banner close
-                    const bannerClose = document.getElementById('banner-close');
-                    if (bannerClose) {
-                        bannerClose.addEventListener('click', () => {
-                            this.hideBanner();
-                        });
-                    }
-
-                    // Visibility change handling
-                    document.addEventListener('visibilitychange', () => {
-                        this.isVisible = !document.hidden;
-                        if (this.isVisible) {
-                            this.updateAllDisplays();
-                        }
-                    });
-
-                } catch (error) {
-                    console.error('Event listener setup error:', error);
-                }
-            }
-
-            setupSetupModalEvents() {
-                try {
-                    const setupTimeOffset = document.getElementById('setup-time-offset');
-                    if (setupTimeOffset) {
-                        setupTimeOffset.addEventListener('change', (e) => {
-                            this.timeOffset = parseFloat(e.target.value);
-                            this.updateSetupTimezone();
-                            this.updateSetupTime();
-                        });
-                    }
-
-                    const setupComplete = document.getElementById('setup-complete');
-                    if (setupComplete) {
-                        setupComplete.addEventListener('click', () => {
-                            this.completeSetup();
-                        });
-                    }
-
-                    const setupSkip = document.getElementById('setup-skip');
-                    if (setupSkip) {
-                        setupSkip.addEventListener('click', () => {
-                            this.skipSetup();
-                        });
-                    }
-
-                    const setupCurrentPhase = document.getElementById('setup-current-phase');
-                    if (setupCurrentPhase) {
-                        setupCurrentPhase.addEventListener('change', (e) => {
-                            this.updateNextPhaseOptions(e.target.value);
-                        });
-                    }
-
-                    const backdrop = document.querySelector('.setup-modal-backdrop');
-                    if (backdrop) {
-                        backdrop.addEventListener('click', () => {
-                            this.skipSetup();
-                        });
-                    }
-
-                } catch (error) {
-                    console.error('Setup modal events error:', error);
-                }
-            }
-
-            showSetupModal() {
-                const modal = document.getElementById('setup-modal');
-                if (modal) {
-                    modal.classList.add('show');
-                    this.startSetupTimeUpdate();
-                    this.populateSetupDefaults();
-                }
-            }
-
-            hideSetupModal() {
-                const modal = document.getElementById('setup-modal');
-                if (modal) {
-                    modal.classList.remove('show');
-                    this.stopSetupTimeUpdate();
-                }
-            }
-
-            populateSetupDefaults() {
-                try {
-                    const setupTimeOffset = document.getElementById('setup-time-offset');
-                    if (setupTimeOffset) {
-                        setupTimeOffset.value = this.timeOffset.toString();
-                    }
-
-                    const autoPhase = this.getCurrentArmsPhase();
-                    const setupCurrentPhase = document.getElementById('setup-current-phase');
-                    if (setupCurrentPhase && !this.currentPhaseOverride) {
-                        setupCurrentPhase.value = autoPhase.id;
-                    }
-
-                    this.updateNextPhaseOptions(setupCurrentPhase?.value || autoPhase.id);
-                    this.updateSetupTimezone();
-                } catch (error) {
-                    console.error('Setup defaults error:', error);
-                }
-            }
-
-            updateNextPhaseOptions(currentPhaseId) {
-                try {
-                    const setupNextPhase = document.getElementById('setup-next-phase');
-                    if (!setupNextPhase) return;
-
-                    const currentIndex = this.data.armsRacePhases.findIndex(p => p.id === currentPhaseId);
-                    const nextIndex = (currentIndex + 1) % this.data.armsRacePhases.length;
-                    const nextPhase = this.data.armsRacePhases[nextIndex];
-
-                    setupNextPhase.value = nextPhase.id;
-                } catch (error) {
-                    console.error('Next phase options error:', error);
-                }
-            }
-
-            updateSetupTimezone() {
-                const offsetElement = document.getElementById('setup-timezone-offset');
-                if (offsetElement) {
-                    const sign = this.timeOffset >= 0 ? '+' : '';
-                    offsetElement.textContent = `${sign}${this.timeOffset}`;
-                }
-            }
-
-            startSetupTimeUpdate() {
-                this.stopSetupTimeUpdate();
-                this.updateSetupTime();
-                this.setupTimeInterval = setInterval(() => {
-                    this.updateSetupTime();
-                }, 1000);
-            }
-
-            stopSetupTimeUpdate() {
-                if (this.setupTimeInterval) {
-                    clearInterval(this.setupTimeInterval);
-                    this.setupTimeInterval = null;
-                }
-            }
-
-            updateSetupTime() {
-                try {
-                    const serverTime = this.getServerTime();
-                    const timeString = serverTime.toUTCString().slice(17, 25);
-                    
-                    const timeElement = document.getElementById('setup-server-time');
-                    if (timeElement) {
-                        timeElement.textContent = timeString;
-                    }
-                } catch (error) {
-                    console.error('Setup time update error:', error);
-                }
-            }
-
-            async completeSetup() {
-                try {
-                    const setupTimeOffset = document.getElementById('setup-time-offset');
-                    const setupCurrentPhase = document.getElementById('setup-current-phase');
-                    const setupNextPhase = document.getElementById('setup-next-phase');
-                    const notificationRadios = document.querySelectorAll('input[name="notifications"]');
-
-                    this.timeOffset = parseFloat(setupTimeOffset?.value || '0');
-                    this.currentPhaseOverride = setupCurrentPhase?.value || null;
-                    this.nextPhaseOverride = setupNextPhase?.value || null;
-
-                    const notificationChoice = Array.from(notificationRadios).find(r => r.checked)?.value;
-                    const wantsNotifications = notificationChoice === 'enabled';
-
-                    if (wantsNotifications) {
-                        await this.requestNotificationPermission();
-                    } else {
-                        this.notificationsEnabled = false;
-                    }
-
-                    this.isSetupComplete = true;
-                    this.saveSettings();
-                    this.syncSettingsToUI();
-
-                    this.hideSetupModal();
-                    this.updateAllDisplays();
-                    this.startUpdateLoop();
-
-                } catch (error) {
-                    console.error('Setup completion error:', error);
-                    this.handleError('Failed to complete setup');
-                }
-            }
-
-            skipSetup() {
-                try {
-                    this.timeOffset = 0;
-                    this.currentPhaseOverride = null;
-                    this.nextPhaseOverride = null;
-                    this.notificationsEnabled = false;
-                    this.isSetupComplete = true;
-
-                    this.saveSettings();
-                    this.syncSettingsToUI();
-
-                    this.hideSetupModal();
-                    this.updateAllDisplays();
-                    this.startUpdateLoop();
-
-                } catch (error) {
-                    console.error('Setup skip error:', error);
-                }
-            }
-
-            async setNotifications(enabled) {
-                try {
-                    if (enabled) {
-                        const permission = await this.requestNotificationPermission();
-                        this.notificationsEnabled = permission;
-                    } else {
-                        this.notificationsEnabled = false;
-                    }
-                    
-                    this.saveSettings();
-                    this.syncSettingsToUI();
-                    
-                } catch (error) {
-                    console.error('Notification setting error:', error);
-                }
-            }
-
-            saveAllSettings() {
-                try {
-                    const timeOffsetSelect = document.getElementById('time-offset');
-                    const notificationsToggle = document.getElementById('notifications-toggle');
-                    const currentPhaseSelect = document.getElementById('current-phase-select');
-                    const nextPhaseSelect = document.getElementById('next-phase-select');
-
-                    if (timeOffsetSelect) this.timeOffset = parseFloat(timeOffsetSelect.value);
-                    if (notificationsToggle) this.notificationsEnabled = notificationsToggle.value === 'enabled';
-                    if (currentPhaseSelect) this.currentPhaseOverride = currentPhaseSelect.value;
-                    if (nextPhaseSelect) this.nextPhaseOverride = nextPhaseSelect.value;
-
-                    this.saveSettings();
-                    this.updateAllDisplays();
-                    
-                    const saveButton = document.getElementById('save-settings');
-                    if (saveButton) {
-                        const originalText = saveButton.textContent;
-                        saveButton.textContent = 'Saved!';
-                        saveButton.style.background = 'var(--gradient-success)';
-                        
-                        setTimeout(() => {
-                            saveButton.textContent = originalText;
-                            saveButton.style.background = '';
-                        }, 2000);
-                    }
-
-                    this.closeAllDropdowns();
-
-                } catch (error) {
-                    console.error('Save settings error:', error);
-                }
-            }
-
-            syncSettingsToUI() {
-                try {
-                    const timeOffsetSelect = document.getElementById('time-offset');
-                    if (timeOffsetSelect) timeOffsetSelect.value = this.timeOffset.toString();
-
-                    const notificationsToggle = document.getElementById('notifications-toggle');
-                    if (notificationsToggle) notificationsToggle.value = this.notificationsEnabled ? 'enabled' : 'disabled';
-
-                    const currentPhaseSelect = document.getElementById('current-phase-select');
-                    if (currentPhaseSelect && this.currentPhaseOverride) {
-                        currentPhaseSelect.value = this.currentPhaseOverride;
-                    }
-
-                    const nextPhaseSelect = document.getElementById('next-phase-select');
-                    if (nextPhaseSelect && this.nextPhaseOverride) {
-                        nextPhaseSelect.value = this.nextPhaseOverride;
-                    }
-
-                } catch (error) {
-                    console.error('UI sync error:', error);
-                }
-            }
-
-            toggleDropdown(type) {
-                const dropdown = document.getElementById(`${type}-dropdown`);
-                const toggle = document.getElementById(`${type}-toggle`);
+    <!-- Load JavaScript Modules -->
+    <script type="module">
+        // Initialize application
+        import('/js/app.js').then(module => {
+            // Hide loading screen once app is loaded
+            const loadingScreen = document.getElementById('loading-screen');
+            const appContainer = document.getElementById('app-container');
+            
+            setTimeout(() => {
+                loadingScreen.classList.add('hidden');
+                appContainer.classList.add('loaded');
                 
-                if (dropdown && toggle) {
-                    const isOpen = dropdown.classList.contains('show');
-                    this.closeAllDropdowns();
-                    
-                    if (!isOpen) {
-                        dropdown.classList.add('show');
-                        toggle.classList.add('active');
-                    }
-                }
-            }
-
-            closeAllDropdowns() {
-                document.querySelectorAll('.settings-dropdown').forEach(dropdown => {
-                    dropdown.classList.remove('show');
-                });
-                document.querySelectorAll('.settings-btn').forEach(btn => {
-                    btn.classList.remove('active');
-                });
-            }
-
-            // FIXED: Enhanced tab switching with proper styling
-            switchTab(tabName) {
-                try {
-                    this.activeTab = tabName;
-                    
-                    // Update all tab buttons
-                    document.querySelectorAll('.tab-btn').forEach(btn => {
-                        btn.classList.remove('active');
-                        btn.setAttribute('aria-selected', 'false');
-                    });
-                    
-                    // Update all tab panels
-                    document.querySelectorAll('.tab-panel').forEach(panel => {
-                        panel.classList.remove('active');
-                    });
-                    
-                    // Activate current tab and panel
-                    const activeBtn = document.querySelector(`[data-tab="${tabName}"]`);
-                    const activePanel = document.getElementById(`${tabName}-tab`);
-                    
-                    if (activeBtn) {
-                        activeBtn.classList.add('active');
-                        activeBtn.setAttribute('aria-selected', 'true');
-                    }
-                    
-                    if (activePanel) {
-                        activePanel.classList.add('active');
-                    }
-                    
-                    // Populate content
-                    this.populateTabContent(tabName);
-                    
-                } catch (error) {
-                    console.error('Tab switch error:', error);
-                }
-            }
-
-            getServerTime() {
-                try {
-                    const now = new Date();
-                    return new Date(now.getTime() + (this.timeOffset * 60 * 60 * 1000));
-                } catch (error) {
-                    console.error('Server time calculation error:', error);
-                    return new Date();
-                }
-            }
-
-            getCurrentArmsPhase() {
-                try {
-                    const serverTime = this.getServerTime();
-                    const hour = serverTime.getUTCHours();
-                    
-                    // 5-phase system with 20-hour cycle
-                    // 00:00-03:59 = City Building (phase 0)
-                    // 04:00-07:59 = Unit Progression (phase 1)
-                    // 08:00-11:59 = Tech Research (phase 2)
-                    // 12:00-15:59 = Drone Boost (phase 3)
-                    // 16:00-19:59 = Hero Advancement (phase 4)
-                    // 20:00-23:59 = City Building (phase 0, cycle restarts)
-                    
-                    let phaseIndex;
-                    if (hour >= 20) {
-                        phaseIndex = 0; // City Building restarts at 20:00
-                    } else {
-                        phaseIndex = Math.floor(hour / 4);
-                    }
-                    
-                    // Handle override if set
-                    if (this.currentPhaseOverride) {
-                        const overridePhase = this.data.armsRacePhases.find(p => p.id === this.currentPhaseOverride);
-                        if (overridePhase) {
-                            phaseIndex = this.data.armsRacePhases.indexOf(overridePhase);
-                        }
-                    }
-                    
-                    const phase = this.data.armsRacePhases[phaseIndex];
-                    
-                    // Calculate time remaining in current phase
-                    let hoursRemaining, minutesRemaining;
-                    if (hour >= 20) {
-                        // Special case: City Building from 20:00-23:59
-                        hoursRemaining = 24 - hour - 1;
-                        minutesRemaining = 60 - serverTime.getUTCMinutes();
-                    } else {
-                        hoursRemaining = 4 - (hour % 4) - 1;
-                        minutesRemaining = 60 - serverTime.getUTCMinutes();
-                    }
-                    
-                    // Calculate start and end hours for display
-                    let startHour, endHour;
-                    if (phaseIndex === 0 && hour >= 20) {
-                        startHour = 20;
-                        endHour = 24;
-                    } else {
-                        startHour = phaseIndex * 4;
-                        endHour = (phaseIndex * 4 + 4);
-                    }
-                    
-                    return {
-                        ...phase,
-                        position: phaseIndex,
-                        startHour: startHour,
-                        endHour: endHour % 24,
-                        hoursRemaining: hoursRemaining,
-                        minutesRemaining: minutesRemaining,
-                        isOverride: !!this.currentPhaseOverride
-                    };
-                } catch (error) {
-                    console.error('Arms phase calculation error:', error);
-                    return this.data.armsRacePhases[0];
-                }
-            }
-
-            getNextArmsPhase() {
-                try {
-                    if (this.nextPhaseOverride) {
-                        const overridePhase = this.data.armsRacePhases.find(p => p.id === this.nextPhaseOverride);
-                        if (overridePhase) {
-                            return { ...overridePhase, isOverride: true };
-                        }
-                    }
-
-                    const currentPhase = this.getCurrentArmsPhase();
-                    const currentIndex = this.data.armsRacePhases.findIndex(p => p.id === currentPhase.id);
-                    const nextIndex = (currentIndex + 1) % this.data.armsRacePhases.length;
-                    
-                    return { ...this.data.armsRacePhases[nextIndex], isOverride: false };
-                } catch (error) {
-                    console.error('Next phase calculation error:', error);
-                    return this.data.armsRacePhases[0];
-                }
-            }
-
-            getCurrentVSDay() {
-                try {
-                    const serverTime = this.getServerTime();
-                    const dayOfWeek = serverTime.getUTCDay();
-                    
-                    const vsDay = this.data.vsDays.find(day => day.day === dayOfWeek);
-                    
-                    if (vsDay) {
-                        return vsDay;
-                    } else {
-                        return { 
-                            day: 0, 
-                            name: "Sunday", 
-                            title: "Preparation Day", 
-                            focus: "Prepare resources and plan for the week ahead"
-                        };
-                    }
-                } catch (error) {
-                    console.error('VS day calculation error:', error);
-                    return this.data.vsDays[0];
-                }
-            }
-
-            isCurrentlyHighPriority() {
-                try {
-                    const currentVSDay = this.getCurrentVSDay();
-                    const currentArmsPhase = this.getCurrentArmsPhase();
-                    
-                    return this.data.priorityAlignments.find(alignment => 
-                        alignment.vsDay === currentVSDay.day && 
-                        alignment.armsPhase === currentArmsPhase.name
-                    );
-                } catch (error) {
-                    console.error('Priority check error:', error);
-                    return null;
-                }
-            }
-
-            findNextPriorityWindow() {
-                try {
-                    const now = this.getServerTime();
-                    const currentAlignment = this.isCurrentlyHighPriority();
-                    
-                    if (currentAlignment) {
-                        const currentPhase = this.getCurrentArmsPhase();
-                        const timeRemaining = (currentPhase.hoursRemaining * 60 * 60 * 1000) + 
-                                            (currentPhase.minutesRemaining * 60 * 1000);
-                        
-                        return {
-                            isActive: true,
-                            timeRemaining: timeRemaining,
-                            alignment: currentAlignment,
-                            phase: currentPhase,
-                            vsDay: this.getCurrentVSDay()
-                        };
-                    }
-                    
-                    // Find next priority window
-                    let nextWindow = null;
-                    let minTimeDiff = Infinity;
-                    
-                    for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
-                        const checkDate = new Date(now);
-                        checkDate.setUTCDate(now.getUTCDate() + dayOffset);
-                        const dayOfWeek = checkDate.getUTCDay();
-                        
-                        const vsDay = this.data.vsDays.find(day => day.day === dayOfWeek);
-                        if (!vsDay) continue;
-                        
-                        const dayAlignments = this.data.priorityAlignments.filter(a => a.vsDay === dayOfWeek);
-                        
-                        for (const alignment of dayAlignments) {
-                            const phase = this.data.armsRacePhases.find(p => p.name === alignment.armsPhase);
-                            if (!phase) continue;
-                            
-                            const phaseIndex = this.data.armsRacePhases.findIndex(p => p.name === phase.name);
-                            const windowTime = new Date(checkDate);
-                            windowTime.setUTCHours(phaseIndex * 4, 0, 0, 0);
-                            
-                            const timeDiff = windowTime.getTime() - now.getTime();
-                            
-                            if (timeDiff > 0 && timeDiff < minTimeDiff) {
-                                minTimeDiff = timeDiff;
-                                nextWindow = {
-                                    isActive: false,
-                                    timeRemaining: timeDiff,
-                                    alignment: alignment,
-                                    phase: phase,
-                                    vsDay: vsDay,
-                                    startTime: windowTime
-                                };
-                            }
-                        }
-                    }
-                    
-                    return nextWindow;
-                } catch (error) {
-                    console.error('Next priority window calculation error:', error);
-                    return null;
-                }
-            }
-
-            formatTime(milliseconds) {
-                if (milliseconds <= 0) return "0m";
-                
-                const totalMinutes = Math.floor(milliseconds / (1000 * 60));
-                const hours = Math.floor(totalMinutes / 60);
-                const minutes = totalMinutes % 60;
-                
-                if (hours > 0) {
-                    return `${hours}h ${minutes}m`;
-                } else {
-                    return `${Math.max(1, minutes)}m`;
-                }
-            }
-
-            // ENHANCED: Update all displays including server time in settings
-            updateAllDisplays() {
-                try {
-                    this.updateTimeDisplay();
-                    this.updateSettingsTime();
-                    this.updateCurrentStatus();
-                    this.updatePriorityDisplay();
-                    this.updateSpendingDetails();
-                    this.updateBanner();
-                    if (this.activeTab) {
-                        this.populateTabContent(this.activeTab);
-                    }
-                } catch (error) {
-                    console.error('Display update error:', error);
-                }
-            }
-
-            updateTimeDisplay() {
-                try {
-                    const serverTime = this.getServerTime();
-                    const timeString = serverTime.toUTCString().slice(17, 25);
-                    
-                    const timeElement = document.getElementById('server-time');
-                    if (timeElement) {
-                        timeElement.textContent = timeString;
-                    }
-                } catch (error) {
-                    console.error('Time display error:', error);
-                }
-            }
-
-            // ADDED: Update server time in settings dropdown
-            updateSettingsTime() {
-                try {
-                    const serverTime = this.getServerTime();
-                    const timeString = serverTime.toUTCString().slice(17, 25);
-                    
-                    const settingsTimeElement = document.getElementById('settings-server-time');
-                    if (settingsTimeElement) {
-                        settingsTimeElement.textContent = timeString;
-                    }
-                } catch (error) {
-                    console.error('Settings time display error:', error);
-                }
-            }
-
-            updateCurrentStatus() {
-                try {
-                    const currentVSDay = this.getCurrentVSDay();
-                    const currentArmsPhase = this.getCurrentArmsPhase();
-                    const isHighPriority = this.isCurrentlyHighPriority();
-                    
-                    const vsDayElement = document.getElementById('current-vs-day');
-                    if (vsDayElement) {
-                        vsDayElement.textContent = currentVSDay.title;
-                    }
-                    
-                    const armsPhaseElement = document.getElementById('arms-phase');
-                    if (armsPhaseElement) {
-                        armsPhaseElement.textContent = currentArmsPhase.name;
-                    }
-                    
-                    const priorityElement = document.getElementById('priority-level');
-                    if (priorityElement) {
-                        priorityElement.textContent = isHighPriority ? 'HIGH' : 'Normal';
-                        priorityElement.style.color = isHighPriority ? 'var(--accent-success)' : 'var(--text-tertiary)';
-                    }
-                    
-                    const countdownElement = document.getElementById('countdown-timer');
-                    if (countdownElement) {
-                        const timeRemaining = (currentArmsPhase.hoursRemaining * 60 * 60 * 1000) +
-                                           (currentArmsPhase.minutesRemaining * 60 * 1000);
-                        countdownElement.textContent = this.formatTime(timeRemaining);
-                    }
-                    
-                    const currentPhaseElement = document.getElementById('current-phase');
-                    if (currentPhaseElement) {
-                        currentPhaseElement.textContent = `${currentArmsPhase.name} Active`;
-                    }
-                    
-                } catch (error) {
-                    console.error('Status update error:', error);
-                }
-            }
-
-            updatePriorityDisplay() {
-                try {
-                    const nextWindow = this.findNextPriorityWindow();
-                    
-                    if (!nextWindow) return;
-                    
-                    const activeNowElement = document.getElementById('active-now');
-                    const badgeLabelElement = document.getElementById('badge-label');
-                    const priorityTimeElement = document.getElementById('next-priority-time');
-                    const priorityEventElement = document.getElementById('next-priority-event');
-                    const currentActionElement = document.getElementById('current-action');
-                    const eventIconElement = document.getElementById('event-icon');
-                    const countdownLabelElement = document.getElementById('countdown-label');
-                    const efficiencyElement = document.getElementById('efficiency-level');
-                    
-                    if (nextWindow.isActive) {
-                        if (activeNowElement) activeNowElement.style.display = 'flex';
-                        if (badgeLabelElement) badgeLabelElement.textContent = 'PEAK EFFICIENCY ACTIVE';
-                        if (priorityTimeElement) priorityTimeElement.textContent = this.formatTime(nextWindow.timeRemaining);
-                        if (priorityEventElement) priorityEventElement.textContent = `${nextWindow.phase.name} + ${nextWindow.vsDay.title}`;
-                        if (currentActionElement) currentActionElement.textContent = `⚡ ${nextWindow.alignment.reason}`;
-                        if (eventIconElement) eventIconElement.textContent = nextWindow.phase.icon;
-                        if (countdownLabelElement) countdownLabelElement.textContent = 'PHASE ENDS IN';
-                        if (efficiencyElement) efficiencyElement.textContent = nextWindow.alignment.benefit;
-                    } else {
-                        if (activeNowElement) activeNowElement.style.display = 'none';
-                        if (badgeLabelElement) badgeLabelElement.textContent = 'NEXT HIGH PRIORITY';
-                        if (priorityTimeElement) priorityTimeElement.textContent = this.formatTime(nextWindow.timeRemaining);
-                        if (priorityEventElement) priorityEventElement.textContent = `${nextWindow.phase.name} + ${nextWindow.vsDay.title}`;
-                        if (currentActionElement) currentActionElement.textContent = nextWindow.alignment.reason;
-                        if (eventIconElement) eventIconElement.textContent = nextWindow.phase.icon;
-                        if (countdownLabelElement) countdownLabelElement.textContent = 'TIME REMAINING';
-                        if (efficiencyElement) efficiencyElement.textContent = nextWindow.alignment.benefit;
-                    }
-                } catch (error) {
-                    console.error('Priority display error:', error);
-                }
-            }
-
-            // ENHANCED: Update spending details
-            updateSpendingDetails() {
-                try {
-                    const nextWindow = this.findNextPriorityWindow();
-                    const spendingItemsElement = document.getElementById('spending-items');
-                    
-                    if (!nextWindow || !spendingItemsElement) return;
-                    
-                    const phase = nextWindow.phase;
-                    const bestSpending = phase.bestSpending || [];
-                    
-                    const html = bestSpending.map(item => `
-                        <span class="spending-item ${item.value === 'high' ? 'high-value' : ''}">${item.item}</span>
-                    `).join('');
-                    
-                    spendingItemsElement.innerHTML = html;
-                } catch (error) {
-                    console.error('Spending details update error:', error);
-                }
-            }
-
-            updateBanner() {
-                try {
-                    const banner = document.getElementById('priority-banner');
-                    if (!banner) return;
-                    
-                    const nextWindow = this.findNextPriorityWindow();
-                    
-                    if (nextWindow && nextWindow.isActive) {
-                        const titleElement = document.getElementById('banner-title');
-                        const timeElement = document.getElementById('banner-time');
-                        
-                        if (titleElement) titleElement.textContent = 'Peak Efficiency Active!';
-                        if (timeElement) timeElement.textContent = this.formatTime(nextWindow.timeRemaining);
-                        
-                        banner.classList.add('peak-priority', 'show');
-                        
-                        if (this.notificationsEnabled && this.lastNotifiedWindow !== nextWindow.alignment.reason) {
-                            this.showNotification('High Priority Active!', `${nextWindow.phase.name} + ${nextWindow.vsDay.title}`);
-                            this.lastNotifiedWindow = nextWindow.alignment.reason;
-                        }
-                    } else if (nextWindow && nextWindow.timeRemaining < 2 * 60 * 60 * 1000) {
-                        const titleElement = document.getElementById('banner-title');
-                        const timeElement = document.getElementById('banner-time');
-                        
-                        if (titleElement) titleElement.textContent = 'High Priority Soon';
-                        if (timeElement) timeElement.textContent = this.formatTime(nextWindow.timeRemaining);
-                        
-                        banner.classList.remove('peak-priority');
-                        banner.classList.add('show');
-                    } else {
-                        this.hideBanner();
-                    }
-                } catch (error) {
-                    console.error('Banner update error:', error);
-                }
-            }
-
-            populateTabContent(tabName) {
-                try {
-                    switch (tabName) {
-                        case 'priority':
-                            this.populatePriorityWindows();
-                            break;
-                        case 'schedule':
-                            this.populateSchedule();
-                            break;
-                        case 'guides':
-                            this.populateGuides();
-                            break;
-                    }
-                } catch (error) {
-                    console.error(`Tab content population error for ${tabName}:`, error);
-                }
-            }
-
-            // ENHANCED: Priority windows with spending details
-            populatePriorityWindows() {
-                try {
-                    const grid = document.getElementById('priority-grid');
-                    if (!grid) return;
-                    
-                    const now = this.getServerTime();
-                    const windows = [];
-                    
-                    for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
-                        const checkDate = new Date(now);
-                        checkDate.setUTCDate(now.getUTCDate() + dayOffset);
-                        const dayOfWeek = checkDate.getUTCDay();
-                        
-                        const vsDay = this.data.vsDays.find(day => day.day === dayOfWeek);
-                        if (!vsDay) continue;
-                        
-                        const dayAlignments = this.data.priorityAlignments.filter(a => a.vsDay === dayOfWeek);
-                        
-                        for (const alignment of dayAlignments) {
-                            const phase = this.data.armsRacePhases.find(p => p.name === alignment.armsPhase);
-                            if (!phase) continue;
-                            
-                            const phaseIndex = this.data.armsRacePhases.findIndex(p => p.name === phase.name);
-                            const startTime = new Date(checkDate);
-                            startTime.setUTCHours(phaseIndex * 4, 0, 0, 0);
-                            
-                            const endTime = new Date(startTime);
-                            endTime.setUTCHours(startTime.getUTCHours() + 4);
-                            
-                            const timeDiff = startTime.getTime() - now.getTime();
-                            const isActive = now >= startTime && now < endTime;
-                            const isPeak = alignment.benefit.includes('Perfect') || alignment.benefit.includes('Maximum');
-                            
-                            windows.push({
-                                startTime,
-                                endTime,
-                                timeDiff,
-                                isActive,
-                                isPeak,
-                                phase,
-                                vsDay,
-                                alignment,
-                                timeDisplay: isActive ? 'Active Now' : timeDiff > 0 ? `in ${this.formatTime(timeDiff)}` : 'Completed'
-                            });
-                        }
-                    }
-                    
-                    windows.sort((a, b) => a.timeDiff - b.timeDiff);
-                    const uniqueWindows = windows.filter((window, index, arr) => 
-                        index === 0 || 
-                        arr[index - 1].startTime.getTime() !== window.startTime.getTime() ||
-                        arr[index - 1].alignment.reason !== window.alignment.reason
-                    );
-                    
-                    const countElement = document.getElementById('priority-count');
-                    if (countElement) {
-                        const activeCount = uniqueWindows.filter(w => w.isActive).length;
-                        const upcomingCount = uniqueWindows.filter(w => !w.isActive && w.timeDiff > 0).length;
-                        countElement.textContent = `${activeCount + upcomingCount} Windows`;
-                    }
-                    
-                    const html = uniqueWindows.slice(0, 12).map(window => `
-                        <div class="priority-window-card ${window.isActive ? 'active' : ''} ${window.isPeak ? 'peak' : ''}">
-                            <div style="background: var(--bg-surface); padding: var(--spacing-lg); border-bottom: 1px solid var(--border-primary); display: flex; justify-content: space-between; align-items: center;">
-                                <div style="font-family: var(--font-mono); font-size: 0.9rem; font-weight: 700; color: var(--text-primary);">${window.timeDisplay}</div>
-                                <div style="padding: 4px var(--spacing-sm); border-radius: var(--border-radius-sm); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; background: ${window.isActive ? 'var(--gradient-success)' : 'var(--gradient-secondary)'}; color: white;">
-                                    ${window.isActive ? 'ACTIVE NOW' : 'UPCOMING'}
-                                </div>
-                            </div>
-                            <div style="padding: var(--spacing-lg);">
-                                <div style="display: flex; align-items: center; gap: var(--spacing-md); margin-bottom: var(--spacing-md);">
-                                    <span style="font-size: 1.5rem;">${window.phase.icon}</span>
-                                    <div style="flex: 1;">
-                                        <div style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 2px;">${window.phase.name} + ${window.vsDay.title}</div>
-                                        <div style="font-size: 0.8rem; color: var(--text-tertiary);">${window.alignment.reason}</div>
-                                    </div>
-                                </div>
-                                <div style="background: var(--gradient-primary); color: white; padding: var(--spacing-sm) var(--spacing-md); border-radius: var(--border-radius); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; text-align: center; margin-bottom: var(--spacing-md);">
-                                    ${window.alignment.benefit}
-                                </div>
-                                <div style="background: var(--bg-tertiary); border-radius: var(--border-radius); padding: var(--spacing-md);">
-                                    <div style="font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); margin-bottom: var(--spacing-sm); text-transform: uppercase;">Best Spending</div>
-                                    <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-xs);">
-                                        ${window.phase.bestSpending?.slice(0, 3).map(item => `<span style="background: ${item.value === 'high' ? 'var(--gradient-secondary)' : 'var(--bg-elevated)'}; color: ${item.value === 'high' ? 'white' : 'var(--text-secondary)'}; padding: 3px var(--spacing-sm); border-radius: var(--border-radius-sm); font-size: 0.7rem; font-weight: 500;">${item.item}</span>`).join('') || ''}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `).join('');
-                    
-                    grid.innerHTML = html;
-                } catch (error) {
-                    console.error('Priority windows population error:', error);
-                    const grid = document.getElementById('priority-grid');
-                    if (grid) {
-                        grid.innerHTML = '<div class="loading-message">Error loading priority windows</div>';
-                    }
-                }
-            }
-
-            populateSchedule() {
-                try {
-                    const grid = document.getElementById('schedule-content');
-                    if (!grid) return;
-                    
-                    const schedule = [];
-                    const now = this.getServerTime();
-                    
-                    for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
-                        const checkDate = new Date(now);
-                        checkDate.setUTCDate(now.getUTCDate() + dayOffset);
-                        const dayOfWeek = checkDate.getUTCDay();
-                        const isToday = dayOffset === 0;
-                        
-                        const vsDay = this.data.vsDays.find(day => day.day === dayOfWeek) || 
-                                     { name: "Sunday", title: "Preparation Day", focus: "Prepare for the week" };
-                        
-                        const phases = [];
-                        // Handle the 5-phase system with 20-hour cycle
-                        for (let phaseIndex = 0; phaseIndex < 5; phaseIndex++) {
-                            const phase = this.data.armsRacePhases[phaseIndex];
-                            
-                            const isPriority = this.data.priorityAlignments.some(a => 
-                                a.vsDay === dayOfWeek && a.armsPhase === phase.name
-                            );
-                            
-                            const startHour = phaseIndex * 4;
-                            const endHour = (phaseIndex * 4 + 4) % 24;
-                            const isActive = isToday && 
-                                now.getUTCHours() >= startHour && 
-                                now.getUTCHours() < (startHour + 4);
-                            
-                            phases.push({
-                                ...phase,
-                                position: phaseIndex,
-                                isPriority,
-                                isActive,
-                                timeRange: `${String(startHour).padStart(2, '0')}:00-${String(endHour).padStart(2, '0')}:00`
-                            });
-                        }
-                        
-                        // Add the City Building phase that runs from 20:00-00:00
-                        const cityBuildingRepeat = {
-                            ...this.data.armsRacePhases[0],
-                            position: 5,
-                            isPriority: this.data.priorityAlignments.some(a => 
-                                a.vsDay === dayOfWeek && a.armsPhase === "City Building"
-                            ),
-                            isActive: isToday && now.getUTCHours() >= 20,
-                            timeRange: "20:00-00:00"
-                        };
-                        phases.push(cityBuildingRepeat);
-                        
-                        schedule.push({
-                            vsDay,
-                            phases,
-                            isToday,
-                            date: checkDate.toLocaleDateString()
-                        });
-                    }
-                    
-                    const html = schedule.map(day => `
-                        <div class="priority-window-card ${day.isToday ? 'active' : ''}">
-                            <div style="background: var(--bg-surface); padding: var(--spacing-lg); border-bottom: 1px solid var(--border-primary); text-align: center;">
-                                <h3 style="font-size: 1.125rem; font-weight: 700; color: var(--text-primary); margin-bottom: var(--spacing-xs);">${day.vsDay.name}</h3>
-                                <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: var(--spacing-xs);">${day.vsDay.title}</div>
-                                <div style="font-size: 0.75rem; color: var(--text-tertiary);">${day.date}</div>
-                            </div>
-                            <div style="padding: var(--spacing-md);">
-                                ${day.phases.map(phase => `
-                                    <div style="background: var(--bg-tertiary); border: 1px solid ${phase.isPriority ? 'var(--accent-warning)' : 'var(--border-primary)'}; border-radius: var(--border-radius); padding: var(--spacing-md); margin-bottom: var(--spacing-xs); display: flex; justify-content: space-between; align-items: center; position: relative; ${phase.isPriority ? 'background: rgba(245, 158, 11, 0.1);' : ''} ${phase.isActive ? 'border-color: var(--accent-success); background: rgba(34, 197, 94, 0.1);' : ''}">
-                                        <div style="font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600; color: var(--text-muted);">${phase.timeRange}</div>
-                                        <div style="flex: 1; text-align: center; font-size: 0.8rem; font-weight: 600; color: var(--text-primary);">${phase.name}</div>
-                                        <div style="font-size: 1rem;">${phase.icon}</div>
-                                        ${phase.isPriority ? '<div style="position: absolute; top: -4px; right: 4px; background: var(--gradient-secondary); color: white; padding: 2px 4px; border-radius: 3px; font-size: 0.6rem; font-weight: 700;">HIGH</div>' : ''}
-                                        ${phase.isActive ? '<div style="position: absolute; top: -4px; left: 4px; background: var(--gradient-success); color: white; padding: 2px 4px; border-radius: 3px; font-size: 0.6rem; font-weight: 700;">NOW</div>' : ''}
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-                    `).join('');
-                    
-                    grid.innerHTML = html;
-                } catch (error) {
-                    console.error('Schedule population error:', error);
-                }
-            }
-
-            populateGuides() {
-                try {
-                    const grid = document.getElementById('guides-content');
-                    if (!grid) return;
-                    
-                    const guides = [
-                        {
-                            title: "5 Distinct Arms Race Phases",
-                            category: "Core Mechanics",
-                            icon: "🔄",
-                            description: "Arms Race runs 5 distinct phases, each lasting 4 hours in a 20-hour cycle that restarts at 20:00. Master this schedule for optimal planning.",
-                            tips: ["Each phase lasts exactly 4 hours", "20-hour cycle (5 phases × 4 hours)", "Cycle restarts at 20:00 server time", "Same phase appears at different times each day"]
-                        },
-                        {
-                            title: "Perfect Alignment Windows",
-                            category: "Peak Efficiency",
-                            icon: "🎯",
-                            description: "Time activities when Arms Race phases perfectly match Alliance VS focus days for maximum dual rewards.",
-                            tips: ["Tech Research + Age of Science = Perfect", "City Building + Base Expansion = Maximum", "Hero Advancement + Train Heroes = Ideal", "Friday offers multiple alignments"]
-                        },
-                        {
-                            title: "Friday Total Mobilization",
-                            category: "Weekly Peak",
-                            icon: "🚀",
-                            description: "Friday offers multiple high-priority windows since Total Mobilization accepts all activity types across all phases.",
-                            tips: ["Save speedups for Friday", "Multiple Arms Race alignments possible", "Highest daily point potential", "All phases can be high priority"]
-                        },
-                        {
-                            title: "Server Time Mastery",
-                            category: "Timing Strategy",
-                            icon: "🕐",
-                            description: "Master your server's predictable 4-hour Arms Race rotation. The schedule is completely consistent once you know the server time.",
-                            tips: ["Know exact server time", "5-phase × 4-hour cycle", "Cycle restarts at 20:00 daily", "Plan with 20-hour rotation in mind"]
-                        },
-                        {
-                            title: "Dual Event Synergy",
-                            category: "Advanced Strategy",
-                            icon: "⚡",
-                            description: "Maximize efficiency by focusing on activities that benefit both Arms Race and Alliance VS simultaneously.",
-                            tips: ["Hero EXP works for both events", "Construction speedups double-count", "Research activities align perfectly", "Drone activities overlap on Monday"]
-                        },
-                        {
-                            title: "Resource Conservation",
-                            category: "Planning Strategy",
-                            icon: "💎",
-                            description: "Save premium resources for high-priority alignment windows rather than using them during low-synergy periods.",
-                            tips: ["Hoard speedups for perfect alignments", "Use basic resources during normal time", "Track upcoming priority windows", "Plan resource usage in advance"]
-                        },
-                        {
-                            title: "Mobile Optimization",
-                            category: "Practical Tips",
-                            icon: "📱",
-                            description: "Set up notifications and quick-access strategies for managing events while mobile gaming with predictable schedules.",
-                            tips: ["Use browser notifications", "Bookmark priority times", "Set phone alarms for peak windows", "Use predictable schedule for planning"]
-                        }
-                    ];
-                    
-                    const html = guides.map(guide => `
-                        <div class="priority-window-card">
-                            <div style="background: var(--bg-surface); padding: var(--spacing-lg); border-bottom: 1px solid var(--border-primary); display: flex; align-items: center; gap: var(--spacing-md);">
-                                <div style="font-size: 1.5rem; flex-shrink: 0;">${guide.icon}</div>
-                                <div style="flex: 1;">
-                                    <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">${guide.title}</h3>
-                                    <div style="font-size: 0.8rem; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 500;">${guide.category}</div>
-                                </div>
-                            </div>
-                            <div style="padding: var(--spacing-lg);">
-                                <p style="font-size: 0.875rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: var(--spacing-lg);">${guide.description}</p>
-                                <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-sm);">
-                                    ${guide.tips.map(tip => `<span style="background: var(--bg-tertiary); color: var(--text-secondary); padding: var(--spacing-sm) var(--spacing-md); border-radius: var(--border-radius); font-size: 0.75rem; font-weight: 500; border: 1px solid var(--border-primary);">${tip}</span>`).join('')}
-                                </div>
-                            </div>
-                        </div>
-                    `).join('');
-                    
-                    grid.innerHTML = html;
-                } catch (error) {
-                    console.error('Guides population error:', error);
-                }
-            }
-
-            hideBanner() {
-                const banner = document.getElementById('priority-banner');
-                if (banner) {
-                    banner.classList.remove('show', 'peak-priority');
-                }
-            }
-
-            async requestNotificationPermission() {
-                try {
-                    if ('Notification' in window) {
-                        const permission = await Notification.requestPermission();
-                        const granted = permission === 'granted';
-                        this.notificationsEnabled = granted;
-                        this.saveSettings();
-                        return granted;
-                    }
-                    return false;
-                } catch (error) {
-                    console.error('Notification permission error:', error);
-                    return false;
-                }
-            }
-
-            showNotification(title, body) {
-                try {
-                    if (this.notificationsEnabled && 'Notification' in window && Notification.permission === 'granted') {
-                        const notification = new Notification(title, {
-                            body: body,
-                            icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🎯</text></svg>',
-                            tag: 'lastwar-priority'
-                        });
-                        
-                        notification.onclick = () => {
-                            window.focus();
-                            notification.close();
-                        };
-                        
-                        setTimeout(() => notification.close(), 5000);
-                    }
-                } catch (error) {
-                    console.error('Notification display error:', error);
-                }
-            }
-
-            loadSettings() {
-                try {
-                    const saved = localStorage.getItem('lwn-settings');
-                    if (saved) {
-                        const settings = JSON.parse(saved);
-                        this.timeOffset = settings.timeOffset || 0;
-                        this.notificationsEnabled = settings.notificationsEnabled || false;
-                        this.isSetupComplete = settings.isSetupComplete || false;
-                        this.currentPhaseOverride = settings.currentPhaseOverride || null;
-                        this.nextPhaseOverride = settings.nextPhaseOverride || null;
-                        
-                        this.syncSettingsToUI();
-                    }
-                } catch (error) {
-                    console.error('Settings load error:', error);
-                }
-            }
-
-            saveSettings() {
-                try {
-                    const settings = {
-                        timeOffset: this.timeOffset,
-                        notificationsEnabled: this.notificationsEnabled,
-                        isSetupComplete: this.isSetupComplete,
-                        currentPhaseOverride: this.currentPhaseOverride,
-                        nextPhaseOverride: this.nextPhaseOverride
-                    };
-                    localStorage.setItem('lwn-settings', JSON.stringify(settings));
-                } catch (error) {
-                    console.error('Settings save error:', error);
-                }
-            }
-
-            startUpdateLoop() {
-                try {
-                    if (this.updateInterval) {
-                        clearInterval(this.updateInterval);
-                    }
-                    
-                    this.updateInterval = setInterval(() => {
-                        if (this.isVisible) {
-                            this.updateAllDisplays();
-                        }
-                    }, 1000);
-                } catch (error) {
-                    console.error('Update loop error:', error);
-                }
-            }
-
-            handleError(message) {
-                console.error('Application error:', message);
-            }
-
-            destroy() {
-                try {
-                    if (this.updateInterval) {
-                        clearInterval(this.updateInterval);
-                    }
-                    if (this.setupTimeInterval) {
-                        clearInterval(this.setupTimeInterval);
-                    }
-                } catch (error) {
-                    console.error('Cleanup error:', error);
-                }
-            }
-        }
-
-        // Initialize the application
-        document.addEventListener('DOMContentLoaded', async () => {
-            try {
-                const app = new VSPointsOptimizer();
-                window.lastWarNexus = app;
-                
-            } catch (error) {
-                console.error('Application initialization failed:', error);
-                
-                const errorHtml = `
-                    <div style="
-                        position: fixed;
-                        top: 50%;
-                        left: 50%;
-                        transform: translate(-50%, -50%);
-                        background: var(--bg-elevated);
-                        border: 1px solid var(--accent-error);
-                        border-radius: 16px;
-                        padding: 32px;
-                        text-align: center;
-                        z-index: 9999;
-                        max-width: 400px;
-                        font-family: var(--font-family);
-                        box-shadow: var(--shadow-xl);
-                    ">
-                        <h2 style="color: var(--accent-error); margin-bottom: 16px; font-size: 1.25rem;">Initialization Error</h2>
-                        <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.5;">
-                            Failed to start Last War Nexus. Please refresh the page and try again.
-                        </p>
-                        <button onclick="window.location.reload()" style="
-                            background: var(--gradient-primary);
-                            color: white;
-                            border: none;
-                            padding: 12px 24px;
-                            border-radius: 8px;
-                            cursor: pointer;
-                            font-weight: 600;
-                        ">Refresh Page</button>
-                    </div>
-                `;
-                
-                document.body.insertAdjacentHTML('beforeend', errorHtml);
-            }
-        });
-
-        window.addEventListener('error', (event) => {
-            console.error('Global error:', event.error);
-        });
-
-        window.addEventListener('unhandledrejection', (event) => {
-            console.error('Unhandled promise rejection:', event.reason);
+                // Remove loading screen after transition
+                setTimeout(() => {
+                    loadingScreen.remove();
+                }, 300);
+            }, 1000); // Minimum loading time for better UX
+        }).catch(error => {
+            console.error('Failed to load application:', error);
+            
+            // Show error state
+            const loadingScreen = document.getElementById('loading-screen');
+            loadingScreen.innerHTML = `
+                <div style="text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">⚠️</div>
+                    <div style="font-size: 1.25rem; margin-bottom: 1rem; color: #ef4444;">Loading Error</div>
+                    <div style="margin-bottom: 2rem;">Failed to load Last War Nexus. Please check your connection and try again.</div>
+                    <button onclick="window.location.reload()" style="background: #0ea5e9; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer;">Retry</button>
+                </div>
+            `;
         });
     </script>
+
+    <!-- Register Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch(registrationError => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+    </script>
 </body>
+</html>

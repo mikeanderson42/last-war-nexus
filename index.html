@@ -46,10 +46,7 @@
     <meta name="msapplication-tap-highlight" content="no">
     
     <!-- Load CSS files -->
-    <link rel="stylesheet" href="css/variables.css">
-    <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/mobile.css">
+    <link rel="stylesheet" href="style.css">
     
     <!-- Structured Data for SEO -->
     <script type="application/ld+json">
@@ -97,19 +94,19 @@
                 
                 <div class="nav-actions">
                     <!-- Time Toggle Button -->
-                    <button class="time-toggle-btn" type="button" aria-label="Toggle between local and server time">
+                    <button class="time-toggle-btn" type="button" aria-label="Toggle between local and server time" id="time-toggle-btn">
                         <span class="time-toggle-icon" aria-hidden="true">🕐</span>
-                        <span class="time-toggle-label">Local Time</span>
+                        <span class="time-toggle-label" id="time-toggle-label">Local Time</span>
                     </button>
                     
                     <!-- Settings Dropdown -->
                     <div class="settings-dropdown-container">
-                        <button class="settings-btn" type="button" aria-label="Open settings" aria-expanded="false">
+                        <button class="settings-btn" type="button" aria-label="Open settings" aria-expanded="false" id="settings-toggle">
                             <span aria-hidden="true">⚙️</span>
                             Settings
                         </button>
                         
-                        <div class="settings-dropdown" role="menu" aria-label="Settings menu">
+                        <div class="settings-dropdown" role="menu" aria-label="Settings menu" id="settings-dropdown">
                             <div class="dropdown-header">
                                 <h3>Settings & Configuration</h3>
                                 <p>Adjust timezone and phase settings for accurate calculations</p>
@@ -117,18 +114,68 @@
                             <div class="dropdown-content">
                                 <div class="setting-item">
                                     <label for="settings-timezone">Server Timezone</label>
-                                    <select id="settings-timezone" class="form-select">
-                                        <option value="0">UTC +0 hours</option>
-                                        <!-- Options populated by JavaScript -->
+                                    <select id="time-offset" class="form-select">
+                                        <option value="-12">UTC -12 hours</option>
+                                        <option value="-11">UTC -11 hours</option>
+                                        <option value="-10">UTC -10 hours</option>
+                                        <option value="-9">UTC -9 hours</option>
+                                        <option value="-8">UTC -8 hours</option>
+                                        <option value="-7">UTC -7 hours</option>
+                                        <option value="-6">UTC -6 hours</option>
+                                        <option value="-5">UTC -5 hours</option>
+                                        <option value="-4">UTC -4 hours</option>
+                                        <option value="-3">UTC -3 hours</option>
+                                        <option value="-2">UTC -2 hours</option>
+                                        <option value="-1">UTC -1 hour</option>
+                                        <option value="0" selected>UTC +0 hours</option>
+                                        <option value="1">UTC +1 hour</option>
+                                        <option value="2">UTC +2 hours</option>
+                                        <option value="3">UTC +3 hours</option>
+                                        <option value="4">UTC +4 hours</option>
+                                        <option value="5">UTC +5 hours</option>
+                                        <option value="5.5">UTC +5.5 hours</option>
+                                        <option value="6">UTC +6 hours</option>
+                                        <option value="7">UTC +7 hours</option>
+                                        <option value="8">UTC +8 hours</option>
+                                        <option value="9">UTC +9 hours</option>
+                                        <option value="10">UTC +10 hours</option>
+                                        <option value="11">UTC +11 hours</option>
+                                        <option value="12">UTC +12 hours</option>
                                     </select>
                                 </div>
                                 <div class="setting-item">
-                                    <label for="settings-notifications">
-                                        <input type="checkbox" id="settings-notifications">
-                                        Enable Priority Notifications
-                                    </label>
+                                    <label for="current-phase-select">Current Arms Race Phase Override</label>
+                                    <select id="current-phase-select" class="form-select">
+                                        <option value="">Use server time calculation</option>
+                                        <option value="city_building">🏗️ City Building</option>
+                                        <option value="unit_progression">⚔️ Unit Progression</option>
+                                        <option value="tech_research">🔬 Tech Research</option>
+                                        <option value="drone_boost">🚁 Drone Boost</option>
+                                        <option value="hero_advancement">🦸 Hero Advancement</option>
+                                    </select>
+                                </div>
+                                <div class="setting-item">
+                                    <label for="next-phase-select">Next Arms Race Phase Override</label>
+                                    <select id="next-phase-select" class="form-select">
+                                        <option value="">Use calculated next phase</option>
+                                        <option value="city_building">🏗️ City Building</option>
+                                        <option value="unit_progression">⚔️ Unit Progression</option>
+                                        <option value="tech_research">🔬 Tech Research</option>
+                                        <option value="drone_boost">🚁 Drone Boost</option>
+                                        <option value="hero_advancement">🦸 Hero Advancement</option>
+                                    </select>
+                                </div>
+                                <div class="setting-item">
+                                    <label for="notifications-toggle">Priority Notifications</label>
+                                    <select id="notifications-toggle" class="form-select">
+                                        <option value="disabled">Disabled</option>
+                                        <option value="enabled">Enabled</option>
+                                    </select>
                                 </div>
                                 <div class="setting-actions">
+                                    <button type="button" class="btn btn-secondary" id="save-settings">
+                                        Save Settings
+                                    </button>
                                     <button type="button" class="btn btn-secondary" data-action="reset-settings">
                                         Reset to Defaults
                                     </button>

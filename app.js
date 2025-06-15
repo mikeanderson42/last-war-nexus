@@ -116,22 +116,17 @@
 
             init() {
                 try {
-                    // Ensure DOM elements exist before initialization
-                    const appContainer = document.getElementById('app-container');
-                    if (!appContainer) {
-                        throw new Error('App container not found');
-                    }
-                    
                     this.loadSettings();
                     this.setupEventListeners();
+                    
+                    // FIXED: Always update displays on initialization
+                    this.updateAllDisplays();
                     
                     // Always show setup modal on first visit (when no settings saved)
                     const hasStoredSettings = localStorage.getItem('lwn-settings');
                     if (!hasStoredSettings || !this.isSetupComplete) {
                         this.showSetupModal();
                     } else {
-                        // Only update displays and start loop if setup is complete
-                        this.updateAllDisplays();
                         this.startUpdateLoop();
                     }
                 } catch (error) {
@@ -434,11 +429,8 @@
                     this.syncSettingsToUI();
 
                     this.hideSetupModal();
-                    // Wait for modal to hide before updating displays
-                    setTimeout(() => {
-                        this.updateAllDisplays();
-                        this.startUpdateLoop();
-                    }, 100);
+                    this.updateAllDisplays();
+                    this.startUpdateLoop();
 
                 } catch (error) {
                     console.error('Setup completion error:', error);
@@ -458,11 +450,8 @@
                     this.syncSettingsToUI();
 
                     this.hideSetupModal();
-                    // Wait for modal to hide before updating displays
-                    setTimeout(() => {
-                        this.updateAllDisplays();
-                        this.startUpdateLoop();
-                    }, 100);
+                    this.updateAllDisplays();
+                    this.startUpdateLoop();
 
                 } catch (error) {
                     console.error('Setup skip error:', error);
@@ -896,12 +885,6 @@
             // ENHANCED: Update all displays including server time in settings
             updateAllDisplays() {
                 try {
-                    // Skip updates while setup modal is active to prevent initialization loops
-                    const setupModal = document.getElementById('setup-modal');
-                    if (setupModal && setupModal.classList.contains('active')) {
-                        return;
-                    }
-                    
                     this.updateTimeDisplay();
                     this.updateSettingsTime();
                     this.updateCurrentStatus();
@@ -2114,7 +2097,7 @@
                 };
 
                 // Add banner toggle function
-                window.lastWarNexus.toggleBanner = this.toggleBanner.bind(this);
+                window.lastWarNexus.toggleBanner = app.toggleBanner.bind(app);
                 
             } catch (error) {
                 console.error('Application initialization failed:', error);

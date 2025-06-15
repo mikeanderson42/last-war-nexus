@@ -1700,28 +1700,32 @@
                                         
                                         <h4>📅 Alliance VS Day Focus</h4>
                                         <ul>
-                                            <li><strong>Monday - Radar Training:</strong> Stamina usage, hero EXP, drone activities</li>
-                                            <li><strong>Tuesday - Base Expansion:</strong> Construction speedups, building power</li>
-                                            <li><strong>Wednesday - Age of Science:</strong> Research speedups, tech advancement</li>
-                                            <li><strong>Thursday - Train Heroes:</strong> Hero recruitment, EXP, skill development</li>
-                                            <li><strong>Friday - Total Mobilization:</strong> All activities count (HIGHEST PRIORITY)</li>
-                                            <li><strong>Saturday - Enemy Buster:</strong> Combat focus, troop activities</li>
+                                            <li><strong>Monday - Radar Training:</strong> Stamina usage, hero EXP, drone activities (2x multiplier)</li>
+                                            <li><strong>Tuesday - Base Expansion:</strong> Construction speedups, building power (2x multiplier)</li>
+                                            <li><strong>Wednesday - Age of Science:</strong> Research speedups, tech advancement (2x multiplier)</li>
+                                            <li><strong>Thursday - Train Heroes:</strong> Hero recruitment, EXP, skill development (2x multiplier)</li>
+                                            <li><strong>Friday - Total Mobilization:</strong> ALL activities count - SAVE RESOURCES FOR THIS (2x multiplier)</li>
+                                            <li><strong>Saturday - Enemy Buster:</strong> Military training, combat preparation (2x multiplier)</li>
                                         </ul>
                                         
                                         <h4>🎯 Perfect Alignment Strategy</h4>
                                         <ul>
-                                            <li><strong>Tech Research + Age of Science:</strong> Maximum research point efficiency</li>
-                                            <li><strong>City Building + Base Expansion:</strong> Optimal construction timing</li>
-                                            <li><strong>Hero Advancement + Train Heroes:</strong> Hero development focus</li>
-                                            <li><strong>Friday Opportunities:</strong> Multiple alignments possible on Total Mobilization</li>
+                                            <li><strong>Tech Research + Age of Science:</strong> 4x point multiplication (2x Arms Race + 2x VS Day)</li>
+                                            <li><strong>City Building + Base Expansion:</strong> 4x point multiplication for construction</li>
+                                            <li><strong>Hero Advancement + Train Heroes:</strong> 4x point multiplication for heroes</li>
+                                            <li><strong>Drone Boost + Radar Training:</strong> 4x point multiplication for stamina</li>
+                                            <li><strong>Unit Progression + Enemy Buster:</strong> 4x point multiplication for military</li>
+                                            <li><strong>Friday Total Mobilization:</strong> 4x points possible with ANY Arms Race phase</li>
                                         </ul>
                                         
                                         <h4>💎 Resource Planning</h4>
                                         <ul>
                                             <li><strong>Speedup Conservation:</strong> Save premium speedups for perfect alignments</li>
                                             <li><strong>Activity Timing:</strong> Plan major activities for high-priority windows</li>
-                                            <li><strong>Diamond Strategy:</strong> Diamond purchases provide points in ALL phases</li>
-                                            <li><strong>VIP Store Priority:</strong> Better value than regular store purchases</li>
+                                            <li><strong>Diamond Strategy:</strong> Diamond purchases provide points in ALL phases (always 2x base points)</li>
+                                            <li><strong>VIP Store Priority:</strong> 30-50% better value than regular store purchases</li>
+                                            <li><strong>Perfect Timing Strategy:</strong> Save premium items for 4x point windows</li>
+                                            <li><strong>Weekly Planning:</strong> Plan major activities around perfect alignments</li>
                                         </ul>
                                         
                                         <h4>📱 Planning Tools</h4>

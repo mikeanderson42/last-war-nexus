@@ -740,7 +740,6 @@ body {
     box-shadow: var(--glass-shadow-hover), var(--inset-shadow);
     backdrop-filter: var(--backdrop-blur-strong);
     -webkit-backdrop-filter: var(--backdrop-blur-strong);
-    transform: translateY(-1px);
 }
 
 .server-reset-card:hover::before {
@@ -818,7 +817,6 @@ body {
     box-shadow: var(--glass-shadow-hover), var(--inset-shadow);
     backdrop-filter: var(--backdrop-blur-strong);
     -webkit-backdrop-filter: var(--backdrop-blur-strong);
-    transform: translateY(-2px);
 }
 
 .countdown-card-compact:hover::before,
@@ -1176,7 +1174,6 @@ body {
     box-shadow: var(--glass-shadow-hover), var(--inset-shadow);
     backdrop-filter: var(--backdrop-blur-strong);
     -webkit-backdrop-filter: var(--backdrop-blur-strong);
-    transform: translateY(-1px);
 }
 
 .tab-btn:hover::before {
@@ -1360,7 +1357,6 @@ body {
     box-shadow: var(--glass-shadow-hover), var(--inset-shadow);
     backdrop-filter: var(--backdrop-blur-strong);
     -webkit-backdrop-filter: var(--backdrop-blur-strong);
-    transform: translateY(-2px);
 }
 
 .priority-window-card:hover::before {

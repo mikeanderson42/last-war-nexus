@@ -116,25 +116,24 @@
 
             init() {
                 try {
-                    console.log('Last War Nexus: Starting initialization...');
+                    // Ensure DOM elements exist before initialization
+                    const appContainer = document.getElementById('app-container');
+                    if (!appContainer) {
+                        throw new Error('App container not found');
+                    }
+                    
                     this.loadSettings();
                     this.setupEventListeners();
-                    
-                    // FIXED: Always update displays on initialization
-                    console.log('Last War Nexus: Updating displays...');
-                    this.updateAllDisplays();
                     
                     // Always show setup modal on first visit (when no settings saved)
                     const hasStoredSettings = localStorage.getItem('lwn-settings');
                     if (!hasStoredSettings || !this.isSetupComplete) {
-                        console.log('Last War Nexus: Showing setup modal...');
                         this.showSetupModal();
                     } else {
-                        console.log('Last War Nexus: Starting update loop...');
+                        // Only update displays and start loop if setup is complete
+                        this.updateAllDisplays();
                         this.startUpdateLoop();
                     }
-                    
-                    console.log('Last War Nexus: Initialization complete!');
                 } catch (error) {
                     console.error('Initialization error:', error);
                     this.handleError('Failed to initialize application');
@@ -435,8 +434,11 @@
                     this.syncSettingsToUI();
 
                     this.hideSetupModal();
-                    this.updateAllDisplays();
-                    this.startUpdateLoop();
+                    // Wait for modal to hide before updating displays
+                    setTimeout(() => {
+                        this.updateAllDisplays();
+                        this.startUpdateLoop();
+                    }, 100);
 
                 } catch (error) {
                     console.error('Setup completion error:', error);
@@ -456,8 +458,11 @@
                     this.syncSettingsToUI();
 
                     this.hideSetupModal();
-                    this.updateAllDisplays();
-                    this.startUpdateLoop();
+                    // Wait for modal to hide before updating displays
+                    setTimeout(() => {
+                        this.updateAllDisplays();
+                        this.startUpdateLoop();
+                    }, 100);
 
                 } catch (error) {
                     console.error('Setup skip error:', error);
@@ -791,10 +796,8 @@
 
             findNextPriorityWindow() {
                 try {
-                    console.log('Last War Nexus: Finding next priority window...');
                     const now = this.getServerTime();
                     const currentAlignment = this.isCurrentlyHighPriority();
-                    console.log('Current alignment:', currentAlignment);
                     
                     if (currentAlignment) {
                         const currentPhase = this.getCurrentArmsPhase();
@@ -893,6 +896,12 @@
             // ENHANCED: Update all displays including server time in settings
             updateAllDisplays() {
                 try {
+                    // Skip updates while setup modal is active to prevent initialization loops
+                    const setupModal = document.getElementById('setup-modal');
+                    if (setupModal && setupModal.classList.contains('active')) {
+                        return;
+                    }
+                    
                     this.updateTimeDisplay();
                     this.updateSettingsTime();
                     this.updateCurrentStatus();
@@ -909,7 +918,6 @@
 
             updateTimeDisplay() {
                 try {
-                    console.log('Last War Nexus: Updating time display...');
                     const serverTime = this.getServerTime();
                     const localTime = new Date();
                     const serverTimeString = serverTime.toUTCString().slice(17, 25);

@@ -3,20 +3,20 @@
 /* ENHANCED: CSS Variables with better contrast and design */
 :root {
     --bg-primary: #0a0a0f;
-    --bg-secondary: #12121a;
-    --bg-tertiary: #1a1a26;
-    --bg-card: #1f1f2e;
-    --bg-elevated: #252538;
-    --bg-surface: #2a2a42;
+    --bg-secondary: #1a1a1a;
+    --bg-tertiary: #202020;
+    --bg-card: #1a1a1a;
+    --bg-elevated: #0f0f0f;
+    --bg-surface: #121212;
     
     --text-primary: #ffffff;
     --text-secondary: #e1e1ea;
     --text-tertiary: #b8b8cc;
     --text-muted: #8a8a9e;
     
-    --border-primary: #3a3a52;
-    --border-secondary: #4a4a62;
-    --border-accent: #5a5a72;
+    --border-primary: rgba(255, 255, 255, 0.06);
+    --border-secondary: rgba(255, 255, 255, 0.1);
+    --border-accent: rgba(255, 255, 255, 0.15);
     
     /* FIXED: Better contrast colors */
     --accent-primary: #1e90ff;
@@ -31,14 +31,14 @@
     --gradient-primary: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
     --gradient-secondary: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
     --gradient-success: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-    --gradient-card: linear-gradient(145deg, rgba(31, 31, 46, 0.95), rgba(26, 26, 38, 0.9));
-    --gradient-elevated: linear-gradient(145deg, rgba(37, 37, 56, 0.95), rgba(31, 31, 46, 0.9));
+    --gradient-card: linear-gradient(145deg, rgba(26, 26, 26, 0.95), rgba(20, 20, 20, 0.9));
+    --gradient-elevated: linear-gradient(145deg, rgba(32, 32, 32, 0.95), rgba(26, 26, 26, 0.9));
     
     /* Refined glass morphism effects */
-    --glass-bg: rgba(31, 31, 46, 0.75);
-    --glass-bg-elevated: rgba(37, 37, 56, 0.85);
-    --glass-border: rgba(255, 255, 255, 0.08);
-    --glass-border-hover: rgba(255, 255, 255, 0.15);
+    --glass-bg: rgba(26, 26, 26, 0.95);
+    --glass-bg-elevated: rgba(32, 32, 32, 0.95);
+    --glass-border: rgba(255, 255, 255, 0.06);
+    --glass-border-hover: rgba(255, 255, 255, 0.12);
     --glass-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
     --glass-shadow-hover: 0 4px 20px rgba(0, 0, 0, 0.15);
     --backdrop-blur: blur(12px);
@@ -95,8 +95,8 @@ html {
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-    background: #1a1a1a;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segui UI', system-ui, sans-serif;
+    background: #0a0a0f;
     color: #ffffff;
     line-height: 1.5;
     overflow-x: hidden;
@@ -111,7 +111,7 @@ body {
     display: flex;
     flex-direction: column;
     position: relative;
-    background: #1a1a1a;
+    background: #2d2d2d;
     padding: 16px;
 }
 
@@ -437,23 +437,23 @@ body {
     gap: var(--spacing-lg);
 }
 
-/* Ultrahuman-style VS Points Optimizer Card */
+/* Ultrahuman-style VS Points Optimizer Card - Darker than background */
 .vs-optimizer-card {
-    background: rgba(45, 45, 55, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 20px;
+    background: #1a1a1a;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
     padding: 24px;
     margin-bottom: 16px;
     transition: all 0.2s ease;
     position: relative;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .vs-optimizer-card:hover {
-    background: rgba(50, 50, 60, 0.95);
-    border-color: rgba(255, 255, 255, 0.12);
+    background: #202020;
+    border-color: rgba(255, 255, 255, 0.1);
     transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 /* Removed duplicate top border rule that caused double border */
@@ -531,14 +531,15 @@ body {
 }
 
 .next-priority-banner {
-    background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(239, 68, 68, 0.1));
-    border: 1px solid rgba(255, 107, 53, 0.3);
-    border-radius: var(--border-radius-lg);
+    background: #0f0f0f;
+    border: 1px solid rgba(251, 146, 60, 0.2);
+    border-radius: 12px;
     padding: var(--spacing-xl);
     margin-bottom: var(--spacing-xl);
     display: flex;
     align-items: center;
     gap: var(--spacing-lg);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .priority-icon {
@@ -668,22 +669,22 @@ body {
     text-align: center;
 }
 
-/* Ultrahuman-style Server Reset Card */
+/* Ultrahuman-style Server Reset Card - Darker than background */
 .server-reset-card {
-    background: rgba(45, 45, 55, 0.95);
-    border: 1px solid rgba(34, 197, 94, 0.2);
-    border-radius: 20px;
+    background: #1a1a1a;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
     padding: 24px;
     transition: all 0.2s ease;
     position: relative;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .server-reset-card:hover {
-    background: rgba(50, 50, 60, 0.95);
-    border-color: rgba(34, 197, 94, 0.3);
+    background: #202020;
+    border-color: rgba(255, 255, 255, 0.1);
     transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 .reset-info {
@@ -717,39 +718,39 @@ body {
     font-family: var(--font-mono);
 }
 
-/* Ultrahuman-style Compact Cards */
+/* Ultrahuman-style Compact Cards - Darker than background */
 .countdown-card-compact {
-    background: rgba(45, 45, 55, 0.95);
-    border: 1px solid rgba(168, 85, 247, 0.15);
-    border-radius: 20px;
+    background: #1a1a1a;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
     padding: 20px;
     transition: all 0.2s ease;
     position: relative;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .strategy-card-compact {
-    background: rgba(45, 45, 55, 0.95);
-    border: 1px solid rgba(251, 146, 60, 0.15);
-    border-radius: 20px;
+    background: #1a1a1a;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
     padding: 20px;
     transition: all 0.2s ease;
     position: relative;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .countdown-card-compact:hover {
-    background: rgba(50, 50, 60, 0.95);
-    border-color: rgba(168, 85, 247, 0.25);
+    background: #202020;
+    border-color: rgba(255, 255, 255, 0.1);
     transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 .strategy-card-compact:hover {
-    background: rgba(50, 50, 60, 0.95);
-    border-color: rgba(251, 146, 60, 0.25);
+    background: #202020;
+    border-color: rgba(255, 255, 255, 0.1);
     transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 /* Ultrahuman-style Card Headers */
@@ -950,30 +951,49 @@ body {
 
 /* ENHANCED: Progress Bar */
 .countdown-progress-section {
-    margin-bottom: var(--spacing-lg);
+    margin: 24px 0;
 }
 
 .progress-bar-container {
     position: relative;
-    height: 8px;
-    background: var(--bg-elevated);
-    border-radius: 4px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
     overflow: hidden;
-    margin-bottom: var(--spacing-xs);
+    margin-bottom: 12px;
 }
 
 .progress-bar {
     position: relative;
     height: 100%;
-    background: var(--bg-elevated);
-    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
 }
 
 .progress-fill {
     height: 100%;
-    background: var(--gradient-primary);
-    border-radius: 4px;
-    transition: width var(--transition-slow);
+    background: linear-gradient(90deg, #fb923c, #f59e0b);
+    border-radius: 3px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 8px rgba(251, 146, 60, 0.4);
+}
+
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: progress-shimmer 2s infinite;
+}
+
+@keyframes progress-shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
 }
 
 .progress-glow {

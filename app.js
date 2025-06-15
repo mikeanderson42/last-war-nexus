@@ -117,14 +117,29 @@
 
             init() {
                 try {
+                    console.log('=== VSPointsOptimizer INIT START ===');
                     this.loadSettings();
+                    console.log('Settings loaded successfully');
                     this.setupEventListeners();
+                    console.log('Event listeners setup successfully');
                     
                     // FIXED: Always update displays on initialization
                     this.updateAllDisplays();
                     
                     // FIXED: Initialize all content including guides
-                    this.initializeAllContent();\n                    \n                    // FIXED: Force populate guides after DOM is ready\n                    setTimeout(() => {\n                        console.log('=== FORCED GUIDE POPULATION ON STARTUP ===');\n                        console.log('activeGuideType:', this.activeGuideType);\n                        this.populateGuides();\n                    }, 1000);
+                    try {
+                        this.initializeAllContent();
+                    } catch (error) {
+                        console.error('Content initialization failed:', error);
+                    }
+                    console.log('All content initialized successfully');
+                    
+                    // FIXED: Force populate guides after DOM is ready
+                    setTimeout(() => {
+                        console.log('=== FORCED GUIDE POPULATION ON STARTUP ===');
+                        console.log('activeGuideType:', this.activeGuideType);
+                        this.populateGuides();
+                    }, 1000);
                     
                     // Always show setup modal on first visit (when no settings saved)
                     const hasStoredSettings = localStorage.getItem('lwn-settings');
@@ -241,7 +256,8 @@
                             // Allow switching even if same type to refresh content
                             if (guideType) {
                                 console.log('Guide navigation clicked:', guideType);
-                                // Force a more comprehensive approach\n                                this.switchGuideTypeForced(guideType);
+                                // Force a more comprehensive approach
+                                this.switchGuideType(guideType);
                             }
                         }
                     });
@@ -640,11 +656,14 @@
             // FIXED: Switch between guide types (tips/seasonal)
             switchGuideType(guideType) {
                 try {
-                    console.log('=== GUIDE TYPE SWITCH START ===');\n                    console.log('Switching to guide type:', guideType);\n                    console.log('Current activeGuideType:', this.activeGuideType);
+                    console.log('=== GUIDE TYPE SWITCH START ===');
+                    console.log('Switching to guide type:', guideType);
+                    console.log('Current activeGuideType:', this.activeGuideType);
                     this.activeGuideType = guideType;
                     
                     // Update guide navigation buttons with improved error handling
-                    const allBtns = document.querySelectorAll('.guide-nav-btn');\n                    console.log('Found guide nav buttons:', allBtns.length);
+                    const allBtns = document.querySelectorAll('.guide-nav-btn');
+                    console.log('Found guide nav buttons:', allBtns.length);
                     if (allBtns.length === 0) {
                         console.warn('No guide navigation buttons found in DOM');
                         return;

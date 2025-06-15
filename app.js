@@ -244,23 +244,53 @@
                         });
                     }
 
-                    // FIXED: Guide navigation buttons with improved event delegation - use document for persistent listening
-                    document.addEventListener('click', (e) => {
+                    // FIXED: Guide navigation buttons with robust mobile support
+                    const handleGuideNavigation = (e) => {
                         const btn = e.target.closest('.guide-nav-btn');
                         if (btn) {
                             e.preventDefault();
                             e.stopPropagation();
                             e.stopImmediatePropagation();
                             
-                            const guideType = btn.getAttribute('data-guide-type');
-                            // Allow switching even if same type to refresh content
-                            if (guideType) {
-                                console.log('Guide navigation clicked:', guideType);
-                                // Force a more comprehensive approach
-                                this.switchGuideType(guideType);
+                            // Prevent multiple rapid clicks
+                            if (btn.hasAttribute('data-processing')) {
+                                return;
                             }
+                            btn.setAttribute('data-processing', 'true');
+                            
+                            const guideType = btn.getAttribute('data-guide-type');
+                            if (guideType) {
+                                console.log('=== GUIDE NAV CLICK ===');
+                                console.log('Guide type:', guideType);
+                                console.log('Current activeGuideType:', this.activeGuideType);
+                                console.log('Current activeTab:', this.activeTab);
+                                
+                                // Ensure we're on the guides tab
+                                if (this.activeTab !== 'guides') {
+                                    console.log('Switching to guides tab first');
+                                    this.switchTab('guides');
+                                }
+                                
+                                // Then switch guide type
+                                this.switchGuideType(guideType);
+                                
+                                // Force content update
+                                setTimeout(() => {
+                                    console.log('Forcing content refresh...');
+                                    this.populateGuides();
+                                }, 100);
+                            }
+                            
+                            // Remove processing flag after delay
+                            setTimeout(() => {
+                                btn.removeAttribute('data-processing');
+                            }, 500);
                         }
-                    });
+                    };
+                    
+                    // Handle both click and touch events for mobile
+                    document.addEventListener('click', handleGuideNavigation.bind(this));
+                    document.addEventListener('touchend', handleGuideNavigation.bind(this));
 
                     // FIXED: Banner toggle functionality
                     const bannerHeader = document.querySelector('.banner-header');
@@ -1533,390 +1563,268 @@
 
             populateGuides() {
                 try {
-                    const grid = document.getElementById('guides-content');
-                    if (!grid) return;
+                    console.log('=== POPULATE GUIDES START ===');
+                    console.log('Active guide type:', this.activeGuideType);
                     
-                    // FIXED: Use different guide sets based on activeGuideType
+                    const grid = document.getElementById('guides-content');
+                    if (!grid) {
+                        console.error('Guides content element not found');
+                        return;
+                    }
+                    
+                    // REDESIGNED: Comprehensive guide system with collapsible sections
                     let guides = [];
                     
                     if (this.activeGuideType === 'seasonal') {
                         guides = [
                             {
                                 title: "Season 1: Foundation Building",
-                                category: "New Player Season Strategy",
+                                category: "New Player Strategy",
                                 icon: "🏗️",
-                                description: "Your first season focuses on learning game mechanics, establishing base infrastructure, and understanding the Arms Race / VS Points system.",
-                                content: `
-                                    <div class="guide-section">
-                                        <h5>🎯 Season 1 Core Objectives</h5>
-                                        <p><strong>Goal:</strong> Learn fundamentals, reach HQ 15+, join active alliance, understand VS Points system</p>
-                                        
-                                        <h5>📚 Learning Phase (Days 1-15)</h5>
-                                        <ul>
-                                            <li><strong>Tutorial Completion:</strong> Follow all in-game tutorials completely</li>
-                                            <li><strong>Basic Buildings:</strong> HQ 10+ with balanced resource/military buildings</li>
-                                            <li><strong>Alliance Research:</strong> Find active alliance in your timezone</li>
-                                            <li><strong>Arms Race Understanding:</strong> Use this tool to track perfect alignment windows</li>
-                                            <li><strong>Hero Focus:</strong> Choose 1-2 main heroes and focus resources</li>
-                                        </ul>
-                                        
-                                        <h5>⚡ First VS Points Strategy (Days 15-45)</h5>
-                                        <ul>
-                                            <li><strong>Perfect Alignments:</strong> Save speedups for 4x point windows</li>
-                                            <li><strong>Daily Activities:</strong> Complete all daily missions and events</li>
-                                            <li><strong>Resource Management:</strong> Don't waste premium items on non-aligned activities</li>
-                                            <li><strong>Power Building:</strong> Target 500k+ power by end of season</li>
-                                        </ul>
-                                        
-                                        <h5>🏆 Season End Goals (Days 45-60)</h5>
-                                        <ul>
-                                            <li><strong>Alliance Contribution:</strong> Consistent VS Points for alliance ranking</li>
-                                            <li><strong>Personal Ranking:</strong> Individual VS Points ranking in server</li>
-                                            <li><strong>Knowledge Base:</strong> Understand all game mechanics for Season 2</li>
-                                        </ul>
-                                    </div>
-                                `
+                                description: "Master the fundamentals and establish strong foundations for future seasons",
+                                sections: [
+                                    {
+                                        title: "🎯 Season 1 Core Objectives",
+                                        content: [
+                                            "**Primary Goal:** Learn all game mechanics and reach HQ 15+",
+                                            "**Alliance Goal:** Join active alliance and contribute consistently",
+                                            "**VS Points Goal:** Understand perfect alignment system",
+                                            "**Power Goal:** Achieve 500k+ total power by season end"
+                                        ]
+                                    },
+                                    {
+                                        title: "📚 Learning Phase (Days 1-15)",
+                                        content: [
+                                            "**Tutorial Mastery:** Complete ALL in-game tutorials without skipping",
+                                            "**Basic Infrastructure:** Build balanced resource and military buildings",
+                                            "**Alliance Research:** Find active alliance in your timezone with voice chat",
+                                            "**Tool Familiarity:** Use this VS Points Optimizer daily to track windows",
+                                            "**Hero Focus:** Choose 2-3 main heroes and concentrate all resources"
+                                        ]
+                                    },
+                                    {
+                                        title: "⚡ VS Points Strategy (Days 15-45)",
+                                        content: [
+                                            "**Perfect Alignments:** Save ALL speedups for 4x point windows only",
+                                            "**Daily Discipline:** Complete all daily missions and participate in events",
+                                            "**Resource Conservation:** Never waste premium items outside alignments",
+                                            "**Consistent Growth:** Maintain steady power growth targeting 10k+ daily",
+                                            "**Alliance Contribution:** Ensure consistent VS Points for alliance ranking"
+                                        ]
+                                    },
+                                    {
+                                        title: "🏆 Season End Goals (Days 45-60)",
+                                        content: [
+                                            "**Alliance Success:** Top 10 alliance ranking on your server",
+                                            "**Personal Achievement:** Top 100 individual VS Points ranking",
+                                            "**Knowledge Mastery:** Understand all game mechanics for Season 2",
+                                            "**Resource Stockpile:** Save premium items for next season start",
+                                            "**Network Building:** Establish relationships with experienced players"
+                                        ]
+                                    }
+                                ]
                             },
                             {
-                                title: "Season 2: Power Acceleration",
-                                category: "Growth & Optimization",
+                                title: "Season 2+: Advanced Mastery",
+                                category: "Expert Strategy",
                                 icon: "⚡",
-                                description: "Second season focuses on rapid power growth, mastering perfect alignments, and establishing yourself as a competitive player.",
-                                content: `
-                                    <div class="guide-section">
-                                        <h5>🎯 Season 2 Core Objectives</h5>
-                                        <p><strong>Goal:</strong> HQ 20+, 2M+ power, top alliance rankings, mastery of perfect alignments</p>
-                                        
-                                        <h5>💪 Power Growth Phase (Days 1-20)</h5>
-                                        <ul>
-                                            <li><strong>Perfect Alignment Mastery:</strong> Use 100% of speedups during 4x point windows</li>
-                                            <li><strong>Hero Specialization:</strong> Develop 3-4 heroes for different combat roles</li>
-                                            <li><strong>Research Focus:</strong> Complete military tech trees for power multiplication</li>
-                                            <li><strong>Equipment Crafting:</strong> Begin serious equipment enhancement</li>
-                                        </ul>
-                                        
-                                        <h5>🏆 Competition Phase (Days 20-50)</h5>
-                                        <ul>
-                                            <li><strong>Ranking Strategy:</strong> Target top 100 in personal VS Points</li>
-                                            <li><strong>Alliance Leadership:</strong> Take active role in alliance coordination</li>
-                                            <li><strong>Resource Efficiency:</strong> 90%+ of activities during perfect alignments</li>
-                                            <li><strong>Event Dominance:</strong> Top rewards in seasonal events</li>
-                                        </ul>
-                                        
-                                        <h5>🎖️ Season End Mastery (Days 50-60)</h5>
-                                        <ul>
-                                            <li><strong>Strategic Stockpiling:</strong> Save premium items for Season 3 start</li>
-                                            <li><strong>Knowledge Transfer:</strong> Share strategies with alliance members</li>
-                                            <li><strong>Next Season Planning:</strong> Analyze what worked and what didn't</li>
-                                        </ul>
-                                    </div>
-                                `
-                            },
-                            {
-                                title: "Season 3: Elite Competition",
-                                category: "Advanced Strategy & Leadership",
-                                icon: "🎖️",
-                                description: "Third season focuses on server dominance, advanced alliance tactics, and establishing yourself as a top-tier player.",
-                                content: `
-                                    <div class="guide-section">
-                                        <h5>🎯 Season 3 Core Objectives</h5>
-                                        <p><strong>Goal:</strong> HQ 25+, 5M+ power, server top 50, alliance leadership role</p>
-                                        
-                                        <h5>👑 Dominance Phase (Days 1-25)</h5>
-                                        <ul>
-                                            <li><strong>Server Leadership:</strong> Lead or co-lead server-wide strategies</li>
-                                            <li><strong>Advanced Alignments:</strong> Perfect timing with premium diamond strategies</li>
-                                            <li><strong>Cross-Alliance Coordination:</strong> Organize multi-alliance campaigns</li>
-                                            <li><strong>Resource Optimization:</strong> Maximum efficiency in all activities</li>
-                                        </ul>
-                                        
-                                        <h5>🚀 Advanced Tactics (Days 25-50)</h5>
-                                        <ul>
-                                            <li><strong>Meta Strategies:</strong> Develop and share optimal builds</li>
-                                            <li><strong>Event Mastery:</strong> Secure #1 rankings in major events</li>
-                                            <li><strong>Alliance Mentorship:</strong> Train new players in VS Points optimization</li>
-                                            <li><strong>PvP Excellence:</strong> Dominate world map and conflicts</li>
-                                        </ul>
-                                        
-                                        <h5>🏆 Legacy Building (Days 50-60)</h5>
-                                        <ul>
-                                            <li><strong>Server Records:</strong> Set records that last multiple seasons</li>
-                                            <li><strong>Knowledge Archive:</strong> Document advanced strategies</li>
-                                            <li><strong>Succession Planning:</strong> Prepare next generation of leaders</li>
-                                        </ul>
-                                        
-                                    </div>
-                                `
-                            },
-                            {
-                                title: "Season 4+: Veteran Mastery",
-                                category: "Expert Level Optimization",
-                                icon: "👑",
-                                description: "Fourth season and beyond - maintaining dominance, innovation, and server-wide influence while perfecting the ultimate VS Points strategies.",
-                                content: `
-                                    <div class="guide-section">
-                                        <h5>🎯 Veteran Objectives</h5>
-                                        <p><strong>Goal:</strong> HQ 30+, 10M+ power, server legend status, innovative strategy development</p>
-                                        
-                                        <h5>🧠 Innovation Phase (Ongoing)</h5>
-                                        <ul>
-                                            <li><strong>Strategy Innovation:</strong> Develop new meta strategies</li>
-                                            <li><strong>Tool Development:</strong> Create and share optimization tools</li>
-                                            <li><strong>Community Leadership:</strong> Guide entire server communities</li>
-                                            <li><strong>Cross-Server Influence:</strong> Share strategies across servers</li>
-                                        </ul>
-                                        
-                                        <h5>📊 Data Mastery (Advanced)</h5>
-                                        <ul>
-                                            <li><strong>Efficiency Analytics:</strong> Track and optimize every activity</li>
-                                            <li><strong>Predictive Planning:</strong> Anticipate event schedules and prepare</li>
-                                            <li><strong>ROI Optimization:</strong> Perfect resource investment strategies</li>
-                                            <li><strong>Mentorship Programs:</strong> Systematic training of new players</li>
-                                        </ul>
-                                        
-                                        <h5>🌟 Legacy Creation (Long-term)</h5>
-                                        <ul>
-                                            <li><strong>Legendary Status:</strong> Become a server legend</li>
-                                            <li><strong>Strategy Documentation:</strong> Create comprehensive guides</li>
-                                            <li><strong>Community Building:</strong> Foster positive server culture</li>
-                                            <li><strong>Game Evolution:</strong> Influence game development through feedback</li>
-                                        </ul>
-                                        
-                                        <div class="reference-link">
-                                            <p><strong>🎯 Ultimate Resource:</strong> This VS Points Optimizer becomes your permanent companion for perfect alignment tracking and maximum efficiency across all seasons.</p>
-                                        </div>
-                                    </div>
-                                `
+                                description: "Advanced strategies for experienced players focusing on dominance and optimization",
+                                sections: [
+                                    {
+                                        title: "🎯 Advanced Objectives",
+                                        content: [
+                                            "**Power Goal:** Achieve HQ 20+ and 2M+ total power",
+                                            "**Ranking Goal:** Top 50 personal VS Points consistently",
+                                            "**Alliance Goal:** Leadership role in top 5 alliance",
+                                            "**Efficiency Goal:** 95%+ activities during perfect alignments"
+                                        ]
+                                    },
+                                    {
+                                        title: "💪 Power Growth Strategies",
+                                        content: [
+                                            "**Perfect Alignment Mastery:** Use 100% of speedups during 4x windows only",
+                                            "**Hero Specialization:** Develop 4-5 heroes for different combat scenarios",
+                                            "**Research Focus:** Complete military and economic tech trees strategically",
+                                            "**Equipment Excellence:** Systematic equipment enhancement and optimization"
+                                        ]
+                                    },
+                                    {
+                                        title: "🏆 Competition Excellence",
+                                        content: [
+                                            "**Ranking Strategy:** Maintain top 50 individual VS Points consistently",
+                                            "**Alliance Leadership:** Coordinate alliance activities and mentor new players",
+                                            "**Resource Mastery:** 95%+ efficiency in all resource expenditure",
+                                            "**Event Dominance:** Secure top rewards in all seasonal and weekly events"
+                                        ]
+                                    }
+                                ]
                             }
                         ];
                     } else {
                         // Default to 'tips' guides - Comprehensive General Guides
                         guides = [
                             {
-                                title: "Squad Building & Composition",
-                                category: "Combat Strategy",
-                                icon: "⚔️",
-                                content: `
-                                    <div class="guide-content">
-                                        <h3>🏗️ Building Powerful Combat Squads</h3>
-                                        <p>Creating effective squads requires understanding unit synergies, roles, and optimal formations for different combat scenarios.</p>
-                                        
-                                        <h4>🎯 Core Squad Roles</h4>
-                                        <ul>
-                                            <li><strong>Tank Units:</strong> High defense and health to absorb damage</li>
-                                            <li><strong>DPS Units:</strong> High attack power for eliminating threats</li>
-                                            <li><strong>Support Units:</strong> Healing, buffs, and utility abilities</li>
-                                            <li><strong>Specialist Units:</strong> Counter specific enemy types or tactics</li>
-                                        </ul>
-                                        
-                                        <h4>⚡ Squad Synergy Principles</h4>
-                                        <ul>
-                                            <li><strong>Unit Type Balance:</strong> Mix infantry, vehicles, and aircraft for versatility</li>
-                                            <li><strong>Hero Compatibility:</strong> Choose heroes that enhance your unit composition</li>
-                                            <li><strong>Formation Strategy:</strong> Position units to maximize strengths and minimize weaknesses</li>
-                                            <li><strong>Power Level Distribution:</strong> Balance investment across all squad members</li>
-                                        </ul>
-                                        
-                                        <h4>🎖️ Advanced Squad Tactics</h4>
-                                        <ul>
-                                            <li><strong>Counter Builds:</strong> Adapt squads to counter enemy formations</li>
-                                            <li><strong>Terrain Advantage:</strong> Use map positioning for tactical benefits</li>
-                                            <li><strong>Resource Efficiency:</strong> Optimize upgrade paths for maximum power gains</li>
-                                            <li><strong>Meta Adaptation:</strong> Adjust strategies based on current game balance</li>
-                                        </ul>
-                                        
-                                        <div class="reference-link">
-                                            <p><strong>📖 Squad Building Guide:</strong> <a href="https://lastwartutorial.com/squad-building" target="_blank" rel="noopener">LastWarTutorial.com</a> provides detailed unit tier lists, formation guides, and combat mechanics explanations.</p>
-                                        </div>
-                                    </div>
-                                `
-                            },
-                            {
-                                title: "Equipment Upgrade Paths",
-                                category: "Power Optimization",
-                                icon: "🛡️",
-                                content: `
-                                    <div class="guide-content">
-                                        <h3>⚙️ Optimal Equipment Development</h3>
-                                        <p>Strategic equipment upgrades provide the most efficient power gains and combat effectiveness improvements.</p>
-                                        
-                                        <h4>🏆 Priority Equipment Types</h4>
-                                        <ul>
-                                            <li><strong>Weapons (First Priority):</strong> Direct damage increase - highest ROI</li>
-                                            <li><strong>Armor (Second Priority):</strong> Survivability improvements</li>
-                                            <li><strong>Accessories (Third Priority):</strong> Utility and special abilities</li>
-                                            <li><strong>Consumables:</strong> Temporary but powerful battlefield advantages</li>
-                                        </ul>
-                                        
-                                        <h4>📈 Upgrade Path Strategy</h4>
-                                        <ol>
-                                            <li><strong>Level Main Weapons:</strong> Focus on primary squad weapons first</li>
-                                            <li><strong>Enhance Star Ratings:</strong> Star upgrades provide significant stat boosts</li>
-                                            <li><strong>Optimize Sets:</strong> Complete equipment sets for bonus effects</li>
-                                            <li><strong>Refine Quality:</strong> Higher quality equipment scales better</li>
-                                        </ol>
-                                        
-                                        <h4>💎 Resource Allocation</h4>
-                                        <ul>
-                                            <li><strong>Materials Focus:</strong> Prioritize rare materials for highest-tier equipment</li>
-                                            <li><strong>Enhancement Order:</strong> Upgrade main squad equipment before secondary squads</li>
-                                            <li><strong>Event Timing:</strong> Save materials for equipment enhancement events</li>
-                                            <li><strong>Cost Efficiency:</strong> Calculate power-per-resource ratios</li>
-                                        </ul>
-                                        
-                                        <h4>🔧 Advanced Optimization</h4>
-                                        <ul>
-                                            <li><strong>Set Bonuses:</strong> Plan equipment combinations for synergy effects</li>
-                                            <li><strong>Situational Gear:</strong> Maintain multiple equipment sets for different scenarios</li>
-                                            <li><strong>Research Integration:</strong> Coordinate equipment upgrades with research progress</li>
-                                            <li><strong>Hero Synergy:</strong> Match equipment effects with hero abilities</li>
-                                        </ul>
-                                        
-                                        <div class="reference-link">
-                                            <p><strong>📖 Equipment Mastery:</strong> <a href="https://lastwartutorial.com/equipment-guide" target="_blank" rel="noopener">LastWarTutorial.com</a> offers detailed equipment calculators, tier lists, and optimization spreadsheets.</p>
-                                        </div>
-                                    </div>
-                                `
-                            },
-                            {
-                                title: "Building Development Strategy",
-                                category: "Base Optimization",
-                                icon: "🏗️",
-                                content: `
-                                    <div class="guide-content">
-                                        <h3>🏛️ Strategic Building Upgrade Order</h3>
-                                        <p>Efficient building development creates the foundation for long-term growth and competitive advantage.</p>
-                                        
-                                        <h4>🎯 Priority Building Order</h4>
-                                        <ol>
-                                            <li><strong>Headquarters (Top Priority):</strong> Unlocks all other building levels</li>
-                                            <li><strong>Resource Buildings:</strong> Oil Wells, Farms, Steel Mills for steady income</li>
-                                            <li><strong>Army Camp:</strong> Increases troop capacity for larger battles</li>
-                                            <li><strong>Research Institute:</strong> Enables crucial technology advancement</li>
-                                            <li><strong>Hero Hall:</strong> Unlocks hero slots and abilities</li>
-                                            <li><strong>Defense Buildings:</strong> Walls, turrets for base protection</li>
-                                        </ol>
-                                        
-                                        <h4>⚡ Early Game Focus (HQ 1-15)</h4>
-                                        <ul>
-                                            <li><strong>Resource Production:</strong> Establish steady resource income</li>
-                                            <li><strong>Storage Capacity:</strong> Prevent resource waste from overflow</li>
-                                            <li><strong>Basic Military:</strong> Training camps and initial army development</li>
-                                            <li><strong>Essential Research:</strong> Economy and military basics</li>
-                                        </ul>
-                                        
-                                        <h4>🚀 Mid Game Strategy (HQ 16-25)</h4>
-                                        <ul>
-                                            <li><strong>Advanced Military:</strong> Specialized unit production buildings</li>
-                                            <li><strong>Hero Development:</strong> Hero halls and recruitment buildings</li>
-                                            <li><strong>Defense Systems:</strong> Comprehensive base protection</li>
-                                            <li><strong>Alliance Support:</strong> Embassy and alliance-related structures</li>
-                                        </ul>
-                                        
-                                        <h4>🏆 Late Game Optimization (HQ 26+)</h4>
-                                        <ul>
-                                            <li><strong>Specialization:</strong> Focus on specific military or economic paths</li>
-                                            <li><strong>Maximum Efficiency:</strong> Optimize all building effects and bonuses</li>
-                                            <li><strong>Event Preparation:</strong> Buildings that enhance event performance</li>
-                                            <li><strong>Competitive Edge:</strong> Structures that provide PvP advantages</li>
-                                        </ul>
-                                        
-                                        <h4>💡 Resource Management Tips</h4>
-                                        <ul>
-                                            <li><strong>Construction Queue:</strong> Plan multiple upgrades during Arms Race events</li>
-                                            <li><strong>Speedup Efficiency:</strong> Use construction speedups during building-focused phases</li>
-                                            <li><strong>Material Stockpiling:</strong> Gather building materials before major upgrades</li>
-                                            <li><strong>Event Timing:</strong> Align major upgrades with base expansion VS days</li>
-                                        </ul>
-                                        
-                                        <div class="reference-link">
-                                            <p><strong>📖 Building Optimization:</strong> <a href="https://lastwartutorial.com/base-development" target="_blank" rel="noopener">LastWarTutorial.com</a> features building calculators, upgrade planners, and efficiency guides.</p>
-                                        </div>
-                                    </div>
-                                `
-                            },
-                            {
                                 title: "VS Points & Arms Race Mastery",
-                                category: "Event Strategy",
+                                category: "Event Optimization",
                                 icon: "🎯",
-                                content: `
-                                    <div class="guide-content">
-                                        <h3>⚡ Maximizing VS Points Efficiency</h3>
-                                        <p>Understanding the Arms Race and Alliance VS mechanics enables strategic planning for maximum point generation.</p>
-                                        
-                                        <h4>🔄 Arms Race Cycle Understanding</h4>
-                                        <ul>
-                                            <li><strong>5-Phase System:</strong> City Building → Unit Progression → Tech Research → Drone Boost → Hero Advancement</li>
-                                            <li><strong>4-Hour Phases:</strong> Each phase lasts exactly 4 hours</li>
-                                            <li><strong>20-Hour Cycle:</strong> Complete cycle takes 20 hours, restarting at 20:00 server time</li>
-                                            <li><strong>Predictable Schedule:</strong> Same phases occur at different times each day</li>
-                                        </ul>
-                                        
-                                        <h4>📅 Alliance VS Day Focus</h4>
-                                        <ul>
-                                            <li><strong>Monday - Radar Training:</strong> Stamina usage, hero EXP, drone activities (2x multiplier)</li>
-                                            <li><strong>Tuesday - Base Expansion:</strong> Construction speedups, building power (2x multiplier)</li>
-                                            <li><strong>Wednesday - Age of Science:</strong> Research speedups, tech advancement (2x multiplier)</li>
-                                            <li><strong>Thursday - Train Heroes:</strong> Hero recruitment, EXP, skill development (2x multiplier)</li>
-                                            <li><strong>Friday - Total Mobilization:</strong> ALL activities count - SAVE RESOURCES FOR THIS (2x multiplier)</li>
-                                            <li><strong>Saturday - Enemy Buster:</strong> Military training, combat preparation (2x multiplier)</li>
-                                        </ul>
-                                        
-                                        <h4>🎯 Perfect Alignment Strategy</h4>
-                                        <ul>
-                                            <li><strong>Tech Research + Age of Science:</strong> 4x point multiplication (2x Arms Race + 2x VS Day)</li>
-                                            <li><strong>City Building + Base Expansion:</strong> 4x point multiplication for construction</li>
-                                            <li><strong>Hero Advancement + Train Heroes:</strong> 4x point multiplication for heroes</li>
-                                            <li><strong>Drone Boost + Radar Training:</strong> 4x point multiplication for stamina</li>
-                                            <li><strong>Unit Progression + Enemy Buster:</strong> 4x point multiplication for military</li>
-                                            <li><strong>Friday Total Mobilization:</strong> 4x points possible with ANY Arms Race phase</li>
-                                        </ul>
-                                        
-                                        <h4>💎 Resource Planning</h4>
-                                        <ul>
-                                            <li><strong>Speedup Conservation:</strong> Save premium speedups for perfect alignments</li>
-                                            <li><strong>Activity Timing:</strong> Plan major activities for high-priority windows</li>
-                                            <li><strong>Diamond Strategy:</strong> Diamond purchases provide points in ALL phases (always 2x base points)</li>
-                                            <li><strong>VIP Store Priority:</strong> 30-50% better value than regular store purchases</li>
-                                            <li><strong>Perfect Timing Strategy:</strong> Save premium items for 4x point windows</li>
-                                            <li><strong>Weekly Planning:</strong> Plan major activities around perfect alignments</li>
-                                        </ul>
-                                        
-                                        <h4>📱 Planning Tools</h4>
-                                        <ul>
-                                            <li><strong>Schedule Tracking:</strong> Use this tool to identify upcoming priority windows</li>
-                                            <li><strong>Time Zone Mastery:</strong> Know your server time for accurate planning</li>
-                                            <li><strong>Notification Setup:</strong> Set alerts for high-priority periods</li>
-                                            <li><strong>Alliance Coordination:</strong> Plan group activities during optimal windows</li>
-                                        </ul>
-                                        
-                                        <div class="reference-link">
-                                            <p><strong>📖 VS Points Mastery:</strong> <a href="https://lastwartutorial.com/vs-points-guide" target="_blank" rel="noopener">LastWarTutorial.com</a> provides detailed point calculators, timing strategies, and optimization techniques.</p>
-                                        </div>
-                                    </div>
-                                `
+                                description: "Master the core mechanics for maximum VS Points efficiency",
+                                sections: [
+                                    {
+                                        title: "🔄 Arms Race Cycle (CRITICAL)",
+                                        content: [
+                                            "**5-Phase System:** City Building → Unit Progression → Tech Research → Drone Boost → Hero Advancement",
+                                            "**4-Hour Phases:** Each phase lasts exactly 4 hours server time",
+                                            "**20-Hour Cycle:** Complete cycle takes 20 hours, NOT 24 hours",
+                                            "**Server Reset:** Always starts at 00:00 server time daily"
+                                        ]
+                                    },
+                                    {
+                                        title: "📅 Alliance VS Day Focus",
+                                        content: [
+                                            "**Monday - Radar Training:** Stamina, hero EXP, drone activities (2x points)",
+                                            "**Tuesday - Base Expansion:** Construction speedups, building power (2x points)",
+                                            "**Wednesday - Age of Science:** Research speedups, tech advancement (2x points)",
+                                            "**Thursday - Train Heroes:** Hero recruitment, EXP, skills (2x points)",
+                                            "**Friday - Total Mobilization:** ALL activities count - SAVE FOR THIS (2x points)",
+                                            "**Saturday - Enemy Buster:** Military training, combat prep (2x points)"
+                                        ]
+                                    },
+                                    {
+                                        title: "🎯 Perfect Alignment Strategy (4x Points)",
+                                        content: [
+                                            "**Tech Research + Age of Science:** 4x points for research activities",
+                                            "**City Building + Base Expansion:** 4x points for construction",
+                                            "**Hero Advancement + Train Heroes:** 4x points for hero activities",
+                                            "**Drone Boost + Radar Training:** 4x points for stamina usage",
+                                            "**Unit Progression + Enemy Buster:** 4x points for military training",
+                                            "**Friday Total Mobilization:** 4x points with ANY Arms Race phase"
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                title: "Resource Management Strategy",
+                                category: "Efficiency Optimization", 
+                                icon: "💎",
+                                description: "Master resource allocation and timing for maximum efficiency",
+                                sections: [
+                                    {
+                                        title: "💎 Premium Resource Strategy",
+                                        content: [
+                                            "**Speedup Conservation:** Save ALL speedups for perfect alignment windows",
+                                            "**Diamond Strategy:** Diamond purchases provide points in ALL phases",
+                                            "**VIP Store Priority:** 30-50% better value than regular diamond store",
+                                            "**Perfect Timing:** Use premium items only during 4x point windows"
+                                        ]
+                                    },
+                                    {
+                                        title: "📦 Inventory Management",
+                                        content: [
+                                            "**Stockpile Strategy:** Save resources for major events and perfect alignments",
+                                            "**Activity Planning:** Plan major upgrades around alignment windows",
+                                            "**Emergency Reserves:** Keep emergency speedups for unexpected opportunities",
+                                            "**Expiration Monitoring:** Use items close to expiration during appropriate phases"
+                                        ]
+                                    },
+                                    {
+                                        title: "⏰ Timing Optimization",
+                                        content: [
+                                            "**Weekly Planning:** Plan major activities around perfect alignments",
+                                            "**Server Time Mastery:** Always know your server time for accurate planning",
+                                            "**Notification Setup:** Set alerts for high-priority periods",
+                                            "**Alliance Coordination:** Sync activities with alliance members for maximum impact"
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                title: "Building & Power Growth",
+                                category: "Development Strategy",
+                                icon: "🏗️",
+                                description: "Optimize building upgrades and power growth for maximum efficiency",
+                                sections: [
+                                    {
+                                        title: "🎯 Priority Building Order",
+                                        content: [
+                                            "**Headquarters (Critical):** Always upgrade first - unlocks everything else",
+                                            "**Resource Buildings:** Oil Wells, Farms, Steel Mills for steady income",
+                                            "**Army Camp:** Increases troop capacity for larger battles",
+                                            "**Research Institute:** Enables crucial technology advancement"
+                                        ]
+                                    },
+                                    {
+                                        title: "⚡ Construction Timing",
+                                        content: [
+                                            "**Perfect Alignments:** Save construction for City Building + Base Expansion (4x points)",
+                                            "**Multiple Upgrades:** Plan queue of upgrades during construction phases",
+                                            "**Speedup Efficiency:** Use construction speedups only during building-focused phases",
+                                            "**Material Stockpiling:** Gather building materials before major upgrade sessions"
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                title: "Alliance & Social Strategy",
+                                category: "Team Coordination",
+                                icon: "🤝",
+                                description: "Maximize alliance benefits and coordinate for mutual success",
+                                sections: [
+                                    {
+                                        title: "🏆 Alliance Selection",
+                                        content: [
+                                            "**Active Alliance:** Choose alliance with members in your timezone",
+                                            "**Communication:** Join alliance with active voice chat or Discord",
+                                            "**Participation Level:** Ensure consistent VS Points contribution expected",
+                                            "**Growth Potential:** Join alliance with room for advancement and learning"
+                                        ]
+                                    },
+                                    {
+                                        title: "🤝 Team Coordination",
+                                        content: [
+                                            "**Synchronized Activities:** Coordinate major activities during perfect alignments",
+                                            "**Knowledge Sharing:** Share VS Points strategies and optimization tips",
+                                            "**Mutual Support:** Help with resource sharing and activity coordination",
+                                            "**Event Planning:** Plan alliance-wide strategies for seasonal events"
+                                        ]
+                                    }
+                                ]
                             }
                         ];
                     }
                     
+                    // REDESIGNED: Modern collapsible guide system
                     const html = guides.map((guide, index) => `
-                        <div class="guide-card" data-guide-index="${index}">
-                            <div class="guide-header" data-guide-toggle="${index}">
-                                <div class="guide-icon">${guide.icon}</div>
-                                <div class="guide-info">
-                                    <h3 class="guide-title">${guide.title}</h3>
-                                    <div class="guide-category">${guide.category}</div>
+                        <div class="guide-card-modern" data-guide-index="${index}">
+                            <div class="guide-header-modern" data-guide-toggle="${index}">
+                                <div class="guide-icon-modern">${guide.icon}</div>
+                                <div class="guide-info-modern">
+                                    <h3 class="guide-title-modern">${guide.title}</h3>
+                                    <div class="guide-category-modern">${guide.category}</div>
+                                    <p class="guide-description-modern">${guide.description}</p>
                                 </div>
-                                <div class="guide-expand-icon" id="guide-expand-${index}">▼</div>
+                                <div class="guide-expand-icon-modern" id="guide-expand-${index}">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                        <path d="M4.427 9.573L8 6.003l3.573 3.57a.5.5 0 0 0 .854-.353V4.5a.5.5 0 0 0-.5-.5H7.207a.5.5 0 0 0-.354.854L10.426 8 6.854 4.427a.5.5 0 0 0-.708 0L2.573 8a.5.5 0 0 0 0 .708l3.57 3.573a.5.5 0 0 0 .708 0z"/>
+                                    </svg>
+                                </div>
                             </div>
-                            <div class="guide-content-wrapper" id="guide-content-${index}">
-                                <div class="guide-content">
-                                    ${guide.content || `
-                                        <p class="guide-description">${guide.description}</p>
-                                        <div class="guide-tips">
-                                            ${guide.tips.map(tip => `<span class="guide-tip">${tip}</span>`).join('')}
+                            <div class="guide-content-wrapper-modern" id="guide-content-${index}">
+                                <div class="guide-content-modern">
+                                    ${guide.sections ? guide.sections.map((section, sIndex) => `
+                                        <div class="guide-section-modern">
+                                            <h4 class="guide-section-title-modern">${section.title}</h4>
+                                            <div class="guide-section-content-modern">
+                                                ${section.content.map(item => `
+                                                    <div class="guide-item-modern">
+                                                        ${item.includes('**') ? 
+                                                            `<div class="guide-point-modern">${item.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</div>` :
+                                                            `<div class="guide-text-modern">${item}</div>`
+                                                        }
+                                                    </div>
+                                                `).join('')}
+                                            </div>
                                         </div>
-                                    `}
+                                    `).join('') : guide.content || ''}
                                 </div>
                             </div>
                         </div>
@@ -1924,17 +1832,19 @@
                     
                     grid.innerHTML = html;
                     
-                    // Add event listeners for guide toggles after DOM update
+                    // Add event listeners for modern guide toggles after DOM update
                     setTimeout(() => {
                         document.querySelectorAll('[data-guide-toggle]').forEach(header => {
                             header.addEventListener('click', (e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
                                 const index = header.getAttribute('data-guide-toggle');
-                                this.toggleGuideExpansion(index);
+                                this.toggleModernGuideExpansion(index);
                             });
                         });
-                    }, 50);
+                        console.log('=== GUIDE EVENT LISTENERS ATTACHED ===');
+                        console.log('Total guide headers:', document.querySelectorAll('[data-guide-toggle]').length);
+                    }, 100);
                     
                 } catch (error) {
                     console.error('Guides population error:', error);

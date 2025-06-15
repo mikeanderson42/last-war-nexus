@@ -122,7 +122,9 @@
                     // FIXED: Always update displays on initialization
                     this.updateAllDisplays();
                     
-                    if (!this.isSetupComplete) {
+                    // Always show setup modal on first visit (when no settings saved)
+                    const hasStoredSettings = localStorage.getItem('lwn-settings');
+                    if (!hasStoredSettings || !this.isSetupComplete) {
                         this.showSetupModal();
                     } else {
                         this.startUpdateLoop();
@@ -600,8 +602,9 @@
                         timeToggleBtn.style.color = this.useLocalTime ? 'var(--text-secondary)' : 'white';
                     }
                     
-                    // Update all time displays
+                    // Update all time displays and refresh content
                     this.updateTimeDisplay();
+                    this.updateAllDisplays();
                     this.saveSettings();
                     
                 } catch (error) {
@@ -1122,6 +1125,15 @@
 
             updateBanner() {
                 try {
+                    // Populate the priority events banner
+                    this.populatePriorityBanner();
+                } catch (error) {
+                    console.error('Banner update error:', error);
+                }
+            }
+
+            updateBannerOld() {
+                try {
                     const banner = document.getElementById('priority-banner');
                     if (!banner) return;
                     
@@ -1282,8 +1294,8 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    `).join('');
+                        </div>`;
+                    }).join('');
                     
                     grid.innerHTML = html;
                 } catch (error) {
@@ -1744,6 +1756,88 @@
                 const banner = document.getElementById('priority-banner');
                 if (banner) {
                     banner.classList.remove('show', 'peak-priority');
+                }
+            }
+
+            // ADDED: Populate Priority Events Banner
+            populatePriorityBanner() {
+                try {
+                    const bannerGrid = document.getElementById('banner-grid');
+                    const bannerCount = document.getElementById('banner-count');
+                    if (!bannerGrid) return;
+                    
+                    const now = this.getServerTime();
+                    const priorityWindows = [];
+                    
+                    // Get next 3 priority windows
+                    for (let dayOffset = 0; dayOffset < 3; dayOffset++) {
+                        const checkDate = new Date(now);
+                        checkDate.setUTCDate(now.getUTCDate() + dayOffset);
+                        const dayOfWeek = checkDate.getUTCDay();
+                        
+                        const vsDay = this.data.vsDays.find(day => day.day === dayOfWeek);
+                        if (!vsDay) continue;
+                        
+                        const dayAlignments = this.data.priorityAlignments.filter(a => a.vsDay === dayOfWeek);
+                        
+                        for (const alignment of dayAlignments) {
+                            const phase = this.data.armsRacePhases.find(p => p.name === alignment.armsPhase);
+                            if (!phase) continue;
+                            
+                            const phaseIndex = this.data.armsRacePhases.findIndex(p => p.name === phase.name);
+                            const startTime = new Date(checkDate);
+                            startTime.setUTCHours(phaseIndex * 4, 0, 0, 0);
+                            
+                            const timeDiff = startTime.getTime() - now.getTime();
+                            const isActive = now >= startTime && now < new Date(startTime.getTime() + (4 * 60 * 60 * 1000));
+                            
+                            if (timeDiff > -240 * 60 * 1000) { // Show if within 4 hours or upcoming
+                                priorityWindows.push({
+                                    startTime,
+                                    timeDiff,
+                                    isActive,
+                                    phase,
+                                    vsDay,
+                                    alignment,
+                                    timeDisplay: isActive ? 'Active Now' : timeDiff > 0 ? `in ${this.formatTime(timeDiff)}` : 'Recently ended'
+                                });
+                            }
+                        }
+                    }
+                    
+                    priorityWindows.sort((a, b) => Math.abs(a.timeDiff) - Math.abs(b.timeDiff));
+                    const displayWindows = priorityWindows.slice(0, 3);
+                    
+                    if (bannerCount) {
+                        bannerCount.textContent = displayWindows.length;
+                    }
+                    
+                    if (displayWindows.length === 0) {
+                        bannerGrid.innerHTML = '<div style="padding: var(--spacing-lg); text-align: center; color: var(--text-tertiary);">No high priority events in the next 3 days</div>';
+                        return;
+                    }
+                    
+                    const html = displayWindows.map(window => `
+                        <div style="background: var(--bg-elevated); border: 1px solid var(--border-primary); border-radius: var(--border-radius); padding: var(--spacing-md); display: flex; align-items: center; gap: var(--spacing-md); ${window.isActive ? 'border-color: var(--accent-success);' : ''}">
+                            <div style="font-size: 1.5rem; flex-shrink: 0;">${window.phase.icon}</div>
+                            <div style="flex: 1; min-width: 0;">
+                                <div style="font-size: 0.875rem; font-weight: 600; color: var(--text-primary); margin-bottom: 2px;">${window.phase.name} + ${window.vsDay.title}</div>
+                                <div style="font-size: 0.75rem; color: var(--text-tertiary);">${window.timeDisplay}</div>
+                            </div>
+                            <div style="padding: 2px 6px; border-radius: var(--border-radius-sm); font-size: 0.65rem; font-weight: 600; text-transform: uppercase; background: ${window.isActive ? 'var(--gradient-success)' : 'var(--gradient-secondary)'}; color: white;">
+                                ${window.isActive ? 'LIVE' : 'SOON'}
+                            </div>
+                        </div>
+                    `).join('');
+                    
+                    bannerGrid.innerHTML = html;
+                    
+                } catch (error) {
+                    console.error('Priority banner population error:', error);
+                    const bannerGrid = document.getElementById('banner-grid');
+                    if (bannerGrid) {
+                        bannerGrid.innerHTML = '<div style="padding: var(--spacing-lg); text-align: center; color: var(--text-secondary);">Unable to load priority events</div>';
+                    }
                 }
             }
 

@@ -1449,7 +1449,7 @@ body {
 .guide-nav-btn.active {
     background: var(--accent-primary);
     color: white;
-    pointer-events: none;
+    /* Removed pointer-events: none to allow switching between guides */
 }
 
 .guide-nav-btn.active:hover {
@@ -1991,10 +1991,10 @@ body {
         padding: 0 var(--spacing-sm);
     }
     
-    /* Navigation mobile optimization */
+    /* Navigation mobile optimization - tightened */
     .nav-container {
-        padding: 0 var(--spacing-sm);
-        min-height: 60px;
+        padding: 0 var(--spacing-xs); /* Reduced from sm */
+        min-height: 54px; /* Reduced from 60px */
     }
     
     .brand {
@@ -2024,9 +2024,9 @@ body {
         min-height: 40px;
     }
     
-    /* Main cards mobile optimization */
+    /* Main cards mobile optimization - tightened */
     .vs-optimizer-card {
-        padding: var(--spacing-md);
+        padding: var(--spacing-sm); /* Reduced from md for tighter mobile layout */
     }
     
     .optimizer-header {
@@ -2067,7 +2067,7 @@ body {
     .countdown-card-compact,
     .strategy-card-compact,
     .server-reset-card {
-        padding: var(--spacing-md);
+        padding: var(--spacing-sm); /* Reduced from md for tighter mobile layout */
     }
     
     .countdown-value {
@@ -2078,18 +2078,18 @@ body {
         font-size: 0.875rem;
     }
     
-    /* Tab navigation mobile */
+    /* Tab navigation mobile - tightened */
     .tab-container {
-        padding: 0 var(--spacing-sm);
-        gap: var(--spacing-xs);
+        padding: 0 var(--spacing-xs); /* Reduced from sm */
+        gap: 2px; /* Reduced from var(--spacing-xs) for tighter tabs */
         flex-wrap: wrap;
     }
     
     .tab-btn {
         flex: 1;
-        min-width: calc(50% - var(--spacing-xs) / 2);
-        padding: var(--spacing-sm);
-        min-height: 50px;
+        min-width: calc(50% - 1px); /* Adjusted for tighter gap */
+        padding: var(--spacing-xs) var(--spacing-sm); /* Reduced vertical padding */
+        min-height: 48px; /* Reduced from 50px */
     }
     
     .tab-icon-wrapper {
@@ -2113,10 +2113,10 @@ body {
         font-size: 0.65rem;
     }
     
-    /* Content mobile optimization */
+    /* Content mobile optimization - tightened */
     .section-header {
-        padding: 0 var(--spacing-sm);
-        margin-bottom: var(--spacing-md);
+        padding: 0 var(--spacing-xs); /* Reduced from sm */
+        margin-bottom: var(--spacing-sm); /* Reduced from md */
     }
     
     .section-header h2 {
@@ -2128,13 +2128,14 @@ body {
     }
     
     .priority-grid {
-        padding: 0 var(--spacing-sm);
-        gap: var(--spacing-sm);
+        padding: 0 var(--spacing-xs); /* Reduced from sm */
+        gap: var(--spacing-xs); /* Reduced from sm for tighter grid */
     }
     
-    /* Priority window cards mobile */
+    /* Priority window cards mobile - tightened */
     .priority-window-card {
-        padding: var(--spacing-md);
+        padding: var(--spacing-sm); /* Reduced from md */
+        margin-bottom: var(--spacing-xs); /* Added to reduce vertical gap */
     }
     
     .priority-header {
@@ -2281,10 +2282,10 @@ body {
 
 /* ENHANCED: Extra Small Mobile Optimization (360px and below) */
 @media (max-width: 360px) {
-    /* Ultra compact mobile */
+    /* Ultra compact mobile - further tightened */
     .nav-container {
         padding: 0 var(--spacing-xs);
-        min-height: 56px;
+        min-height: 50px; /* Reduced from 56px */
     }
     
     .brand-text {
@@ -2322,10 +2323,10 @@ body {
         font-size: 1.1rem;
     }
     
-    /* Ultra compact tabs */
+    /* Ultra compact tabs - tightened */
     .tab-btn {
-        padding: var(--spacing-xs);
-        min-height: 44px;
+        padding: 2px var(--spacing-xs); /* Reduced vertical padding */
+        min-height: 42px; /* Reduced from 44px */
     }
     
     .tab-icon {
@@ -2393,7 +2394,7 @@ body {
     }
 }
 
-/* ENHANCED: Mobile Scrolling Fixes */
+/* ENHANCED: Mobile Scrolling Fixes and Spacing Optimization */
 @media (max-width: 768px) {
     /* Fix iOS scrolling issues */
     html, body {
@@ -2403,13 +2404,24 @@ body {
         height: 100%;
     }
     
-    /* Ensure app container allows scrolling */
+    /* Ensure app container allows scrolling with tighter spacing */
     .app-container {
         overflow-x: hidden;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
         min-height: 100%;
         height: auto;
+        padding: 0; /* Remove any default padding for tighter mobile layout */
+    }
+    
+    /* Tighten dashboard section spacing */
+    .dashboard-section {
+        padding: var(--spacing-sm) 0; /* Reduced from lg */
+    }
+    
+    /* Tighten main content spacing */
+    .main-content {
+        padding: var(--spacing-sm) 0; /* Reduced from lg */
     }
     
     /* Fix fixed positioning issues on mobile */

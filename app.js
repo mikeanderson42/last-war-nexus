@@ -226,7 +226,7 @@
                         });
                     }
 
-                    // FIXED: Guide navigation buttons with targeted event delegation
+                    // FIXED: Guide navigation buttons with improved event delegation
                     const guideNavContainer = document.querySelector('.guide-nav-container');
                     if (guideNavContainer) {
                         guideNavContainer.addEventListener('click', (e) => {
@@ -237,7 +237,8 @@
                                 e.stopImmediatePropagation();
                                 
                                 const guideType = btn.getAttribute('data-guide-type');
-                                if (guideType && guideType !== this.activeGuideType) {
+                                // Allow switching even if same type to refresh content
+                                if (guideType) {
                                     console.log('Guide navigation clicked:', guideType);
                                     this.switchGuideType(guideType);
                                 }
@@ -642,8 +643,14 @@
                     console.log('Switching to guide type:', guideType);
                     this.activeGuideType = guideType;
                     
-                    // Update guide navigation buttons
-                    document.querySelectorAll('.guide-nav-btn').forEach(btn => {
+                    // Update guide navigation buttons with improved error handling
+                    const allBtns = document.querySelectorAll('.guide-nav-btn');
+                    if (allBtns.length === 0) {
+                        console.warn('No guide navigation buttons found in DOM');
+                        return;
+                    }
+                    
+                    allBtns.forEach(btn => {
                         btn.classList.remove('active');
                         btn.setAttribute('aria-selected', 'false');
                     });
@@ -655,6 +662,7 @@
                         console.log('Updated active button for:', guideType);
                     } else {
                         console.warn('Could not find button for guide type:', guideType);
+                        console.log('Available buttons:', allBtns);
                     }
                     
                     // Always update guides content regardless of active tab
@@ -664,6 +672,7 @@
                     
                 } catch (error) {
                     console.error('Guide type switch error:', error);
+                    this.handleError('Failed to switch guide type', error);
                 }
             }
 

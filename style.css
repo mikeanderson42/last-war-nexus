@@ -45,9 +45,10 @@
     --backdrop-blur-strong: blur(16px);
     
     /* Gradient borders and depth */
-    --gradient-border-primary: linear-gradient(135deg, rgba(30, 144, 255, 0.3), rgba(139, 92, 246, 0.3));
-    --gradient-border-secondary: linear-gradient(135deg, rgba(255, 107, 53, 0.3), rgba(255, 163, 68, 0.3));
-    --gradient-border-success: linear-gradient(135deg, rgba(34, 197, 94, 0.3), rgba(16, 163, 74, 0.3));
+    --gradient-border-primary: linear-gradient(135deg, rgba(30, 144, 255, 0.4), rgba(34, 197, 94, 0.4));
+    --gradient-border-secondary: linear-gradient(135deg, rgba(255, 179, 102, 0.15), rgba(255, 138, 76, 0.25));
+    --gradient-border-success: linear-gradient(135deg, rgba(34, 197, 94, 0.4), rgba(30, 144, 255, 0.3));
+    --gradient-border-accent: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(30, 144, 255, 0.4));
     --inset-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
     --depth-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
     
@@ -483,11 +484,10 @@ body {
     box-shadow: var(--glass-shadow-hover), var(--inset-shadow);
     backdrop-filter: var(--backdrop-blur-strong);
     -webkit-backdrop-filter: var(--backdrop-blur-strong);
-    transform: translateY(-1px);
 }
 
 .vs-optimizer-card:hover::before {
-    opacity: 1;
+    opacity: 0.7;
 }
 
 .vs-optimizer-card::before {
@@ -501,9 +501,7 @@ body {
     opacity: 0.8;
 }
 
-.vs-optimizer-card:hover {
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
-}
+/* Removed duplicate vs-optimizer-card:hover rule */
 
 .optimizer-header {
     background: var(--bg-surface);
@@ -1467,7 +1465,10 @@ body {
     -webkit-backdrop-filter: var(--backdrop-blur-strong);
     border-top: 1px solid var(--glass-border);
     box-shadow: var(--depth-shadow), 0 -4px 20px rgba(0, 0, 0, 0.15);
-    position: relative;
+    z-index: 50;
+    transform: translateY(0);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    max-height: 140px;
 }
 
 .priority-events-banner::before {

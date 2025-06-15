@@ -231,6 +231,16 @@
                         });
                     });
 
+                    // FIXED: Banner toggle functionality
+                    const bannerHeader = document.querySelector('.banner-header');
+                    if (bannerHeader) {
+                        bannerHeader.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            this.toggleBanner();
+                        });
+                    }
+
                     // Close dropdowns on outside click
                     document.addEventListener('click', (e) => {
                         if (!e.target.closest('.settings-dropdown-container')) {
@@ -859,6 +869,27 @@
                 }
             }
 
+            toggleBanner() {
+                try {
+                    const banner = document.getElementById('priority-events-banner');
+                    const toggle = document.getElementById('banner-toggle');
+                    
+                    if (banner && toggle) {
+                        const isCollapsed = banner.classList.contains('collapsed');
+                        banner.classList.toggle('collapsed');
+                        toggle.textContent = isCollapsed ? '▲' : '▼';
+                        
+                        // Update aria attribute
+                        const header = document.querySelector('.banner-header');
+                        if (header) {
+                            header.setAttribute('aria-expanded', !isCollapsed);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Banner toggle error:', error);
+                }
+            }
+
             // ENHANCED: Update all displays including server time in settings
             updateAllDisplays() {
                 try {
@@ -1421,115 +1452,148 @@
                     if (this.activeGuideType === 'seasonal') {
                         guides = [
                             {
-                                title: "Season Overview & Strategy",
-                                category: "Understanding Last War Seasons",
-                                icon: "📅",
-                                description: "Last War seasons typically run 60-90 days with distinct phases requiring different strategies and resource management approaches.",
+                                title: "Season 1: Foundation Building",
+                                category: "New Player Season Strategy",
+                                icon: "🏗️",
+                                description: "Your first season focuses on learning game mechanics, establishing base infrastructure, and understanding the Arms Race / VS Points system.",
                                 content: `
                                     <div class="guide-section">
-                                        <h5>Season Structure</h5>
-                                        <p>Each season brings new challenges, events, and opportunities. Understanding the seasonal pattern helps you plan resource usage and maximize your power growth efficiently.</p>
+                                        <h5>🎯 Season 1 Core Objectives</h5>
+                                        <p><strong>Goal:</strong> Learn fundamentals, reach HQ 15+, join active alliance, understand VS Points system</p>
                                         
-                                        <h5>Early Season Priorities (Days 1-30)</h5>
+                                        <h5>📚 Learning Phase (Days 1-15)</h5>
                                         <ul>
-                                            <li><strong>Base Development:</strong> Focus on upgrading resource buildings and core infrastructure</li>
-                                            <li><strong>Alliance Selection:</strong> Join an active alliance that matches your play style and timezone</li>
-                                            <li><strong>Event Participation:</strong> Complete all available events to establish resource foundation</li>
-                                            <li><strong>Research Path:</strong> Prioritize military and economic research trees</li>
+                                            <li><strong>Tutorial Completion:</strong> Follow all in-game tutorials completely</li>
+                                            <li><strong>Basic Buildings:</strong> HQ 10+ with balanced resource/military buildings</li>
+                                            <li><strong>Alliance Research:</strong> Find active alliance in your timezone</li>
+                                            <li><strong>Arms Race Understanding:</strong> Use this tool to track perfect alignment windows</li>
+                                            <li><strong>Hero Focus:</strong> Choose 1-2 main heroes and focus resources</li>
                                         </ul>
                                         
-                                        <h5>Mid-Season Strategy (Days 30-60)</h5>
+                                        <h5>⚡ First VS Points Strategy (Days 15-45)</h5>
                                         <ul>
-                                            <li><strong>Power Scaling:</strong> Focus on troop training and hero development</li>
-                                            <li><strong>Territory Expansion:</strong> Secure strategic positions and resource nodes</li>
-                                            <li><strong>Alliance Coordination:</strong> Participate in alliance events and coordinate attacks</li>
-                                            <li><strong>Equipment Focus:</strong> Begin serious equipment crafting and enhancement</li>
+                                            <li><strong>Perfect Alignments:</strong> Save speedups for 4x point windows</li>
+                                            <li><strong>Daily Activities:</strong> Complete all daily missions and events</li>
+                                            <li><strong>Resource Management:</strong> Don't waste premium items on non-aligned activities</li>
+                                            <li><strong>Power Building:</strong> Target 500k+ power by end of season</li>
                                         </ul>
                                         
-                                        <h5>Late Season Push (Days 60+)</h5>
+                                        <h5>🏆 Season End Goals (Days 45-60)</h5>
                                         <ul>
-                                            <li><strong>Competition Mode:</strong> Focus on ranking events and leaderboard positions</li>
-                                            <li><strong>Resource Conservation:</strong> Save premium items for final ranking pushes</li>
-                                            <li><strong>Strategic Alliances:</strong> Form coalitions for end-season objectives</li>
-                                            <li><strong>Achievement Completion:</strong> Secure all seasonal rewards and titles</li>
+                                            <li><strong>Alliance Contribution:</strong> Consistent VS Points for alliance ranking</li>
+                                            <li><strong>Personal Ranking:</strong> Individual VS Points ranking in server</li>
+                                            <li><strong>Knowledge Base:</strong> Understand all game mechanics for Season 2</li>
                                         </ul>
-                                        
-                                        <div class="reference-link">
-                                            <p><strong>📖 Detailed Seasonal Guide:</strong> <a href="https://lastwartutorial.com/seasonal-strategy" target="_blank" rel="noopener">Visit LastWarTutorial.com</a> for comprehensive seasonal breakdowns, event calendars, and advanced strategies.</p>
-                                        </div>
                                     </div>
                                 `
                             },
                             {
-                                title: "New Season Setup Guide",
-                                category: "Season Start Optimization",
-                                icon: "🚀",
-                                description: "Critical first 48-72 hours that set the foundation for your entire season performance and competitive positioning.",
+                                title: "Season 2: Power Acceleration",
+                                category: "Growth & Optimization",
+                                icon: "⚡",
+                                description: "Second season focuses on rapid power growth, mastering perfect alignments, and establishing yourself as a competitive player.",
                                 content: `
                                     <div class="guide-section">
-                                        <h5>Hour 1-6: Immediate Actions</h5>
+                                        <h5>🎯 Season 2 Core Objectives</h5>
+                                        <p><strong>Goal:</strong> HQ 20+, 2M+ power, top alliance rankings, mastery of perfect alignments</p>
+                                        
+                                        <h5>💪 Power Growth Phase (Days 1-20)</h5>
                                         <ul>
-                                            <li><strong>Resource Collection:</strong> Claim all season start bonuses and gifts</li>
-                                            <li><strong>Base Assessment:</strong> Plan your building upgrade sequence based on available resources</li>
-                                            <li><strong>Alliance Search:</strong> Research and apply to high-activity alliances in your timezone</li>
-                                            <li><strong>Event Registration:</strong> Sign up for all available events immediately</li>
+                                            <li><strong>Perfect Alignment Mastery:</strong> Use 100% of speedups during 4x point windows</li>
+                                            <li><strong>Hero Specialization:</strong> Develop 3-4 heroes for different combat roles</li>
+                                            <li><strong>Research Focus:</strong> Complete military tech trees for power multiplication</li>
+                                            <li><strong>Equipment Crafting:</strong> Begin serious equipment enhancement</li>
                                         </ul>
                                         
-                                        <h5>Day 1-3: Foundation Building</h5>
+                                        <h5>🏆 Competition Phase (Days 20-50)</h5>
                                         <ul>
-                                            <li><strong>Core Buildings:</strong> Command Center → Resource Buildings → Military Buildings</li>
-                                            <li><strong>Research Priority:</strong> Economic boost → Military efficiency → Specialized paths</li>
-                                            <li><strong>Hero Development:</strong> Focus on one main hero and complementary support heroes</li>
-                                            <li><strong>Troop Training:</strong> Maintain constant training queues using free speedups</li>
+                                            <li><strong>Ranking Strategy:</strong> Target top 100 in personal VS Points</li>
+                                            <li><strong>Alliance Leadership:</strong> Take active role in alliance coordination</li>
+                                            <li><strong>Resource Efficiency:</strong> 90%+ of activities during perfect alignments</li>
+                                            <li><strong>Event Dominance:</strong> Top rewards in seasonal events</li>
                                         </ul>
                                         
-                                        <h5>Week 1: Establishing Rhythm</h5>
+                                        <h5>🎖️ Season End Mastery (Days 50-60)</h5>
                                         <ul>
-                                            <li><strong>Daily Routines:</strong> Login patterns, event participation, resource management</li>
-                                            <li><strong>Alliance Integration:</strong> Active chat participation, help requests, coordinated activities</li>
-                                            <li><strong>Power Growth:</strong> Target 100k+ power by end of week 1</li>
-                                            <li><strong>Strategic Planning:</strong> Identify season-specific goals and milestones</li>
+                                            <li><strong>Strategic Stockpiling:</strong> Save premium items for Season 3 start</li>
+                                            <li><strong>Knowledge Transfer:</strong> Share strategies with alliance members</li>
+                                            <li><strong>Next Season Planning:</strong> Analyze what worked and what didn't</li>
                                         </ul>
-                                        
-                                        <div class="reference-link">
-                                            <p><strong>📖 Complete New Season Guide:</strong> <a href="https://lastwartutorial.com/new-season-guide" target="_blank" rel="noopener">LastWarTutorial.com</a> provides detailed day-by-day actions, optimal building sequences, and alliance selection strategies.</p>
-                                        </div>
                                     </div>
                                 `
                             },
                             {
-                                title: "End Season Maximization",
-                                category: "Final Ranking Push",
-                                icon: "🏆",
-                                description: "Strategies for the final 2-4 weeks to secure maximum seasonal rewards, rankings, and prepare for next season transition.",
+                                title: "Season 3: Elite Competition",
+                                category: "Advanced Strategy & Leadership",
+                                icon: "🎖️",
+                                description: "Third season focuses on server dominance, advanced alliance tactics, and establishing yourself as a top-tier player.",
                                 content: `
                                     <div class="guide-section">
-                                        <h5>Resource Conservation Strategy</h5>
+                                        <h5>🎯 Season 3 Core Objectives</h5>
+                                        <p><strong>Goal:</strong> HQ 25+, 5M+ power, server top 50, alliance leadership role</p>
+                                        
+                                        <h5>👑 Dominance Phase (Days 1-25)</h5>
                                         <ul>
-                                            <li><strong>Premium Items:</strong> Save diamonds, gold speedups, and legendary materials for final push</li>
-                                            <li><strong>Event Planning:</strong> Identify highest-reward events and save resources accordingly</li>
-                                            <li><strong>Ranking Analysis:</strong> Monitor leaderboards and calculate requirements for next tier</li>
-                                            <li><strong>Alliance Coordination:</strong> Plan group activities for maximum collective rewards</li>
+                                            <li><strong>Server Leadership:</strong> Lead or co-lead server-wide strategies</li>
+                                            <li><strong>Advanced Alignments:</strong> Perfect timing with premium diamond strategies</li>
+                                            <li><strong>Cross-Alliance Coordination:</strong> Organize multi-alliance campaigns</li>
+                                            <li><strong>Resource Optimization:</strong> Maximum efficiency in all activities</li>
                                         </ul>
                                         
-                                        <h5>Power Surge Tactics</h5>
+                                        <h5>🚀 Advanced Tactics (Days 25-50)</h5>
                                         <ul>
-                                            <li><strong>Building Completion:</strong> Finish all pending upgrades using saved speedups</li>
-                                            <li><strong>Research Rush:</strong> Complete high-power research nodes with saved materials</li>
-                                            <li><strong>Equipment Enhancement:</strong> Maximize equipment using accumulated enhancement stones</li>
-                                            <li><strong>Hero Advancement:</strong> Push hero levels and skills using saved EXP items</li>
+                                            <li><strong>Meta Strategies:</strong> Develop and share optimal builds</li>
+                                            <li><strong>Event Mastery:</strong> Secure #1 rankings in major events</li>
+                                            <li><strong>Alliance Mentorship:</strong> Train new players in VS Points optimization</li>
+                                            <li><strong>PvP Excellence:</strong> Dominate world map and conflicts</li>
                                         </ul>
                                         
-                                        <h5>Next Season Preparation</h5>
+                                        <h5>🏆 Legacy Building (Days 50-60)</h5>
                                         <ul>
-                                            <li><strong>Carry-over Items:</strong> Understand what transfers and what doesn't</li>
-                                            <li><strong>Strategic Stockpiling:</strong> Save specific resources that provide early advantages</li>
-                                            <li><strong>Alliance Continuity:</strong> Plan alliance transitions or leadership changes</li>
-                                            <li><strong>Skill Development:</strong> Analyze performance and identify improvement areas</li>
+                                            <li><strong>Server Records:</strong> Set records that last multiple seasons</li>
+                                            <li><strong>Knowledge Archive:</strong> Document advanced strategies</li>
+                                            <li><strong>Succession Planning:</strong> Prepare next generation of leaders</li>
+                                        </ul>
+                                        
+                                    </div>
+                                `
+                            },
+                            {
+                                title: "Season 4+: Veteran Mastery",
+                                category: "Expert Level Optimization",
+                                icon: "👑",
+                                description: "Fourth season and beyond - maintaining dominance, innovation, and server-wide influence while perfecting the ultimate VS Points strategies.",
+                                content: `
+                                    <div class="guide-section">
+                                        <h5>🎯 Veteran Objectives</h5>
+                                        <p><strong>Goal:</strong> HQ 30+, 10M+ power, server legend status, innovative strategy development</p>
+                                        
+                                        <h5>🧠 Innovation Phase (Ongoing)</h5>
+                                        <ul>
+                                            <li><strong>Strategy Innovation:</strong> Develop new meta strategies</li>
+                                            <li><strong>Tool Development:</strong> Create and share optimization tools</li>
+                                            <li><strong>Community Leadership:</strong> Guide entire server communities</li>
+                                            <li><strong>Cross-Server Influence:</strong> Share strategies across servers</li>
+                                        </ul>
+                                        
+                                        <h5>📊 Data Mastery (Advanced)</h5>
+                                        <ul>
+                                            <li><strong>Efficiency Analytics:</strong> Track and optimize every activity</li>
+                                            <li><strong>Predictive Planning:</strong> Anticipate event schedules and prepare</li>
+                                            <li><strong>ROI Optimization:</strong> Perfect resource investment strategies</li>
+                                            <li><strong>Mentorship Programs:</strong> Systematic training of new players</li>
+                                        </ul>
+                                        
+                                        <h5>🌟 Legacy Creation (Long-term)</h5>
+                                        <ul>
+                                            <li><strong>Legendary Status:</strong> Become a server legend</li>
+                                            <li><strong>Strategy Documentation:</strong> Create comprehensive guides</li>
+                                            <li><strong>Community Building:</strong> Foster positive server culture</li>
+                                            <li><strong>Game Evolution:</strong> Influence game development through feedback</li>
                                         </ul>
                                         
                                         <div class="reference-link">
-                                            <p><strong>📖 End Season Optimization:</strong> <a href="https://lastwartutorial.com/end-season-strategy" target="_blank" rel="noopener">LastWarTutorial.com</a> offers detailed ranking calculators, reward optimization guides, and season transition strategies.</p>
+                                            <p><strong>🎯 Ultimate Resource:</strong> This VS Points Optimizer becomes your permanent companion for perfect alignment tracking and maximum efficiency across all seasons.</p>
                                         </div>
                                     </div>
                                 `
@@ -2041,22 +2105,7 @@
                 };
 
                 // Add banner toggle function
-                window.lastWarNexus.toggleBanner = function() {
-                    try {
-                        const banner = document.getElementById('priority-events-banner');
-                        const content = document.getElementById('banner-content');
-                        const toggle = document.getElementById('banner-toggle');
-                        
-                        if (banner && content && toggle) {
-                            const isCollapsed = banner.classList.contains('collapsed');
-                            banner.classList.toggle('collapsed');
-                            toggle.textContent = isCollapsed ? '▼' : '▲';
-                            toggle.style.transform = isCollapsed ? 'rotate(0deg)' : 'rotate(180deg)';
-                        }
-                    } catch (error) {
-                        console.error('Banner toggle error:', error);
-                    }
-                };
+                window.lastWarNexus.toggleBanner = this.toggleBanner.bind(this);
                 
             } catch (error) {
                 console.error('Application initialization failed:', error);

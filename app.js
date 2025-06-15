@@ -123,6 +123,9 @@
                     // FIXED: Always update displays on initialization
                     this.updateAllDisplays();
                     
+                    // FIXED: Initialize all content including guides
+                    this.initializeAllContent();\n                    \n                    // FIXED: Force populate guides after DOM is ready\n                    setTimeout(() => {\n                        console.log('=== FORCED GUIDE POPULATION ON STARTUP ===');\n                        console.log('activeGuideType:', this.activeGuideType);\n                        this.populateGuides();\n                    }, 1000);
+                    
                     // Always show setup modal on first visit (when no settings saved)
                     const hasStoredSettings = localStorage.getItem('lwn-settings');
                     if (!hasStoredSettings || !this.isSetupComplete) {
@@ -226,25 +229,22 @@
                         });
                     }
 
-                    // FIXED: Guide navigation buttons with improved event delegation
-                    const guideNavContainer = document.querySelector('.guide-nav-container');
-                    if (guideNavContainer) {
-                        guideNavContainer.addEventListener('click', (e) => {
-                            const btn = e.target.closest('.guide-nav-btn');
-                            if (btn) {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                e.stopImmediatePropagation();
-                                
-                                const guideType = btn.getAttribute('data-guide-type');
-                                // Allow switching even if same type to refresh content
-                                if (guideType) {
-                                    console.log('Guide navigation clicked:', guideType);
-                                    this.switchGuideType(guideType);
-                                }
+                    // FIXED: Guide navigation buttons with improved event delegation - use document for persistent listening
+                    document.addEventListener('click', (e) => {
+                        const btn = e.target.closest('.guide-nav-btn');
+                        if (btn) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            e.stopImmediatePropagation();
+                            
+                            const guideType = btn.getAttribute('data-guide-type');
+                            // Allow switching even if same type to refresh content
+                            if (guideType) {
+                                console.log('Guide navigation clicked:', guideType);
+                                // Force a more comprehensive approach\n                                this.switchGuideTypeForced(guideType);
                             }
-                        });
-                    }
+                        }
+                    });
 
                     // FIXED: Banner toggle functionality
                     const bannerHeader = document.querySelector('.banner-header');
@@ -640,11 +640,11 @@
             // FIXED: Switch between guide types (tips/seasonal)
             switchGuideType(guideType) {
                 try {
-                    console.log('Switching to guide type:', guideType);
+                    console.log('=== GUIDE TYPE SWITCH START ===');\n                    console.log('Switching to guide type:', guideType);\n                    console.log('Current activeGuideType:', this.activeGuideType);
                     this.activeGuideType = guideType;
                     
                     // Update guide navigation buttons with improved error handling
-                    const allBtns = document.querySelectorAll('.guide-nav-btn');
+                    const allBtns = document.querySelectorAll('.guide-nav-btn');\n                    console.log('Found guide nav buttons:', allBtns.length);
                     if (allBtns.length === 0) {
                         console.warn('No guide navigation buttons found in DOM');
                         return;
@@ -1257,6 +1257,20 @@
                     }
                 } catch (error) {
                     console.error(`Tab content population error for ${tabName}:`, error);
+                }
+            }
+            
+            // FIXED: Initialize guides content on startup regardless of active tab
+            initializeAllContent() {
+                try {
+                    // Always populate guides content so navigation works
+                    this.populateGuides();
+                    // Populate the current active tab
+                    if (this.activeTab) {
+                        this.populateTabContent(this.activeTab);
+                    }
+                } catch (error) {
+                    console.error('Content initialization error:', error);
                 }
             }
 

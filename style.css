@@ -2483,7 +2483,7 @@ body {
     }
 }
 
-/* ENHANCED: Landscape Mobile Optimization */
+/* ENHANCED: Guide Navigation Mobile Optimizations */\n@media (max-width: 768px) {\n    .guide-nav-container {\n        margin-bottom: var(--spacing-md); /* Reduced from xl */\n    }\n    \n    .guide-nav {\n        gap: var(--spacing-xs); /* Reduced gap for mobile */\n        padding: var(--spacing-xs); /* Tighter padding */\n    }\n    \n    .guide-nav-btn {\n        padding: var(--spacing-xs) var(--spacing-sm); /* Reduced padding */\n        font-size: 0.8rem; /* Slightly smaller text */\n        min-height: 44px; /* Ensure touch target size */\n        min-width: 44px;\n    }\n    \n    .guide-nav-icon {\n        font-size: 0.9rem; /* Smaller icons */\n    }\n}\n\n/* ENHANCED: Landscape Mobile Optimization */
 @media (max-width: 896px) and (orientation: landscape) {
     .nav-container {
         min-height: 50px;

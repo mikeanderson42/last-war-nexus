@@ -44,27 +44,21 @@
     --backdrop-blur: blur(12px);
     --backdrop-blur-strong: blur(16px);
     
-    /* Ultrahuman-style gradient borders - visible and vibrant */
-    --gradient-border-primary: linear-gradient(135deg, #1E90FF 0%, #22C55E 50%, #8B5CF6 100%);
-    --gradient-border-secondary: linear-gradient(135deg, #22C55E 0%, #10B981 50%, #06B6D4 100%);
-    --gradient-border-accent: linear-gradient(135deg, #8B5CF6 0%, #A855F7 50%, #EC4899 100%);
-    --gradient-border-warm: linear-gradient(135deg, #FB923C 0%, #F97316 50%, #F56565 100%);
-    
-    /* Enhanced gradient borders for hover states */
-    --gradient-border-primary-hover: linear-gradient(135deg, #3B82F6 0%, #34D399 50%, #A78BFA 100%);
-    --gradient-border-secondary-hover: linear-gradient(135deg, #34D399 0%, #14B8A6 50%, #0EA5E9 100%);
-    --gradient-border-accent-hover: linear-gradient(135deg, #A78BFA 0%, #C084FC 50%, #F472B6 100%);
-    --gradient-border-warm-hover: linear-gradient(135deg, #FBBF24 0%, #FB923C 50%, #F87171 100%);
+    /* Subtle modern gradient borders - barely visible depth */
+    --gradient-border-primary: linear-gradient(135deg, rgba(30, 144, 255, 0.12), rgba(30, 144, 255, 0.08));
+    --gradient-border-secondary: linear-gradient(135deg, rgba(34, 197, 94, 0.10), rgba(34, 197, 94, 0.06));
+    --gradient-border-accent: linear-gradient(135deg, rgba(139, 92, 246, 0.10), rgba(139, 92, 246, 0.06));
+    --gradient-border-warm: linear-gradient(135deg, rgba(251, 146, 60, 0.08), rgba(251, 146, 60, 0.04));
     --inset-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
     --depth-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
     
-    /* Ultrahuman-inspired gradient glows */
-    --glow-primary: radial-gradient(ellipse 800px 600px at center, rgba(30, 144, 255, 0.08) 0%, transparent 50%);
-    --glow-secondary: radial-gradient(ellipse 600px 400px at center, rgba(34, 197, 94, 0.06) 0%, transparent 50%);
-    --glow-accent: radial-gradient(ellipse 700px 500px at center, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
-    --glow-warm: radial-gradient(ellipse 650px 450px at center, rgba(255, 138, 76, 0.04) 0%, transparent 50%);
-    --glow-hover-primary: radial-gradient(ellipse 900px 700px at center, rgba(30, 144, 255, 0.12) 0%, transparent 50%);
-    --glow-hover-secondary: radial-gradient(ellipse 750px 550px at center, rgba(34, 197, 94, 0.08) 0%, transparent 50%);
+    /* Subtle background glows - barely perceptible */
+    --glow-primary: radial-gradient(ellipse 600px 400px at center, rgba(30, 144, 255, 0.03) 0%, transparent 60%);
+    --glow-secondary: radial-gradient(ellipse 500px 350px at center, rgba(34, 197, 94, 0.02) 0%, transparent 60%);
+    --glow-accent: radial-gradient(ellipse 550px 400px at center, rgba(139, 92, 246, 0.02) 0%, transparent 60%);
+    --glow-warm: radial-gradient(ellipse 500px 350px at center, rgba(255, 138, 76, 0.02) 0%, transparent 60%);
+    --glow-hover-primary: radial-gradient(ellipse 650px 450px at center, rgba(30, 144, 255, 0.04) 0%, transparent 60%);
+    --glow-hover-secondary: radial-gradient(ellipse 550px 400px at center, rgba(34, 197, 94, 0.03) 0%, transparent 60%);
     
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.15);
     --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.2);
@@ -91,12 +85,7 @@
     --spacing-2xl: 32px;
 }
 
-/* Ultrahuman-style gradient border animations */
-@keyframes gradient-shift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
+/* Removed garish animations - keeping design clean and subtle */
 
 /* ENHANCED: Global Styles */
 * {
@@ -486,17 +475,15 @@ body {
 .vs-optimizer-card::before {
     content: '';
     position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    bottom: -1px;
     background: var(--gradient-border-primary);
-    border-radius: calc(var(--border-radius-lg) + 2px);
-    opacity: 0.8;
+    border-radius: calc(var(--border-radius-lg) + 1px);
+    opacity: 0.4;
     z-index: -1;
     transition: all var(--transition-normal);
-    background-size: 200% 200%;
-    animation: gradient-shift 3s ease infinite;
 }
 
 .vs-optimizer-card::after {
@@ -509,7 +496,7 @@ body {
     background: var(--glow-primary);
     transform: translate(-50%, -50%);
     z-index: -2;
-    opacity: 0.6;
+    opacity: 0.3;
     transition: all var(--transition-normal);
     border-radius: 50%;
     pointer-events: none;
@@ -524,19 +511,11 @@ body {
 }
 
 .vs-optimizer-card:hover::before {
-    opacity: 1;
-    top: -3px;
-    left: -3px;
-    right: -3px;
-    bottom: -3px;
-    background: var(--gradient-border-primary-hover);
+    opacity: 0.6;
 }
 
 .vs-optimizer-card:hover::after {
-    opacity: 0.8;
-    width: 130%;
-    height: 130%;
-    background: var(--glow-hover-primary);
+    opacity: 0.4;
 }
 
 /* Removed duplicate top border rule that caused double border */
@@ -768,13 +747,13 @@ body {
 .server-reset-card::before {
     content: '';
     position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    bottom: -1px;
     background: var(--gradient-border-secondary);
-    border-radius: calc(var(--border-radius-lg) + 2px);
-    opacity: 0.7;
+    border-radius: calc(var(--border-radius-lg) + 1px);
+    opacity: 0.3;
     z-index: -1;
     transition: all var(--transition-normal);
 }
@@ -797,26 +776,18 @@ body {
     background: var(--glow-secondary);
     transform: translate(-50%, -50%);
     z-index: -2;
-    opacity: 0.5;
+    opacity: 0.25;
     transition: all var(--transition-normal);
     border-radius: 50%;
     pointer-events: none;
 }
 
 .server-reset-card:hover::before {
-    opacity: 0.9;
-    top: -3px;
-    left: -3px;
-    right: -3px;
-    bottom: -3px;
-    background: var(--gradient-border-secondary-hover);
+    opacity: 0.5;
 }
 
 .server-reset-card:hover::after {
-    opacity: 0.7;
-    width: 125%;
-    height: 125%;
-    background: var(--glow-hover-secondary);
+    opacity: 0.35;
 }
 
 .reset-info {
@@ -868,13 +839,13 @@ body {
 .countdown-card-compact::before {
     content: '';
     position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    bottom: -1px;
     background: var(--gradient-border-accent);
-    border-radius: calc(var(--border-radius-lg) + 2px);
-    opacity: 0.6;
+    border-radius: calc(var(--border-radius-lg) + 1px);
+    opacity: 0.25;
     z-index: -1;
     transition: all var(--transition-normal);
 }
@@ -882,13 +853,13 @@ body {
 .strategy-card-compact::before {
     content: '';
     position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    bottom: -1px;
     background: var(--gradient-border-warm);
-    border-radius: calc(var(--border-radius-lg) + 2px);
-    opacity: 0.6;
+    border-radius: calc(var(--border-radius-lg) + 1px);
+    opacity: 0.25;
     z-index: -1;
     transition: all var(--transition-normal);
 }
@@ -903,21 +874,11 @@ body {
 }
 
 .countdown-card-compact:hover::before {
-    opacity: 0.85;
-    top: -3px;
-    left: -3px;
-    right: -3px;
-    bottom: -3px;
-    background: var(--gradient-border-accent-hover);
+    opacity: 0.4;
 }
 
 .strategy-card-compact:hover::before {
-    opacity: 0.85;
-    top: -3px;
-    left: -3px;
-    right: -3px;
-    bottom: -3px;
-    background: var(--gradient-border-warm-hover);
+    opacity: 0.4;
 }
 
 .countdown-card-compact::after {
@@ -930,7 +891,7 @@ body {
     background: var(--glow-accent);
     transform: translate(-50%, -50%);
     z-index: -2;
-    opacity: 0.4;
+    opacity: 0.2;
     transition: all var(--transition-normal);
     border-radius: 50%;
     pointer-events: none;
@@ -946,22 +907,18 @@ body {
     background: var(--glow-warm);
     transform: translate(-50%, -50%);
     z-index: -2;
-    opacity: 0.4;
+    opacity: 0.2;
     transition: all var(--transition-normal);
     border-radius: 50%;
     pointer-events: none;
 }
 
 .countdown-card-compact:hover::after {
-    opacity: 0.6;
-    width: 120%;
-    height: 120%;
+    opacity: 0.3;
 }
 
 .strategy-card-compact:hover::after {
-    opacity: 0.6;
-    width: 120%;
-    height: 120%;
+    opacity: 0.3;
 }
 
 /* ENHANCED: Card Headers */

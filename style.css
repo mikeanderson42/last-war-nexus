@@ -2,43 +2,44 @@
 
 /* ENHANCED: CSS Variables with better contrast and design */
 :root {
-    --bg-primary: #0a0a0f;
-    --bg-secondary: #1a1a1a;
-    --bg-tertiary: #202020;
-    --bg-card: #1a1a1a;
-    --bg-elevated: #0f0f0f;
-    --bg-surface: #121212;
+    /* Dark navy/black background tones */
+    --bg-primary: #0a0e13;
+    --bg-secondary: #141921;
+    --bg-tertiary: #1e242e;
+    --bg-card: #1a1f29;
+    --bg-elevated: #242a36;
+    --bg-surface: #2d3543;
     
     --text-primary: #ffffff;
-    --text-secondary: #e1e1ea;
-    --text-tertiary: #b8b8cc;
-    --text-muted: #8a8a9e;
+    --text-secondary: #b8c0d0;
+    --text-tertiary: #8a94a8;
+    --text-muted: #6b7585;
     
-    --border-primary: rgba(255, 255, 255, 0.06);
-    --border-secondary: rgba(255, 255, 255, 0.1);
-    --border-accent: rgba(255, 255, 255, 0.15);
+    --border-primary: rgba(255, 255, 255, 0.08);
+    --border-secondary: rgba(255, 255, 255, 0.12);
+    --border-accent: rgba(255, 255, 255, 0.2);
     
-    /* FIXED: Better contrast colors */
-    --accent-primary: #1e90ff;
-    --accent-primary-dark: #1873cc;
-    --accent-primary-light: #4da6ff;
-    --accent-secondary: #f97316;
-    --accent-success: #22c55e;
-    --accent-warning: #f59e0b;
-    --accent-error: #ef4444;
-    --accent-purple: #8b5cf6;
+    /* Vibrant accent colors from reference */
+    --accent-primary: #00d4ff;
+    --accent-primary-dark: #0099cc;
+    --accent-primary-light: #66e2ff;
+    --accent-secondary: #ff6b35;
+    --accent-success: #00ff88;
+    --accent-warning: #ffb800;
+    --accent-error: #ff4757;
+    --accent-purple: #a55eea;
     
-    --gradient-primary: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
-    --gradient-secondary: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
-    --gradient-success: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-    --gradient-card: linear-gradient(145deg, rgba(26, 26, 26, 0.95), rgba(20, 20, 20, 0.9));
-    --gradient-elevated: linear-gradient(145deg, rgba(32, 32, 32, 0.95), rgba(26, 26, 26, 0.9));
+    --gradient-primary: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+    --gradient-secondary: linear-gradient(135deg, #ff6b35 0%, #ff4757 100%);
+    --gradient-success: linear-gradient(135deg, #00ff88 0%, #00cc66 100%);
+    --gradient-card: linear-gradient(145deg, #1a1f29 0%, #141921 100%);
+    --gradient-elevated: linear-gradient(145deg, #242a36 0%, #1e242e 100%);
     
     /* Refined glass morphism effects */
-    --glass-bg: rgba(26, 26, 26, 0.95);
-    --glass-bg-elevated: rgba(32, 32, 32, 0.95);
-    --glass-border: rgba(255, 255, 255, 0.06);
-    --glass-border-hover: rgba(255, 255, 255, 0.12);
+    --glass-bg: rgba(26, 31, 41, 0.85);
+    --glass-bg-elevated: rgba(36, 42, 54, 0.9);
+    --glass-border: rgba(0, 212, 255, 0.1);
+    --glass-border-hover: rgba(0, 212, 255, 0.2);
     --glass-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
     --glass-shadow-hover: 0 4px 20px rgba(0, 0, 0, 0.15);
     --backdrop-blur: blur(12px);
@@ -54,10 +55,10 @@
     
     /* Removed background glows - keeping design clean like Ultrahuman */
     
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.15);
-    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.2);
-    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.25);
-    --shadow-xl: 0 12px 48px rgba(0, 0, 0, 0.3);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+    --shadow-xl: 0 12px 48px rgba(0, 0, 0, 0.6);
     
     --border-radius-sm: 6px;
     --border-radius: 10px;
@@ -96,7 +97,7 @@ html {
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segui UI', system-ui, sans-serif;
-    background: #0a0a0f;
+    background: linear-gradient(135deg, #0a0e13 0%, #1e242e 100%);
     color: #ffffff;
     line-height: 1.5;
     overflow-x: hidden;
@@ -439,21 +440,22 @@ body {
 
 /* Ultrahuman-style VS Points Optimizer Card - Darker than background */
 .vs-optimizer-card {
-    background: #1a1a1a;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 16px;
+    background: var(--gradient-card);
+    border: 1px solid var(--border-primary);
+    border-left: 4px solid var(--accent-primary);
+    border-radius: 12px;
     padding: 24px;
     margin-bottom: 16px;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     position: relative;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--shadow-md);
+    backdrop-filter: blur(10px);
 }
 
 .vs-optimizer-card:hover {
-    background: #202020;
-    border-color: rgba(255, 255, 255, 0.1);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    border-left-color: var(--accent-primary-light);
 }
 
 /* Removed duplicate top border rule that caused double border */
@@ -486,35 +488,36 @@ body {
     display: flex;
     align-items: center;
     gap: var(--spacing-xs);
-    background: rgba(34, 197, 94, 0.15);
-    border: 1px solid rgba(34, 197, 94, 0.3);
+    background: rgba(0, 255, 136, 0.15);
+    border: 1px solid rgba(0, 255, 136, 0.3);
     border-radius: 12px;
     padding: 4px var(--spacing-sm);
     font-size: 0.7rem;
     font-weight: 700;
     color: var(--accent-success);
+    animation: pulse 2s infinite;
 }
 
 .live-dot {
     width: 6px;
     height: 6px;
-    background: var(--accent-success);
+    background: #00ff88;
     border-radius: 50%;
     animation: livePulse 2s ease-in-out infinite;
-    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+    box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7);
 }
 
 @keyframes livePulse {
     0% {
-        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+        box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7);
         transform: scale(1);
     }
     50% {
-        box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
+        box-shadow: 0 0 0 6px rgba(0, 255, 136, 0);
         transform: scale(1.1);
     }
     100% {
-        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+        box-shadow: 0 0 0 0 rgba(0, 255, 136, 0);
         transform: scale(1);
     }
 }
@@ -531,15 +534,28 @@ body {
 }
 
 .next-priority-banner {
-    background: #0f0f0f;
-    border: 1px solid rgba(251, 146, 60, 0.2);
+    background: linear-gradient(135deg, rgba(255, 107, 53, 0.15), rgba(255, 71, 87, 0.15));
+    border: 1px solid rgba(255, 107, 53, 0.3);
     border-radius: 12px;
     padding: var(--spacing-xl);
     margin-bottom: var(--spacing-xl);
     display: flex;
     align-items: center;
     gap: var(--spacing-lg);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    box-shadow: 0 4px 16px rgba(255, 107, 53, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.next-priority-banner::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 107, 53, 0.1) 0%, transparent 70%);
+    animation: pulse 3s ease-in-out infinite;
 }
 
 .priority-icon {
@@ -671,20 +687,21 @@ body {
 
 /* Ultrahuman-style Server Reset Card - Darker than background */
 .server-reset-card {
-    background: #1a1a1a;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 16px;
+    background: var(--gradient-card);
+    border: 1px solid var(--border-primary);
+    border-left: 4px solid var(--accent-success);
+    border-radius: 12px;
     padding: 24px;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     position: relative;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--shadow-md);
+    backdrop-filter: blur(10px);
 }
 
 .server-reset-card:hover {
-    background: #202020;
-    border-color: rgba(255, 255, 255, 0.1);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    border-left-color: #33ff99;
 }
 
 .reset-info {
@@ -720,23 +737,27 @@ body {
 
 /* Ultrahuman-style Compact Cards - Darker than background */
 .countdown-card-compact {
-    background: #1a1a1a;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 16px;
+    background: var(--gradient-card);
+    border: 1px solid var(--border-primary);
+    border-left: 4px solid var(--accent-warning);
+    border-radius: 12px;
     padding: 20px;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     position: relative;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--shadow-md);
+    backdrop-filter: blur(10px);
 }
 
 .strategy-card-compact {
-    background: #1a1a1a;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 16px;
+    background: var(--gradient-card);
+    border: 1px solid var(--border-primary);
+    border-left: 4px solid var(--accent-secondary);
+    border-radius: 12px;
     padding: 20px;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     position: relative;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--shadow-md);
+    backdrop-filter: blur(10px);
 }
 
 .countdown-card-compact:hover {
@@ -972,12 +993,12 @@ body {
 
 .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, #fb923c, #f59e0b);
+    background: var(--gradient-primary);
     border-radius: 3px;
     transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
-    box-shadow: 0 0 8px rgba(251, 146, 60, 0.4);
+    box-shadow: 0 0 12px rgba(0, 212, 255, 0.5);
 }
 
 .progress-fill::after {
@@ -994,6 +1015,16 @@ body {
 @keyframes progress-shimmer {
     0% { left: -100%; }
     100% { left: 100%; }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+@keyframes glow {
+    0%, 100% { box-shadow: 0 0 5px rgba(0, 212, 255, 0.3); }
+    50% { box-shadow: 0 0 20px rgba(0, 212, 255, 0.6); }
 }
 
 .progress-glow {

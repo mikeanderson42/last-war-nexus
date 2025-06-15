@@ -903,28 +903,30 @@
                 try {
                     const serverTime = this.getServerTime();
                     const localTime = new Date();
-                    const serverTimeString = serverTime.toUTCString().slice(17, 25);
+                    const displayTime = this.useLocalTime ? localTime : serverTime;
+                    const displayTimeString = this.useLocalTime ? 
+                        localTime.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }) :
+                        serverTime.toUTCString().slice(17, 25);
                     
                     // Legacy server time display
                     const timeElement = document.getElementById('server-time');
                     if (timeElement) {
-                        timeElement.textContent = serverTimeString;
+                        timeElement.textContent = displayTimeString;
                     }
 
                     // Enhanced time displays for main cards
                     const currentDisplayTime = document.getElementById('current-display-time');
                     if (currentDisplayTime) {
-                        currentDisplayTime.textContent = localTime.toLocaleTimeString('en-US', { 
-                            hour12: false, 
-                            hour: '2-digit', 
-                            minute: '2-digit',
-                            second: '2-digit'
-                        });
+                        const label = this.useLocalTime ? 'Local Time' : 'Your Time';
+                        currentDisplayTime.textContent = `${displayTimeString} (${label})`;
                     }
 
                     const serverDisplayTime = document.getElementById('server-display-time');
                     if (serverDisplayTime) {
-                        serverDisplayTime.textContent = serverTimeString;
+                        const serverLabel = this.useLocalTime ? 'Server Time' : 'Server Time';
+                        const serverDisplay = this.useLocalTime ? 
+                            serverTime.toUTCString().slice(17, 25) : displayTimeString;
+                        serverDisplayTime.textContent = `${serverDisplay} (${serverLabel})`;
                     }
 
                     // Phase end time
@@ -935,7 +937,11 @@
                                          (currentPhase.minutesRemaining * 60 * 1000);
                         const phaseEndDate = new Date(Date.now() + phaseEndMs);
                         
-                        phaseEndTime.textContent = phaseEndDate.toLocaleTimeString('en-US', { 
+                        // Convert to appropriate timezone for display
+                        const displayEndTime = this.useLocalTime ? phaseEndDate : 
+                            new Date(phaseEndDate.getTime() + (this.timeOffset * 60 * 60 * 1000));
+                        
+                        phaseEndTime.textContent = displayEndTime.toLocaleTimeString('en-US', { 
                             hour12: false, 
                             hour: '2-digit', 
                             minute: '2-digit'
@@ -2016,6 +2022,7 @@
                         this.isSetupComplete = settings.isSetupComplete || false;
                         this.currentPhaseOverride = settings.currentPhaseOverride || null;
                         this.nextPhaseOverride = settings.nextPhaseOverride || null;
+                        this.useLocalTime = settings.useLocalTime !== undefined ? settings.useLocalTime : true;
                         
                         this.syncSettingsToUI();
                     }
@@ -2031,7 +2038,8 @@
                         notificationsEnabled: this.notificationsEnabled,
                         isSetupComplete: this.isSetupComplete,
                         currentPhaseOverride: this.currentPhaseOverride,
-                        nextPhaseOverride: this.nextPhaseOverride
+                        nextPhaseOverride: this.nextPhaseOverride,
+                        useLocalTime: this.useLocalTime
                     };
                     localStorage.setItem('lwn-settings', JSON.stringify(settings));
                 } catch (error) {

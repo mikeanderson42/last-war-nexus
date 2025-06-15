@@ -52,6 +52,14 @@
     --inset-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
     --depth-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
     
+    /* Ultrahuman-inspired gradient glows */
+    --glow-primary: radial-gradient(ellipse 800px 600px at center, rgba(30, 144, 255, 0.08) 0%, transparent 50%);
+    --glow-secondary: radial-gradient(ellipse 600px 400px at center, rgba(34, 197, 94, 0.06) 0%, transparent 50%);
+    --glow-accent: radial-gradient(ellipse 700px 500px at center, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+    --glow-warm: radial-gradient(ellipse 650px 450px at center, rgba(255, 138, 76, 0.04) 0%, transparent 50%);
+    --glow-hover-primary: radial-gradient(ellipse 900px 700px at center, rgba(30, 144, 255, 0.12) 0%, transparent 50%);
+    --glow-hover-secondary: radial-gradient(ellipse 750px 550px at center, rgba(34, 197, 94, 0.08) 0%, transparent 50%);
+    
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.15);
     --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.2);
     --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.25);
@@ -455,10 +463,11 @@ body {
     border: 1px solid var(--glass-border);
     border-radius: var(--border-radius-lg);
     box-shadow: var(--depth-shadow), var(--inset-shadow);
-    overflow: hidden;
+    overflow: visible;
     margin-bottom: var(--spacing-lg);
     transition: all var(--transition-normal);
     position: relative;
+    z-index: 1;
 }
 
 .vs-optimizer-card::before {
@@ -479,6 +488,22 @@ body {
     transition: opacity var(--transition-normal);
 }
 
+.vs-optimizer-card::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 120%;
+    height: 120%;
+    background: var(--glow-primary);
+    transform: translate(-50%, -50%);
+    z-index: -2;
+    opacity: 0.6;
+    transition: all var(--transition-normal);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
 .vs-optimizer-card:hover {
     background: var(--glass-bg-elevated);
     border-color: var(--glass-border-hover);
@@ -489,6 +514,13 @@ body {
 
 .vs-optimizer-card:hover::before {
     opacity: 0.3;
+}
+
+.vs-optimizer-card:hover::after {
+    opacity: 0.8;
+    width: 130%;
+    height: 130%;
+    background: var(--glow-hover-primary);
 }
 
 /* Removed duplicate top border rule that caused double border */
@@ -711,9 +743,10 @@ body {
     border: 1px solid var(--glass-border);
     border-radius: var(--border-radius-lg);
     box-shadow: var(--depth-shadow), var(--inset-shadow);
-    overflow: hidden;
+    overflow: visible;
     transition: all var(--transition-normal);
     position: relative;
+    z-index: 1;
 }
 
 .server-reset-card::before {
@@ -742,8 +775,31 @@ body {
     -webkit-backdrop-filter: var(--backdrop-blur-strong);
 }
 
+.server-reset-card::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 115%;
+    height: 115%;
+    background: var(--glow-secondary);
+    transform: translate(-50%, -50%);
+    z-index: -2;
+    opacity: 0.5;
+    transition: all var(--transition-normal);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
 .server-reset-card:hover::before {
     opacity: 0.2;
+}
+
+.server-reset-card:hover::after {
+    opacity: 0.7;
+    width: 125%;
+    height: 125%;
+    background: var(--glow-hover-secondary);
 }
 
 .reset-info {
@@ -786,9 +842,10 @@ body {
     border: 1px solid var(--glass-border);
     border-radius: var(--border-radius-lg);
     box-shadow: var(--depth-shadow), var(--inset-shadow);
-    overflow: hidden;
+    overflow: visible;
     transition: all var(--transition-normal);
     position: relative;
+    z-index: 1;
 }
 
 .countdown-card-compact::before,
@@ -822,6 +879,50 @@ body {
 .countdown-card-compact:hover::before,
 .strategy-card-compact:hover::before {
     opacity: 0.15;
+}
+
+.countdown-card-compact::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 110%;
+    height: 110%;
+    background: var(--glow-accent);
+    transform: translate(-50%, -50%);
+    z-index: -2;
+    opacity: 0.4;
+    transition: all var(--transition-normal);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.strategy-card-compact::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 110%;
+    height: 110%;
+    background: var(--glow-warm);
+    transform: translate(-50%, -50%);
+    z-index: -2;
+    opacity: 0.4;
+    transition: all var(--transition-normal);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.countdown-card-compact:hover::after {
+    opacity: 0.6;
+    width: 120%;
+    height: 120%;
+}
+
+.strategy-card-compact:hover::after {
+    opacity: 0.6;
+    width: 120%;
+    height: 120%;
 }
 
 /* ENHANCED: Card Headers */

@@ -304,7 +304,8 @@
             showSetupModal() {
                 const modal = document.getElementById('setup-modal');
                 if (modal) {
-                    modal.classList.add('show');
+                    modal.classList.add('active');
+                    modal.setAttribute('aria-hidden', 'false');
                     this.startSetupTimeUpdate();
                     this.populateSetupDefaults();
                 }
@@ -313,7 +314,8 @@
             hideSetupModal() {
                 const modal = document.getElementById('setup-modal');
                 if (modal) {
-                    modal.classList.remove('show');
+                    modal.classList.remove('active');
+                    modal.setAttribute('aria-hidden', 'true');
                     this.stopSetupTimeUpdate();
                 }
             }
@@ -586,10 +588,16 @@
                 try {
                     this.useLocalTime = !this.useLocalTime;
                     
-                    // Update button text
+                    // Update button text and styling
                     const timeToggleLabel = document.getElementById('time-toggle-label');
+                    const timeToggleBtn = document.getElementById('time-toggle-btn');
                     if (timeToggleLabel) {
                         timeToggleLabel.textContent = this.useLocalTime ? 'Local Time' : 'Server Time';
+                    }
+                    if (timeToggleBtn) {
+                        // Add visual indication of current mode
+                        timeToggleBtn.style.background = this.useLocalTime ? 'var(--bg-surface)' : 'var(--accent-primary)';
+                        timeToggleBtn.style.color = this.useLocalTime ? 'var(--text-secondary)' : 'white';
                     }
                     
                     // Update all time displays
@@ -960,6 +968,39 @@
                     if (currentPhaseElement) {
                         currentPhaseElement.textContent = `${currentArmsPhase.name} Active`;
                     }
+
+                    // FIXED: Update next priority window information
+                    const nextPriorityElement = document.getElementById('next-priority-info');
+                    if (nextPriorityElement) {
+                        const nextWindow = this.findNextPriorityWindow();
+                        if (nextWindow) {
+                            if (nextWindow.isActive) {
+                                nextPriorityElement.innerHTML = `
+                                    <div style="color: var(--accent-success); font-weight: 600; margin-bottom: 4px;">
+                                        🔥 ACTIVE NOW: ${nextWindow.phase.name} + ${nextWindow.vsDay.title}
+                                    </div>
+                                    <div style="font-size: 0.875rem; color: var(--text-secondary);">
+                                        ${this.formatTime(nextWindow.timeRemaining)} remaining
+                                    </div>
+                                `;
+                            } else {
+                                nextPriorityElement.innerHTML = `
+                                    <div style="font-weight: 600; margin-bottom: 4px;">
+                                        ${nextWindow.phase.name} + ${nextWindow.vsDay.title}
+                                    </div>
+                                    <div style="font-size: 0.875rem; color: var(--text-secondary);">
+                                        in ${this.formatTime(nextWindow.timeRemaining)}
+                                    </div>
+                                `;
+                            }
+                        } else {
+                            nextPriorityElement.innerHTML = `
+                                <div style="color: var(--text-tertiary); font-style: italic;">
+                                    No upcoming priority windows found
+                                </div>
+                            `;
+                        }
+                    }
                     
                 } catch (error) {
                     console.error('Status update error:', error);
@@ -1275,7 +1316,43 @@
                     const grid = document.getElementById('guides-content');
                     if (!grid) return;
                     
-                    const guides = [
+                    // FIXED: Use different guide sets based on activeGuideType
+                    let guides = [];
+                    
+                    if (this.activeGuideType === 'seasonal') {
+                        guides = [
+                            {
+                                title: "Foundation Phase",
+                                category: "Season Start",
+                                icon: "🏗️",
+                                description: "Essential building blocks for a successful season. Focus on infrastructure and core development.",
+                                tips: ["Prioritize resource production buildings", "Establish solid military base", "Complete daily missions consistently", "Join active alliance early"]
+                            },
+                            {
+                                title: "Expansion Phase",
+                                category: "Mid Season",
+                                icon: "📈",
+                                description: "Scale your operations and territory. This is the growth phase where you expand capabilities.",
+                                tips: ["Unlock new territories", "Increase military capacity", "Diversify resource streams", "Form strategic partnerships"]
+                            },
+                            {
+                                title: "Competition Phase",
+                                category: "Late Season",
+                                icon: "⚔️",
+                                description: "Peak competition period. Focus on high-impact activities and strategic positioning.",
+                                tips: ["Maximize efficiency in all activities", "Focus on high-value targets", "Coordinate with alliance for events", "Save premium resources for key moments"]
+                            },
+                            {
+                                title: "Mastery Phase",
+                                category: "Season End",
+                                icon: "👑",
+                                description: "Final push for seasonal rewards and achievements. Maximize remaining opportunities.",
+                                tips: ["Complete all seasonal objectives", "Use accumulated resources wisely", "Prepare for next season transition", "Secure final ranking improvements"]
+                            }
+                        ];
+                    } else {
+                        // Default to 'tips' guides
+                        guides = [
                         {
                             title: "5 Distinct Arms Race Phases",
                             category: "Core Mechanics",
@@ -1326,6 +1403,7 @@
                             tips: ["Use browser notifications", "Bookmark priority times", "Set phone alarms for peak windows", "Use predictable schedule for planning"]
                         }
                     ];
+                    }
                     
                     const html = guides.map(guide => `
                         <div class="priority-window-card">

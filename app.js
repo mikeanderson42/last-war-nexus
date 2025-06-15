@@ -1743,7 +1743,7 @@
                     
                     const html = guides.map((guide, index) => `
                         <div class="guide-card" data-guide-index="${index}">
-                            <div class="guide-header" onclick="window.lastWarNexus.toggleGuideExpansion(${index})">
+                            <div class="guide-header" data-guide-toggle="${index}">
                                 <div class="guide-icon">${guide.icon}</div>
                                 <div class="guide-info">
                                     <h3 class="guide-title">${guide.title}</h3>
@@ -1751,7 +1751,7 @@
                                 </div>
                                 <div class="guide-expand-icon" id="guide-expand-${index}">▼</div>
                             </div>
-                            <div class="guide-content-wrapper" id="guide-content-${index}" style="display: none;">
+                            <div class="guide-content-wrapper" id="guide-content-${index}">
                                 <div class="guide-content">
                                     ${guide.content || `
                                         <p class="guide-description">${guide.description}</p>
@@ -1765,8 +1765,50 @@
                     `).join('');
                     
                     grid.innerHTML = html;
+                    
+                    // Add event listeners for guide toggles after DOM update
+                    setTimeout(() => {
+                        document.querySelectorAll('[data-guide-toggle]').forEach(header => {
+                            header.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                const index = header.getAttribute('data-guide-toggle');
+                                this.toggleGuideExpansion(index);
+                            });
+                        });
+                    }, 50);
+                    
                 } catch (error) {
                     console.error('Guides population error:', error);
+                }
+            }
+
+            // ENHANCED: Guide expansion functionality
+            toggleGuideExpansion(index) {
+                try {
+                    const content = document.getElementById(`guide-content-${index}`);
+                    const icon = document.getElementById(`guide-expand-${index}`);
+                    const card = document.querySelector(`[data-guide-index="${index}"]`);
+                    
+                    if (content && icon && card) {
+                        const isExpanded = card.classList.contains('expanded');
+                        
+                        if (isExpanded) {
+                            // Collapse
+                            card.classList.remove('expanded');
+                            content.style.maxHeight = '0';
+                            content.style.opacity = '0';
+                            icon.style.transform = 'rotate(0deg)';
+                        } else {
+                            // Expand
+                            card.classList.add('expanded');
+                            content.style.maxHeight = content.scrollHeight + 'px';
+                            content.style.opacity = '1';
+                            icon.style.transform = 'rotate(180deg)';
+                        }
+                    }
+                } catch (error) {
+                    console.error('Guide expansion error:', error);
                 }
             }
 
@@ -1831,24 +1873,32 @@
                     }
                     
                     if (displayWindows.length === 0) {
-                        bannerGrid.innerHTML = '<div style="padding: var(--spacing-lg); text-align: center; color: var(--text-tertiary);">No high priority events in the next 3 days</div>';
+                        bannerGrid.innerHTML = `
+                            <div class="banner-event-card">
+                                <div class="banner-event-icon">⏰</div>
+                                <div class="banner-event-info">
+                                    <div class="banner-event-title">No Priority Events</div>
+                                    <div class="banner-event-time">Next 3 days clear</div>
+                                </div>
+                            </div>
+                            <div class="banner-ad-space">Ad Space Available</div>
+                        `;
                         return;
                     }
                     
-                    const html = displayWindows.map(window => `
-                        <div style="background: var(--bg-elevated); border: 1px solid var(--border-primary); border-radius: var(--border-radius); padding: var(--spacing-md); display: flex; align-items: center; gap: var(--spacing-md); ${window.isActive ? 'border-color: var(--accent-success);' : ''}">
-                            <div style="font-size: 1.5rem; flex-shrink: 0;">${window.phase.icon}</div>
-                            <div style="flex: 1; min-width: 0;">
-                                <div style="font-size: 0.875rem; font-weight: 600; color: var(--text-primary); margin-bottom: 2px;">${window.phase.name} + ${window.vsDay.title}</div>
-                                <div style="font-size: 0.75rem; color: var(--text-tertiary);">${window.timeDisplay}</div>
-                            </div>
-                            <div style="padding: 2px 6px; border-radius: var(--border-radius-sm); font-size: 0.65rem; font-weight: 600; text-transform: uppercase; background: ${window.isActive ? 'var(--gradient-success)' : 'var(--gradient-secondary)'}; color: white;">
-                                ${window.isActive ? 'LIVE' : 'SOON'}
+                    // Take only first 3 events
+                    const events = displayWindows.slice(0, 3);
+                    const html = events.map(window => `
+                        <div class="banner-event-card ${window.isActive ? 'active' : ''}">
+                            <div class="banner-event-icon">${window.phase.icon}</div>
+                            <div class="banner-event-info">
+                                <div class="banner-event-title">${window.phase.name}</div>
+                                <div class="banner-event-time">${window.timeDisplay}</div>
                             </div>
                         </div>
                     `).join('');
                     
-                    bannerGrid.innerHTML = html;
+                    bannerGrid.innerHTML = html + '<div class="banner-ad-space">Ad Space Available</div>';
                     
                 } catch (error) {
                     console.error('Priority banner population error:', error);

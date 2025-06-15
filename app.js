@@ -1572,7 +1572,7 @@
                         return;
                     }
                     
-                    // REDESIGNED: Comprehensive guide system with collapsible sections
+                    // FULLY FUNCTIONAL: Guide system with working collapsible sections
                     let guides = [];
                     
                     if (this.activeGuideType === 'seasonal') {
@@ -1585,41 +1585,31 @@
                                 sections: [
                                     {
                                         title: "🎯 Season 1 Core Objectives",
-                                        content: [
-                                            "**Primary Goal:** Learn all game mechanics and reach HQ 15+",
-                                            "**Alliance Goal:** Join active alliance and contribute consistently",
-                                            "**VS Points Goal:** Understand perfect alignment system",
-                                            "**Power Goal:** Achieve 500k+ total power by season end"
+                                        items: [
+                                            "Learn all game mechanics and reach HQ 15+",
+                                            "Join active alliance and contribute consistently", 
+                                            "Understand perfect alignment system",
+                                            "Achieve 500k+ total power by season end"
                                         ]
                                     },
                                     {
                                         title: "📚 Learning Phase (Days 1-15)",
-                                        content: [
-                                            "**Tutorial Mastery:** Complete ALL in-game tutorials without skipping",
-                                            "**Basic Infrastructure:** Build balanced resource and military buildings",
-                                            "**Alliance Research:** Find active alliance in your timezone with voice chat",
-                                            "**Tool Familiarity:** Use this VS Points Optimizer daily to track windows",
-                                            "**Hero Focus:** Choose 2-3 main heroes and concentrate all resources"
+                                        items: [
+                                            "Complete ALL in-game tutorials without skipping",
+                                            "Build balanced resource and military buildings",
+                                            "Find active alliance in your timezone with voice chat",
+                                            "Use this VS Points Optimizer daily to track windows",
+                                            "Choose 2-3 main heroes and concentrate all resources"
                                         ]
                                     },
                                     {
                                         title: "⚡ VS Points Strategy (Days 15-45)",
-                                        content: [
-                                            "**Perfect Alignments:** Save ALL speedups for 4x point windows only",
-                                            "**Daily Discipline:** Complete all daily missions and participate in events",
-                                            "**Resource Conservation:** Never waste premium items outside alignments",
-                                            "**Consistent Growth:** Maintain steady power growth targeting 10k+ daily",
-                                            "**Alliance Contribution:** Ensure consistent VS Points for alliance ranking"
-                                        ]
-                                    },
-                                    {
-                                        title: "🏆 Season End Goals (Days 45-60)",
-                                        content: [
-                                            "**Alliance Success:** Top 10 alliance ranking on your server",
-                                            "**Personal Achievement:** Top 100 individual VS Points ranking",
-                                            "**Knowledge Mastery:** Understand all game mechanics for Season 2",
-                                            "**Resource Stockpile:** Save premium items for next season start",
-                                            "**Network Building:** Establish relationships with experienced players"
+                                        items: [
+                                            "Save ALL speedups for 4x point windows only",
+                                            "Complete all daily missions and participate in events",
+                                            "Never waste premium items outside alignments",
+                                            "Maintain steady power growth targeting 10k+ daily",
+                                            "Ensure consistent VS Points for alliance ranking"
                                         ]
                                     }
                                 ]
@@ -1632,36 +1622,27 @@
                                 sections: [
                                     {
                                         title: "🎯 Advanced Objectives",
-                                        content: [
-                                            "**Power Goal:** Achieve HQ 20+ and 2M+ total power",
-                                            "**Ranking Goal:** Top 50 personal VS Points consistently",
-                                            "**Alliance Goal:** Leadership role in top 5 alliance",
-                                            "**Efficiency Goal:** 95%+ activities during perfect alignments"
+                                        items: [
+                                            "Achieve HQ 20+ and 2M+ total power",
+                                            "Maintain top 50 personal VS Points consistently",
+                                            "Take leadership role in top 5 alliance",
+                                            "Achieve 95%+ activities during perfect alignments"
                                         ]
                                     },
                                     {
                                         title: "💪 Power Growth Strategies",
-                                        content: [
-                                            "**Perfect Alignment Mastery:** Use 100% of speedups during 4x windows only",
-                                            "**Hero Specialization:** Develop 4-5 heroes for different combat scenarios",
-                                            "**Research Focus:** Complete military and economic tech trees strategically",
-                                            "**Equipment Excellence:** Systematic equipment enhancement and optimization"
-                                        ]
-                                    },
-                                    {
-                                        title: "🏆 Competition Excellence",
-                                        content: [
-                                            "**Ranking Strategy:** Maintain top 50 individual VS Points consistently",
-                                            "**Alliance Leadership:** Coordinate alliance activities and mentor new players",
-                                            "**Resource Mastery:** 95%+ efficiency in all resource expenditure",
-                                            "**Event Dominance:** Secure top rewards in all seasonal and weekly events"
+                                        items: [
+                                            "Use 100% of speedups during 4x windows only",
+                                            "Develop 4-5 heroes for different combat scenarios",
+                                            "Complete military and economic tech trees strategically",
+                                            "Implement systematic equipment enhancement"
                                         ]
                                     }
                                 ]
                             }
                         ];
                     } else {
-                        // Default to 'tips' guides - Comprehensive General Guides
+                        // Default to 'tips' guides - General Strategy Guides
                         guides = [
                             {
                                 title: "VS Points & Arms Race Mastery",
@@ -1671,33 +1652,33 @@
                                 sections: [
                                     {
                                         title: "🔄 Arms Race Cycle (CRITICAL)",
-                                        content: [
-                                            "**5-Phase System:** City Building → Unit Progression → Tech Research → Drone Boost → Hero Advancement",
-                                            "**4-Hour Phases:** Each phase lasts exactly 4 hours server time",
-                                            "**20-Hour Cycle:** Complete cycle takes 20 hours, NOT 24 hours",
-                                            "**Server Reset:** Always starts at 00:00 server time daily"
+                                        items: [
+                                            "5-Phase System: City Building → Unit Progression → Tech Research → Drone Boost → Hero Advancement",
+                                            "Each phase lasts exactly 4 hours server time",
+                                            "Complete cycle takes 20 hours, NOT 24 hours",
+                                            "Always starts at 00:00 server time daily"
                                         ]
                                     },
                                     {
                                         title: "📅 Alliance VS Day Focus",
-                                        content: [
-                                            "**Monday - Radar Training:** Stamina, hero EXP, drone activities (2x points)",
-                                            "**Tuesday - Base Expansion:** Construction speedups, building power (2x points)",
-                                            "**Wednesday - Age of Science:** Research speedups, tech advancement (2x points)",
-                                            "**Thursday - Train Heroes:** Hero recruitment, EXP, skills (2x points)",
-                                            "**Friday - Total Mobilization:** ALL activities count - SAVE FOR THIS (2x points)",
-                                            "**Saturday - Enemy Buster:** Military training, combat prep (2x points)"
+                                        items: [
+                                            "Monday - Radar Training: Stamina, hero EXP, drone activities (2x points)",
+                                            "Tuesday - Base Expansion: Construction speedups, building power (2x points)",
+                                            "Wednesday - Age of Science: Research speedups, tech advancement (2x points)",
+                                            "Thursday - Train Heroes: Hero recruitment, EXP, skills (2x points)",
+                                            "Friday - Total Mobilization: ALL activities count - SAVE FOR THIS (2x points)",
+                                            "Saturday - Enemy Buster: Military training, combat prep (2x points)"
                                         ]
                                     },
                                     {
                                         title: "🎯 Perfect Alignment Strategy (4x Points)",
-                                        content: [
-                                            "**Tech Research + Age of Science:** 4x points for research activities",
-                                            "**City Building + Base Expansion:** 4x points for construction",
-                                            "**Hero Advancement + Train Heroes:** 4x points for hero activities",
-                                            "**Drone Boost + Radar Training:** 4x points for stamina usage",
-                                            "**Unit Progression + Enemy Buster:** 4x points for military training",
-                                            "**Friday Total Mobilization:** 4x points with ANY Arms Race phase"
+                                        items: [
+                                            "Tech Research + Age of Science = 4x points for research activities",
+                                            "City Building + Base Expansion = 4x points for construction",
+                                            "Hero Advancement + Train Heroes = 4x points for hero activities",
+                                            "Drone Boost + Radar Training = 4x points for stamina usage",
+                                            "Unit Progression + Enemy Buster = 4x points for military training",
+                                            "Friday Total Mobilization = 4x points with ANY Arms Race phase"
                                         ]
                                     }
                                 ]
@@ -1710,29 +1691,29 @@
                                 sections: [
                                     {
                                         title: "💎 Premium Resource Strategy",
-                                        content: [
-                                            "**Speedup Conservation:** Save ALL speedups for perfect alignment windows",
-                                            "**Diamond Strategy:** Diamond purchases provide points in ALL phases",
-                                            "**VIP Store Priority:** 30-50% better value than regular diamond store",
-                                            "**Perfect Timing:** Use premium items only during 4x point windows"
+                                        items: [
+                                            "Save ALL speedups for perfect alignment windows",
+                                            "Diamond purchases provide points in ALL phases",
+                                            "VIP Store offers 30-50% better value than regular diamond store",
+                                            "Use premium items only during 4x point windows"
                                         ]
                                     },
                                     {
                                         title: "📦 Inventory Management",
-                                        content: [
-                                            "**Stockpile Strategy:** Save resources for major events and perfect alignments",
-                                            "**Activity Planning:** Plan major upgrades around alignment windows",
-                                            "**Emergency Reserves:** Keep emergency speedups for unexpected opportunities",
-                                            "**Expiration Monitoring:** Use items close to expiration during appropriate phases"
+                                        items: [
+                                            "Save resources for major events and perfect alignments",
+                                            "Plan major upgrades around alignment windows",
+                                            "Keep emergency speedups for unexpected opportunities",
+                                            "Monitor expiration dates and use items during appropriate phases"
                                         ]
                                     },
                                     {
                                         title: "⏰ Timing Optimization",
-                                        content: [
-                                            "**Weekly Planning:** Plan major activities around perfect alignments",
-                                            "**Server Time Mastery:** Always know your server time for accurate planning",
-                                            "**Notification Setup:** Set alerts for high-priority periods",
-                                            "**Alliance Coordination:** Sync activities with alliance members for maximum impact"
+                                        items: [
+                                            "Plan major activities around perfect alignments",
+                                            "Always know your server time for accurate planning",
+                                            "Set alerts for high-priority periods",
+                                            "Sync activities with alliance members for maximum impact"
                                         ]
                                     }
                                 ]
@@ -1745,46 +1726,46 @@
                                 sections: [
                                     {
                                         title: "🎯 Priority Building Order",
-                                        content: [
-                                            "**Headquarters (Critical):** Always upgrade first - unlocks everything else",
-                                            "**Resource Buildings:** Oil Wells, Farms, Steel Mills for steady income",
-                                            "**Army Camp:** Increases troop capacity for larger battles",
-                                            "**Research Institute:** Enables crucial technology advancement"
+                                        items: [
+                                            "Headquarters (Critical): Always upgrade first - unlocks everything else",
+                                            "Resource Buildings: Oil Wells, Farms, Steel Mills for steady income",
+                                            "Army Camp: Increases troop capacity for larger battles",
+                                            "Research Institute: Enables crucial technology advancement"
                                         ]
                                     },
                                     {
                                         title: "⚡ Construction Timing",
-                                        content: [
-                                            "**Perfect Alignments:** Save construction for City Building + Base Expansion (4x points)",
-                                            "**Multiple Upgrades:** Plan queue of upgrades during construction phases",
-                                            "**Speedup Efficiency:** Use construction speedups only during building-focused phases",
-                                            "**Material Stockpiling:** Gather building materials before major upgrade sessions"
+                                        items: [
+                                            "Save construction for City Building + Base Expansion (4x points)",
+                                            "Plan queue of upgrades during construction phases",
+                                            "Use construction speedups only during building-focused phases",
+                                            "Gather building materials before major upgrade sessions"
                                         ]
                                     }
                                 ]
                             },
                             {
-                                title: "Alliance & Social Strategy",
+                                title: "Alliance & Social Strategy", 
                                 category: "Team Coordination",
                                 icon: "🤝",
                                 description: "Maximize alliance benefits and coordinate for mutual success",
                                 sections: [
                                     {
                                         title: "🏆 Alliance Selection",
-                                        content: [
-                                            "**Active Alliance:** Choose alliance with members in your timezone",
-                                            "**Communication:** Join alliance with active voice chat or Discord",
-                                            "**Participation Level:** Ensure consistent VS Points contribution expected",
-                                            "**Growth Potential:** Join alliance with room for advancement and learning"
+                                        items: [
+                                            "Choose alliance with members in your timezone",
+                                            "Join alliance with active voice chat or Discord",
+                                            "Ensure consistent VS Points contribution expected",
+                                            "Find alliance with room for advancement and learning"
                                         ]
                                     },
                                     {
                                         title: "🤝 Team Coordination",
-                                        content: [
-                                            "**Synchronized Activities:** Coordinate major activities during perfect alignments",
-                                            "**Knowledge Sharing:** Share VS Points strategies and optimization tips",
-                                            "**Mutual Support:** Help with resource sharing and activity coordination",
-                                            "**Event Planning:** Plan alliance-wide strategies for seasonal events"
+                                        items: [
+                                            "Coordinate major activities during perfect alignments",
+                                            "Share VS Points strategies and optimization tips",
+                                            "Help with resource sharing and activity coordination",
+                                            "Plan alliance-wide strategies for seasonal events"
                                         ]
                                     }
                                 ]
@@ -1792,88 +1773,110 @@
                         ];
                     }
                     
-                    // REDESIGNED: Modern collapsible guide system
+                    // Generate HTML using existing site card styling
                     const html = guides.map((guide, index) => `
-                        <div class="guide-card-modern" data-guide-index="${index}">
-                            <div class="guide-header-modern" data-guide-toggle="${index}">
-                                <div class="guide-icon-modern">${guide.icon}</div>
-                                <div class="guide-info-modern">
-                                    <h3 class="guide-title-modern">${guide.title}</h3>
-                                    <div class="guide-category-modern">${guide.category}</div>
-                                    <p class="guide-description-modern">${guide.description}</p>
+                        <div class="priority-window-card guide-card" data-guide-index="${index}">
+                            <div class="guide-header" data-guide-toggle="${index}">
+                                <div class="guide-main-info">
+                                    <div class="guide-icon">${guide.icon}</div>
+                                    <div class="guide-details">
+                                        <h3 class="guide-title">${guide.title}</h3>
+                                        <div class="guide-category">${guide.category}</div>
+                                        <p class="guide-description">${guide.description}</p>
+                                    </div>
                                 </div>
-                                <div class="guide-expand-icon-modern" id="guide-expand-${index}">
-                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                                        <path d="M4.427 9.573L8 6.003l3.573 3.57a.5.5 0 0 0 .854-.353V4.5a.5.5 0 0 0-.5-.5H7.207a.5.5 0 0 0-.354.854L10.426 8 6.854 4.427a.5.5 0 0 0-.708 0L2.573 8a.5.5 0 0 0 0 .708l3.57 3.573a.5.5 0 0 0 .708 0z"/>
-                                    </svg>
-                                </div>
+                                <button class="guide-toggle-btn" id="guide-toggle-${index}" aria-label="Toggle guide sections">
+                                    <span class="guide-toggle-icon">▼</span>
+                                </button>
                             </div>
-                            <div class="guide-content-wrapper-modern" id="guide-content-${index}">
-                                <div class="guide-content-modern">
-                                    ${guide.sections ? guide.sections.map((section, sIndex) => `
-                                        <div class="guide-section-modern">
-                                            <h4 class="guide-section-title-modern">${section.title}</h4>
-                                            <div class="guide-section-content-modern">
-                                                ${section.content.map(item => `
-                                                    <div class="guide-item-modern">
-                                                        ${item.includes('**') ? 
-                                                            `<div class="guide-point-modern">${item.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</div>` :
-                                                            `<div class="guide-text-modern">${item}</div>`
-                                                        }
-                                                    </div>
-                                                `).join('')}
-                                            </div>
-                                        </div>
-                                    `).join('') : guide.content || ''}
-                                </div>
+                            <div class="guide-content" id="guide-content-${index}" style="display: none;">
+                                ${guide.sections.map((section, sIndex) => `
+                                    <div class="guide-section">
+                                        <h4 class="guide-section-title">${section.title}</h4>
+                                        <ul class="guide-section-list">
+                                            ${section.items.map(item => `
+                                                <li class="guide-section-item">${item}</li>
+                                            `).join('')}
+                                        </ul>
+                                    </div>
+                                `).join('')}
                             </div>
                         </div>
                     `).join('');
                     
                     grid.innerHTML = html;
                     
-                    // Add event listeners for modern guide toggles after DOM update
+                    // Add functional event listeners
                     setTimeout(() => {
                         document.querySelectorAll('[data-guide-toggle]').forEach(header => {
                             header.addEventListener('click', (e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
                                 const index = header.getAttribute('data-guide-toggle');
-                                this.toggleModernGuideExpansion(index);
+                                this.toggleGuideExpansion(index);
                             });
                         });
-                        console.log('=== GUIDE EVENT LISTENERS ATTACHED ===');
-                        console.log('Total guide headers:', document.querySelectorAll('[data-guide-toggle]').length);
-                    }, 100);
+                        console.log('=== FUNCTIONAL GUIDE LISTENERS ATTACHED ===');
+                        console.log('Total guide cards:', document.querySelectorAll('.guide-card').length);
+                    }, 50);
                     
                 } catch (error) {
                     console.error('Guides population error:', error);
                 }
             }
 
-            // ENHANCED: Guide expansion functionality
+            // FUNCTIONAL: Guide expansion functionality
             toggleGuideExpansion(index) {
                 try {
+                    console.log('=== TOGGLE GUIDE ===');
+                    console.log('Index:', index);
+                    
                     const content = document.getElementById(`guide-content-${index}`);
-                    const icon = document.getElementById(`guide-expand-${index}`);
+                    const toggleBtn = document.getElementById(`guide-toggle-${index}`);
+                    const toggleIcon = toggleBtn ? toggleBtn.querySelector('.guide-toggle-icon') : null;
                     const card = document.querySelector(`[data-guide-index="${index}"]`);
                     
-                    if (content && icon && card) {
-                        const isExpanded = card.classList.contains('expanded');
+                    console.log('Content element:', content);
+                    console.log('Toggle button:', toggleBtn);
+                    console.log('Toggle icon:', toggleIcon);
+                    console.log('Card element:', card);
+                    
+                    if (content && toggleIcon && card) {
+                        const isExpanded = content.style.display === 'block';
+                        console.log('Currently expanded:', isExpanded);
+                        
+                        // Close all other guides first (accordion behavior)
+                        document.querySelectorAll('.guide-card').forEach((otherCard, otherIndex) => {
+                            if (otherIndex !== parseInt(index)) {
+                                const otherContent = document.getElementById(`guide-content-${otherIndex}`);
+                                const otherIcon = document.getElementById(`guide-toggle-${otherIndex}`)?.querySelector('.guide-toggle-icon');
+                                if (otherContent) {
+                                    otherContent.style.display = 'none';
+                                    otherCard.classList.remove('expanded');
+                                }
+                                if (otherIcon) {
+                                    otherIcon.textContent = '▼';
+                                }
+                            }
+                        });
                         
                         if (isExpanded) {
-                            // Collapse
+                            // Collapse this guide
+                            content.style.display = 'none';
                             card.classList.remove('expanded');
-                            content.style.maxHeight = '0';
-                            content.style.opacity = '0';
-                            icon.style.transform = 'rotate(0deg)';
+                            toggleIcon.textContent = '▼';
+                            console.log('Guide collapsed');
                         } else {
-                            // Expand
+                            // Expand this guide
+                            content.style.display = 'block';
                             card.classList.add('expanded');
-                            content.style.maxHeight = content.scrollHeight + 'px';
-                            content.style.opacity = '1';
-                            icon.style.transform = 'rotate(180deg)';
+                            toggleIcon.textContent = '▲';
+                            console.log('Guide expanded');
                         }
+                    } else {
+                        console.error('Missing guide elements for index:', index);
+                        console.error('Available content elements:', document.querySelectorAll('[id^="guide-content-"]').length);
+                        console.error('Available toggle buttons:', document.querySelectorAll('[id^="guide-toggle-"]').length);
                     }
                 } catch (error) {
                     console.error('Guide expansion error:', error);

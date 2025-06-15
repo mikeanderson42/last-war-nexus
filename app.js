@@ -17,6 +17,7 @@
                 this.nextPhaseOverride = null;
                 this.useLocalTime = true;
                 this.activeGuideType = 'tips';
+                this.eventListenersSetup = false;
 
                 // ENHANCED: Detailed spending information for each phase
                 this.data = {
@@ -137,6 +138,12 @@
 
             setupEventListeners() {
                 try {
+                    // Prevent setting up listeners multiple times
+                    if (this.eventListenersSetup) {
+                        return;
+                    }
+                    this.eventListenersSetup = true;
+                    
                     this.setupSetupModalEvents();
                     
                     // Settings dropdown
@@ -219,19 +226,24 @@
                         });
                     }
 
-                    // FIXED: Guide navigation buttons with event delegation
-                    document.addEventListener('click', (e) => {
-                        if (e.target.closest('.guide-nav-btn')) {
-                            e.preventDefault();
-                            e.stopPropagation();
+                    // FIXED: Guide navigation buttons with targeted event delegation
+                    const guideNavContainer = document.querySelector('.guide-nav-container');
+                    if (guideNavContainer) {
+                        guideNavContainer.addEventListener('click', (e) => {
                             const btn = e.target.closest('.guide-nav-btn');
-                            const guideType = btn.getAttribute('data-guide-type');
-                            if (guideType) {
-                                console.log('Guide navigation clicked:', guideType);
-                                this.switchGuideType(guideType);
+                            if (btn) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                e.stopImmediatePropagation();
+                                
+                                const guideType = btn.getAttribute('data-guide-type');
+                                if (guideType && guideType !== this.activeGuideType) {
+                                    console.log('Guide navigation clicked:', guideType);
+                                    this.switchGuideType(guideType);
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
 
                     // FIXED: Banner toggle functionality
                     const bannerHeader = document.querySelector('.banner-header');

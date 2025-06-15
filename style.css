@@ -1408,7 +1408,10 @@ body {
     font-size: 0.875rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all var(--transition-normal);
+    transition: background-color 0.2s ease, color 0.2s ease;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .guide-nav-btn:hover {
@@ -1416,7 +1419,23 @@ body {
     color: var(--text-primary);
 }
 
+.guide-nav-btn:focus {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+}
+
+.guide-nav-btn:active {
+    transform: none;
+    background: var(--bg-elevated);
+}
+
 .guide-nav-btn.active {
+    background: var(--accent-primary);
+    color: white;
+    pointer-events: none;
+}
+
+.guide-nav-btn.active:hover {
     background: var(--accent-primary);
     color: white;
 }

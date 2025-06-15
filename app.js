@@ -219,16 +219,18 @@
                         });
                     }
 
-                    // FIXED: Guide navigation buttons
-                    document.querySelectorAll('.guide-nav-btn').forEach(btn => {
-                        btn.addEventListener('click', (e) => {
+                    // FIXED: Guide navigation buttons with event delegation
+                    document.addEventListener('click', (e) => {
+                        if (e.target.closest('.guide-nav-btn')) {
                             e.preventDefault();
                             e.stopPropagation();
+                            const btn = e.target.closest('.guide-nav-btn');
                             const guideType = btn.getAttribute('data-guide-type');
                             if (guideType) {
+                                console.log('Guide navigation clicked:', guideType);
                                 this.switchGuideType(guideType);
                             }
-                        });
+                        }
                     });
 
                     // FIXED: Banner toggle functionality
@@ -625,22 +627,26 @@
             // FIXED: Switch between guide types (tips/seasonal)
             switchGuideType(guideType) {
                 try {
+                    console.log('Switching to guide type:', guideType);
                     this.activeGuideType = guideType;
                     
                     // Update guide navigation buttons
                     document.querySelectorAll('.guide-nav-btn').forEach(btn => {
                         btn.classList.remove('active');
+                        btn.setAttribute('aria-selected', 'false');
                     });
                     
                     const activeBtn = document.querySelector(`[data-guide-type="${guideType}"]`);
                     if (activeBtn) {
                         activeBtn.classList.add('active');
+                        activeBtn.setAttribute('aria-selected', 'true');
+                        console.log('Updated active button for:', guideType);
+                    } else {
+                        console.warn('Could not find button for guide type:', guideType);
                     }
                     
-                    // Update guides content if on guides tab
-                    if (this.activeTab === 'guides') {
-                        this.populateGuides();
-                    }
+                    // Always update guides content regardless of active tab
+                    this.populateGuides();
                     
                     this.saveSettings();
                     

@@ -116,19 +116,25 @@
 
             init() {
                 try {
+                    console.log('Last War Nexus: Starting initialization...');
                     this.loadSettings();
                     this.setupEventListeners();
                     
                     // FIXED: Always update displays on initialization
+                    console.log('Last War Nexus: Updating displays...');
                     this.updateAllDisplays();
                     
                     // Always show setup modal on first visit (when no settings saved)
                     const hasStoredSettings = localStorage.getItem('lwn-settings');
                     if (!hasStoredSettings || !this.isSetupComplete) {
+                        console.log('Last War Nexus: Showing setup modal...');
                         this.showSetupModal();
                     } else {
+                        console.log('Last War Nexus: Starting update loop...');
                         this.startUpdateLoop();
                     }
+                    
+                    console.log('Last War Nexus: Initialization complete!');
                 } catch (error) {
                     console.error('Initialization error:', error);
                     this.handleError('Failed to initialize application');
@@ -247,14 +253,6 @@
                             this.closeAllDropdowns();
                         }
                     });
-
-                    // Banner toggle expand/collapse
-                    const bannerHeader = document.querySelector('.banner-header');
-                    if (bannerHeader) {
-                        bannerHeader.addEventListener('click', () => {
-                            this.toggleBanner();
-                        });
-                    }
 
                     // Banner close
                     const bannerClose = document.getElementById('banner-close');
@@ -793,8 +791,10 @@
 
             findNextPriorityWindow() {
                 try {
+                    console.log('Last War Nexus: Finding next priority window...');
                     const now = this.getServerTime();
                     const currentAlignment = this.isCurrentlyHighPriority();
+                    console.log('Current alignment:', currentAlignment);
                     
                     if (currentAlignment) {
                         const currentPhase = this.getCurrentArmsPhase();
@@ -909,6 +909,7 @@
 
             updateTimeDisplay() {
                 try {
+                    console.log('Last War Nexus: Updating time display...');
                     const serverTime = this.getServerTime();
                     const localTime = new Date();
                     const serverTimeString = serverTime.toUTCString().slice(17, 25);

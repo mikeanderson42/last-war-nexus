@@ -238,6 +238,14 @@
                         }
                     });
 
+                    // Banner toggle expand/collapse
+                    const bannerHeader = document.querySelector('.banner-header');
+                    if (bannerHeader) {
+                        bannerHeader.addEventListener('click', () => {
+                            this.toggleBanner();
+                        });
+                    }
+
                     // Banner close
                     const bannerClose = document.getElementById('banner-close');
                     if (bannerClose) {
@@ -945,13 +953,15 @@
                     const currentArmsPhase = this.getCurrentArmsPhase();
                     const nextWindow = this.findNextPriorityWindow();
                     
-                    // Update main time display
+                    // Update main time display with clear mode indicator
                     const mainTimeDisplay = document.getElementById('main-time-display');
                     if (mainTimeDisplay) {
                         const timeString = this.useLocalTime ? 
-                            new Date().toLocaleTimeString('en-US', { hour12: false }) :
-                            serverTime.toUTCString().slice(17, 25);
+                            new Date().toLocaleTimeString('en-US', { hour12: false }) + ' LOCAL' :
+                            serverTime.toUTCString().slice(17, 25) + ' SERVER';
                         mainTimeDisplay.textContent = timeString;
+                        mainTimeDisplay.style.fontSize = '0.875rem';
+                        mainTimeDisplay.style.fontWeight = '600';
                     }
                     
                     // Update priority countdown
@@ -1036,7 +1046,10 @@
                     
                     // Calculate next server reset (daily at 00:00 server time)
                     const nextReset = new Date(serverTime);
-                    nextReset.setHours(24, 0, 0, 0); // Next midnight server time
+                    nextReset.setUTCHours(24, 0, 0, 0); // Next midnight UTC
+                    
+                    // Adjust for server time offset
+                    const resetInServerTime = new Date(nextReset.getTime() - (this.timeOffset * 60 * 60 * 1000));
                     
                     // Convert to local time for display
                     const localResetTime = new Date(nextReset.getTime() - (this.timeOffset * 60 * 60 * 1000));
@@ -1046,7 +1059,9 @@
                     const timeUntilReset = document.getElementById('time-until-reset');
                     
                     if (nextServerReset) {
-                        nextServerReset.textContent = nextReset.toUTCString().slice(17, 25) + ' Server';
+                        // Always show 00:00 in server time zone
+                        const serverHours = this.timeOffset >= 0 ? `UTC+${this.timeOffset}` : `UTC${this.timeOffset}`;
+                        nextServerReset.textContent = `00:00 ${serverHours}`;
                     }
                     
                     if (resetLocalTime) {
@@ -1726,22 +1741,25 @@
                         ];
                     }
                     
-                    const html = guides.map(guide => `
-                        <div class="priority-window-card">
-                            <div style="background: var(--bg-surface); padding: var(--spacing-lg); border-bottom: 1px solid var(--border-primary); display: flex; align-items: center; gap: var(--spacing-md);">
-                                <div style="font-size: 1.5rem; flex-shrink: 0;">${guide.icon}</div>
-                                <div style="flex: 1;">
-                                    <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">${guide.title}</h3>
-                                    <div style="font-size: 0.8rem; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 500;">${guide.category}</div>
+                    const html = guides.map((guide, index) => `
+                        <div class="guide-card" data-guide-index="${index}">
+                            <div class="guide-header" onclick="window.lastWarNexus.toggleGuideExpansion(${index})">
+                                <div class="guide-icon">${guide.icon}</div>
+                                <div class="guide-info">
+                                    <h3 class="guide-title">${guide.title}</h3>
+                                    <div class="guide-category">${guide.category}</div>
                                 </div>
+                                <div class="guide-expand-icon" id="guide-expand-${index}">▼</div>
                             </div>
-                            <div style="padding: var(--spacing-lg);">
-                                ${guide.content || `
-                                    <p style="font-size: 0.875rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: var(--spacing-lg);">${guide.description}</p>
-                                    <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-sm);">
-                                        ${guide.tips.map(tip => `<span style="background: var(--bg-tertiary); color: var(--text-secondary); padding: var(--spacing-sm) var(--spacing-md); border-radius: var(--border-radius); font-size: 0.75rem; font-weight: 500; border: 1px solid var(--border-primary);">${tip}</span>`).join('')}
-                                    </div>
-                                `}
+                            <div class="guide-content-wrapper" id="guide-content-${index}" style="display: none;">
+                                <div class="guide-content">
+                                    ${guide.content || `
+                                        <p class="guide-description">${guide.description}</p>
+                                        <div class="guide-tips">
+                                            ${guide.tips.map(tip => `<span class="guide-tip">${tip}</span>`).join('')}
+                                        </div>
+                                    `}
+                                </div>
                             </div>
                         </div>
                     `).join('');
@@ -1950,6 +1968,41 @@
             try {
                 const app = new VSPointsOptimizer();
                 window.lastWarNexus = app;
+                
+                // Add guide expansion function to window
+                window.lastWarNexus.toggleGuideExpansion = function(index) {
+                    try {
+                        const content = document.getElementById(`guide-content-${index}`);
+                        const icon = document.getElementById(`guide-expand-${index}`);
+                        
+                        if (content && icon) {
+                            const isExpanded = content.style.display !== 'none';
+                            content.style.display = isExpanded ? 'none' : 'block';
+                            icon.textContent = isExpanded ? '▼' : '▲';
+                            icon.style.transform = isExpanded ? 'rotate(0deg)' : 'rotate(180deg)';
+                        }
+                    } catch (error) {
+                        console.error('Guide expansion error:', error);
+                    }
+                };
+
+                // Add banner toggle function
+                window.lastWarNexus.toggleBanner = function() {
+                    try {
+                        const banner = document.getElementById('priority-events-banner');
+                        const content = document.getElementById('banner-content');
+                        const toggle = document.getElementById('banner-toggle');
+                        
+                        if (banner && content && toggle) {
+                            const isCollapsed = banner.classList.contains('collapsed');
+                            banner.classList.toggle('collapsed');
+                            toggle.textContent = isCollapsed ? '▼' : '▲';
+                            toggle.style.transform = isCollapsed ? 'rotate(0deg)' : 'rotate(180deg)';
+                        }
+                    } catch (error) {
+                        console.error('Banner toggle error:', error);
+                    }
+                };
                 
             } catch (error) {
                 console.error('Application initialization failed:', error);

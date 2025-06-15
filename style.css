@@ -94,6 +94,8 @@ html {
     font-size: 16px;
     scroll-behavior: smooth;
     /* Remove overflow-x hidden from html to allow proper scrolling */
+    /* Fix viewport height on mobile */
+    height: -webkit-fill-available;
 }
 
 body {
@@ -103,6 +105,7 @@ body {
     line-height: 1.5;
     /* Remove overflow-x hidden to fix mobile scrolling */
     min-height: 100vh;
+    min-height: -webkit-fill-available; /* Fix iOS viewport height */
     font-size: 16px;
     position: relative;
     

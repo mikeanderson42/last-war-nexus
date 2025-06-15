@@ -2468,6 +2468,36 @@ body {
     }
 }
 
+/* ENHANCED: Mobile Performance and Accessibility */
+* {
+    /* Ensure all elements are mobile-optimized */
+    -webkit-tap-highlight-color: transparent;
+}
+
+button, 
+.btn, 
+[role="button"],
+[tabindex] {
+    /* Ensure all interactive elements have proper touch targets */
+    min-height: 44px;
+    min-width: 44px;
+    touch-action: manipulation;
+}
+
+@media (max-width: 480px) {
+    /* Force minimum touch targets on mobile */
+    .guide-nav-btn,
+    .tab-btn,
+    .time-toggle-btn,
+    .settings-btn,
+    .btn,
+    button,
+    [role="button"] {
+        min-height: 48px !important;
+        min-width: 48px !important;
+    }
+}
+
 /* ENHANCED: Animations */
 @keyframes pulse {
     0%, 100% {

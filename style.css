@@ -93,7 +93,7 @@
 html {
     font-size: 16px;
     scroll-behavior: smooth;
-    overflow-x: hidden;
+    /* Remove overflow-x hidden from html to allow proper scrolling */
 }
 
 body {
@@ -101,9 +101,10 @@ body {
     background: var(--bg-primary);
     color: #ffffff;
     line-height: 1.5;
-    overflow-x: hidden;
+    /* Remove overflow-x hidden to fix mobile scrolling */
     min-height: 100vh;
     font-size: 16px;
+    position: relative;
     
     /* Mobile optimizations */
     -webkit-tap-highlight-color: transparent;
@@ -111,7 +112,8 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    touch-action: manipulation;
+    /* Remove touch-action manipulation to allow natural scrolling */
+    -webkit-overflow-scrolling: touch; /* Enable smooth scrolling on iOS */
 }
 
 
@@ -122,7 +124,7 @@ body {
     flex-direction: column;
     position: relative;
     background: var(--bg-primary);
-    padding: 16px;
+    /* Remove padding that might cause scrolling issues */
 }
 
 /* Removed distracting background gradients for clean Ultrahuman look */
@@ -133,11 +135,9 @@ body {
     backdrop-filter: var(--backdrop-blur);
     -webkit-backdrop-filter: var(--backdrop-blur);
     border-bottom: 1px solid var(--glass-border);
-    position: sticky;
-    top: 0;
+    position: relative; /* Changed from sticky to fix mobile scrolling */
     z-index: 100;
     box-shadow: var(--depth-shadow);
-    position: relative;
 }
 
 .main-nav::after {
@@ -2384,6 +2384,46 @@ body {
     }
 }
 
+/* ENHANCED: Mobile Scrolling Fixes */
+@media (max-width: 768px) {
+    /* Fix iOS scrolling issues */
+    html, body {
+        overflow-x: hidden;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        height: 100%;
+    }
+    
+    /* Ensure app container allows scrolling */
+    .app-container {
+        overflow-x: hidden;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        min-height: 100%;
+        height: auto;
+    }
+    
+    /* Fix fixed positioning issues on mobile */
+    .priority-events-banner {
+        position: relative !important;
+        margin-top: var(--spacing-lg);
+        margin-bottom: var(--spacing-lg);
+    }
+    
+    /* Ensure main content is scrollable */
+    .dashboard-section,
+    .main-content {
+        overflow: visible;
+    }
+    
+    /* Fix tab navigation to not interfere with scrolling */
+    .tab-navigation {
+        position: relative;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
 /* ENHANCED: Touch Optimizations for All Mobile Devices */
 @media (hover: none) and (pointer: coarse) {
     /* Improve touch targets */
@@ -2414,6 +2454,11 @@ body {
     .btn:active {
         transform: scale(0.98);
         transition: transform 0.1s ease;
+    }
+    
+    /* Ensure body scrolling works on touch devices */
+    body {
+        touch-action: pan-y !important;
     }
 }
 
@@ -2474,6 +2519,11 @@ body {
     -webkit-tap-highlight-color: transparent;
 }
 
+/* Fix viewport issues on mobile */
+@viewport {
+    width: device-width;
+}
+
 button, 
 .btn, 
 [role="button"],
@@ -2481,7 +2531,7 @@ button,
     /* Ensure all interactive elements have proper touch targets */
     min-height: 44px;
     min-width: 44px;
-    touch-action: manipulation;
+    /* Remove touch-action manipulation to fix scrolling */
 }
 
 @media (max-width: 480px) {
@@ -2741,4 +2791,96 @@ select:focus,
 
 .reference-link a:hover {
     text-decoration: underline;
+}
+
+/* CRITICAL: Final Mobile Scrolling Fixes */
+@media screen and (max-width: 768px) {
+    /* Reset any problematic styles for mobile */
+    html {
+        height: 100%;
+        overflow-x: hidden;
+        overflow-y: scroll;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    body {
+        height: 100%;
+        overflow-x: hidden;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        position: relative;
+        touch-action: pan-y;
+    }
+    
+    /* Ensure content wrapper allows scrolling */
+    #app-container,
+    .app-container {
+        min-height: 100%;
+        height: auto;
+        overflow: visible;
+        position: relative;
+    }
+    
+    /* Remove any height constraints that block scrolling */
+    .dashboard-section,
+    .main-content,
+    .tab-content {
+        height: auto;
+        min-height: auto;
+        overflow: visible;
+    }
+    
+    /* Ensure modals scroll properly */
+    .setup-modal-content {
+        max-height: 90vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Fix any z-index stacking issues */
+    .main-nav {
+        z-index: 50;
+    }
+    
+    .settings-dropdown {
+        z-index: 60;
+    }
+    
+    .priority-events-banner {
+        z-index: 40;
+    }
+    
+    /* Ensure dropdowns don't block scrolling */
+    .settings-dropdown-container {
+        position: relative;
+    }
+    
+    /* Fix tab navigation scrolling */
+    .tab-navigation {
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
+    }
+    
+    .tab-container {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Prevent horizontal scroll from tabs */
+    .tab-container::-webkit-scrollbar {
+        display: none;
+    }
+    
+    /* Final reset for any position fixed elements on mobile */
+    .priority-events-banner.collapsed,
+    .priority-events-banner:not(.collapsed) {
+        position: relative !important;
+        bottom: auto !important;
+        left: auto !important;
+        right: auto !important;
+    }
 }

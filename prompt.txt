@@ -1,0 +1,171 @@
+# Last War Nexus - Development Prompt
+
+## Project Overview
+Last War Nexus is a VS Points & Arms Race optimizer for the mobile game "Last War: Survival". It helps players maximize their VS Points efficiency by tracking Arms Race phases and Alliance Duel alignment windows.
+
+## 🚨 CRITICAL DEVELOPMENT PRINCIPLES
+
+### 1. FUNCTIONALITY FIRST - ALWAYS
+- **Maintaining existing functionality is the absolute top priority**
+- **Never break working features for the sake of improvements**
+- **Test thoroughly before committing any changes**
+- **When in doubt, preserve the current working state**
+
+### 2. SYNTAX VALIDATION IS MANDATORY
+- **Always validate JavaScript syntax**: `node -c filename.js`
+- **Check for literal `\n` characters that should be actual newlines**
+- **Verify all function references exist before calling them**
+- **Test CSS parsing to ensure no syntax errors**
+
+### 3. DEFENSIVE PROGRAMMING
+- **Check DOM elements exist before manipulating them**
+- **Use try-catch blocks around critical operations**
+- **Add console logging for debugging complex issues**
+- **Handle edge cases gracefully**
+
+## 📋 Key Features
+- **Real-time Arms Race phase tracking** (5 phases, 4-hour cycles)
+- **VS Day alignment detection** (Monday-Saturday themes)
+- **Priority window identification** (4x VS Points opportunities)
+- **Mobile-optimized responsive design**
+- **Guide navigation system** (General Tips / Seasonal Guides)
+- **Settings management** with timezone adjustments
+
+## 🛠 Technical Stack
+- **Vanilla JavaScript** (ES6+, single class architecture)
+- **CSS3** with CSS variables and media queries
+- **HTML5** with semantic structure and accessibility
+- **Progressive Web App** features (manifest, service worker)
+
+## 📱 Device Support
+- **Primary: Mobile devices** (iOS Safari, Android Chrome)
+- **Secondary: Desktop browsers** (Chrome, Firefox, Safari, Edge)
+- **Touch-first design** with 44px minimum touch targets
+- **Responsive breakpoints**: 768px, 480px, 360px
+
+## 🎯 Core Functionality Requirements
+
+### Data Loading & Display:
+- VS Points calculation and phase tracking
+- Real-time countdown timers
+- Priority window detection
+- Schedule generation for full weeks
+
+### User Interface:
+- Tab navigation (Priority Windows, Event Schedule, Strategy Guides)
+- Guide type switching (General Tips, Seasonal Guides)
+- Settings dropdown with timezone controls
+- Time display toggle (Local/Server time)
+
+### Mobile Experience:
+- Smooth scrolling and touch interactions
+- Properly positioned dropdowns and overlays
+- Readable text and accessible touch targets
+- Optimized spacing and layout
+
+## ⚠️ Common Pitfalls to Avoid
+
+### JavaScript Issues:
+- **Literal `\n` in strings** instead of actual newlines
+- **Calling undefined functions** or methods
+- **DOM manipulation before elements exist**
+- **Unhandled errors breaking initialization**
+
+### CSS Problems:
+- **Off-screen dropdown positioning**
+- **Missing mobile responsiveness**
+- **Z-index conflicts with overlays**
+- **Broken media query syntax**
+
+### Functionality Regressions:
+- **Guide navigation buttons not working**
+- **Settings menu positioning incorrectly**
+- **Data not loading due to initialization errors**
+- **Mobile scrolling issues**
+
+## 🔧 Development Workflow
+
+### Before Starting:
+1. Understand the current working state
+2. Identify the minimal change needed
+3. Plan how to preserve existing functionality
+4. Consider mobile-first approach
+
+### During Development:
+1. Make small, incremental changes
+2. Test each change immediately
+3. Validate syntax after each edit
+4. Check both desktop and mobile behavior
+
+### Before Committing:
+1. Run `node -c app.js` to validate syntax
+2. Test all core functionality manually
+3. Check console for errors or warnings
+4. Verify mobile responsiveness
+5. Ensure no regressions introduced
+
+## 📚 Code Architecture
+
+### Main Application (`app.js`):
+- `VSPointsOptimizer` class handles all functionality
+- `init()` method manages startup sequence
+- Event delegation for dynamic content
+- Error handling throughout critical paths
+
+### Styling (`style.css`):
+- CSS variables for consistent theming
+- Mobile-first responsive design
+- Component-based organization
+- Progressive enhancement approach
+
+### Structure (`index.html`):
+- Semantic HTML5 markup
+- Accessibility attributes (ARIA, roles)
+- Progressive Web App metadata
+- Clean, maintainable structure
+
+## 🎨 Design System
+
+### Colors:
+- Primary: `#00d4ff` (accent blue)
+- Background: `#0a0e13` (dark base)
+- Text: `#ffffff` (primary), `#b8bfc7` (secondary)
+- Success: `#00ff88`, Warning: `#ffb800`, Error: `#ff4757`
+
+### Typography:
+- Font: Inter (web font)
+- Scale: 0.75rem - 2rem
+- Weight: 400-700
+- Line height: 1.5
+
+### Spacing:
+- Base unit: 4px
+- Scale: xs(4), sm(8), md(12), lg(16), xl(24), 2xl(32)
+
+### Components:
+- Cards with glass morphism effects
+- Buttons with proper touch targets
+- Dropdowns with safe positioning
+- Navigation with clear states
+
+## 🚀 Performance Considerations
+- Efficient DOM updates (batch changes)
+- Optimized update intervals (5s data, 1s countdowns)
+- Minimal reflows and repaints
+- Touch-optimized interactions
+
+## 🔍 Testing Strategy
+- **Manual testing** on multiple devices/browsers
+- **Console monitoring** for errors and warnings
+- **Functionality verification** after each change
+- **Regression testing** of core features
+
+## 📝 Documentation Standards
+- Clear, descriptive commit messages
+- Inline comments for complex logic
+- Update this prompt with lessons learned
+- Maintain CLAUDE.md with development guidelines
+
+---
+
+**GOLDEN RULE: If it's working, be extremely careful about changing it. If it's not working, fix it with the minimal possible change.**

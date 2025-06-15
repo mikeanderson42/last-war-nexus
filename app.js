@@ -572,10 +572,40 @@
                     this.closeAllDropdowns();
                     
                     if (!isOpen) {
+                        // Position dropdown safely within viewport
+                        this.positionDropdownSafely(dropdown, toggle);
                         dropdown.classList.add('active');
                         toggle.classList.add('active');
                         toggle.setAttribute('aria-expanded', 'true');
                     }
+                }
+            }
+            
+            // Ensure dropdown stays within viewport bounds
+            positionDropdownSafely(dropdown, toggle) {
+                try {
+                    const toggleRect = toggle.getBoundingClientRect();
+                    const dropdownWidth = 320; // Default width
+                    const viewportWidth = window.innerWidth;
+                    const margin = 16; // Minimum margin from edge
+                    
+                    // Reset any custom positioning
+                    dropdown.style.left = '';
+                    dropdown.style.right = '0';
+                    
+                    // Check if dropdown would go off-screen to the right
+                    if (toggleRect.right - dropdownWidth < margin) {
+                        // Position from left edge instead
+                        dropdown.style.right = '';
+                        dropdown.style.left = `${Math.max(margin, toggleRect.left)}px`;
+                        dropdown.style.position = 'fixed';
+                        dropdown.style.top = `${toggleRect.bottom + 8}px`;
+                    } else if (toggleRect.left + dropdownWidth > viewportWidth - margin) {
+                        // Position from right edge but constrained
+                        dropdown.style.right = `${Math.max(margin, viewportWidth - toggleRect.right)}px`;
+                    }
+                } catch (error) {
+                    console.error('Dropdown positioning error:', error);
                 }
             }
 

@@ -307,6 +307,7 @@ body {
     top: calc(100% + var(--spacing-sm));
     right: 0;
     width: 320px;
+    max-width: calc(100vw - var(--spacing-lg) * 2);
     background: var(--glass-bg-elevated);
     backdrop-filter: var(--backdrop-blur-strong);
     -webkit-backdrop-filter: var(--backdrop-blur-strong);
@@ -318,6 +319,8 @@ body {
     transform: scale(0.95);
     transition: all var(--transition-normal);
     z-index: 1000;
+    /* Prevent off-screen positioning */
+    transform-origin: top right;
 }
 
 .settings-dropdown.active {

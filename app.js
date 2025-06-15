@@ -1572,10 +1572,11 @@
                         return;
                     }
                     
-                    // FULLY FUNCTIONAL: Guide system with working collapsible sections
+                    // WORKING GUIDES SYSTEM: Complete seasonal and tips guides
                     let guides = [];
                     
                     if (this.activeGuideType === 'seasonal') {
+                        // SEASONAL GUIDES: Individual seasons 1, 2, 3, 4
                         guides = [
                             {
                                 title: "Season 1: Foundation Building",
@@ -1589,7 +1590,8 @@
                                             "Learn all game mechanics and reach HQ 15+",
                                             "Join active alliance and contribute consistently", 
                                             "Understand perfect alignment system",
-                                            "Achieve 500k+ total power by season end"
+                                            "Achieve 500k+ total power by season end",
+                                            "Complete tutorial and establish resource income"
                                         ]
                                     },
                                     {
@@ -1615,34 +1617,120 @@
                                 ]
                             },
                             {
-                                title: "Season 2+: Advanced Mastery",
-                                category: "Expert Strategy",
+                                title: "Season 2: Power Acceleration",
+                                category: "Growth & Optimization",
                                 icon: "⚡",
-                                description: "Advanced strategies for experienced players focusing on dominance and optimization",
+                                description: "Rapid power growth and mastering perfect alignments for competitive advantage",
                                 sections: [
                                     {
-                                        title: "🎯 Advanced Objectives",
+                                        title: "🎯 Season 2 Core Objectives",
                                         items: [
                                             "Achieve HQ 20+ and 2M+ total power",
-                                            "Maintain top 50 personal VS Points consistently",
-                                            "Take leadership role in top 5 alliance",
-                                            "Achieve 95%+ activities during perfect alignments"
+                                            "Master perfect alignment timing (95%+ efficiency)",
+                                            "Secure top 100 personal VS Points ranking",
+                                            "Take active role in alliance leadership",
+                                            "Develop 4-5 specialized heroes for different roles"
                                         ]
                                     },
                                     {
                                         title: "💪 Power Growth Strategies",
                                         items: [
-                                            "Use 100% of speedups during 4x windows only",
-                                            "Develop 4-5 heroes for different combat scenarios",
+                                            "Use 100% of speedups during 4x point windows only",
                                             "Complete military and economic tech trees strategically",
-                                            "Implement systematic equipment enhancement"
+                                            "Implement systematic equipment enhancement program",
+                                            "Focus on hero specialization for combat scenarios",
+                                            "Optimize research paths for maximum power gains"
+                                        ]
+                                    },
+                                    {
+                                        title: "🏆 Competition Excellence",
+                                        items: [
+                                            "Maintain consistent top 100 VS Points ranking",
+                                            "Lead alliance coordination activities",
+                                            "Mentor new players in optimization strategies",
+                                            "Dominate seasonal events for maximum rewards"
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                title: "Season 3: Elite Competition",
+                                category: "Advanced Strategy & Leadership",
+                                icon: "🎖️",
+                                description: "Server dominance and advanced alliance tactics for top-tier players",
+                                sections: [
+                                    {
+                                        title: "🎯 Season 3 Core Objectives",
+                                        items: [
+                                            "Achieve HQ 25+ and 5M+ total power",
+                                            "Secure server top 50 ranking consistently",
+                                            "Lead or co-lead top 5 alliance",
+                                            "Perfect alignment efficiency (98%+ activities)",
+                                            "Establish server-wide strategic influence"
+                                        ]
+                                    },
+                                    {
+                                        title: "👑 Dominance Strategies",
+                                        items: [
+                                            "Lead server-wide strategic coordination",
+                                            "Develop advanced diamond spending strategies",
+                                            "Organize multi-alliance campaigns",
+                                            "Optimize all activities for maximum efficiency",
+                                            "Create and share meta strategies with community"
+                                        ]
+                                    },
+                                    {
+                                        title: "🚀 Advanced Tactics",
+                                        items: [
+                                            "Secure #1 rankings in major events",
+                                            "Mentor alliance members in advanced optimization",
+                                            "Dominate world map and PvP conflicts",
+                                            "Develop innovative strategies for game evolution"
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                title: "Season 4: Veteran Mastery",
+                                category: "Expert Level Optimization",
+                                icon: "👑",
+                                description: "Maintaining dominance, innovation, and server-wide influence as a veteran player",
+                                sections: [
+                                    {
+                                        title: "🎯 Veteran Objectives",
+                                        items: [
+                                            "Achieve HQ 30+ and 10M+ total power",
+                                            "Attain server legend status and recognition",
+                                            "Lead innovative strategy development",
+                                            "Maintain top 10 ranking across all metrics",
+                                            "Influence game development through feedback"
+                                        ]
+                                    },
+                                    {
+                                        title: "🧠 Innovation & Leadership",
+                                        items: [
+                                            "Develop new meta strategies for community",
+                                            "Create and share optimization tools",
+                                            "Guide entire server communities",
+                                            "Share strategies across multiple servers",
+                                            "Establish mentorship programs for new players"
+                                        ]
+                                    },
+                                    {
+                                        title: "📊 Data Mastery",
+                                        items: [
+                                            "Track and optimize every activity with analytics",
+                                            "Predict event schedules and prepare strategically",
+                                            "Perfect resource investment ROI strategies",
+                                            "Create comprehensive strategy documentation",
+                                            "Foster positive server culture and community building"
                                         ]
                                     }
                                 ]
                             }
                         ];
                     } else {
-                        // Default to 'tips' guides - General Strategy Guides
+                        // GENERAL TIPS: Comprehensive strategy guides
                         guides = [
                             {
                                 title: "VS Points & Arms Race Mastery",
@@ -1656,7 +1744,8 @@
                                             "5-Phase System: City Building → Unit Progression → Tech Research → Drone Boost → Hero Advancement",
                                             "Each phase lasts exactly 4 hours server time",
                                             "Complete cycle takes 20 hours, NOT 24 hours",
-                                            "Always starts at 00:00 server time daily"
+                                            "Always starts at 00:00 server time daily",
+                                            "Phase timing is consistent across all servers"
                                         ]
                                     },
                                     {
@@ -1667,7 +1756,8 @@
                                             "Wednesday - Age of Science: Research speedups, tech advancement (2x points)",
                                             "Thursday - Train Heroes: Hero recruitment, EXP, skills (2x points)",
                                             "Friday - Total Mobilization: ALL activities count - SAVE FOR THIS (2x points)",
-                                            "Saturday - Enemy Buster: Military training, combat prep (2x points)"
+                                            "Saturday - Enemy Buster: Military training, combat prep (2x points)",
+                                            "Sunday - Preparation Day: Plan for upcoming week"
                                         ]
                                     },
                                     {
@@ -1695,7 +1785,8 @@
                                             "Save ALL speedups for perfect alignment windows",
                                             "Diamond purchases provide points in ALL phases",
                                             "VIP Store offers 30-50% better value than regular diamond store",
-                                            "Use premium items only during 4x point windows"
+                                            "Use premium items only during 4x point windows",
+                                            "Plan weekly resource expenditure around alignments"
                                         ]
                                     },
                                     {
@@ -1704,7 +1795,8 @@
                                             "Save resources for major events and perfect alignments",
                                             "Plan major upgrades around alignment windows",
                                             "Keep emergency speedups for unexpected opportunities",
-                                            "Monitor expiration dates and use items during appropriate phases"
+                                            "Monitor expiration dates and use items during appropriate phases",
+                                            "Coordinate with alliance for maximum efficiency"
                                         ]
                                     },
                                     {
@@ -1713,7 +1805,8 @@
                                             "Plan major activities around perfect alignments",
                                             "Always know your server time for accurate planning",
                                             "Set alerts for high-priority periods",
-                                            "Sync activities with alliance members for maximum impact"
+                                            "Sync activities with alliance members for maximum impact",
+                                            "Use this tool to track upcoming priority windows"
                                         ]
                                     }
                                 ]
@@ -1730,7 +1823,8 @@
                                             "Headquarters (Critical): Always upgrade first - unlocks everything else",
                                             "Resource Buildings: Oil Wells, Farms, Steel Mills for steady income",
                                             "Army Camp: Increases troop capacity for larger battles",
-                                            "Research Institute: Enables crucial technology advancement"
+                                            "Research Institute: Enables crucial technology advancement",
+                                            "Hero Hall: Unlocks additional hero slots and abilities"
                                         ]
                                     },
                                     {
@@ -1739,7 +1833,8 @@
                                             "Save construction for City Building + Base Expansion (4x points)",
                                             "Plan queue of upgrades during construction phases",
                                             "Use construction speedups only during building-focused phases",
-                                            "Gather building materials before major upgrade sessions"
+                                            "Gather building materials before major upgrade sessions",
+                                            "Coordinate major builds with alliance events"
                                         ]
                                     }
                                 ]
@@ -1756,7 +1851,8 @@
                                             "Choose alliance with members in your timezone",
                                             "Join alliance with active voice chat or Discord",
                                             "Ensure consistent VS Points contribution expected",
-                                            "Find alliance with room for advancement and learning"
+                                            "Find alliance with room for advancement and learning",
+                                            "Look for alliances with experienced mentors"
                                         ]
                                     },
                                     {
@@ -1765,7 +1861,8 @@
                                             "Coordinate major activities during perfect alignments",
                                             "Share VS Points strategies and optimization tips",
                                             "Help with resource sharing and activity coordination",
-                                            "Plan alliance-wide strategies for seasonal events"
+                                            "Plan alliance-wide strategies for seasonal events",
+                                            "Participate in alliance research and development"
                                         ]
                                     }
                                 ]
@@ -1773,10 +1870,10 @@
                         ];
                     }
                     
-                    // Generate HTML using existing site card styling
+                    // Generate functional HTML with proper scrolling
                     const html = guides.map((guide, index) => `
                         <div class="priority-window-card guide-card" data-guide-index="${index}">
-                            <div class="guide-header" data-guide-toggle="${index}">
+                            <div class="guide-header" onclick="window.lastWarNexus.toggleGuideExpansion(${index})" role="button" tabindex="0">
                                 <div class="guide-main-info">
                                     <div class="guide-icon">${guide.icon}</div>
                                     <div class="guide-details">
@@ -1804,28 +1901,21 @@
                         </div>
                     `).join('');
                     
+                    // Clear loading message and set content
                     grid.innerHTML = html;
-                    
-                    // Add functional event listeners
-                    setTimeout(() => {
-                        document.querySelectorAll('[data-guide-toggle]').forEach(header => {
-                            header.addEventListener('click', (e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                const index = header.getAttribute('data-guide-toggle');
-                                this.toggleGuideExpansion(index);
-                            });
-                        });
-                        console.log('=== FUNCTIONAL GUIDE LISTENERS ATTACHED ===');
-                        console.log('Total guide cards:', document.querySelectorAll('.guide-card').length);
-                    }, 50);
+                    console.log('=== GUIDES POPULATED SUCCESSFULLY ===');
+                    console.log('Total guides rendered:', guides.length);
                     
                 } catch (error) {
                     console.error('Guides population error:', error);
+                    const grid = document.getElementById('guides-content');
+                    if (grid) {
+                        grid.innerHTML = '<div class="error-message">Failed to load guides. Please refresh the page.</div>';
+                    }
                 }
             }
 
-            // FUNCTIONAL: Guide expansion functionality
+            // WORKING: Guide expansion functionality
             toggleGuideExpansion(index) {
                 try {
                     console.log('=== TOGGLE GUIDE ===');
@@ -1835,11 +1925,6 @@
                     const toggleBtn = document.getElementById(`guide-toggle-${index}`);
                     const toggleIcon = toggleBtn ? toggleBtn.querySelector('.guide-toggle-icon') : null;
                     const card = document.querySelector(`[data-guide-index="${index}"]`);
-                    
-                    console.log('Content element:', content);
-                    console.log('Toggle button:', toggleBtn);
-                    console.log('Toggle icon:', toggleIcon);
-                    console.log('Card element:', card);
                     
                     if (content && toggleIcon && card) {
                         const isExpanded = content.style.display === 'block';
@@ -1872,6 +1957,18 @@
                             card.classList.add('expanded');
                             toggleIcon.textContent = '▲';
                             console.log('Guide expanded');
+                            
+                            // Scroll to guide with proper spacing
+                            setTimeout(() => {
+                                const headerHeight = 80; // Account for fixed header
+                                const cardTop = card.getBoundingClientRect().top + window.pageYOffset;
+                                const scrollTarget = cardTop - headerHeight;
+                                
+                                window.scrollTo({
+                                    top: scrollTarget,
+                                    behavior: 'smooth'
+                                });
+                            }, 100);
                         }
                     } else {
                         console.error('Missing guide elements for index:', index);
@@ -2179,21 +2276,7 @@
                 window.lastWarNexus = app;
                 
                 // Add guide expansion function to window
-                window.lastWarNexus.toggleGuideExpansion = function(index) {
-                    try {
-                        const content = document.getElementById(`guide-content-${index}`);
-                        const icon = document.getElementById(`guide-expand-${index}`);
-                        
-                        if (content && icon) {
-                            const isExpanded = content.style.display !== 'none';
-                            content.style.display = isExpanded ? 'none' : 'block';
-                            icon.textContent = isExpanded ? '▼' : '▲';
-                            icon.style.transform = isExpanded ? 'rotate(0deg)' : 'rotate(180deg)';
-                        }
-                    } catch (error) {
-                        console.error('Guide expansion error:', error);
-                    }
-                };
+                // Remove duplicate toggleGuideExpansion definition
 
                 // Add banner toggle function
                 window.lastWarNexus.toggleBanner = app.toggleBanner.bind(app);

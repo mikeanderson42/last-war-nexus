@@ -2,13 +2,13 @@
 
 /* ENHANCED: CSS Variables with better contrast and design */
 :root {
-    /* Dark navy/black background tones */
-    --bg-primary: #0a0e13;
-    --bg-secondary: #141921;
-    --bg-tertiary: #1e242e;
-    --bg-card: #1a1f29;
-    --bg-elevated: #242a36;
-    --bg-surface: #2d3543;
+    /* Dark greyish-blue background tones */
+    --bg-primary: #1a1d23;
+    --bg-secondary: #2a2e36;
+    --bg-tertiary: #363c47;
+    --bg-card: #2a2e36;
+    --bg-elevated: #1f232a;
+    --bg-surface: #252932;
     
     --text-primary: #ffffff;
     --text-secondary: #b8c0d0;
@@ -32,8 +32,8 @@
     --gradient-primary: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
     --gradient-secondary: linear-gradient(135deg, #ff6b35 0%, #ff4757 100%);
     --gradient-success: linear-gradient(135deg, #00ff88 0%, #00cc66 100%);
-    --gradient-card: #1e242e;
-    --gradient-elevated: #242a36;
+    --gradient-card: #2a2e36;
+    --gradient-elevated: #363c47;
     
     /* Refined glass morphism effects */
     --glass-bg: rgba(26, 31, 41, 0.85);
@@ -97,7 +97,7 @@ html {
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segui UI', system-ui, sans-serif;
-    background: #0a0e13;
+    background: #1a1d23;
     color: #ffffff;
     line-height: 1.5;
     overflow-x: hidden;
@@ -440,15 +440,15 @@ body {
 
 /* Ultrahuman-style VS Points Optimizer Card - Darker than background */
 .vs-optimizer-card {
-    background: #1e242e;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #2a2e36;
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-left: 4px solid var(--accent-primary);
     border-radius: 12px;
     padding: 24px;
     margin-bottom: 16px;
     transition: all 0.3s ease;
     position: relative;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 .vs-optimizer-card:hover {
@@ -533,15 +533,15 @@ body {
 }
 
 .next-priority-banner {
-    background: linear-gradient(135deg, rgba(255, 107, 53, 0.15), rgba(255, 71, 87, 0.15));
-    border: 1px solid rgba(255, 107, 53, 0.3);
+    background: #1f232a;
+    border: 1px solid rgba(255, 107, 53, 0.2);
     border-radius: 12px;
     padding: var(--spacing-xl);
     margin-bottom: var(--spacing-xl);
     display: flex;
     align-items: center;
     gap: var(--spacing-lg);
-    box-shadow: 0 4px 16px rgba(255, 107, 53, 0.1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
     position: relative;
     overflow: hidden;
 }
@@ -686,14 +686,14 @@ body {
 
 /* Ultrahuman-style Server Reset Card - Darker than background */
 .server-reset-card {
-    background: #1e242e;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #2a2e36;
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-left: 4px solid var(--accent-success);
     border-radius: 12px;
     padding: 24px;
     transition: all 0.3s ease;
     position: relative;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 .server-reset-card:hover {
@@ -735,25 +735,25 @@ body {
 
 /* Ultrahuman-style Compact Cards - Darker than background */
 .countdown-card-compact {
-    background: #1e242e;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #2a2e36;
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-left: 4px solid var(--accent-warning);
     border-radius: 12px;
     padding: 20px;
     transition: all 0.3s ease;
     position: relative;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 .strategy-card-compact {
-    background: #1e242e;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #2a2e36;
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-left: 4px solid var(--accent-secondary);
     border-radius: 12px;
     padding: 20px;
     transition: all 0.3s ease;
     position: relative;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 .countdown-card-compact:hover {

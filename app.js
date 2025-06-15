@@ -1881,7 +1881,7 @@
                                     <div class="banner-event-time">Next 3 days clear</div>
                                 </div>
                             </div>
-                            <div class="banner-ad-space">Ad Space Available</div>
+                            /* Removed ad space area */
                         `;
                         return;
                     }
@@ -1898,7 +1898,7 @@
                         </div>
                     `).join('');
                     
-                    bannerGrid.innerHTML = html + '<div class="banner-ad-space">Ad Space Available</div>';
+                    bannerGrid.innerHTML = html;
                     
                 } catch (error) {
                     console.error('Priority banner population error:', error);

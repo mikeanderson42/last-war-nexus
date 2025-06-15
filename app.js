@@ -15,6 +15,8 @@
                 this.isSetupComplete = false;
                 this.currentPhaseOverride = null;
                 this.nextPhaseOverride = null;
+                this.useLocalTime = true;
+                this.activeGuideType = 'tips';
 
                 // ENHANCED: Detailed spending information for each phase
                 this.data = {
@@ -117,10 +119,12 @@
                     this.loadSettings();
                     this.setupEventListeners();
                     
+                    // FIXED: Always update displays on initialization
+                    this.updateAllDisplays();
+                    
                     if (!this.isSetupComplete) {
                         this.showSetupModal();
                     } else {
-                        this.updateAllDisplays();
                         this.startUpdateLoop();
                     }
                 } catch (error) {
@@ -202,6 +206,28 @@
                             this.showSetupModal();
                         });
                     }
+
+                    // FIXED: Time toggle button
+                    const timeToggleBtn = document.getElementById('time-toggle-btn');
+                    if (timeToggleBtn) {
+                        timeToggleBtn.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            this.toggleTimeMode();
+                        });
+                    }
+
+                    // FIXED: Guide navigation buttons
+                    document.querySelectorAll('.guide-nav-btn').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const guideType = btn.getAttribute('data-guide-type');
+                            if (guideType) {
+                                this.switchGuideType(guideType);
+                            }
+                        });
+                    });
 
                     // Close dropdowns on outside click
                     document.addEventListener('click', (e) => {
@@ -497,22 +523,24 @@
                 const toggle = document.getElementById(`${type}-toggle`);
                 
                 if (dropdown && toggle) {
-                    const isOpen = dropdown.classList.contains('show');
+                    const isOpen = dropdown.classList.contains('active');
                     this.closeAllDropdowns();
                     
                     if (!isOpen) {
-                        dropdown.classList.add('show');
+                        dropdown.classList.add('active');
                         toggle.classList.add('active');
+                        toggle.setAttribute('aria-expanded', 'true');
                     }
                 }
             }
 
             closeAllDropdowns() {
                 document.querySelectorAll('.settings-dropdown').forEach(dropdown => {
-                    dropdown.classList.remove('show');
+                    dropdown.classList.remove('active');
                 });
                 document.querySelectorAll('.settings-btn').forEach(btn => {
                     btn.classList.remove('active');
+                    btn.setAttribute('aria-expanded', 'false');
                 });
             }
 
@@ -550,6 +578,53 @@
                     
                 } catch (error) {
                     console.error('Tab switch error:', error);
+                }
+            }
+
+            // FIXED: Toggle between local and server time display
+            toggleTimeMode() {
+                try {
+                    this.useLocalTime = !this.useLocalTime;
+                    
+                    // Update button text
+                    const timeToggleLabel = document.getElementById('time-toggle-label');
+                    if (timeToggleLabel) {
+                        timeToggleLabel.textContent = this.useLocalTime ? 'Local Time' : 'Server Time';
+                    }
+                    
+                    // Update all time displays
+                    this.updateTimeDisplay();
+                    this.saveSettings();
+                    
+                } catch (error) {
+                    console.error('Time mode toggle error:', error);
+                }
+            }
+
+            // FIXED: Switch between guide types (tips/seasonal)
+            switchGuideType(guideType) {
+                try {
+                    this.activeGuideType = guideType;
+                    
+                    // Update guide navigation buttons
+                    document.querySelectorAll('.guide-nav-btn').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    
+                    const activeBtn = document.querySelector(`[data-guide-type="${guideType}"]`);
+                    if (activeBtn) {
+                        activeBtn.classList.add('active');
+                    }
+                    
+                    // Update guides content if on guides tab
+                    if (this.activeTab === 'guides') {
+                        this.populateGuides();
+                    }
+                    
+                    this.saveSettings();
+                    
+                } catch (error) {
+                    console.error('Guide type switch error:', error);
                 }
             }
 

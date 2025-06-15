@@ -194,33 +194,74 @@
         <section class="dashboard-section" id="main-content">
             <div class="dashboard-grid-compact">
                 <div class="main-cards">
-                    <div class="current-status-card">
-                        <div class="card-header">
-                            <h2>🎯 Current Priority Status</h2>
-                            <div class="status-indicator" id="status-indicator">
-                                <span class="status-dot"></span>
-                                <span class="status-text">Loading...</span>
+                    <!-- Enhanced VS Points Optimizer Card -->
+                    <div class="vs-optimizer-card">
+                        <div class="optimizer-header">
+                            <div class="optimizer-title">
+                                <h2>VS Points Optimizer</h2>
+                                <div class="live-indicator">
+                                    <span class="live-dot"></span>
+                                    <span class="live-text">LIVE</span>
+                                </div>
                             </div>
+                            <div class="server-time-display" id="main-time-display">Loading...</div>
                         </div>
-                        <div class="card-content">
-                            <div class="status-grid">
-                                <div class="status-item">
-                                    <span class="status-label">VS Day:</span>
-                                    <span class="status-value" id="current-vs-day">Loading...</span>
-                                </div>
-                                <div class="status-item">
-                                    <span class="status-label">Arms Race:</span>
-                                    <span class="status-value" id="arms-phase">Loading...</span>
-                                </div>
-                                <div class="status-item">
-                                    <span class="status-label">Priority:</span>
-                                    <span class="status-value" id="priority-level">Loading...</span>
+                        
+                        <div class="optimizer-content">
+                            <!-- Next High Priority Section -->
+                            <div class="next-priority-banner">
+                                <div class="priority-icon">⚡</div>
+                                <div class="priority-text">
+                                    <h3>NEXT HIGH PRIORITY</h3>
+                                    <div class="priority-countdown" id="priority-countdown">Loading...</div>
+                                    <div class="priority-remaining">TIME REMAINING</div>
                                 </div>
                             </div>
                             
-                            <div class="next-priority-section">
-                                <h4>Next Priority Window</h4>
-                                <div class="next-priority-info" id="next-priority-info">Loading...</div>
+                            <!-- Current Phase Information -->
+                            <div class="current-phase-info">
+                                <div class="phase-header">
+                                    <div class="phase-icon" id="phase-icon">🚁</div>
+                                    <div class="phase-details">
+                                        <h4 id="phase-title">Loading...</h4>
+                                        <p id="phase-description">Loading phase information...</p>
+                                    </div>
+                                    <div class="efficiency-badge" id="efficiency-badge">Loading...</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Best Spending Section -->
+                            <div class="spending-section">
+                                <h4>BEST SPENDING FOR MAXIMUM POINTS</h4>
+                                <div class="spending-tags" id="spending-tags">
+                                    <div class="spending-tag loading">Loading...</div>
+                                </div>
+                                <div class="spending-reminder" id="spending-reminder">
+                                    💎 Reminder: Diamond purchases award points in ALL phases
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Server Reset Information Card -->
+                    <div class="server-reset-card">
+                        <div class="card-header">
+                            <h3>🕐 Server Reset Information</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="reset-info">
+                                <div class="reset-item">
+                                    <span class="reset-label">Next Server Reset:</span>
+                                    <span class="reset-value" id="next-server-reset">Loading...</span>
+                                </div>
+                                <div class="reset-item">
+                                    <span class="reset-label">Your Local Time:</span>
+                                    <span class="reset-value" id="reset-local-time">Loading...</span>
+                                </div>
+                                <div class="reset-item">
+                                    <span class="reset-label">Time Until Reset:</span>
+                                    <span class="reset-value" id="time-until-reset">Loading...</span>
+                                </div>
                             </div>
                         </div>
                     </div>

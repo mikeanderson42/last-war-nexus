@@ -937,26 +937,75 @@
 
             updateCurrentStatus() {
                 try {
+                    const serverTime = this.getServerTime();
                     const currentVSDay = this.getCurrentVSDay();
                     const currentArmsPhase = this.getCurrentArmsPhase();
-                    const isHighPriority = this.isCurrentlyHighPriority();
+                    const nextWindow = this.findNextPriorityWindow();
                     
-                    const vsDayElement = document.getElementById('current-vs-day');
-                    if (vsDayElement) {
-                        vsDayElement.textContent = currentVSDay.title;
+                    // Update main time display
+                    const mainTimeDisplay = document.getElementById('main-time-display');
+                    if (mainTimeDisplay) {
+                        const timeString = this.useLocalTime ? 
+                            new Date().toLocaleTimeString('en-US', { hour12: false }) :
+                            serverTime.toUTCString().slice(17, 25);
+                        mainTimeDisplay.textContent = timeString;
                     }
                     
-                    const armsPhaseElement = document.getElementById('arms-phase');
-                    if (armsPhaseElement) {
-                        armsPhaseElement.textContent = currentArmsPhase.name;
+                    // Update priority countdown
+                    const priorityCountdown = document.getElementById('priority-countdown');
+                    if (priorityCountdown && nextWindow) {
+                        priorityCountdown.textContent = this.formatTime(nextWindow.timeRemaining);
                     }
                     
-                    const priorityElement = document.getElementById('priority-level');
-                    if (priorityElement) {
-                        priorityElement.textContent = isHighPriority ? 'HIGH' : 'Normal';
-                        priorityElement.style.color = isHighPriority ? 'var(--accent-success)' : 'var(--text-tertiary)';
+                    // Update phase information
+                    const phaseIcon = document.getElementById('phase-icon');
+                    const phaseTitle = document.getElementById('phase-title');
+                    const phaseDescription = document.getElementById('phase-description');
+                    const efficiencyBadge = document.getElementById('efficiency-badge');
+                    
+                    if (nextWindow && nextWindow.isActive) {
+                        // Currently active priority window
+                        if (phaseIcon) phaseIcon.textContent = nextWindow.phase.icon || '🎯';
+                        if (phaseTitle) phaseTitle.textContent = `${nextWindow.phase.name} + ${nextWindow.vsDay.title}`;
+                        if (phaseDescription) phaseDescription.textContent = `${nextWindow.phase.activities.join(', ')} align perfectly with ${nextWindow.vsDay.focus}`;
+                        if (efficiencyBadge) {
+                            efficiencyBadge.textContent = 'MAXIMUM EFFICIENCY';
+                            efficiencyBadge.style.background = 'var(--gradient-success)';
+                        }
+                    } else {
+                        // Regular phase information
+                        const phaseData = this.data.armsRacePhases.find(p => p.id === currentArmsPhase.id) || this.data.armsRacePhases[0];
+                        if (phaseIcon) phaseIcon.textContent = phaseData.icon;
+                        if (phaseTitle) phaseTitle.textContent = `${phaseData.name} + ${currentVSDay.title}`;
+                        if (phaseDescription) phaseDescription.textContent = `${phaseData.activities.join(' & ')} activities align with ${currentVSDay.focus}`;
+                        if (efficiencyBadge) {
+                            const alignment = this.data.priorityAlignments.find(a => 
+                                a.vsDay === currentVSDay.day && a.armsPhase === phaseData.name
+                            );
+                            if (alignment) {
+                                efficiencyBadge.textContent = alignment.benefit.toUpperCase();
+                                efficiencyBadge.style.background = 'var(--gradient-primary)';
+                            } else {
+                                efficiencyBadge.textContent = 'NORMAL';
+                                efficiencyBadge.style.background = 'var(--bg-elevated)';
+                                efficiencyBadge.style.color = 'var(--text-secondary)';
+                            }
+                        }
                     }
                     
+                    // Update spending tags
+                    const spendingTags = document.getElementById('spending-tags');
+                    if (spendingTags) {
+                        const currentPhaseData = this.data.armsRacePhases.find(p => p.id === currentArmsPhase.id);
+                        if (currentPhaseData && currentPhaseData.bestSpending) {
+                            const tagsHTML = currentPhaseData.bestSpending.map(item => 
+                                `<div class="spending-tag ${item.value}">${item.item}</div>`
+                            ).join('');
+                            spendingTags.innerHTML = tagsHTML;
+                        }
+                    }
+                    
+                    // Update countdown display (legacy support)
                     const countdownElement = document.getElementById('countdown-timer');
                     if (countdownElement) {
                         const timeRemaining = (currentArmsPhase.hoursRemaining * 60 * 60 * 1000) +
@@ -968,42 +1017,46 @@
                     if (currentPhaseElement) {
                         currentPhaseElement.textContent = `${currentArmsPhase.name} Active`;
                     }
-
-                    // FIXED: Update next priority window information
-                    const nextPriorityElement = document.getElementById('next-priority-info');
-                    if (nextPriorityElement) {
-                        const nextWindow = this.findNextPriorityWindow();
-                        if (nextWindow) {
-                            if (nextWindow.isActive) {
-                                nextPriorityElement.innerHTML = `
-                                    <div style="color: var(--accent-success); font-weight: 600; margin-bottom: 4px;">
-                                        🔥 ACTIVE NOW: ${nextWindow.phase.name} + ${nextWindow.vsDay.title}
-                                    </div>
-                                    <div style="font-size: 0.875rem; color: var(--text-secondary);">
-                                        ${this.formatTime(nextWindow.timeRemaining)} remaining
-                                    </div>
-                                `;
-                            } else {
-                                nextPriorityElement.innerHTML = `
-                                    <div style="font-weight: 600; margin-bottom: 4px;">
-                                        ${nextWindow.phase.name} + ${nextWindow.vsDay.title}
-                                    </div>
-                                    <div style="font-size: 0.875rem; color: var(--text-secondary);">
-                                        in ${this.formatTime(nextWindow.timeRemaining)}
-                                    </div>
-                                `;
-                            }
-                        } else {
-                            nextPriorityElement.innerHTML = `
-                                <div style="color: var(--text-tertiary); font-style: italic;">
-                                    No upcoming priority windows found
-                                </div>
-                            `;
-                        }
-                    }
+                    
+                    // Update server reset information
+                    this.updateServerResetInfo();
                     
                 } catch (error) {
                     console.error('Status update error:', error);
+                }
+            }
+
+            updateServerResetInfo() {
+                try {
+                    const now = new Date();
+                    const serverTime = this.getServerTime();
+                    
+                    // Calculate next server reset (daily at 00:00 server time)
+                    const nextReset = new Date(serverTime);
+                    nextReset.setHours(24, 0, 0, 0); // Next midnight server time
+                    
+                    // Convert to local time for display
+                    const localResetTime = new Date(nextReset.getTime() - (this.timeOffset * 60 * 60 * 1000));
+                    
+                    const nextServerReset = document.getElementById('next-server-reset');
+                    const resetLocalTime = document.getElementById('reset-local-time');
+                    const timeUntilReset = document.getElementById('time-until-reset');
+                    
+                    if (nextServerReset) {
+                        nextServerReset.textContent = nextReset.toUTCString().slice(17, 25) + ' Server';
+                    }
+                    
+                    if (resetLocalTime) {
+                        resetLocalTime.textContent = localResetTime.toLocaleTimeString('en-US', { hour12: false }) + ' Local';
+                    }
+                    
+                    if (timeUntilReset) {
+                        const timeUntil = nextReset.getTime() - serverTime.getTime();
+                        timeUntilReset.textContent = this.formatTime(timeUntil);
+                    }
+                    
+                } catch (error) {
+                    console.error('Server reset update error:', error);
                 }
             }
 
@@ -1165,7 +1218,9 @@
                                 phase,
                                 vsDay,
                                 alignment,
-                                timeDisplay: isActive ? 'Active Now' : timeDiff > 0 ? `in ${this.formatTime(timeDiff)}` : 'Completed'
+                                timeDisplay: isActive ? 'Active Now' : timeDiff > 0 ? `in ${this.formatTime(timeDiff)}` : 'Completed',
+                                startTimeLocal: new Date(startTime.getTime() - (this.timeOffset * 60 * 60 * 1000)),
+                                startTimeServer: startTime
                             });
                         }
                     }
@@ -1184,12 +1239,29 @@
                         countElement.textContent = `${activeCount + upcomingCount} Windows`;
                     }
                     
-                    const html = uniqueWindows.slice(0, 12).map(window => `
+                    const html = uniqueWindows.slice(0, 12).map(window => {
+                        const startTimeDisplay = this.useLocalTime ? 
+                            window.startTimeLocal.toLocaleString('en-US', { 
+                                weekday: 'short', 
+                                month: 'short', 
+                                day: 'numeric', 
+                                hour: '2-digit', 
+                                minute: '2-digit',
+                                hour12: false 
+                            }) + ' Local' :
+                            window.startTimeServer.toUTCString().slice(0, 22) + ' Server';
+                        
+                        return `
                         <div class="priority-window-card ${window.isActive ? 'active' : ''} ${window.isPeak ? 'peak' : ''}">
-                            <div style="background: var(--bg-surface); padding: var(--spacing-lg); border-bottom: 1px solid var(--border-primary); display: flex; justify-content: space-between; align-items: center;">
-                                <div style="font-family: var(--font-mono); font-size: 0.9rem; font-weight: 700; color: var(--text-primary);">${window.timeDisplay}</div>
-                                <div style="padding: 4px var(--spacing-sm); border-radius: var(--border-radius-sm); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; background: ${window.isActive ? 'var(--gradient-success)' : 'var(--gradient-secondary)'}; color: white;">
-                                    ${window.isActive ? 'ACTIVE NOW' : 'UPCOMING'}
+                            <div style="background: var(--bg-surface); padding: var(--spacing-lg); border-bottom: 1px solid var(--border-primary);">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-sm);">
+                                    <div style="font-family: var(--font-mono); font-size: 0.9rem; font-weight: 700; color: var(--text-primary);">${window.timeDisplay}</div>
+                                    <div style="padding: 4px var(--spacing-sm); border-radius: var(--border-radius-sm); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; background: ${window.isActive ? 'var(--gradient-success)' : 'var(--gradient-secondary)'}; color: white;">
+                                        ${window.isActive ? 'ACTIVE NOW' : 'UPCOMING'}
+                                    </div>
+                                </div>
+                                <div style="font-size: 0.75rem; color: var(--text-tertiary); font-family: var(--font-mono);">
+                                    Starts: ${startTimeDisplay}
                                 </div>
                             </div>
                             <div style="padding: var(--spacing-lg);">
@@ -1322,87 +1394,324 @@
                     if (this.activeGuideType === 'seasonal') {
                         guides = [
                             {
-                                title: "Foundation Phase",
-                                category: "Season Start",
-                                icon: "🏗️",
-                                description: "Essential building blocks for a successful season. Focus on infrastructure and core development.",
-                                tips: ["Prioritize resource production buildings", "Establish solid military base", "Complete daily missions consistently", "Join active alliance early"]
+                                title: "Season Overview & Strategy",
+                                category: "Understanding Last War Seasons",
+                                icon: "📅",
+                                description: "Last War seasons typically run 60-90 days with distinct phases requiring different strategies and resource management approaches.",
+                                content: `
+                                    <div class="guide-section">
+                                        <h5>Season Structure</h5>
+                                        <p>Each season brings new challenges, events, and opportunities. Understanding the seasonal pattern helps you plan resource usage and maximize your power growth efficiently.</p>
+                                        
+                                        <h5>Early Season Priorities (Days 1-30)</h5>
+                                        <ul>
+                                            <li><strong>Base Development:</strong> Focus on upgrading resource buildings and core infrastructure</li>
+                                            <li><strong>Alliance Selection:</strong> Join an active alliance that matches your play style and timezone</li>
+                                            <li><strong>Event Participation:</strong> Complete all available events to establish resource foundation</li>
+                                            <li><strong>Research Path:</strong> Prioritize military and economic research trees</li>
+                                        </ul>
+                                        
+                                        <h5>Mid-Season Strategy (Days 30-60)</h5>
+                                        <ul>
+                                            <li><strong>Power Scaling:</strong> Focus on troop training and hero development</li>
+                                            <li><strong>Territory Expansion:</strong> Secure strategic positions and resource nodes</li>
+                                            <li><strong>Alliance Coordination:</strong> Participate in alliance events and coordinate attacks</li>
+                                            <li><strong>Equipment Focus:</strong> Begin serious equipment crafting and enhancement</li>
+                                        </ul>
+                                        
+                                        <h5>Late Season Push (Days 60+)</h5>
+                                        <ul>
+                                            <li><strong>Competition Mode:</strong> Focus on ranking events and leaderboard positions</li>
+                                            <li><strong>Resource Conservation:</strong> Save premium items for final ranking pushes</li>
+                                            <li><strong>Strategic Alliances:</strong> Form coalitions for end-season objectives</li>
+                                            <li><strong>Achievement Completion:</strong> Secure all seasonal rewards and titles</li>
+                                        </ul>
+                                        
+                                        <div class="reference-link">
+                                            <p><strong>📖 Detailed Seasonal Guide:</strong> <a href="https://lastwartutorial.com/seasonal-strategy" target="_blank" rel="noopener">Visit LastWarTutorial.com</a> for comprehensive seasonal breakdowns, event calendars, and advanced strategies.</p>
+                                        </div>
+                                    </div>
+                                `
                             },
                             {
-                                title: "Expansion Phase",
-                                category: "Mid Season",
-                                icon: "📈",
-                                description: "Scale your operations and territory. This is the growth phase where you expand capabilities.",
-                                tips: ["Unlock new territories", "Increase military capacity", "Diversify resource streams", "Form strategic partnerships"]
+                                title: "New Season Setup Guide",
+                                category: "Season Start Optimization",
+                                icon: "🚀",
+                                description: "Critical first 48-72 hours that set the foundation for your entire season performance and competitive positioning.",
+                                content: `
+                                    <div class="guide-section">
+                                        <h5>Hour 1-6: Immediate Actions</h5>
+                                        <ul>
+                                            <li><strong>Resource Collection:</strong> Claim all season start bonuses and gifts</li>
+                                            <li><strong>Base Assessment:</strong> Plan your building upgrade sequence based on available resources</li>
+                                            <li><strong>Alliance Search:</strong> Research and apply to high-activity alliances in your timezone</li>
+                                            <li><strong>Event Registration:</strong> Sign up for all available events immediately</li>
+                                        </ul>
+                                        
+                                        <h5>Day 1-3: Foundation Building</h5>
+                                        <ul>
+                                            <li><strong>Core Buildings:</strong> Command Center → Resource Buildings → Military Buildings</li>
+                                            <li><strong>Research Priority:</strong> Economic boost → Military efficiency → Specialized paths</li>
+                                            <li><strong>Hero Development:</strong> Focus on one main hero and complementary support heroes</li>
+                                            <li><strong>Troop Training:</strong> Maintain constant training queues using free speedups</li>
+                                        </ul>
+                                        
+                                        <h5>Week 1: Establishing Rhythm</h5>
+                                        <ul>
+                                            <li><strong>Daily Routines:</strong> Login patterns, event participation, resource management</li>
+                                            <li><strong>Alliance Integration:</strong> Active chat participation, help requests, coordinated activities</li>
+                                            <li><strong>Power Growth:</strong> Target 100k+ power by end of week 1</li>
+                                            <li><strong>Strategic Planning:</strong> Identify season-specific goals and milestones</li>
+                                        </ul>
+                                        
+                                        <div class="reference-link">
+                                            <p><strong>📖 Complete New Season Guide:</strong> <a href="https://lastwartutorial.com/new-season-guide" target="_blank" rel="noopener">LastWarTutorial.com</a> provides detailed day-by-day actions, optimal building sequences, and alliance selection strategies.</p>
+                                        </div>
+                                    </div>
+                                `
                             },
                             {
-                                title: "Competition Phase",
-                                category: "Late Season",
-                                icon: "⚔️",
-                                description: "Peak competition period. Focus on high-impact activities and strategic positioning.",
-                                tips: ["Maximize efficiency in all activities", "Focus on high-value targets", "Coordinate with alliance for events", "Save premium resources for key moments"]
-                            },
-                            {
-                                title: "Mastery Phase",
-                                category: "Season End",
-                                icon: "👑",
-                                description: "Final push for seasonal rewards and achievements. Maximize remaining opportunities.",
-                                tips: ["Complete all seasonal objectives", "Use accumulated resources wisely", "Prepare for next season transition", "Secure final ranking improvements"]
+                                title: "End Season Maximization",
+                                category: "Final Ranking Push",
+                                icon: "🏆",
+                                description: "Strategies for the final 2-4 weeks to secure maximum seasonal rewards, rankings, and prepare for next season transition.",
+                                content: `
+                                    <div class="guide-section">
+                                        <h5>Resource Conservation Strategy</h5>
+                                        <ul>
+                                            <li><strong>Premium Items:</strong> Save diamonds, gold speedups, and legendary materials for final push</li>
+                                            <li><strong>Event Planning:</strong> Identify highest-reward events and save resources accordingly</li>
+                                            <li><strong>Ranking Analysis:</strong> Monitor leaderboards and calculate requirements for next tier</li>
+                                            <li><strong>Alliance Coordination:</strong> Plan group activities for maximum collective rewards</li>
+                                        </ul>
+                                        
+                                        <h5>Power Surge Tactics</h5>
+                                        <ul>
+                                            <li><strong>Building Completion:</strong> Finish all pending upgrades using saved speedups</li>
+                                            <li><strong>Research Rush:</strong> Complete high-power research nodes with saved materials</li>
+                                            <li><strong>Equipment Enhancement:</strong> Maximize equipment using accumulated enhancement stones</li>
+                                            <li><strong>Hero Advancement:</strong> Push hero levels and skills using saved EXP items</li>
+                                        </ul>
+                                        
+                                        <h5>Next Season Preparation</h5>
+                                        <ul>
+                                            <li><strong>Carry-over Items:</strong> Understand what transfers and what doesn't</li>
+                                            <li><strong>Strategic Stockpiling:</strong> Save specific resources that provide early advantages</li>
+                                            <li><strong>Alliance Continuity:</strong> Plan alliance transitions or leadership changes</li>
+                                            <li><strong>Skill Development:</strong> Analyze performance and identify improvement areas</li>
+                                        </ul>
+                                        
+                                        <div class="reference-link">
+                                            <p><strong>📖 End Season Optimization:</strong> <a href="https://lastwartutorial.com/end-season-strategy" target="_blank" rel="noopener">LastWarTutorial.com</a> offers detailed ranking calculators, reward optimization guides, and season transition strategies.</p>
+                                        </div>
+                                    </div>
+                                `
                             }
                         ];
                     } else {
-                        // Default to 'tips' guides
+                        // Default to 'tips' guides - Comprehensive General Guides
                         guides = [
-                        {
-                            title: "5 Distinct Arms Race Phases",
-                            category: "Core Mechanics",
-                            icon: "🔄",
-                            description: "Arms Race runs 5 distinct phases, each lasting 4 hours in a 20-hour cycle that restarts at 20:00. Master this schedule for optimal planning.",
-                            tips: ["Each phase lasts exactly 4 hours", "20-hour cycle (5 phases × 4 hours)", "Cycle restarts at 20:00 server time", "Same phase appears at different times each day"]
-                        },
-                        {
-                            title: "Perfect Alignment Windows",
-                            category: "Peak Efficiency",
-                            icon: "🎯",
-                            description: "Time activities when Arms Race phases perfectly match Alliance VS focus days for maximum dual rewards.",
-                            tips: ["Tech Research + Age of Science = Perfect", "City Building + Base Expansion = Maximum", "Hero Advancement + Train Heroes = Ideal", "Friday offers multiple alignments"]
-                        },
-                        {
-                            title: "Friday Total Mobilization",
-                            category: "Weekly Peak",
-                            icon: "🚀",
-                            description: "Friday offers multiple high-priority windows since Total Mobilization accepts all activity types across all phases.",
-                            tips: ["Save speedups for Friday", "Multiple Arms Race alignments possible", "Highest daily point potential", "All phases can be high priority"]
-                        },
-                        {
-                            title: "Server Time Mastery",
-                            category: "Timing Strategy",
-                            icon: "🕐",
-                            description: "Master your server's predictable 4-hour Arms Race rotation. The schedule is completely consistent once you know the server time.",
-                            tips: ["Know exact server time", "5-phase × 4-hour cycle", "Cycle restarts at 20:00 daily", "Plan with 20-hour rotation in mind"]
-                        },
-                        {
-                            title: "Dual Event Synergy",
-                            category: "Advanced Strategy",
-                            icon: "⚡",
-                            description: "Maximize efficiency by focusing on activities that benefit both Arms Race and Alliance VS simultaneously.",
-                            tips: ["Hero EXP works for both events", "Construction speedups double-count", "Research activities align perfectly", "Drone activities overlap on Monday"]
-                        },
-                        {
-                            title: "Resource Conservation",
-                            category: "Planning Strategy",
-                            icon: "💎",
-                            description: "Save premium resources for high-priority alignment windows rather than using them during low-synergy periods.",
-                            tips: ["Hoard speedups for perfect alignments", "Use basic resources during normal time", "Track upcoming priority windows", "Plan resource usage in advance"]
-                        },
-                        {
-                            title: "Mobile Optimization",
-                            category: "Practical Tips",
-                            icon: "📱",
-                            description: "Set up notifications and quick-access strategies for managing events while mobile gaming with predictable schedules.",
-                            tips: ["Use browser notifications", "Bookmark priority times", "Set phone alarms for peak windows", "Use predictable schedule for planning"]
-                        }
-                    ];
+                            {
+                                title: "Squad Building & Composition",
+                                category: "Combat Strategy",
+                                icon: "⚔️",
+                                content: `
+                                    <div class="guide-content">
+                                        <h3>🏗️ Building Powerful Combat Squads</h3>
+                                        <p>Creating effective squads requires understanding unit synergies, roles, and optimal formations for different combat scenarios.</p>
+                                        
+                                        <h4>🎯 Core Squad Roles</h4>
+                                        <ul>
+                                            <li><strong>Tank Units:</strong> High defense and health to absorb damage</li>
+                                            <li><strong>DPS Units:</strong> High attack power for eliminating threats</li>
+                                            <li><strong>Support Units:</strong> Healing, buffs, and utility abilities</li>
+                                            <li><strong>Specialist Units:</strong> Counter specific enemy types or tactics</li>
+                                        </ul>
+                                        
+                                        <h4>⚡ Squad Synergy Principles</h4>
+                                        <ul>
+                                            <li><strong>Unit Type Balance:</strong> Mix infantry, vehicles, and aircraft for versatility</li>
+                                            <li><strong>Hero Compatibility:</strong> Choose heroes that enhance your unit composition</li>
+                                            <li><strong>Formation Strategy:</strong> Position units to maximize strengths and minimize weaknesses</li>
+                                            <li><strong>Power Level Distribution:</strong> Balance investment across all squad members</li>
+                                        </ul>
+                                        
+                                        <h4>🎖️ Advanced Squad Tactics</h4>
+                                        <ul>
+                                            <li><strong>Counter Builds:</strong> Adapt squads to counter enemy formations</li>
+                                            <li><strong>Terrain Advantage:</strong> Use map positioning for tactical benefits</li>
+                                            <li><strong>Resource Efficiency:</strong> Optimize upgrade paths for maximum power gains</li>
+                                            <li><strong>Meta Adaptation:</strong> Adjust strategies based on current game balance</li>
+                                        </ul>
+                                        
+                                        <div class="reference-link">
+                                            <p><strong>📖 Squad Building Guide:</strong> <a href="https://lastwartutorial.com/squad-building" target="_blank" rel="noopener">LastWarTutorial.com</a> provides detailed unit tier lists, formation guides, and combat mechanics explanations.</p>
+                                        </div>
+                                    </div>
+                                `
+                            },
+                            {
+                                title: "Equipment Upgrade Paths",
+                                category: "Power Optimization",
+                                icon: "🛡️",
+                                content: `
+                                    <div class="guide-content">
+                                        <h3>⚙️ Optimal Equipment Development</h3>
+                                        <p>Strategic equipment upgrades provide the most efficient power gains and combat effectiveness improvements.</p>
+                                        
+                                        <h4>🏆 Priority Equipment Types</h4>
+                                        <ul>
+                                            <li><strong>Weapons (First Priority):</strong> Direct damage increase - highest ROI</li>
+                                            <li><strong>Armor (Second Priority):</strong> Survivability improvements</li>
+                                            <li><strong>Accessories (Third Priority):</strong> Utility and special abilities</li>
+                                            <li><strong>Consumables:</strong> Temporary but powerful battlefield advantages</li>
+                                        </ul>
+                                        
+                                        <h4>📈 Upgrade Path Strategy</h4>
+                                        <ol>
+                                            <li><strong>Level Main Weapons:</strong> Focus on primary squad weapons first</li>
+                                            <li><strong>Enhance Star Ratings:</strong> Star upgrades provide significant stat boosts</li>
+                                            <li><strong>Optimize Sets:</strong> Complete equipment sets for bonus effects</li>
+                                            <li><strong>Refine Quality:</strong> Higher quality equipment scales better</li>
+                                        </ol>
+                                        
+                                        <h4>💎 Resource Allocation</h4>
+                                        <ul>
+                                            <li><strong>Materials Focus:</strong> Prioritize rare materials for highest-tier equipment</li>
+                                            <li><strong>Enhancement Order:</strong> Upgrade main squad equipment before secondary squads</li>
+                                            <li><strong>Event Timing:</strong> Save materials for equipment enhancement events</li>
+                                            <li><strong>Cost Efficiency:</strong> Calculate power-per-resource ratios</li>
+                                        </ul>
+                                        
+                                        <h4>🔧 Advanced Optimization</h4>
+                                        <ul>
+                                            <li><strong>Set Bonuses:</strong> Plan equipment combinations for synergy effects</li>
+                                            <li><strong>Situational Gear:</strong> Maintain multiple equipment sets for different scenarios</li>
+                                            <li><strong>Research Integration:</strong> Coordinate equipment upgrades with research progress</li>
+                                            <li><strong>Hero Synergy:</strong> Match equipment effects with hero abilities</li>
+                                        </ul>
+                                        
+                                        <div class="reference-link">
+                                            <p><strong>📖 Equipment Mastery:</strong> <a href="https://lastwartutorial.com/equipment-guide" target="_blank" rel="noopener">LastWarTutorial.com</a> offers detailed equipment calculators, tier lists, and optimization spreadsheets.</p>
+                                        </div>
+                                    </div>
+                                `
+                            },
+                            {
+                                title: "Building Development Strategy",
+                                category: "Base Optimization",
+                                icon: "🏗️",
+                                content: `
+                                    <div class="guide-content">
+                                        <h3>🏛️ Strategic Building Upgrade Order</h3>
+                                        <p>Efficient building development creates the foundation for long-term growth and competitive advantage.</p>
+                                        
+                                        <h4>🎯 Priority Building Order</h4>
+                                        <ol>
+                                            <li><strong>Headquarters (Top Priority):</strong> Unlocks all other building levels</li>
+                                            <li><strong>Resource Buildings:</strong> Oil Wells, Farms, Steel Mills for steady income</li>
+                                            <li><strong>Army Camp:</strong> Increases troop capacity for larger battles</li>
+                                            <li><strong>Research Institute:</strong> Enables crucial technology advancement</li>
+                                            <li><strong>Hero Hall:</strong> Unlocks hero slots and abilities</li>
+                                            <li><strong>Defense Buildings:</strong> Walls, turrets for base protection</li>
+                                        </ol>
+                                        
+                                        <h4>⚡ Early Game Focus (HQ 1-15)</h4>
+                                        <ul>
+                                            <li><strong>Resource Production:</strong> Establish steady resource income</li>
+                                            <li><strong>Storage Capacity:</strong> Prevent resource waste from overflow</li>
+                                            <li><strong>Basic Military:</strong> Training camps and initial army development</li>
+                                            <li><strong>Essential Research:</strong> Economy and military basics</li>
+                                        </ul>
+                                        
+                                        <h4>🚀 Mid Game Strategy (HQ 16-25)</h4>
+                                        <ul>
+                                            <li><strong>Advanced Military:</strong> Specialized unit production buildings</li>
+                                            <li><strong>Hero Development:</strong> Hero halls and recruitment buildings</li>
+                                            <li><strong>Defense Systems:</strong> Comprehensive base protection</li>
+                                            <li><strong>Alliance Support:</strong> Embassy and alliance-related structures</li>
+                                        </ul>
+                                        
+                                        <h4>🏆 Late Game Optimization (HQ 26+)</h4>
+                                        <ul>
+                                            <li><strong>Specialization:</strong> Focus on specific military or economic paths</li>
+                                            <li><strong>Maximum Efficiency:</strong> Optimize all building effects and bonuses</li>
+                                            <li><strong>Event Preparation:</strong> Buildings that enhance event performance</li>
+                                            <li><strong>Competitive Edge:</strong> Structures that provide PvP advantages</li>
+                                        </ul>
+                                        
+                                        <h4>💡 Resource Management Tips</h4>
+                                        <ul>
+                                            <li><strong>Construction Queue:</strong> Plan multiple upgrades during Arms Race events</li>
+                                            <li><strong>Speedup Efficiency:</strong> Use construction speedups during building-focused phases</li>
+                                            <li><strong>Material Stockpiling:</strong> Gather building materials before major upgrades</li>
+                                            <li><strong>Event Timing:</strong> Align major upgrades with base expansion VS days</li>
+                                        </ul>
+                                        
+                                        <div class="reference-link">
+                                            <p><strong>📖 Building Optimization:</strong> <a href="https://lastwartutorial.com/base-development" target="_blank" rel="noopener">LastWarTutorial.com</a> features building calculators, upgrade planners, and efficiency guides.</p>
+                                        </div>
+                                    </div>
+                                `
+                            },
+                            {
+                                title: "VS Points & Arms Race Mastery",
+                                category: "Event Strategy",
+                                icon: "🎯",
+                                content: `
+                                    <div class="guide-content">
+                                        <h3>⚡ Maximizing VS Points Efficiency</h3>
+                                        <p>Understanding the Arms Race and Alliance VS mechanics enables strategic planning for maximum point generation.</p>
+                                        
+                                        <h4>🔄 Arms Race Cycle Understanding</h4>
+                                        <ul>
+                                            <li><strong>5-Phase System:</strong> City Building → Unit Progression → Tech Research → Drone Boost → Hero Advancement</li>
+                                            <li><strong>4-Hour Phases:</strong> Each phase lasts exactly 4 hours</li>
+                                            <li><strong>20-Hour Cycle:</strong> Complete cycle takes 20 hours, restarting at 20:00 server time</li>
+                                            <li><strong>Predictable Schedule:</strong> Same phases occur at different times each day</li>
+                                        </ul>
+                                        
+                                        <h4>📅 Alliance VS Day Focus</h4>
+                                        <ul>
+                                            <li><strong>Monday - Radar Training:</strong> Stamina usage, hero EXP, drone activities</li>
+                                            <li><strong>Tuesday - Base Expansion:</strong> Construction speedups, building power</li>
+                                            <li><strong>Wednesday - Age of Science:</strong> Research speedups, tech advancement</li>
+                                            <li><strong>Thursday - Train Heroes:</strong> Hero recruitment, EXP, skill development</li>
+                                            <li><strong>Friday - Total Mobilization:</strong> All activities count (HIGHEST PRIORITY)</li>
+                                            <li><strong>Saturday - Enemy Buster:</strong> Combat focus, troop activities</li>
+                                        </ul>
+                                        
+                                        <h4>🎯 Perfect Alignment Strategy</h4>
+                                        <ul>
+                                            <li><strong>Tech Research + Age of Science:</strong> Maximum research point efficiency</li>
+                                            <li><strong>City Building + Base Expansion:</strong> Optimal construction timing</li>
+                                            <li><strong>Hero Advancement + Train Heroes:</strong> Hero development focus</li>
+                                            <li><strong>Friday Opportunities:</strong> Multiple alignments possible on Total Mobilization</li>
+                                        </ul>
+                                        
+                                        <h4>💎 Resource Planning</h4>
+                                        <ul>
+                                            <li><strong>Speedup Conservation:</strong> Save premium speedups for perfect alignments</li>
+                                            <li><strong>Activity Timing:</strong> Plan major activities for high-priority windows</li>
+                                            <li><strong>Diamond Strategy:</strong> Diamond purchases provide points in ALL phases</li>
+                                            <li><strong>VIP Store Priority:</strong> Better value than regular store purchases</li>
+                                        </ul>
+                                        
+                                        <h4>📱 Planning Tools</h4>
+                                        <ul>
+                                            <li><strong>Schedule Tracking:</strong> Use this tool to identify upcoming priority windows</li>
+                                            <li><strong>Time Zone Mastery:</strong> Know your server time for accurate planning</li>
+                                            <li><strong>Notification Setup:</strong> Set alerts for high-priority periods</li>
+                                            <li><strong>Alliance Coordination:</strong> Plan group activities during optimal windows</li>
+                                        </ul>
+                                        
+                                        <div class="reference-link">
+                                            <p><strong>📖 VS Points Mastery:</strong> <a href="https://lastwartutorial.com/vs-points-guide" target="_blank" rel="noopener">LastWarTutorial.com</a> provides detailed point calculators, timing strategies, and optimization techniques.</p>
+                                        </div>
+                                    </div>
+                                `
+                            }
+                        ];
                     }
                     
                     const html = guides.map(guide => `
@@ -1415,10 +1724,12 @@
                                 </div>
                             </div>
                             <div style="padding: var(--spacing-lg);">
-                                <p style="font-size: 0.875rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: var(--spacing-lg);">${guide.description}</p>
-                                <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-sm);">
-                                    ${guide.tips.map(tip => `<span style="background: var(--bg-tertiary); color: var(--text-secondary); padding: var(--spacing-sm) var(--spacing-md); border-radius: var(--border-radius); font-size: 0.75rem; font-weight: 500; border: 1px solid var(--border-primary);">${tip}</span>`).join('')}
-                                </div>
+                                ${guide.content || `
+                                    <p style="font-size: 0.875rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: var(--spacing-lg);">${guide.description}</p>
+                                    <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-sm);">
+                                        ${guide.tips.map(tip => `<span style="background: var(--bg-tertiary); color: var(--text-secondary); padding: var(--spacing-sm) var(--spacing-md); border-radius: var(--border-radius); font-size: 0.75rem; font-weight: 500; border: 1px solid var(--border-primary);">${tip}</span>`).join('')}
+                                    </div>
+                                `}
                             </div>
                         </div>
                     `).join('');

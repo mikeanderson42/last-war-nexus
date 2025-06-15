@@ -1093,13 +1093,15 @@
                     
                     // Calculate next server reset (daily at 00:00 server time)
                     const nextReset = new Date(serverTime);
-                    nextReset.setUTCHours(24, 0, 0, 0); // Next midnight UTC
+                    nextReset.setUTCHours(0, 0, 0, 0); // Set to midnight UTC
                     
-                    // Adjust for server time offset
-                    const resetInServerTime = new Date(nextReset.getTime() - (this.timeOffset * 60 * 60 * 1000));
+                    // If we're already past midnight, move to next day
+                    if (nextReset <= serverTime) {
+                        nextReset.setUTCDate(nextReset.getUTCDate() + 1);
+                    }
                     
-                    // Convert to local time for display
-                    const localResetTime = new Date(nextReset.getTime() - (this.timeOffset * 60 * 60 * 1000));
+                    // Convert to local time for display (no need for double offset adjustment)
+                    const localResetTime = new Date(nextReset.getTime());
                     
                     const nextServerReset = document.getElementById('next-server-reset');
                     const resetLocalTime = document.getElementById('reset-local-time');
@@ -2070,19 +2072,98 @@
                     if (this.updateInterval) {
                         clearInterval(this.updateInterval);
                     }
+                    if (this.countdownInterval) {
+                        clearInterval(this.countdownInterval);
+                    }
                     
+                    // Update immediately
+                    this.updateAllDisplays();
+                    
+                    // Set up regular updates every 5 seconds (more efficient)
                     this.updateInterval = setInterval(() => {
                         if (this.isVisible) {
                             this.updateAllDisplays();
                         }
+                    }, 5000);
+                    
+                    // Set up countdown updates every second for time-sensitive elements
+                    this.countdownInterval = setInterval(() => {
+                        if (this.isVisible) {
+                            this.updateCountdowns();
+                        }
                     }, 1000);
                 } catch (error) {
                     console.error('Update loop error:', error);
+                    this.handleError('Failed to start update loop', error);
+                }
+            }
+            
+            updateCountdowns() {
+                try {
+                    // Update only time-sensitive countdown elements efficiently
+                    const countdownElement = document.getElementById('countdown-timer');
+                    const priorityCountdown = document.getElementById('priority-countdown');
+                    const timeUntilReset = document.getElementById('time-until-reset');
+                    
+                    if (countdownElement || priorityCountdown || timeUntilReset) {
+                        const now = this.useLocalTime ? new Date() : this.getServerTime();
+                        
+                        // Update only countdown displays without full refresh
+                        this.updateTimeDisplays(now);
+                    }
+                } catch (error) {
+                    console.error('Countdown update error:', error);
                 }
             }
 
-            handleError(message) {
-                console.error('Application error:', message);
+            handleError(message, error = null) {
+                console.error('Application error:', message, error);
+                
+                // Show user-friendly error message
+                this.showErrorMessage(message);
+            }
+            
+            showErrorMessage(message) {
+                try {
+                    // Create or update error notification
+                    let errorContainer = document.getElementById('error-notification');
+                    if (!errorContainer) {
+                        errorContainer = document.createElement('div');
+                        errorContainer.id = 'error-notification';
+                        errorContainer.className = 'error-notification';
+                        document.body.appendChild(errorContainer);
+                    }
+                    
+                    errorContainer.innerHTML = `
+                        <div class="error-content">
+                            <span class="error-icon" aria-hidden="true">⚠️</span>
+                            <span class="error-message">${message}</span>
+                            <button class="error-close" onclick="this.parentElement.parentElement.remove()">×</button>
+                        </div>
+                    `;
+                    
+                    errorContainer.style.display = 'block';
+                    
+                    // Auto-hide after 5 seconds
+                    setTimeout(() => {
+                        if (errorContainer && errorContainer.parentNode) {
+                            errorContainer.remove();
+                        }
+                    }, 5000);
+                } catch (error) {
+                    console.error('Failed to show error message:', error);
+                }
+            }
+            
+            showLoadingState(element, message = 'Loading...') {
+                if (element) {
+                    element.innerHTML = `
+                        <div class="loading-state">
+                            <span class="loading-spinner" aria-hidden="true"></span>
+                            <span class="loading-text">${message}</span>
+                        </div>
+                    `;
+                }
             }
 
             destroy() {
@@ -2090,9 +2171,16 @@
                     if (this.updateInterval) {
                         clearInterval(this.updateInterval);
                     }
+                    if (this.countdownInterval) {
+                        clearInterval(this.countdownInterval);
+                    }
                     if (this.setupTimeInterval) {
                         clearInterval(this.setupTimeInterval);
                     }
+                    
+                    // Clean up error notifications
+                    const errorNotifications = document.querySelectorAll('.error-notification');
+                    errorNotifications.forEach(notification => notification.remove());
                 } catch (error) {
                     console.error('Cleanup error:', error);
                 }

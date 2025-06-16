@@ -139,11 +139,28 @@ button:focus-visible {
 .tab-btn:focus,
 .tab-btn:focus-visible,
 .tab-btn:active,
-.tab-btn:hover {
+.tab-btn:hover,
+button[data-tab],
+button[data-tab]:focus,
+button[data-tab]:focus-visible,
+button[data-tab]:active,
+button[data-tab]:hover {
   outline: none !important;
   box-shadow: none !important;
   -webkit-tap-highlight-color: transparent !important;
   -webkit-focus-ring-color: transparent !important;
+  border-radius: var(--border-radius-lg) !important;
+}
+
+/* Force remove any browser default button styling */
+button[data-tab="priority"],
+button[data-tab="schedule"], 
+button[data-tab="guides"] {
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
 }
 
 /* Only show styling when SELECTED (.active class) */
@@ -779,4 +796,40 @@ button:active {
 
 .w-full {
   width: 100%;
+}
+/* Nuclear option - remove ALL button focus glows */
+button:focus,
+button:focus-visible,
+button:active,
+*:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Specifically target the problematic navigation buttons */
+#priority-tab-btn,
+#schedule-tab-btn,
+#guides-tab-btn,
+#priority-tab-btn:focus,
+#schedule-tab-btn:focus,
+#guides-tab-btn:focus,
+#priority-tab-btn:focus-visible,
+#schedule-tab-btn:focus-visible,
+#guides-tab-btn:focus-visible,
+#priority-tab-btn:active,
+#schedule-tab-btn:active,
+#guides-tab-btn:active {
+    outline: none !important;
+    box-shadow: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+    border: 1px solid var(--border-primary) !important;
+}
+
+/* Only show highlight when button has .active class */
+#priority-tab-btn.active,
+#schedule-tab-btn.active,
+#guides-tab-btn.active {
+    border-left: 3px solid var(--accent-primary) !important;
+    box-shadow: none !important;
+    outline: none !important;
 }

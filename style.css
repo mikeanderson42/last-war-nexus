@@ -132,26 +132,43 @@ body {
 
 /* Removed distracting background gradients for clean Ultrahuman look */
 
-/* ENHANCED: Header Navigation Styles */
+/* ENHANCED: Header Navigation Styles with Premium Glass Effect */
 .main-nav {
-    background: var(--glass-bg);
-    backdrop-filter: var(--backdrop-blur);
-    -webkit-backdrop-filter: var(--backdrop-blur);
-    border-bottom: 1px solid var(--glass-border);
+    background: linear-gradient(145deg, 
+        rgba(21, 25, 34, 0.95) 0%, 
+        rgba(15, 19, 28, 0.98) 50%,
+        rgba(26, 31, 41, 0.95) 100%
+    );
+    backdrop-filter: var(--backdrop-blur-strong);
+    -webkit-backdrop-filter: var(--backdrop-blur-strong);
+    border-bottom: 1px solid rgba(0, 212, 255, 0.2);
     position: relative; /* Changed from sticky to fix mobile scrolling */
     z-index: 100;
-    box-shadow: var(--depth-shadow);
+    box-shadow: 
+        0 4px 20px rgba(0, 0, 0, 0.4),
+        0 1px 0 rgba(255, 255, 255, 0.05) inset;
+    position: relative;
+    overflow: hidden;
 }
 
 .main-nav::after {
     content: '';
     position: absolute;
-    bottom: 0;
+    top: 0;
     left: 0;
     right: 0;
     height: 1px;
-    background: var(--gradient-border-primary);
-    opacity: 0.5;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(0, 212, 255, 0.4), 
+        transparent
+    );
+    animation: navGlow 8s ease-in-out infinite;
+}
+
+@keyframes navGlow {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.8; }
 }
 
 .nav-container {
@@ -164,13 +181,45 @@ body {
     height: 64px;
 }
 
-/* ENHANCED: Brand Styling */
+/* ENHANCED: Brand Styling with Premium Glass Effect */
 .brand {
     display: flex;
     align-items: center;
     gap: var(--spacing-md);
     text-decoration: none;
     color: var(--text-primary);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: linear-gradient(135deg, 
+        rgba(0, 212, 255, 0.08) 0%, 
+        rgba(26, 31, 41, 0.9) 50%,
+        rgba(0, 153, 204, 0.08) 100%
+    );
+    border: 1px solid rgba(0, 212, 255, 0.15);
+    border-radius: var(--border-radius-lg);
+    backdrop-filter: blur(12px);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.brand::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -50%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(0, 212, 255, 0.1), 
+        transparent
+    );
+    animation: brandShimmer 6s ease-in-out infinite;
+}
+
+@keyframes brandShimmer {
+    0%, 100% { transform: translateX(-100%); opacity: 0; }
+    50% { transform: translateX(0%); opacity: 1; }
 }
 
 .brand-icon-container {

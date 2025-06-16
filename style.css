@@ -471,7 +471,7 @@ body {
 .main-cards {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-lg);
+    gap: var(--spacing-md);
 }
 
 /* ENHANCED: Side Cards Container */
@@ -3611,7 +3611,6 @@ body.guide-open {
     box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.2) !important;
 }
 
-.tab-btn:focus,
 .guide-nav-btn:focus,
 .time-toggle-btn:focus,
 .settings-btn:focus {
@@ -3692,7 +3691,8 @@ select:focus,
 }
 
 .tab-btn:focus {
-    outline: none;
+    outline: none !important;
+    box-shadow: none !important;
     border-left: 3px solid var(--accent-primary);
 }
 

@@ -3987,3 +3987,35 @@ select:focus,
         margin: 0 !important;
     }
 }
+/* Importance-coded dots */
+.importance-minor {
+  color: #10b981 !important; /* Green for minor points */
+}
+
+.importance-important {
+  color: #f59e0b !important; /* Orange for important points */
+}
+
+.importance-critical {
+  color: #ef4444 !important; /* Red for critical points */
+}
+
+/* Section toggle styles */
+.section-toggle-icon {
+  font-size: 0.9em;
+  margin-right: 8px;
+  transition: transform 0.3s ease;
+}
+
+.guide-fullscreen-section-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.guide-fullscreen-section-header:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 8px;
+  margin: -8px -8px 8px -8px;
+}

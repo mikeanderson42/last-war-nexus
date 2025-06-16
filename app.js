@@ -1820,7 +1820,7 @@
                             }
                         ];
                     } else {
-                        // COMPREHENSIVE TIPS GUIDES: Detailed, exhaustive content for maximum effectiveness
+                        // COMPREHENSIVE TIPS GUIDES: Detailed, exhaustive content with collapsible panels and importance-coded dots
                         guides = [
                             {
                                 title: "VS Points Complete Mastery System",
@@ -1828,38 +1828,43 @@
                                 icon: "🎯",
                                 description: "Complete guide to mastering VS Points through mathematical understanding, strategic timing, and advanced optimization techniques",
                                 keyTakeaway: "Understanding VS Points mathematics and perfect timing can increase your efficiency by 300-500% compared to random spending",
+                                collapsible: true,
                                 sections: [
                                     {
                                         title: "🧮 VS Points Mathematics & Core Mechanics (WHY Points Multiply)",
+                                        collapsible: true,
                                         items: [
                                             {
                                                 main: "The Mathematical Foundation of VS Points",
-                                                subPoints: [
-                                                    "Base Formula: VS Points = Resource Value × Phase Multiplier × Daily Bonus × Activity Type Modifier",
-                                                    "Perfect Alignment: When your activity matches BOTH the Arms Race phase AND the daily VS focus event",
-                                                    "Bonus Calculation: Perfect Alignment = 1.5x multiplier (50% bonus) applied to base activity points",
-                                                    "Compound Effect: 1000 diamonds base → 1500 VS points during perfect alignment (500 extra points)",
-                                                    "Annual Impact: Perfect timing can generate 200,000-500,000 additional VS points per year"
+                                                importance: "critical",
+                                                points: [
+                                                    { text: "Base Formula: VS Points = Resource Value × Phase Multiplier × Daily Bonus × Activity Type Modifier", importance: "critical" },
+                                                    { text: "Perfect Alignment: When your activity matches BOTH the Arms Race phase AND the daily VS focus event", importance: "critical" },
+                                                    { text: "Bonus Calculation: Perfect Alignment = 1.5x multiplier (50% bonus) applied to base activity points", importance: "important" },
+                                                    { text: "Compound Effect: 1000 diamonds base → 1500 VS points during perfect alignment (500 extra points)", importance: "important" },
+                                                    { text: "Annual Impact: Perfect timing can generate 200,000-500,000 additional VS points per year", importance: "critical" }
                                                 ]
                                             },
                                             {
                                                 main: "Why Timing Creates Exponential Value",
-                                                subPoints: [
-                                                    "Resource Scarcity: Premium resources (speedups, legendary items) are limited - wasting them reduces long-term potential",
-                                                    "Competitive Advantage: 50% bonus compounds over time - consistent perfect timing beats larger random spending",
-                                                    "Alliance Impact: Your optimized points contribute to alliance rankings and unlock better alliance rewards",
-                                                    "Event Qualification: Higher VS points qualify you for better tier rewards in seasonal events",
-                                                    "Progression Speed: Efficient VS point generation accelerates overall game progression by 3-6 months"
+                                                importance: "critical",
+                                                points: [
+                                                    { text: "Resource Scarcity: Premium resources (speedups, legendary items) are limited - wasting them reduces long-term potential", importance: "important" },
+                                                    { text: "Competitive Advantage: 50% bonus compounds over time - consistent perfect timing beats larger random spending", importance: "critical" },
+                                                    { text: "Alliance Impact: Your optimized points contribute to alliance rankings and unlock better alliance rewards", importance: "important" },
+                                                    { text: "Event Qualification: Higher VS points qualify you for better tier rewards in seasonal events", importance: "important" },
+                                                    { text: "Progression Speed: Efficient VS point generation accelerates overall game progression by 3-6 months", importance: "critical" }
                                                 ]
                                             },
                                             {
                                                 main: "Arms Race Phase System Explained",
-                                                subPoints: [
-                                                    "5 Rotating Phases: City Building (0-4h), Unit Progression (4-8h), Tech Research (8-12h), Drone Boost (12-16h), Hero Advancement (16-20h)",
-                                                    "4-Hour Cycles: Each phase lasts exactly 4 hours and repeats daily in the same pattern",
-                                                    "Activity Matching: Your spending activity must match the current phase (construction during City Building, research during Tech Research, etc.)",
-                                                    "Phase Transition: New phases begin at exact times - 00:00, 04:00, 08:00, 12:00, 16:00, 20:00 server time",
-                                                    "Global Synchronization: All players worldwide follow the same Arms Race schedule based on server time"
+                                                importance: "critical",
+                                                points: [
+                                                    { text: "5 Rotating Phases: City Building (0-4h), Unit Progression (4-8h), Tech Research (8-12h), Drone Boost (12-16h), Hero Advancement (16-20h)", importance: "critical" },
+                                                    { text: "4-Hour Cycles: Each phase lasts exactly 4 hours and repeats daily in the same pattern", importance: "critical" },
+                                                    { text: "Activity Matching: Your spending activity must match the current phase (construction during City Building, research during Tech Research, etc.)", importance: "critical" },
+                                                    { text: "Phase Transition: New phases begin at exact times - 00:00, 04:00, 08:00, 12:00, 16:00, 20:00 server time", importance: "important" },
+                                                    { text: "Global Synchronization: All players worldwide follow the same Arms Race schedule based on server time", importance: "minor" }
                                                 ]
                                             },
                                             {
@@ -2137,7 +2142,9 @@
                                     </div>
                                     ${guide.keyTakeaway ? `<div class="guide-fullscreen-takeaway">💡 <strong>Key Point:</strong> ${guide.keyTakeaway}</div>` : ''}
                                     <div class="guide-fullscreen-content">
-                                        ${guide.sections.map((section, sIndex) => `
+                                        ${guide.sections.map((section, sIndex) => {
+                                            const isCollapsible = section.collapsible || guide.collapsible;
+                                            return `
                                             <div class="guide-fullscreen-section">
                                                 <h3 class="guide-fullscreen-section-title">${section.title}</h3>
                                                 <div class="guide-fullscreen-items">
@@ -2145,7 +2152,7 @@
                                                         if (typeof item === 'string') {
                                                             return `
                                                                 <div class="guide-fullscreen-item">
-                                                                    <span class="guide-fullscreen-bullet">✓</span>
+                                                                    <span class="guide-fullscreen-bullet importance-minor">•</span>
                                                                     <span class="guide-fullscreen-text">${item}</span>
                                                                 </div>
                                                             `;
@@ -2153,17 +2160,20 @@
                                                             return `
                                                                 <div class="guide-fullscreen-item-group">
                                                                     <div class="guide-fullscreen-main-item">
-                                                                        <span class="guide-fullscreen-main-bullet">▶</span>
+                                                                        <span class="guide-fullscreen-main-bullet importance-${item.importance || 'minor'}">▶</span>
                                                                         <span class="guide-fullscreen-main-text">${item.main}</span>
                                                                     </div>
-                                                                    ${item.subPoints && item.subPoints.length > 0 ? `
+                                                                    ${(item.subPoints || item.points) && (item.subPoints || item.points).length > 0 ? `
                                                                         <div class="guide-fullscreen-sub-items">
-                                                                            ${item.subPoints.map(subPoint => `
+                                                                            ${(item.subPoints || item.points).map(subPoint => {
+                                                                                const importance = subPoint.importance || 'minor';
+                                                                                const text = subPoint.text || subPoint;
+                                                                                return `
                                                                                 <div class="guide-fullscreen-sub-item">
-                                                                                    <span class="guide-fullscreen-sub-bullet">•</span>
-                                                                                    <span class="guide-fullscreen-sub-text">${subPoint}</span>
+                                                                                    <span class="guide-fullscreen-sub-bullet importance-${importance}">•</span>
+                                                                                    <span class="guide-fullscreen-sub-text">${text}</span>
                                                                                 </div>
-                                                                            `).join('')}
+                                                                            `; }).join('')}
                                                                         </div>
                                                                     ` : ''}
                                                                 </div>
@@ -2172,7 +2182,7 @@
                                                     }).join('')}
                                                 </div>
                                             </div>
-                                        `).join('')}
+                                        `; }).join('')}
                                     </div>
                                 </div>
                             </div>
@@ -2242,6 +2252,22 @@
                     }
                 } catch (error) {
                     console.error('Guide expansion error:', error);
+                }
+            }
+
+            // NEW: Toggle section functionality for collapsible panels
+            toggleSection(guideIndex, sectionIndex) {
+                try {
+                    const sectionContent = document.getElementById(`section-content-${guideIndex}-${sectionIndex}`);
+                    const toggleIcon = document.getElementById(`section-toggle-${guideIndex}-${sectionIndex}`);
+                    
+                    if (sectionContent && toggleIcon) {
+                        const isExpanded = sectionContent.style.display !== 'none';
+                        sectionContent.style.display = isExpanded ? 'none' : 'block';
+                        toggleIcon.textContent = isExpanded ? '▶' : '▼';
+                    }
+                } catch (error) {
+                    console.error('Section toggle error:', error);
                 }
             }
 

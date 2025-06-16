@@ -285,7 +285,6 @@ button:active {
   background: var(--bg-elevated);
   border-color: var(--accent-primary);
   transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
 }
 
 .tab-btn.active {
@@ -293,7 +292,6 @@ button:active {
   border: 1px solid var(--border-primary);
   border-left: 3px solid var(--accent-primary);
   color: var(--accent-primary);
-  box-shadow: var(--shadow-sm);
 }
 
 /* Mobile-only glow effect for tab buttons */

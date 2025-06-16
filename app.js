@@ -2636,11 +2636,18 @@
                 try {
                     const sectionContent = document.getElementById(`section-content-${guideIndex}-${sectionIndex}`);
                     const toggleIcon = document.getElementById(`section-toggle-${guideIndex}-${sectionIndex}`);
+                    const keyTakeaway = document.querySelector('.guide-fullscreen-takeaway');
                     
                     if (sectionContent && toggleIcon) {
                         const isExpanded = sectionContent.style.display !== 'none';
                         sectionContent.style.display = isExpanded ? 'none' : 'block';
                         toggleIcon.textContent = isExpanded ? '▶' : '▼';
+                        
+                        // Hide key takeaway when any section is opened
+                        if (keyTakeaway) {
+                            const anySectionOpen = document.querySelector('[id^="section-content-"]:not([style*="none"])');
+                            keyTakeaway.style.display = anySectionOpen ? 'none' : 'block';
+                        }
                     }
                 } catch (error) {
                     console.error('Section toggle error:', error);

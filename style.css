@@ -2150,7 +2150,7 @@ body {
     }
     
     .live-indicator {
-        gap: var(--spacing-xs);
+        display: none;
     }
     
     .live-text {

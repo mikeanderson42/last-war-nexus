@@ -488,7 +488,6 @@ body {
     border-left: 3px solid var(--accent-primary);
     border-radius: 12px;
     padding: 24px;
-    margin-bottom: 16px;
     transition: all 0.3s ease;
     position: relative;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);

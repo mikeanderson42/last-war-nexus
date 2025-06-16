@@ -280,26 +280,26 @@ body {
 }
 
 .time-toggle-btn:active {
-    background: var(--glass-bg-elevated);
-    border: 1px solid var(--glass-border);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-secondary);
     border-left: 3px solid var(--accent-primary);
-    color: var(--accent-primary);
+    color: var(--text-secondary);
 }
 
 .time-toggle-btn.active {
-    background: var(--glass-bg-elevated);
-    border: 1px solid var(--glass-border);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-secondary);
     border-left: 3px solid var(--accent-primary);
-    color: var(--accent-primary);
-    box-shadow: var(--shadow-sm);
+    color: var(--text-secondary);
 }
 
 .time-toggle-btn:focus {
     outline: none !important;
     box-shadow: none !important;
+    border: 1px solid var(--border-secondary);
     border-left: 3px solid var(--accent-primary);
-    background: var(--glass-bg-elevated);
-    color: var(--accent-primary);
+    background: var(--bg-surface);
+    color: var(--text-secondary);
 }
 
 .time-toggle-icon {

@@ -596,6 +596,23 @@
                         nextPhaseSelect.value = this.nextPhaseOverride;
                     }
 
+                    // Sync time toggle button state
+                    const timeToggleLabel = document.getElementById('time-toggle-label');
+                    const timeToggleBtn = document.getElementById('time-toggle-btn');
+                    if (timeToggleLabel) {
+                        timeToggleLabel.textContent = this.useLocalTime ? 'Local Time' : 'Server Time';
+                    }
+                    if (timeToggleBtn) {
+                        // Remove any inline styles and use CSS classes
+                        timeToggleBtn.style.background = '';
+                        timeToggleBtn.style.color = '';
+                        if (this.useLocalTime) {
+                            timeToggleBtn.classList.remove('active');
+                        } else {
+                            timeToggleBtn.classList.add('active');
+                        }
+                    }
+
                 } catch (error) {
                     console.error('UI sync error:', error);
                 }
@@ -710,9 +727,15 @@
                         timeToggleLabel.textContent = this.useLocalTime ? 'Local Time' : 'Server Time';
                     }
                     if (timeToggleBtn) {
-                        // Add visual indication of current mode
-                        timeToggleBtn.style.background = this.useLocalTime ? 'var(--bg-surface)' : 'var(--accent-primary)';
-                        timeToggleBtn.style.color = this.useLocalTime ? 'var(--text-secondary)' : 'white';
+                        // Remove any inline styles to let CSS handle appearance
+                        timeToggleBtn.style.background = '';
+                        timeToggleBtn.style.color = '';
+                        // Add visual indication with left border only for server time
+                        if (this.useLocalTime) {
+                            timeToggleBtn.classList.remove('active');
+                        } else {
+                            timeToggleBtn.classList.add('active');
+                        }
                     }
                     
                     // Update all time displays and refresh content

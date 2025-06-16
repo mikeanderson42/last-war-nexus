@@ -610,6 +610,10 @@
                     this.closeAllDropdowns();
                     
                     if (!isOpen) {
+                        // Scroll to top when opening settings dropdown to keep it in view
+                        if (type === 'settings') {
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }
                         // Position dropdown safely within viewport
                         this.positionDropdownSafely(dropdown, toggle);
                         dropdown.classList.add('active');

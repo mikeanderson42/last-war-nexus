@@ -36,22 +36,14 @@ body {
   box-sizing: border-box;
 }
 
-/* Text overflow prevention - exclude tab-label on mobile */
+/* Text overflow prevention */
 .event-name-gaming,
 .event-action-gaming,
-.banner-title {
+.banner-title,
+.tab-label {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-/* Tab label overflow prevention for desktop only */
-@media (min-width: 768px) {
-  .tab-label {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
 }
 
 /* Flexible containers */
@@ -102,43 +94,16 @@ body {
   }
   
   .tab-btn {
-    min-width: 180px;
-    max-width: 200px;
-    padding: var(--spacing-md) var(--spacing-md);
-    min-height: 64px;
-    flex-shrink: 0;
-    /* Ensure proper touch targets */
-    position: relative;
-    z-index: 10;
-    align-items: flex-start;
-    padding-top: var(--spacing-sm);
-    padding-bottom: var(--spacing-sm);
-  }
-  
-  .tab-label {
-    font-size: 0.75rem;
-    line-height: 1.1;
-    white-space: normal !important;
-    overflow: visible !important;
-    text-overflow: unset !important;
-    max-width: 140px;
-    word-wrap: break-word;
-    hyphens: auto;
+    min-width: 150px;
+    padding: var(--spacing-sm) var(--spacing-md);
   }
   
   .tab-description {
-    font-size: 0.75rem;
-    max-width: 140px;
-    line-height: 1.2;
-    white-space: normal !important;
-    overflow: visible !important;
-    text-overflow: unset !important;
+    display: none;
   }
   
   .tab-count {
-    font-size: 0.75rem;
-    padding: 2px 6px;
-    margin-top: 2px;
+    display: none;
   }
   
   .priority-window-header {
@@ -160,28 +125,6 @@ body {
 @media (max-width: 767px) {
   .main-nav {
     padding: var(--spacing-xs) 0;
-  }
-  
-  /* Fix settings button and dropdown on mobile */
-  .settings-btn {
-    min-height: 48px;
-    min-width: 48px;
-    padding: var(--spacing-sm);
-    font-size: var(--font-size-sm);
-    z-index: 1100;
-    position: relative;
-    touch-action: manipulation;
-  }
-  
-  .settings-dropdown {
-    position: fixed !important;
-    top: calc(var(--header-height) + var(--spacing-sm)) !important;
-    right: var(--spacing-md) !important;
-    left: var(--spacing-md) !important;
-    width: auto !important;
-    max-width: none !important;
-    z-index: 1200 !important;
-    transform-origin: top center !important;
   }
   
   .nav-container {
@@ -208,37 +151,8 @@ body {
   }
   
   .tab-btn {
-    min-width: 190px;
-    max-width: 240px;
+    min-width: 180px;
     flex-shrink: 0;
-    min-height: 72px;
-    /* Ensure buttons are properly clickable */
-    pointer-events: auto;
-    position: relative;
-    z-index: 10;
-    align-items: center;
-    padding: var(--spacing-md);
-    white-space: normal;
-    word-wrap: break-word;
-  }
-  
-  /* Fix text wrapping for longer labels */
-  .tab-label {
-    white-space: normal !important;
-    overflow: visible !important;
-    text-overflow: unset !important;
-    line-height: 1.1;
-    max-width: 160px;
-    word-wrap: break-word;
-    hyphens: auto;
-  }
-  
-  .tab-description {
-    white-space: normal !important;
-    overflow: visible !important;
-    text-overflow: unset !important;
-    line-height: 1.2;
-    max-width: 160px;
   }
   
   .dashboard-grid-compact {
@@ -342,20 +256,8 @@ body {
   button,
   .settings-btn,
   .time-toggle-btn {
-    min-height: 48px;
-    min-width: 48px;
-    /* Ensure touch events work properly */
-    pointer-events: auto;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Fix settings button specifically for mobile */
-  .settings-btn {
-    min-width: 80px;
-    padding: var(--spacing-md) var(--spacing-lg);
-    position: relative;
-    z-index: 20;
+    min-height: 44px;
+    min-width: 44px;
   }
   
   .toggle-switch {

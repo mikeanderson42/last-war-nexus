@@ -1619,48 +1619,100 @@
                                     },
                                     {
                                         title: "📋 Weeks 1-2: Foundation Building Priority System",
+                                        collapsible: true,
                                         items: [
-                                            "Priority 1: Headquarters to level 15+ (unlocks advanced features, alliance benefits, higher-tier buildings)",
-                                            "Priority 2: Alliance Center to maximum possible level (increases warehouse protection capacity to 8+ hours)",
-                                            "Priority 3: All 4 resource buildings to level 15+ (provides 300-500% increase in daily resource generation)",
-                                            "Priority 4: Research Institute to level 12+ (unlocks economic research tree essential for long-term efficiency)",
-                                            "Priority 5: Hospitals to level 12+ (protects 70%+ of troops from permanent death in combat)",
-                                            "NEVER BUILD: Walls, decorations, multiple training camps, or cosmetic buildings during foundation phase",
-                                            "Queue Management: Keep all 4 construction queues busy 24/7 using alliance help to reduce build times"
+                                            {
+                                                main: "Critical Foundation Building Order (CANNOT BE CHANGED LATER)",
+                                                importance: "critical",
+                                                points: [
+                                                    { text: "Priority 1: Headquarters to level 15+ (unlocks advanced features, alliance benefits, higher-tier buildings)", importance: "critical" },
+                                                    { text: "Priority 2: Alliance Center to maximum possible level (increases warehouse protection capacity to 8+ hours)", importance: "critical" },
+                                                    { text: "Priority 3: All 4 resource buildings to level 15+ (provides 300-500% increase in daily resource generation)", importance: "critical" },
+                                                    { text: "Priority 4: Research Institute to level 12+ (unlocks economic research tree essential for long-term efficiency)", importance: "important" },
+                                                    { text: "Priority 5: Hospitals to level 12+ (protects 70%+ of troops from permanent death in combat)", importance: "important" }
+                                                ]
+                                            },
+                                            {
+                                                main: "Fatal Foundation Mistakes to Avoid",
+                                                importance: "critical",
+                                                points: [
+                                                    { text: "NEVER BUILD: Walls, decorations, multiple training camps, or cosmetic buildings during foundation phase", importance: "critical" },
+                                                    { text: "Queue Management: Keep all 4 construction queues busy 24/7 using alliance help to reduce build times", importance: "important" }
+                                                ]
+                                            }
                                         ]
                                     },
                                     {
                                         title: "🔬 Weeks 1-4: Research Strategy & Specialization",
+                                        collapsible: true,
                                         items: [
-                                            "Phase 1 Research: Economic tree FIRST - Resource Production I-IV, Construction Speed I-III, Research Speed I-III",
-                                            "Phase 2 Research: Basic Military research only after economic foundation complete - choose Infantry specialization",
-                                            "Alliance Research: Join economic projects first, military projects only after week 3-4",
-                                            "Speedup Timing: Use research speedups EXCLUSIVELY during Tech Research Arms Race phases for VS points",
-                                            "Troop Specialization: Choose Infantry for beginners (cheapest to maintain, most forgiving, easiest to master)",
-                                            "Long-term Impact: Completing economic research provides 200-400% efficiency gains for ALL future activities"
+                                            {
+                                                main: "Critical Research Sequence (MUST FOLLOW ORDER)",
+                                                importance: "critical",
+                                                points: [
+                                                    { text: "Phase 1 Research: Economic tree FIRST - Resource Production I-IV, Construction Speed I-III, Research Speed I-III", importance: "critical" },
+                                                    { text: "Phase 2 Research: Basic Military research only after economic foundation complete - choose Infantry specialization", importance: "critical" },
+                                                    { text: "Long-term Impact: Completing economic research provides 200-400% efficiency gains for ALL future activities", importance: "critical" }
+                                                ]
+                                            },
+                                            {
+                                                main: "Strategic Research Optimization",
+                                                importance: "important",
+                                                points: [
+                                                    { text: "Alliance Research: Join economic projects first, military projects only after week 3-4", importance: "important" },
+                                                    { text: "Speedup Timing: Use research speedups EXCLUSIVELY during Tech Research Arms Race phases for VS points", importance: "important" },
+                                                    { text: "Troop Specialization: Choose Infantry for beginners (cheapest to maintain, most forgiving, easiest to master)", importance: "minor" }
+                                                ]
+                                            }
                                         ]
                                     },
                                     {
                                         title: "💰 Resource Management & VS Points Integration",
+                                        collapsible: true,
                                         items: [
-                                            "Warehouse Strategy: Use alliance warehouse protection religiously - store ALL resources immediately upon collection",
-                                            "Production Optimization: Never let resource buildings reach maximum capacity - always have upgrades queued",
-                                            "Event Participation: Participate in ALL resource events - gathering missions, competitions, alliance donations",
-                                            "VS Points Integration: Convert excess resources during City Building Arms Race phases for bonus points",
-                                            "Strategic Stockpiling: Build up 2-3 days worth of premium resources before major perfect alignment windows",
-                                            "Alliance Coordination: Request specific resource types from alliance during major construction phases"
+                                            {
+                                                main: "Essential Resource Protection & Management",
+                                                importance: "critical",
+                                                points: [
+                                                    { text: "Warehouse Strategy: Use alliance warehouse protection religiously - store ALL resources immediately upon collection", importance: "critical" },
+                                                    { text: "Production Optimization: Never let resource buildings reach maximum capacity - always have upgrades queued", importance: "important" },
+                                                    { text: "Event Participation: Participate in ALL resource events - gathering missions, competitions, alliance donations", importance: "important" }
+                                                ]
+                                            },
+                                            {
+                                                main: "Advanced Resource Strategy & VS Points Integration",
+                                                importance: "important",
+                                                points: [
+                                                    { text: "VS Points Integration: Convert excess resources during City Building Arms Race phases for bonus points", importance: "important" },
+                                                    { text: "Strategic Stockpiling: Build up 2-3 days worth of premium resources before major perfect alignment windows", importance: "important" },
+                                                    { text: "Alliance Coordination: Request specific resource types from alliance during major construction phases", importance: "minor" }
+                                                ]
+                                            }
                                         ]
                                     },
                                     {
                                         title: "🚫 Critical Season 1 Mistakes That Destroy 3-6 Months of Progress",
+                                        collapsible: true,
                                         items: [
-                                            "Decoration Trap: Building walls, decorations, cosmetic buildings (wastes 2-4 weeks of critical resources)",
-                                            "Specialization Error: Training multiple troop types instead of Infantry focus (reduces effectiveness by 50-70%)",
-                                            "Speedup Waste: Using speedups randomly vs Arms Race alignment windows (loses 25-50% potential VS points)",
-                                            "Alliance Mistake: Joining inactive alliance or staying solo (loses 40-60% of potential daily resources and help)",
-                                            "Hospital Neglect: Not building adequate hospitals before combat (permanent troop losses cost millions in resources)",
-                                            "Research Error: Prioritizing military research over economic research (reduces efficiency by 200-300%)",
-                                            "Protection Failure: Not using alliance warehouse protection (loses resources to attacks, raids, and capacity overflow)"
+                                            {
+                                                main: "Catastrophic Building & Resource Mistakes",
+                                                importance: "critical",
+                                                points: [
+                                                    { text: "Decoration Trap: Building walls, decorations, cosmetic buildings (wastes 2-4 weeks of critical resources)", importance: "critical" },
+                                                    { text: "Speedup Waste: Using speedups randomly vs Arms Race alignment windows (loses 25-50% potential VS points)", importance: "critical" },
+                                                    { text: "Protection Failure: Not using alliance warehouse protection (loses resources to attacks, raids, and capacity overflow)", importance: "critical" }
+                                                ]
+                                            },
+                                            {
+                                                main: "Strategic Focus & Specialization Errors",
+                                                importance: "critical",
+                                                points: [
+                                                    { text: "Specialization Error: Training multiple troop types instead of Infantry focus (reduces effectiveness by 50-70%)", importance: "critical" },
+                                                    { text: "Research Error: Prioritizing military research over economic research (reduces efficiency by 200-300%)", importance: "critical" },
+                                                    { text: "Alliance Mistake: Joining inactive alliance or staying solo (loses 40-60% of potential daily resources and help)", importance: "important" },
+                                                    { text: "Hospital Neglect: Not building adequate hospitals before combat (permanent troop losses cost millions in resources)", importance: "important" }
+                                                ]
+                                            }
                                         ]
                                     }
                                 ]
@@ -1671,9 +1723,11 @@
                                 icon: "❄️",
                                 description: "Master military specialization, hero development, and competitive participation during Polar Storm",
                                 keyTakeaway: "Military specialization mastery and competitive participation determine your viability for next 6-12 months",
+                                collapsible: true,
                                 sections: [
                                     {
                                         title: "⚔️ Military Specialization Mastery (Critical Choice Point)",
+                                        collapsible: true,
                                         items: [
                                             "Infantry Path: Tanky, cost-effective, beginner-friendly - best for defensive strategies and resource protection",
                                             "Vehicle Path: Balanced offense/defense, moderate cost - best for adaptable players who change strategies",
@@ -1686,6 +1740,7 @@
                                     },
                                     {
                                         title: "🦸 Hero Development System (Season 2 Advanced Strategy)",
+                                        collapsible: true,
                                         items: [
                                             "Recruitment Strategy: Focus exclusively on heroes providing bonuses to your chosen troop specialization",
                                             "Gear Progression Path: Weapons first (damage multipliers), armor second (survivability), accessories third (special bonuses)",
@@ -1698,6 +1753,7 @@
                                     },
                                     {
                                         title: "🎯 Combat Strategy & Tactical Development",
+                                        collapsible: true,
                                         items: [
                                             "Intelligence Operations: Always scout targets before attacking - reconnaissance prevents 80% of combat disasters",
                                             "Rock-Paper-Scissors: Master Infantry > Aircraft > Vehicles > Infantry advantage cycles",
@@ -1710,6 +1766,7 @@
                                     },
                                     {
                                         title: "❄️ Season 2 Exclusive Content: Polar Storm Mastery",
+                                        collapsible: true,
                                         items: [
                                             "Cold Wave Events: Master survival and resource management during harsh weather challenge periods",
                                             "Titanium Alloy Factories: Essential facilities for crafting advanced military equipment and high-tier gear",
@@ -1727,9 +1784,11 @@
                                 icon: "🏛️",
                                 description: "Master advanced research paths, Oasis Project exploration, and technology integration",
                                 keyTakeaway: "Technology mastery and research optimization separate truly competitive players from casual participants",
+                                collapsible: true,
                                 sections: [
                                     {
                                         title: "🔬 Advanced Research Path Optimization",
+                                        collapsible: true,
                                         items: [
                                             "Completion Strategy: Economic research tree to 100% completion before any advanced military research begins",
                                             "Infrastructure Requirements: Research Center level 25+, Labs level 20+, Observatory unlocked and operational",
@@ -1742,6 +1801,7 @@
                                     },
                                     {
                                         title: "🏜️ Season 3 Exclusive: Oasis Project & Desert Artifacts",
+                                        collapsible: true,
                                         items: [
                                             "Oasis Project Events: Participate for rare technological advancement materials and ancient technology blueprints",
                                             "Desert Artifacts Exploration: Discover unique research bonuses and unlock advanced technology development paths",
@@ -1753,6 +1813,7 @@
                                     },
                                     {
                                         title: "⚙️ Technology Integration & Synergy Strategy",
+                                        collapsible: true,
                                         items: [
                                             "Integration Principle: Every new technology should support and enhance your chosen specialization strategy",
                                             "Building Synergy: Unlock advanced building functions that multiply effectiveness of existing infrastructure",
@@ -1765,6 +1826,7 @@
                                     },
                                     {
                                         title: "📊 Advanced Resource & Time Management",
+                                        collapsible: true,
                                         items: [
                                             "Resource Scale: Advanced research requires 10-20x more resources than basic research - plan resource allocation",
                                             "Alliance Leverage: Use alliance technology projects to reduce individual research costs by 30-50%",
@@ -1782,9 +1844,11 @@
                                 icon: "🌙",
                                 description: "Achieve competitive dominance through Season 4 systems mastery and alliance leadership",
                                 keyTakeaway: "Season 4 mastery requires perfect optimization of all systems plus leadership of alliance competitive strategies",
+                                collapsible: true,
                                 sections: [
                                     {
                                         title: "🌙 Season 4 Advanced Systems: Evernight Isle Features",
+                                        collapsible: true,
                                         items: [
                                             "Blood Night Descend: Master new high-difficulty combat mode requiring specialized tactics and elite formations",
                                             "Tactics Cards System: Collect and optimize card combinations providing temporary powerful combat and economic bonuses",
@@ -1796,6 +1860,7 @@
                                     },
                                     {
                                         title: "🏆 Perfect VS Points Optimization (Expert Level)",
+                                        collapsible: true,
                                         items: [
                                             "Efficiency Mastery: Achieve 95%+ efficiency in VS point generation through perfect timing and resource management",
                                             "Alliance Coordination: Lead massive coordinated spending events during Total Mobilization Friday perfect alignments",
@@ -1808,6 +1873,7 @@
                                     },
                                     {
                                         title: "👥 Alliance Warfare & Strategic Leadership",
+                                        collapsible: true,
                                         items: [
                                             "Strategic Warfare Leadership: Command alliance vs alliance conflicts with coordinated attacks, resource sharing, strategic objectives",
                                             "Advanced Tactical Mastery: Master complex combat tactics including rally timing, target prioritization, formation optimization",
@@ -1820,6 +1886,7 @@
                                     },
                                     {
                                         title: "🌟 End-Game Excellence & Legacy Building",
+                                        collapsible: true,
                                         items: [
                                             "Elite Content Mastery: Coordinate alliance raids on ultimate-difficulty content for exclusive rewards and achievements",
                                             "Seasonal Event Dominance: Perfect participation strategies in limited-time competitive events for maximum rewards",
@@ -2407,8 +2474,15 @@
                                             const isCollapsible = section.collapsible || guide.collapsible;
                                             return `
                                             <div class="guide-fullscreen-section">
-                                                <h3 class="guide-fullscreen-section-title">${section.title}</h3>
-                                                <div class="guide-fullscreen-items">
+                                                <div class="guide-fullscreen-section-header" 
+                                                     onclick="window.lastWarNexus.toggleSection(${index}, ${sIndex})"
+                                                     style="cursor: ${isCollapsible ? 'pointer' : 'default'}">
+                                                    <h3 class="guide-fullscreen-section-title">
+                                                        ${isCollapsible ? `<span id="section-toggle-${index}-${sIndex}" class="section-toggle-icon">${sIndex === 0 ? '▼' : '▶'}</span>` : ''}
+                                                        ${section.title}
+                                                    </h3>
+                                                </div>
+                                                <div id="section-content-${index}-${sIndex}" class="guide-fullscreen-items" style="display: ${sIndex === 0 ? 'block' : 'none'};">
                                                     ${section.items.map(item => {
                                                         if (typeof item === 'string') {
                                                             return `

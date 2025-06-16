@@ -1590,17 +1590,31 @@
                                 icon: "🦠",
                                 description: "Master the critical foundation phase - mistakes here cost 3-6 months of progression",
                                 keyTakeaway: "Perfect your first 30 days foundation or waste months catching up to optimal players",
+                                collapsible: true,
                                 sections: [
                                     {
                                         title: "🚨 Hour-by-Hour First 72 Hours (Make or Break Period)",
+                                        collapsible: true,
                                         items: [
-                                            "Hour 1-6: Complete tutorial completely, immediately search for most active alliance available",
-                                            "Day 1 Priority: Focus exclusively on Headquarters upgrades to HQ8+ to unlock alliance warehouse protection",
-                                            "Day 2 Critical: Complete ALL rookie challenges - provides 2-3 weeks worth of speedups and premium resources",
-                                            "Day 3 Foundation: Build all 4 basic resource types (farms, oil wells, steel mills, electronics) to level 5+",
-                                            "NEVER WASTE ROOKIE SPEEDUPS: Every speedup used randomly costs 24-48 hours of optimal progression",
-                                            "Alliance Selection: Join alliance with 40+ daily helps, active chat, and members in your timezone",
-                                            "Resource Protection Rule: Never hold more than 2 hours of production outside alliance warehouse"
+                                            {
+                                                main: "First 24 Hours - Foundation Phase (CRITICAL)",
+                                                importance: "critical",
+                                                points: [
+                                                    { text: "Hour 1-6: Complete tutorial completely, immediately search for most active alliance available", importance: "critical" },
+                                                    { text: "Day 1 Priority: Focus exclusively on Headquarters upgrades to HQ8+ to unlock alliance warehouse protection", importance: "critical" },
+                                                    { text: "Alliance Selection: Join alliance with 40+ daily helps, active chat, and members in your timezone", importance: "critical" },
+                                                    { text: "Resource Protection Rule: Never hold more than 2 hours of production outside alliance warehouse", importance: "important" }
+                                                ]
+                                            },
+                                            {
+                                                main: "Days 2-3 - Resource Foundation (MAKE OR BREAK)",
+                                                importance: "critical",
+                                                points: [
+                                                    { text: "Day 2 Critical: Complete ALL rookie challenges - provides 2-3 weeks worth of speedups and premium resources", importance: "critical" },
+                                                    { text: "Day 3 Foundation: Build all 4 basic resource types (farms, oil wells, steel mills, electronics) to level 5+", importance: "critical" },
+                                                    { text: "NEVER WASTE ROOKIE SPEEDUPS: Every speedup used randomly costs 24-48 hours of optimal progression", importance: "critical" }
+                                                ]
+                                            }
                                         ]
                                     },
                                     {
@@ -1999,109 +2013,356 @@
                                 ]
                             },
                             {
-                                title: "Resource Strategy",
-                                category: "Smart Spending",
+                                title: "Resource Strategy & Smart Spending Mastery",
+                                category: "Advanced Economics",
                                 icon: "💎",
-                                description: "How to spend resources efficiently for maximum returns",
-                                keyTakeaway: "Hoard for perfect windows, use VIP store, diamonds work everywhere",
+                                description: "Complete guide to resource optimization, strategic hoarding, and maximum ROI spending decisions",
+                                keyTakeaway: "Strategic resource management can increase your effectiveness by 200-400% compared to random spending",
+                                collapsible: true,
                                 sections: [
                                     {
-                                        title: "💰 Smart Spending Rules",
+                                        title: "💰 Core Spending Principles & Resource Economics",
+                                        collapsible: true,
                                         items: [
-                                            "VIP Store = 30-50% better value than regular store",
-                                            "Diamond purchases count for points in ALL phases",
-                                            "Save ALL speedups for 4x point windows only",
-                                            "Emergency rule: Only spend if you're falling behind alliance"
+                                            {
+                                                main: "VIP Store Optimization Strategy",
+                                                importance: "critical",
+                                                points: [
+                                                    { text: "VIP Store provides 30-50% better value than regular store for ALL items", importance: "critical" },
+                                                    { text: "Priority purchases: Construction speedups, research speedups, hero items during sales", importance: "important" },
+                                                    { text: "Weekly VIP refresh timing: Always check Monday mornings for new inventory", importance: "important" },
+                                                    { text: "Bulk buying strategy: Purchase larger quantities during 40%+ discount events", importance: "minor" }
+                                                ]
+                                            },
+                                            {
+                                                main: "Diamond Spending Universal Rules",
+                                                importance: "critical",
+                                                points: [
+                                                    { text: "Diamond purchases count for VS points in ALL Arms Race phases regardless of activity type", importance: "critical" },
+                                                    { text: "Best diamond ROI: Speedup bundles during perfect alignment windows", importance: "critical" },
+                                                    { text: "Emergency spending: Only break hoarding rules if falling >20% behind alliance ranking", importance: "important" },
+                                                    { text: "Monthly budget strategy: Set aside 80% for perfect windows, 20% for emergencies", importance: "important" }
+                                                ]
+                                            },
+                                            {
+                                                main: "Strategic Hoarding & Resource Accumulation",
+                                                importance: "critical",
+                                                points: [
+                                                    { text: "Save ALL speedups exclusively for perfect alignment windows (1.5x point multiplier)", importance: "critical" },
+                                                    { text: "Hoarding threshold: Maintain 72-hour supply for major perfect window opportunities", importance: "important" },
+                                                    { text: "Resource prioritization: Legendary items > Premium speedups > Standard speedups > Basic materials", importance: "important" },
+                                                    { text: "Alliance coordination: Synchronize major spending with alliance mass events for bonus rewards", importance: "minor" }
+                                                ]
+                                            }
                                         ]
                                     },
                                     {
-                                        title: "📦 What to Save vs Use",
+                                        title: "📦 Resource Classification & Optimal Usage Strategy",
+                                        collapsible: true,
                                         items: [
-                                            "SAVE: All speedups, legendary items, premium resources",
-                                            "USE ANYTIME: Basic materials, free items with timers",
-                                            "COORDINATE: Big purchases with alliance events",
-                                            "PLAN: Major upgrades around alignment schedules"
+                                            {
+                                                main: "Critical Resources to ALWAYS Save for Perfect Windows",
+                                                importance: "critical",
+                                                points: [
+                                                    { text: "Construction Speedups: Exclusively for Tuesday 00:00-04:00 City Building + Base Expansion windows", importance: "critical" },
+                                                    { text: "Research Speedups: Only use during Wednesday 08:00-12:00 Tech Research + Age of Science windows", importance: "critical" },
+                                                    { text: "Training Speedups: Reserve for Saturday 04:00-08:00 Unit Progression + Enemy Buster windows", importance: "critical" },
+                                                    { text: "Legendary Items: All legendary trucks, valor badges, hero items - never use outside perfect alignment", importance: "critical" },
+                                                    { text: "Premium Resources: Dragon crystals, advanced materials, elite equipment - maximum ROI during alignment only", importance: "important" }
+                                                ]
+                                            },
+                                            {
+                                                main: "Resources Safe to Use Anytime",
+                                                importance: "important",
+                                                points: [
+                                                    { text: "Basic Materials: Wood, steel, food, oil - use freely as they regenerate quickly", importance: "minor" },
+                                                    { text: "Free Items with Timers: Event rewards with expiration dates - use before they expire", importance: "important" },
+                                                    { text: "Low-Value Speedups: 5-minute and 15-minute speedups can be used for immediate needs", importance: "minor" },
+                                                    { text: "Daily Login Rewards: Most daily freebies are safe to use immediately", importance: "minor" }
+                                                ]
+                                            },
+                                            {
+                                                main: "Alliance Coordination & Strategic Timing",
+                                                importance: "important",
+                                                points: [
+                                                    { text: "Mass Spending Events: Coordinate with alliance officers for synchronized major purchases", importance: "important" },
+                                                    { text: "Alliance Store Priority: Focus on speedups and legendary items when available", importance: "important" },
+                                                    { text: "Help Point Usage: Save help points for special alliance store refresh events", importance: "minor" },
+                                                    { text: "Donation Strategy: Donate regularly but save premium items for personal perfect windows", importance: "minor" }
+                                                ]
+                                            }
                                         ]
                                     },
                                     {
-                                        title: "⏰ Timing Your Big Moves",
+                                        title: "⏰ Perfect Timing Strategy for Major Decisions",
+                                        collapsible: true,
                                         items: [
-                                            "Major building upgrades: City Building + Base Expansion",
-                                            "Research projects: Tech Research + Age of Science",
-                                            "Hero recruitment: Hero Advancement + Train Heroes",
-                                            "Equipment upgrades: Friday Total Mobilization"
+                                            {
+                                                main: "Tier 1 Perfect Alignment Opportunities (Maximum ROI)",
+                                                importance: "critical",
+                                                points: [
+                                                    { text: "Tuesday 00:00-04:00: Major building upgrades during City Building + Base Expansion alignment", importance: "critical" },
+                                                    { text: "Wednesday 08:00-12:00: Research projects during Tech Research + Age of Science alignment", importance: "critical" },
+                                                    { text: "Thursday 16:00-20:00: Hero recruitment/upgrades during Hero Advancement + Train Heroes alignment", importance: "critical" },
+                                                    { text: "Friday All Day: Equipment upgrades during Total Mobilization universal bonus", importance: "critical" }
+                                                ]
+                                            },
+                                            {
+                                                main: "Advanced Timing Strategies & Preparation",
+                                                importance: "important",
+                                                points: [
+                                                    { text: "48-Hour Preparation Rule: Begin stockpiling specific resources 2 days before major alignment windows", importance: "important" },
+                                                    { text: "Queue Overlap Strategy: Start long upgrades 30-45 minutes before perfect windows end", importance: "important" },
+                                                    { text: "Multi-Phase Planning: Coordinate 3-4 major upgrades across consecutive perfect windows", importance: "important" },
+                                                    { text: "Emergency Protocol: Have backup plans if alignment windows are missed due to real-life conflicts", importance: "minor" }
+                                                ]
+                                            },
+                                            {
+                                                main: "Resource Flow & Acquisition Timing",
+                                                importance: "important",
+                                                points: [
+                                                    { text: "Material Gathering: Complete resource runs 6-12 hours before perfect alignment windows", importance: "important" },
+                                                    { text: "Diamond Purchases: Buy speedup packages during or just before perfect alignment periods", importance: "important" },
+                                                    { text: "Alliance Requests: Ask for specific resources 24 hours before you plan to use them", importance: "minor" },
+                                                    { text: "Event Participation: Time event completions to coincide with resource needs", importance: "minor" }
+                                                ]
+                                            }
                                         ]
                                     }
                                 ]
                             },
                             {
-                                title: "Building Priority",
-                                category: "Power Growth",
+                                title: "Building Priority & Construction Strategy Mastery",
+                                category: "Power Growth & Base Optimization",
                                 icon: "🏗️",
-                                description: "Which buildings to upgrade first for fastest progression",
-                                keyTakeaway: "HQ first always, then resource buildings, then military",
+                                description: "Complete guide to optimal building progression, construction timing, and power maximization strategies",
+                                keyTakeaway: "Strategic building priority with perfect timing can accelerate your progression by 4-6 months compared to random upgrades",
+                                collapsible: true,
                                 sections: [
                                     {
-                                        title: "🎯 Must-Upgrade First (Priority Order)",
+                                        title: "🎯 Critical Building Priority Matrix (Mathematical Optimization)",
+                                        collapsible: true,
                                         items: [
-                                            "1. Headquarters (unlocks everything else)",
-                                            "2. Resource buildings (steady income)",
-                                            "3. Army Camp (bigger armies)",
-                                            "4. Research Institute (technology tree)"
+                                            {
+                                                main: "Tier 1: Absolute Priority Buildings (Must Upgrade First)",
+                                                importance: "critical",
+                                                points: [
+                                                    { text: "Headquarters: ALWAYS upgrade first - unlocks all other building levels and technologies", importance: "critical" },
+                                                    { text: "Research Institute: Second priority - enables technology advancement for long-term power multiplication", importance: "critical" },
+                                                    { text: "Resource Buildings: Oil refineries and steel mills provide compound growth - upgrade immediately after HQ/Research", importance: "critical" },
+                                                    { text: "Army Camp: Larger armies = higher combat power and better resource protection", importance: "important" }
+                                                ]
+                                            },
+                                            {
+                                                main: "Tier 2: High-Impact Secondary Buildings",
+                                                importance: "important",
+                                                points: [
+                                                    { text: "Command Center: Increases march capacity and coordination abilities for alliance activities", importance: "important" },
+                                                    { text: "Hero Hall: Enables hero recruitment and advancement - critical for mid-game power spikes", importance: "important" },
+                                                    { text: "Arsenal: Weapon and equipment upgrades provide massive combat effectiveness boosts", importance: "important" },
+                                                    { text: "Training Grounds: Faster troop training reduces downtime between battles and resource runs", importance: "minor" }
+                                                ]
+                                            },
+                                            {
+                                                main: "Tier 3: Optimization and Quality of Life Buildings",
+                                                importance: "minor",
+                                                points: [
+                                                    { text: "Radar Station: Improves scouting and drone mission efficiency - upgrade when resources are abundant", importance: "minor" },
+                                                    { text: "Medical Center: Reduces healing costs and time - valuable for active combat players", importance: "minor" },
+                                                    { text: "Defensive Buildings: Walls and turrets - only upgrade if frequently attacked", importance: "minor" },
+                                                    { text: "Decorative Buildings: Pure aesthetics - upgrade last when all functional buildings are maxed", importance: "minor" }
+                                                ]
+                                            }
                                         ]
                                     },
                                     {
-                                        title: "⚡ Construction Strategy",
+                                        title: "⚡ Advanced Construction Strategy & Perfect Timing",
+                                        collapsible: true,
                                         items: [
-                                            "Queue multiple upgrades during City Building phase",
-                                            "Gather materials before perfect alignment windows",
-                                            "Use construction speedups ONLY during 4x periods",
-                                            "Focus on power-generating buildings first"
+                                            {
+                                                main: "Perfect Alignment Construction Strategy",
+                                                importance: "critical",
+                                                points: [
+                                                    { text: "Tuesday 00:00-04:00: Queue ALL major building upgrades during City Building + Base Expansion perfect alignment", importance: "critical" },
+                                                    { text: "Parallel Construction: Start multiple buildings simultaneously to maximize 4-hour window efficiency", importance: "critical" },
+                                                    { text: "Speedup Stockpiling: Accumulate 48-72 hours of construction speedups before each Tuesday window", importance: "important" },
+                                                    { text: "Material Pre-Gathering: Complete all resource runs 6-12 hours before construction windows", importance: "important" }
+                                                ]
+                                            },
+                                            {
+                                                main: "Construction Queue Management & Optimization",
+                                                importance: "important",
+                                                points: [
+                                                    { text: "Longest First Strategy: Start highest-level upgrades first to maximize overlap with perfect windows", importance: "important" },
+                                                    { text: "Builder Efficiency: Keep all builders active 24/7 with staggered completion times", importance: "important" },
+                                                    { text: "Emergency Protocols: Reserve 20% of speedups for urgent alliance war preparations", importance: "minor" },
+                                                    { text: "Weekend Preparation: Use Saturday-Sunday to gather materials for Tuesday construction sessions", importance: "minor" }
+                                                ]
+                                            },
+                                            {
+                                                main: "Power Maximization & ROI Analysis",
+                                                importance: "important",
+                                                points: [
+                                                    { text: "Power-per-Hour Calculation: Prioritize buildings that provide highest power gain per construction time", importance: "important" },
+                                                    { text: "Resource Investment ROI: Focus on buildings that unlock higher-tier resource generation first", importance: "important" },
+                                                    { text: "Technology Synchronization: Coordinate building upgrades with research completions for maximum synergy", importance: "minor" },
+                                                    { text: "Alliance Benefit Analysis: Prioritize buildings that enhance alliance contribution capabilities", importance: "minor" }
+                                                ]
+                                            }
                                         ]
                                     },
                                     {
-                                        title: "🚫 Common Building Mistakes",
+                                        title: "🚫 Critical Mistakes to Avoid & Optimization Traps",
+                                        collapsible: true,
                                         items: [
-                                            "Don't build decorative buildings early",
-                                            "Don't upgrade everything equally (focus priorities)",
-                                            "Don't use speedups outside alignment windows",
-                                            "Don't neglect resource production buildings"
+                                            {
+                                                main: "Fatal Construction Timing Mistakes",
+                                                importance: "critical",
+                                                points: [
+                                                    { text: "Never use construction speedups outside Tuesday 00:00-04:00 perfect alignment windows", importance: "critical" },
+                                                    { text: "Don't start major upgrades on random days - wait for City Building + Base Expansion alignment", importance: "critical" },
+                                                    { text: "Avoid upgrading decorative buildings before all functional buildings are maxed for your HQ level", importance: "important" },
+                                                    { text: "Don't upgrade everything equally - focus on tier 1 priorities until completion", importance: "important" }
+                                                ]
+                                            },
+                                            {
+                                                main: "Resource Management Traps",
+                                                importance: "important",
+                                                points: [
+                                                    { text: "Don't neglect resource production buildings - they provide compound growth over time", importance: "important" },
+                                                    { text: "Avoid spending diamonds on instant upgrades outside perfect alignment windows", importance: "important" },
+                                                    { text: "Don't hoard materials indefinitely - use them strategically during perfect windows", importance: "minor" },
+                                                    { text: "Never upgrade storage buildings before production buildings", importance: "minor" }
+                                                ]
+                                            },
+                                            {
+                                                main: "Strategic Planning Errors",
+                                                importance: "important",
+                                                points: [
+                                                    { text: "Don't plan construction without checking your research progress - coordinate both systems", importance: "important" },
+                                                    { text: "Avoid starting long upgrades without sufficient resources to complete them", importance: "important" },
+                                                    { text: "Don't ignore alliance building requirements for wars and events", importance: "minor" },
+                                                    { text: "Never upgrade defensive buildings if you're not being attacked regularly", importance: "minor" }
+                                                ]
+                                            }
                                         ]
                                     }
                                 ]
                             },
                             {
-                                title: "Alliance Success",
-                                category: "Team Play",
+                                title: "Alliance Success & Strategic Cooperation Mastery",
+                                category: "Team Strategy & Leadership",
                                 icon: "🤝",
-                                description: "How to find great alliances and be a valuable member",
-                                keyTakeaway: "Active timezone alliance, contribute consistently, coordinate timing",
+                                description: "Complete guide to alliance selection, contribution optimization, leadership skills, and strategic coordination",
+                                keyTakeaway: "Strategic alliance cooperation can multiply your individual effectiveness by 500-1000% through coordinated events and shared knowledge",
+                                collapsible: true,
                                 sections: [
                                     {
-                                        title: "🏆 Finding the Right Alliance",
+                                        title: "🏆 Elite Alliance Selection Strategy & Evaluation Criteria",
+                                        collapsible: true,
                                         items: [
-                                            "Same timezone (can coordinate during events)",
-                                            "Active voice chat or Discord server",
-                                            "Reasonable VS Points requirements (not too high/low)",
-                                            "Helpful, experienced members willing to teach"
+                                            {
+                                                main: "Critical Alliance Evaluation Factors (Must-Have Criteria)",
+                                                importance: "critical",
+                                                points: [
+                                                    { text: "Timezone Alignment: Alliance must be active during your peak playing hours for coordinated events", importance: "critical" },
+                                                    { text: "Communication Infrastructure: Active Discord/voice chat with organized channels for strategy discussion", importance: "critical" },
+                                                    { text: "Knowledge Sharing Culture: Experienced members who actively teach optimization strategies and timing", importance: "critical" },
+                                                    { text: "Consistent Activity Level: 80%+ of members participate in alliance events and hit daily activity targets", importance: "important" }
+                                                ]
+                                            },
+                                            {
+                                                main: "Performance and Progression Indicators",
+                                                importance: "important",
+                                                points: [
+                                                    { text: "VS Points Requirements: Should match your current level +20% for growth motivation without impossible standards", importance: "important" },
+                                                    { text: "Alliance Ranking History: Consistent top 100 server ranking indicates effective leadership and coordination", importance: "important" },
+                                                    { text: "Event Participation Rate: 90%+ participation in alliance wars and major events", importance: "important" },
+                                                    { text: "Member Retention: Low turnover rate indicates good culture and effective leadership", importance: "minor" }
+                                                ]
+                                            },
+                                            {
+                                                main: "Red Flags and Alliances to Avoid",
+                                                importance: "important",
+                                                points: [
+                                                    { text: "Unrealistic Requirements: VS point minimums that are impossible for your current progression level", importance: "important" },
+                                                    { text: "Poor Communication: No organized chat channels or inactive leadership during critical events", importance: "important" },
+                                                    { text: "Toxic Culture: Drama, infighting, or members who don't share strategies or help others", importance: "minor" },
+                                                    { text: "Inconsistent Activity: Alliance frequently misses event milestones due to inactive members", importance: "minor" }
+                                                ]
+                                            }
                                         ]
                                     },
                                     {
-                                        title: "🤝 Being a Great Alliance Member",
+                                        title: "🤝 Excellence in Alliance Contribution & Strategic Value",
+                                        collapsible: true,
                                         items: [
-                                            "Contribute VS Points consistently (even small amounts help)",
-                                            "Coordinate major activities with alliance timing",
-                                            "Share optimization tips and strategies",
-                                            "Help newer members learn the basics"
+                                            {
+                                                main: "Consistent High-Value Contributions",
+                                                importance: "critical",
+                                                points: [
+                                                    { text: "VS Points Consistency: Contribute daily even if small amounts - reliability beats large sporadic contributions", importance: "critical" },
+                                                    { text: "Perfect Timing Coordination: Synchronize major spending with alliance mass events during perfect alignment windows", importance: "critical" },
+                                                    { text: "Resource Sharing Strategy: Donate regularly and request strategically during your preparation phases", importance: "important" },
+                                                    { text: "Event Participation: Maintain 100% participation rate in alliance wars and major events", importance: "important" }
+                                                ]
+                                            },
+                                            {
+                                                main: "Knowledge Leadership & Strategic Mentoring",
+                                                importance: "important",
+                                                points: [
+                                                    { text: "Strategy Sharing: Actively teach optimization techniques and perfect timing strategies to alliance members", importance: "important" },
+                                                    { text: "New Member Onboarding: Create comprehensive guides and provide 1-on-1 mentoring for new recruits", importance: "important" },
+                                                    { text: "Innovation and Testing: Experiment with new strategies and share results with the alliance", importance: "minor" },
+                                                    { text: "Problem Solving: Help troubleshoot alliance coordination issues and optimize group activities", importance: "minor" }
+                                                ]
+                                            },
+                                            {
+                                                main: "Advanced Alliance Value Creation",
+                                                importance: "important",
+                                                points: [
+                                                    { text: "Intelligence Gathering: Share enemy alliance information and strategic insights during wars", importance: "important" },
+                                                    { text: "Coordination Leadership: Help organize complex multi-member activities and timing synchronization", importance: "important" },
+                                                    { text: "Technology Research: Stay updated on game changes and share meta strategy updates", importance: "minor" },
+                                                    { text: "Alliance Recruitment: Help identify and recruit high-quality new members", importance: "minor" }
+                                                ]
+                                            }
                                         ]
                                     },
                                     {
-                                        title: "⚡ Alliance Coordination",
+                                        title: "⚡ Advanced Alliance Coordination & Strategic Synchronization",
+                                        collapsible: true,
                                         items: [
-                                            "Plan big upgrades during same alignment windows",
-                                            "Share resource donations during events",
-                                            "Coordinate research and building timings",
-                                            "Work together on seasonal competitions"
+                                            {
+                                                main: "Perfect Timing Mass Coordination Strategy",
+                                                importance: "critical",
+                                                points: [
+                                                    { text: "Tuesday 00:00-04:00 Mass Building: Coordinate all alliance members to upgrade buildings simultaneously during perfect alignment", importance: "critical" },
+                                                    { text: "Wednesday 08:00-12:00 Research Sync: Synchronize research completions and speedup usage across alliance", importance: "critical" },
+                                                    { text: "Friday Total Mobilization Events: Plan alliance-wide massive spending days during universal bonus periods", importance: "critical" },
+                                                    { text: "Advance Planning System: Create 72-hour advance coordination schedules shared in alliance Discord", importance: "important" }
+                                                ]
+                                            },
+                                            {
+                                                main: "Resource Flow and Mutual Support Systems",
+                                                importance: "important",
+                                                points: [
+                                                    { text: "Strategic Resource Donations: Coordinate who donates what resources based on individual perfect timing needs", importance: "important" },
+                                                    { text: "Alliance Store Optimization: Rotate purchases to maximize collective benefit and avoid resource conflicts", importance: "important" },
+                                                    { text: "Emergency Support Network: Establish rapid response system for members facing urgent resource needs", importance: "minor" },
+                                                    { text: "Help Point Banking: Coordinate help point usage for maximum collective alliance store benefits", importance: "minor" }
+                                                ]
+                                            },
+                                            {
+                                                main: "Competitive Events and Seasonal Coordination",
+                                                importance: "important",
+                                                points: [
+                                                    { text: "Alliance War Strategy: Coordinate attack timings and resource allocation for maximum damage efficiency", importance: "important" },
+                                                    { text: "Seasonal Competition Planning: Create 4-week preparation schedules for major server-wide events", importance: "important" },
+                                                    { text: "Cross-Alliance Intelligence: Share information about enemy alliances and coordinate counter-strategies", importance: "minor" },
+                                                    { text: "Leadership Rotation: Establish systems for sharing coordination responsibilities to prevent burnout", importance: "minor" }
+                                                ]
+                                            }
                                         ]
                                     }
                                 ]

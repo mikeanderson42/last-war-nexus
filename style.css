@@ -2005,10 +2005,15 @@ body {
     
     /* Settings dropdown */
     .settings-dropdown {
-        width: 90vw;
+        width: calc(100vw - var(--spacing-md) * 2);
         max-width: 320px;
-        right: var(--spacing-md);
-        left: var(--spacing-md);
+        right: var(--spacing-sm);
+        left: var(--spacing-sm);
+        top: 60px;
+        /* Ensure dropdown stays within viewport */
+        max-height: calc(100vh - 120px);
+        overflow-y: auto;
+        position: fixed;
     }
     
     /* Banner optimization - keep fixed positioning on mobile */
@@ -2255,6 +2260,10 @@ body {
         right: var(--spacing-sm);
         left: var(--spacing-sm);
         top: 60px;
+        /* Ensure dropdown stays within viewport */
+        max-height: calc(100vh - 120px);
+        overflow-y: auto;
+        position: fixed;
     }
     
     .dropdown-content {

@@ -2449,7 +2449,7 @@
                                             <span>×</span>
                                         </button>
                                     </div>
-                                    ${guide.keyTakeaway ? `<div class="guide-fullscreen-takeaway">💡 <strong>Key Point:</strong> ${guide.keyTakeaway}</div>` : ''}
+                                    ${guide.keyTakeaway ? `<div class="guide-fullscreen-takeaway" style="display: none;">💡 <strong>Key Point:</strong> ${guide.keyTakeaway}</div>` : ''}
                                     <div class="guide-fullscreen-content">
                                         ${guide.sections.map((section, sIndex) => {
                                             const isCollapsible = section.collapsible || guide.collapsible;
@@ -2636,18 +2636,11 @@
                 try {
                     const sectionContent = document.getElementById(`section-content-${guideIndex}-${sectionIndex}`);
                     const toggleIcon = document.getElementById(`section-toggle-${guideIndex}-${sectionIndex}`);
-                    const keyTakeaway = document.querySelector('.guide-fullscreen-takeaway');
                     
                     if (sectionContent && toggleIcon) {
                         const isExpanded = sectionContent.style.display !== 'none';
                         sectionContent.style.display = isExpanded ? 'none' : 'block';
                         toggleIcon.textContent = isExpanded ? '▶' : '▼';
-                        
-                        // Hide key takeaway when any section is opened
-                        if (keyTakeaway) {
-                            const anySectionOpen = document.querySelector('[id^="section-content-"]:not([style*="none"])');
-                            keyTakeaway.style.display = anySectionOpen ? 'none' : 'block';
-                        }
                     }
                 } catch (error) {
                     console.error('Section toggle error:', error);

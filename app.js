@@ -271,14 +271,19 @@
                                     this.switchTab('guides');
                                 }
                                 
+                                // Capture previous guide type before switching
+                                const previousGuideType = this.activeGuideType;
+                                
                                 // Then switch guide type
                                 this.switchGuideType(guideType);
                                 
-                                // Force content update
-                                setTimeout(() => {
-                                    console.log('Forcing content refresh...');
+                                // Only refresh if guide type actually changed (prevent auto-closing)
+                                if (guideType !== previousGuideType) {
+                                    console.log('Guide type changed, refreshing content...');
                                     this.populateGuides();
-                                }, 100);
+                                } else {
+                                    console.log('Same guide type, no refresh needed');
+                                }
                             }
                             
                             // Remove processing flag after delay

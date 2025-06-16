@@ -368,6 +368,11 @@ body {
     transition: all var(--transition-normal);
     min-height: 44px; /* Ensure proper touch target size */
     min-width: 44px;
+    position: relative;
+    z-index: calc(var(--z-dropdown) + 1);
+    /* Ensure proper touch interaction on mobile */
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
 }
 
 .settings-btn:hover {
@@ -403,15 +408,38 @@ body {
     visibility: hidden;
     transform: scale(0.95);
     transition: all var(--transition-normal);
-    z-index: 1000;
+    z-index: var(--z-dropdown);
     /* Prevent off-screen positioning */
     transform-origin: top right;
+    pointer-events: auto;
 }
 
-.settings-dropdown.active {
+/* Support both .active and .show classes for dropdown visibility */
+.settings-dropdown.active,
+.settings-dropdown.show {
     opacity: 1;
     visibility: visible;
     transform: scale(1);
+    z-index: var(--z-dropdown);
+}
+
+/* Mobile-specific dropdown positioning */
+@media (max-width: 767px) {
+    .settings-dropdown {
+        position: fixed;
+        top: var(--header-height);
+        right: var(--spacing-md);
+        left: var(--spacing-md);
+        width: auto;
+        max-width: none;
+        z-index: calc(var(--z-dropdown) + 10);
+        transform-origin: top center;
+    }
+    
+    .settings-dropdown.active,
+    .settings-dropdown.show {
+        z-index: calc(var(--z-dropdown) + 10);
+    }
 }
 
 .dropdown-header {

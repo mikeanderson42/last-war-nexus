@@ -1137,12 +1137,16 @@ export class VSPointsUI extends VSPointsCore {
     const btn = document.querySelector('.settings-btn');
     
     if (dropdown) {
-      const isVisible = dropdown.classList.contains('show');
+      const isVisible = dropdown.classList.contains('show') || dropdown.classList.contains('active');
       if (isVisible) {
         this.closeSettingsDropdown();
       } else {
-        dropdown.classList.add('show');
-        if (btn) btn.classList.add('active');
+        // Use both classes for compatibility
+        dropdown.classList.add('show', 'active');
+        if (btn) {
+          btn.classList.add('active');
+          btn.setAttribute('aria-expanded', 'true');
+        }
       }
     }
   }
@@ -1155,10 +1159,11 @@ export class VSPointsUI extends VSPointsCore {
     const btn = document.querySelector('.settings-btn');
     
     if (dropdown) {
-      dropdown.classList.remove('show');
+      dropdown.classList.remove('show', 'active');
     }
     if (btn) {
       btn.classList.remove('active');
+      btn.setAttribute('aria-expanded', 'false');
     }
   }
 

@@ -647,7 +647,7 @@
 
             closeAllDropdowns() {
                 document.querySelectorAll('.settings-dropdown').forEach(dropdown => {
-                    dropdown.classList.remove('active');
+                    dropdown.classList.remove('active', 'show');
                 });
                 document.querySelectorAll('.settings-btn').forEach(btn => {
                     btn.classList.remove('active');

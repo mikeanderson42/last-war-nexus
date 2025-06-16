@@ -1615,7 +1615,7 @@
                         // COMPREHENSIVE SEASONAL GUIDES: Complete progression system based on lastwartutorial.com research
                         guides = [
                             {
-                                title: "Season 1: Crimson Plague Foundation",
+                                title: "Season 1:<br>Crimson Plague Foundation",
                                 category: "New Player Complete Guide (Days 1-45)",
                                 icon: "🦠",
                                 description: "Master essential foundation systems, resource management, building priorities, and early game progression strategies during Crimson Plague",
@@ -1748,7 +1748,7 @@
                                 ]
                             },
                             {
-                                title: "Season 2: Polar Storm Military Excellence",
+                                title: "Season 2:<br>Polar Storm Military Excellence",
                                 category: "Intermediate Strategy (Days 45-120)",
                                 icon: "❄️",
                                 description: "Master military specialization, hero development, and competitive participation during Polar Storm",
@@ -1809,7 +1809,7 @@
                                 ]
                             },
                             {
-                                title: "Season 3: Golden Kingdom Technology Mastery",
+                                title: "Season 3:<br>Golden Kingdom Technology Mastery",
                                 category: "Advanced Strategy (Days 120-200)",
                                 icon: "🏛️",
                                 description: "Master advanced research paths, Oasis Project exploration, and technology integration",
@@ -1869,7 +1869,7 @@
                                 ]
                             },
                             {
-                                title: "Season 4: Evernight Isle Competitive Excellence",
+                                title: "Season 4:<br>Evernight Isle Competitive Excellence",
                                 category: "Expert Mastery (Days 200+)",
                                 icon: "🌙",
                                 description: "Achieve competitive dominance through Season 4 systems mastery and alliance leadership",

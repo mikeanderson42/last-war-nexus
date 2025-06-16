@@ -2,45 +2,45 @@
 
 /* ENHANCED: CSS Variables with better contrast and design */
 :root {
-    /* Reference dark background tones */
-    --bg-primary: #0a0e13;
-    --bg-secondary: #151922;
-    --bg-tertiary: #1e242e;
-    --bg-card: #1a1f28;
-    --bg-elevated: #252b37;
-    --bg-hover: #252b37;
-    --bg-surface: #2d3748;
+    /* Reference dark background tones - desaturated by 20% */
+    --bg-primary: #0c0e11;
+    --bg-secondary: #161820;
+    --bg-tertiary: #1f242c;
+    --bg-card: #1b1f26;
+    --bg-elevated: #262a35;
+    --bg-hover: #262a35;
+    --bg-surface: #2e3546;
     
     --text-primary: #ffffff;
     --text-secondary: #b8bfc7; /* Improved contrast from #9ca3af */
     --text-tertiary: #8b95a2; /* Improved contrast from #6b7280 */
     --text-muted: #8b95a2;
     
-    --border-primary: #2d3748;
-    --border-secondary: #374151;
-    --border-accent: #00d4ff;
+    --border-primary: #2e3546;
+    --border-secondary: #38414f;
+    --border-accent: #33b8d4;
     
-    /* Reference accent colors */
-    --accent-primary: #00d4ff;
-    --accent-primary-dark: #0099cc;
-    --accent-primary-light: #66e2ff;
-    --accent-secondary: #ff6b35;
-    --accent-success: #00ff88;
-    --accent-warning: #ffb800;
-    --accent-error: #ff4757;
-    --accent-purple: #8b5cf6;
+    /* Reference accent colors - desaturated by 20% */
+    --accent-primary: #33b8d4;
+    --accent-primary-dark: #2d8ea6;
+    --accent-primary-light: #7ad1e5;
+    --accent-secondary: #d17553;
+    --accent-success: #33d177;
+    --accent-warning: #d19a33;
+    --accent-error: #d1606f;
+    --accent-purple: #9673d1;
     
-    --gradient-primary: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
-    --gradient-secondary: linear-gradient(135deg, #ff6b35 0%, #ff4757 100%);
-    --gradient-success: linear-gradient(135deg, #00ff88 0%, #00cc66 100%);
-    --gradient-card: #2a2e36;
-    --gradient-elevated: #363c47;
+    --gradient-primary: linear-gradient(135deg, #33b8d4 0%, #2d8ea6 100%);
+    --gradient-secondary: linear-gradient(135deg, #d17553 0%, #d1606f 100%);
+    --gradient-success: linear-gradient(135deg, #33d177 0%, #2da659 100%);
+    --gradient-card: #2b2d34;
+    --gradient-elevated: #373b45;
     
-    /* Refined glass morphism effects */
-    --glass-bg: rgba(26, 31, 41, 0.85);
-    --glass-bg-elevated: rgba(36, 42, 54, 0.9);
-    --glass-border: rgba(0, 212, 255, 0.1);
-    --glass-border-hover: rgba(0, 212, 255, 0.2);
+    /* Refined glass morphism effects - desaturated */
+    --glass-bg: rgba(27, 31, 38, 0.85);
+    --glass-bg-elevated: rgba(38, 42, 52, 0.9);
+    --glass-border: rgba(51, 184, 212, 0.1);
+    --glass-border-hover: rgba(51, 184, 212, 0.2);
     --glass-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
     --glass-shadow-hover: 0 4px 20px rgba(0, 0, 0, 0.15);
     --backdrop-blur: blur(12px);
@@ -524,19 +524,37 @@ body {
     font-size: 1.25rem;
     font-weight: 700;
     margin: 0;
+    padding: var(--spacing-sm) var(--spacing-md);
     background: linear-gradient(135deg, 
-        rgba(0, 212, 255, 0.9) 0%, 
-        rgba(0, 153, 204, 0.8) 25%,
-        rgba(102, 226, 255, 0.7) 50%,
-        rgba(0, 212, 255, 0.9) 75%,
-        rgba(0, 153, 204, 0.8) 100%
+        rgba(51, 184, 212, 0.9) 0%, 
+        rgba(45, 142, 166, 0.8) 25%,
+        rgba(122, 209, 229, 0.7) 50%,
+        rgba(51, 184, 212, 0.9) 75%,
+        rgba(45, 142, 166, 0.8) 100%
     );
     background-size: 200% 200%;
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
     animation: glassTitleShimmer 4s ease-in-out infinite;
-    filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.4));
+    filter: drop-shadow(0 0 8px rgba(51, 184, 212, 0.4));
+    border-radius: var(--border-radius-lg);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(51, 184, 212, 0.2);
+    position: relative;
+}
+
+.optimizer-title h2::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(51, 184, 212, 0.05);
+    border-radius: var(--border-radius-lg);
+    z-index: -1;
 }
 
 .live-indicator {

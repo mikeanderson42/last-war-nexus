@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Last War Nexus - Testing</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #1e293b;
+            color: white;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #475569;
+            border-radius: 8px;
+        }
+        .test-button {
+            background: #0ea5e9;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .test-button:hover {
+            background: #0284c7;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success { background: #065f46; color: #d1fae5; }
+        .error { background: #7f1d1d; color: #fecaca; }
+        .warning { background: #78350f; color: #fed7aa; }
+    </style>
+</head>
+<body>
+    <h1>Last War Nexus - Verification Tests</h1>
+    
+    <div class="test-section">
+        <h2>📋 Test Results</h2>
+        <div id="test-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🎯 Tab Navigation Test</h2>
+        <button class="test-button" onclick="testTabNavigation()">Test Tab Buttons</button>
+        <div id="tab-test-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>⚙️ Settings Dropdown Test</h2>
+        <button class="test-button" onclick="testSettingsDropdown()">Test Settings Button</button>
+        <div id="settings-test-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🕐 Time Toggle Test</h2>
+        <button class="test-button" onclick="testTimeToggle()">Test Time Toggle</button>
+        <div id="time-test-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>📱 Mobile Responsive Test</h2>
+        <button class="test-button" onclick="testMobileView()">Simulate Mobile</button>
+        <button class="test-button" onclick="testDesktopView()">Simulate Desktop</button>
+        <div id="mobile-test-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🎨 CSS Check</h2>
+        <button class="test-button" onclick="checkCSS()">Check Styles</button>
+        <div id="css-test-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>📖 Guide Navigation Test</h2>
+        <button class="test-button" onclick="testGuideNavigation()">Test Guide Sections</button>
+        <div id="guide-test-results"></div>
+    </div>
+
+    <script>
+        function addResult(elementId, message, type = 'success') {
+            const container = document.getElementById(elementId);
+            const result = document.createElement('div');
+            result.className = `status ${type}`;
+            result.textContent = message;
+            container.appendChild(result);
+        }
+
+        function testTabNavigation() {
+            addResult('tab-test-results', 'Testing tab navigation...', 'warning');
+            
+            // Open main app in new window
+            const appWindow = window.open('/index.html', 'testWindow', 'width=1200,height=800');
+            
+            setTimeout(() => {
+                try {
+                    const tabs = appWindow.document.querySelectorAll('.tab-btn');
+                    if (tabs.length === 0) {
+                        addResult('tab-test-results', 'ERROR: No tab buttons found', 'error');
+                        return;
+                    }
+                    
+                    addResult('tab-test-results', `Found ${tabs.length} tab buttons`, 'success');
+                    
+                    // Test each tab
+                    tabs.forEach((tab, index) => {
+                        setTimeout(() => {
+                            tab.click();
+                            const tabName = tab.dataset.tab;
+                            const isActive = tab.classList.contains('active');
+                            addResult('tab-test-results', 
+                                `Tab "${tabName}": ${isActive ? 'WORKING' : 'FAILED'}`, 
+                                isActive ? 'success' : 'error'
+                            );
+                        }, index * 500);
+                    });
+                    
+                } catch (error) {
+                    addResult('tab-test-results', `Error: ${error.message}`, 'error');
+                }
+            }, 2000);
+        }
+
+        function testSettingsDropdown() {
+            addResult('settings-test-results', 'Testing settings dropdown...', 'warning');
+            
+            const appWindow = window.open('/index.html', 'testWindow', 'width=1200,height=800');
+            
+            setTimeout(() => {
+                try {
+                    const settingsBtn = appWindow.document.getElementById('settings-toggle');
+                    if (!settingsBtn) {
+                        addResult('settings-test-results', 'ERROR: Settings button not found', 'error');
+                        return;
+                    }
+                    
+                    // Test dropdown toggle
+                    settingsBtn.click();
+                    
+                    setTimeout(() => {
+                        const dropdown = appWindow.document.getElementById('settings-dropdown');
+                        const isOpen = dropdown && dropdown.classList.contains('active');
+                        addResult('settings-test-results', 
+                            `Settings dropdown: ${isOpen ? 'OPENS' : 'FAILED TO OPEN'}`, 
+                            isOpen ? 'success' : 'error'
+                        );
+                        
+                        // Test closing
+                        if (isOpen) {
+                            settingsBtn.click();
+                            setTimeout(() => {
+                                const isClosed = !dropdown.classList.contains('active');
+                                addResult('settings-test-results', 
+                                    `Settings dropdown: ${isClosed ? 'CLOSES' : 'FAILED TO CLOSE'}`, 
+                                    isClosed ? 'success' : 'error'
+                                );
+                            }, 300);
+                        }
+                    }, 300);
+                    
+                } catch (error) {
+                    addResult('settings-test-results', `Error: ${error.message}`, 'error');
+                }
+            }, 2000);
+        }
+
+        function testTimeToggle() {
+            addResult('time-test-results', 'Testing time toggle...', 'warning');
+            
+            const appWindow = window.open('/index.html', 'testWindow', 'width=1200,height=800');
+            
+            setTimeout(() => {
+                try {
+                    const timeToggleBtn = appWindow.document.getElementById('time-toggle-btn');
+                    if (!timeToggleBtn) {
+                        addResult('time-test-results', 'ERROR: Time toggle button not found', 'error');
+                        return;
+                    }
+                    
+                    const originalText = timeToggleBtn.textContent;
+                    timeToggleBtn.click();
+                    
+                    setTimeout(() => {
+                        const newText = timeToggleBtn.textContent;
+                        const hasChanged = originalText !== newText;
+                        addResult('time-test-results', 
+                            `Time toggle: ${hasChanged ? 'WORKING' : 'NOT CHANGING'}`, 
+                            hasChanged ? 'success' : 'warning'
+                        );
+                    }, 300);
+                    
+                } catch (error) {
+                    addResult('time-test-results', `Error: ${error.message}`, 'error');
+                }
+            }, 2000);
+        }
+
+        function testMobileView() {
+            addResult('mobile-test-results', 'Testing mobile view...', 'warning');
+            
+            const appWindow = window.open('/index.html', 'testWindow', 'width=375,height=667');
+            
+            setTimeout(() => {
+                try {
+                    const tabContainer = appWindow.document.querySelector('.tab-container');
+                    const navContainer = appWindow.document.querySelector('.nav-container');
+                    
+                    if (!tabContainer || !navContainer) {
+                        addResult('mobile-test-results', 'ERROR: Mobile elements not found', 'error');
+                        return;
+                    }
+                    
+                    // Check if mobile styles are applied
+                    const computedStyle = appWindow.getComputedStyle(tabContainer);
+                    const overflowX = computedStyle.overflowX;
+                    
+                    addResult('mobile-test-results', 
+                        `Mobile tab scrolling: ${overflowX === 'auto' ? 'ENABLED' : 'CHECK NEEDED'}`, 
+                        overflowX === 'auto' ? 'success' : 'warning'
+                    );
+                    
+                } catch (error) {
+                    addResult('mobile-test-results', `Error: ${error.message}`, 'error');
+                }
+            }, 2000);
+        }
+
+        function testDesktopView() {
+            addResult('mobile-test-results', 'Testing desktop view...', 'warning');
+            
+            const appWindow = window.open('/index.html', 'testWindow', 'width=1200,height=800');
+            
+            setTimeout(() => {
+                try {
+                    const mainNav = appWindow.document.querySelector('.main-nav');
+                    if (!mainNav) {
+                        addResult('mobile-test-results', 'ERROR: Main navigation not found', 'error');
+                        return;
+                    }
+                    
+                    // Check for glass effects
+                    const computedStyle = appWindow.getComputedStyle(mainNav);
+                    const backdropFilter = computedStyle.backdropFilter || computedStyle.webkitBackdropFilter;
+                    
+                    addResult('mobile-test-results', 
+                        `Header glass effects: ${backdropFilter === 'none' || !backdropFilter ? 'REMOVED ✓' : 'STILL PRESENT ✗'}`, 
+                        backdropFilter === 'none' || !backdropFilter ? 'success' : 'error'
+                    );
+                    
+                } catch (error) {
+                    addResult('mobile-test-results', `Error: ${error.message}`, 'error');
+                }
+            }, 2000);
+        }
+
+        function checkCSS() {
+            addResult('css-test-results', 'Checking CSS styles...', 'warning');
+            
+            fetch('/css/components.css')
+                .then(response => response.text())
+                .then(css => {
+                    const hasBackdropFilter = css.includes('backdrop-filter');
+                    const hasBlur = css.includes('blur(');
+                    
+                    addResult('css-test-results', 
+                        `Components.css glass effects: ${!hasBackdropFilter && !hasBlur ? 'CLEAN ✓' : 'NEEDS CLEANUP ✗'}`, 
+                        !hasBackdropFilter && !hasBlur ? 'success' : 'error'
+                    );
+                })
+                .catch(error => {
+                    addResult('css-test-results', `Error loading CSS: ${error.message}`, 'error');
+                });
+            
+            fetch('/style.css')
+                .then(response => response.text())
+                .then(css => {
+                    const hasBackdropFilter = css.includes('backdrop-filter');
+                    const hasBlur = css.includes('blur(');
+                    
+                    addResult('css-test-results', 
+                        `Style.css glass effects: ${!hasBackdropFilter && !hasBlur ? 'CLEAN ✓' : 'NEEDS CLEANUP ✗'}`, 
+                        !hasBackdropFilter && !hasBlur ? 'success' : 'error'
+                    );
+                })
+                .catch(error => {
+                    addResult('css-test-results', `Error loading CSS: ${error.message}`, 'error');
+                });
+        }
+
+        function testGuideNavigation() {
+            addResult('guide-test-results', 'Testing guide navigation...', 'warning');
+            
+            const appWindow = window.open('/index.html', 'testWindow', 'width=1200,height=800');
+            
+            setTimeout(() => {
+                try {
+                    // First switch to guides tab
+                    const guidesTab = appWindow.document.querySelector('[data-tab="guides"]');
+                    if (!guidesTab) {
+                        addResult('guide-test-results', 'ERROR: Guides tab not found', 'error');
+                        return;
+                    }
+                    
+                    guidesTab.click();
+                    
+                    setTimeout(() => {
+                        const guideNavBtns = appWindow.document.querySelectorAll('.guide-nav-btn');
+                        if (guideNavBtns.length === 0) {
+                            addResult('guide-test-results', 'ERROR: Guide navigation buttons not found', 'error');
+                            return;
+                        }
+                        
+                        addResult('guide-test-results', `Found ${guideNavBtns.length} guide navigation buttons`, 'success');
+                        
+                        // Test guide navigation buttons
+                        guideNavBtns.forEach((btn, index) => {
+                            setTimeout(() => {
+                                btn.click();
+                                const guideType = btn.dataset.guideType;
+                                const isActive = btn.classList.contains('active');
+                                addResult('guide-test-results', 
+                                    `Guide "${guideType}": ${isActive ? 'WORKING' : 'FAILED'}`, 
+                                    isActive ? 'success' : 'error'
+                                );
+                            }, index * 500);
+                        });
+                        
+                    }, 500);
+                    
+                } catch (error) {
+                    addResult('guide-test-results', `Error: ${error.message}`, 'error');
+                }
+            }, 2000);
+        }
+
+        // Run initial checks
+        window.onload = function() {
+            addResult('test-results', 'Test environment loaded successfully', 'success');
+            addResult('test-results', 'Server running on port 8080', 'success');
+            addResult('test-results', 'Ready to run verification tests', 'warning');
+        };
+    </script>
+</body>
+</html>

@@ -9,10 +9,9 @@
 
 /* Main Navigation */
 .main-nav {
-  background: linear-gradient(145deg, rgba(30, 30, 35, 0.98), rgba(25, 25, 30, 0.95));
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(10px);
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-primary);
+  box-shadow: var(--shadow-sm);
   position: sticky;
   top: 0;
   z-index: var(--z-dropdown);

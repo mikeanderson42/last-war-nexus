@@ -134,42 +134,19 @@ body {
 
 /* ENHANCED: Header Navigation Styles with Premium Glass Effect */
 .main-nav {
-    background: linear-gradient(145deg, 
-        rgba(21, 25, 34, 0.95) 0%, 
-        rgba(15, 19, 28, 0.98) 50%,
-        rgba(26, 31, 41, 0.95) 100%
-    );
-    backdrop-filter: var(--backdrop-blur-strong);
-    -webkit-backdrop-filter: var(--backdrop-blur-strong);
-    border-bottom: 1px solid rgba(0, 212, 255, 0.2);
-    position: relative; /* Changed from sticky to fix mobile scrolling */
-    z-index: 100;
-    box-shadow: 
-        0 4px 20px rgba(0, 0, 0, 0.4),
-        0 1px 0 rgba(255, 255, 255, 0.05) inset;
-    position: relative;
-    overflow: hidden;
-}
-
-.main-nav::after {
-    content: '';
-    position: absolute;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-primary);
+    position: sticky;
     top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, 
-        transparent, 
-        rgba(0, 212, 255, 0.4), 
-        transparent
-    );
-    animation: navGlow 8s ease-in-out infinite;
+    z-index: 100;
+    box-shadow: var(--shadow-sm);
+    padding: var(--spacing-sm) 0;
+    min-height: var(--header-height);
 }
 
-@keyframes navGlow {
-    0%, 100% { opacity: 0.3; }
-    50% { opacity: 0.8; }
-}
+/* Removed animated glow effect for clean design */
+
+/* Removed navGlow animation for clean design */
 
 .nav-container {
     max-width: 1200px;

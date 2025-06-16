@@ -2428,12 +2428,12 @@
                                         <h3 class="guide-preview-title">${guide.title}</h3>
                                         <div class="guide-preview-category">${guide.category}</div>
                                     </div>
-                                    <button class="guide-preview-btn" id="guide-toggle-${index}" aria-label="Open guide">
-                                        <span class="guide-preview-text">Read Guide</span>
-                                        <span class="guide-toggle-icon">→</span>
-                                    </button>
                                 </div>
                                 ${guide.keyTakeaway ? `<div class="guide-preview-takeaway">💡 ${guide.keyTakeaway}</div>` : ''}
+                                <button class="guide-preview-btn" id="guide-toggle-${index}" aria-label="Open guide">
+                                    <span class="guide-preview-text">Read Guide</span>
+                                    <span class="guide-toggle-icon">→</span>
+                                </button>
                             </div>
                             <div class="guide-fullscreen-overlay" id="guide-content-${index}" style="display: none;">
                                 <div class="guide-fullscreen-container">

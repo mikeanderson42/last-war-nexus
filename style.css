@@ -289,7 +289,9 @@ body {
 .time-toggle-btn:focus {
     outline: none !important;
     box-shadow: none !important;
-    border-left: 3px solid var(--accent-primary);
+    border: 1px solid var(--border-secondary);
+    background: var(--bg-surface);
+    color: var(--text-secondary);
 }
 
 .time-toggle-icon {
@@ -2895,16 +2897,18 @@ body {
 .guide-preview-title {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--text-primary);
+    color: #ffffff;
     margin: 0 0 var(--spacing-xs) 0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
 }
 
 .guide-preview-category {
     font-size: 0.875rem;
-    color: var(--text-tertiary);
+    color: #b8bfc7;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
 
 .guide-preview-btn {

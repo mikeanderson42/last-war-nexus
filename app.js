@@ -1936,33 +1936,24 @@
                                                 main: "Arms Race Phase System Explained",
                                                 importance: "critical",
                                                 points: [
-                                                    { text: "5 Rotating Phases: City Building (0-4h), Unit Progression (4-8h), Tech Research (8-12h), Drone Boost (12-16h), Hero Advancement (16-20h)", importance: "critical" },
-                                                    { text: "4-Hour Cycles: Each phase lasts exactly 4 hours and repeats daily in the same pattern", importance: "critical" },
-                                                    { text: "Activity Matching: Your spending activity must match the current phase (construction during City Building, research during Tech Research, etc.)", importance: "critical" },
-                                                    { text: "Phase Transition: New phases begin at exact times - 00:00, 04:00, 08:00, 12:00, 16:00, 20:00 server time", importance: "important" },
-                                                    { text: "Global Synchronization: All players worldwide follow the same Arms Race schedule based on server time", importance: "minor" }
+                                                    { text: "5 Rotating Phases in 4-Hour Cycles: City Building (0-4h), Unit Progression (4-8h), Tech Research (8-12h), Drone Boost (12-16h), Hero Advancement (16-20h). Each phase repeats daily in the same pattern with exact transition times at 00:00, 04:00, 08:00, 12:00, 16:00, 20:00 server time.", importance: "critical" },
+                                                    { text: "Activity Matching Strategy: Your spending activity must align with the current phase (construction during City Building, research during Tech Research, etc.). All players worldwide follow the same synchronized schedule, creating predictable optimization windows.", importance: "critical" }
                                                 ]
                                             },
                                             {
                                                 main: "Daily VS Focus Events & Perfect Alignment Windows",
-                                                subPoints: [
-                                                    "Monday - Radar Training: Drone activities get bonus when combined with Drone Boost phase (12:00-16:00)",
-                                                    "Tuesday - Base Expansion: Construction activities get bonus when combined with City Building phase (00:00-04:00)",
-                                                    "Wednesday - Age of Science: Research activities get bonus when combined with Tech Research phase (08:00-12:00)",
-                                                    "Thursday - Train Heroes: Hero activities get bonus when combined with Hero Advancement phase (16:00-20:00)",
-                                                    "Friday - Total Mobilization: ALL activities get 50% bonus regardless of Arms Race phase (entire day)",
-                                                    "Saturday - Enemy Buster: Military activities get bonus when combined with Unit Progression phase (04:00-08:00)",
-                                                    "Sunday - Planning Day: Use for preparation, resource stockpiling, and strategy coordination"
+                                                importance: "critical",
+                                                points: [
+                                                    { text: "Weekday Perfect Windows: Monday (Radar Training + Drone Boost, 12:00-16:00), Tuesday (Base Expansion + City Building, 00:00-04:00), Wednesday (Age of Science + Tech Research, 08:00-12:00), Thursday (Train Heroes + Hero Advancement, 16:00-20:00), Saturday (Enemy Buster + Unit Progression, 04:00-08:00).", importance: "critical" },
+                                                    { text: "Special Days: Friday offers Total Mobilization where ALL activities get 50% bonus regardless of Arms Race phase (entire day). Sunday is your Planning Day for resource stockpiling, strategy coordination, and preparing for the week's optimal windows.", importance: "important" }
                                                 ]
                                             },
                                             {
                                                 main: "Advanced Mathematical Examples & ROI Calculations",
-                                                subPoints: [
-                                                    "Scenario 1: 10 construction speedups during perfect alignment (Tuesday 00:00-04:00) = 150 points vs 100 points random timing",
-                                                    "Scenario 2: 5 research speedups during perfect alignment (Wednesday 08:00-12:00) = 300 points vs 200 points random timing",
-                                                    "Scenario 3: $100 diamond purchase during Friday Total Mobilization = 1500 VS points vs 1000 points other days",
-                                                    "Annual ROI: Player spending $1000/year with perfect timing generates 50% more VS points than random spending",
-                                                    "Competitive Impact: 50% efficiency advantage compounds to 6-12 month progression lead over non-optimized players"
+                                                importance: "important",
+                                                points: [
+                                                    { text: "Real Scenarios: 10 construction speedups during perfect alignment (Tuesday 00:00-04:00) = 150 points vs 100 random timing. 5 research speedups during Wednesday 08:00-12:00 = 300 points vs 200 random. $100 diamond purchase on Friday = 1500 VS points vs 1000 other days.", importance: "important" },
+                                                    { text: "Annual Impact: A player spending $1000/year with perfect timing generates 50% more VS points than random spending. This 50% efficiency advantage compounds to a 6-12 month progression lead over non-optimized players.", importance: "critical" }
                                                 ]
                                             }
                                         ]
@@ -1972,25 +1963,18 @@
                                         items: [
                                             {
                                                 main: "Daily Focus Schedule & Optimal Activity Windows",
-                                                subPoints: [
-                                                    "Monday - Radar Training: Focus on drone stamina, hero EXP, radar missions. Perfect window: 12:00-16:00 (Drone Boost phase)",
-                                                    "Tuesday - Base Expansion: Construction speedups, building upgrades, legendary trucks. Perfect window: 00:00-04:00 (City Building phase)",
-                                                    "Wednesday - Age of Science: Research speedups, tech upgrades, valor badges. Perfect window: 08:00-12:00 (Tech Research phase)",
-                                                    "Thursday - Train Heroes: Hero recruitment, EXP items, skill medals, hero shards. Perfect window: 16:00-20:00 (Hero Advancement phase)",
-                                                    "Friday - Total Mobilization: ALL activities receive 50% bonus regardless of phase. Plan biggest spending day here.",
-                                                    "Saturday - Enemy Buster: Military training, healing speedups, combat activities. Perfect window: 04:00-08:00 (Unit Progression phase)",
-                                                    "Sunday - Strategic Planning: Review next week's windows, coordinate alliance activities, stockpile resources for upcoming events"
+                                                importance: "critical",
+                                                points: [
+                                                    { text: "Monday-Thursday Focus: Monday targets drone stamina/hero EXP/radar missions (12:00-16:00 Drone Boost). Tuesday emphasizes construction speedups/building upgrades/legendary trucks (00:00-04:00 City Building). Wednesday prioritizes research speedups/tech upgrades/valor badges (08:00-12:00 Tech Research). Thursday focuses on hero recruitment/EXP items/skill medals (16:00-20:00 Hero Advancement).", importance: "critical" },
+                                                    { text: "Weekend Strategy: Friday is Total Mobilization day where ALL activities receive 50% bonus regardless of phase - plan your biggest spending here. Saturday targets military training/healing speedups (04:00-08:00 Unit Progression). Sunday is for strategic planning, alliance coordination, and resource stockpiling.", importance: "important" }
                                                 ]
                                             },
                                             {
                                                 main: "Weekly Resource Stockpiling Strategy",
-                                                subPoints: [
-                                                    "Monday-Wednesday: Accumulate construction speedups for Tuesday perfect windows",
-                                                    "Tuesday-Thursday: Collect research speedups for Wednesday perfect windows",
-                                                    "Wednesday-Friday: Gather hero items for Thursday perfect windows",
-                                                    "Thursday-Saturday: Stockpile military speedups for Saturday perfect windows",
-                                                    "Friday Preparation: Build largest resource reserves for Friday Total Mobilization",
-                                                    "Weekend Planning: Use Saturday-Sunday to prepare for next week's cycle"
+                                                importance: "important",
+                                                points: [
+                                                    { text: "Weekday Accumulation: Monday-Wednesday accumulate construction speedups for Tuesday windows. Tuesday-Thursday collect research items for Wednesday. Wednesday-Friday gather hero materials for Thursday. Thursday-Saturday stockpile military resources for Saturday windows.", importance: "important" },
+                                                    { text: "Strategic Days: Friday requires the largest resource reserves for Total Mobilization maximum impact. Use Saturday-Sunday for planning, coordination, and preparing for next week's optimization cycle.", importance: "important" }
                                                 ]
                                             },
                                             {
@@ -2072,7 +2056,8 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                additionalInfo: "This VS Points system represents the mathematical foundation of competitive Last War optimization. Understanding these principles separates elite players from casual participants, creating sustainable advantages that compound over months and years of gameplay. Master these techniques to achieve 300-500% efficiency gains over non-optimized players."
                             },
                             {
                                 title: "Resource Strategy & Smart Spending Mastery",
@@ -2191,7 +2176,8 @@
                                             }
                                         ]
                                     }
-                                ]
+                                ],
+                                additionalInfo: "Master the economics of Last War through strategic resource allocation, timing optimization, and investment prioritization that maximizes long-term competitive advantage. This guide provides the economic foundation for sustainable server dominance."
                             },
                             {
                                 title: "Building Priority & Construction Strategy Mastery",
@@ -2513,6 +2499,14 @@
                                                 </div>
                                             </div>
                                         `; }).join('')}
+                                        ${guide.additionalInfo ? `
+                                            <div class="guide-additional-info">
+                                                <div class="guide-additional-info-content">
+                                                    <span class="guide-additional-info-icon">💡</span>
+                                                    <span class="guide-additional-info-text">${guide.additionalInfo}</span>
+                                                </div>
+                                            </div>
+                                        ` : ''}
                                     </div>
                                 </div>
                             </div>

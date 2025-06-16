@@ -4181,3 +4181,33 @@ body.guide-open {
     margin-bottom: var(--spacing-sm);
   }
 }
+
+/* Guide Additional Info Styling */
+.guide-additional-info {
+    margin-top: var(--spacing-lg);
+    padding: var(--spacing-lg);
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(102, 226, 255, 0.05));
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    border-radius: var(--border-radius-lg);
+    backdrop-filter: blur(10px);
+}
+
+.guide-additional-info-content {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+}
+
+.guide-additional-info-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.guide-additional-info-text {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-primary);
+    font-style: italic;
+    opacity: 0.9;
+}

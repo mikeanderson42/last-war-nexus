@@ -1784,7 +1784,7 @@ body {
     box-shadow: var(--shadow-xl);
     width: 90%;
     max-width: 500px;
-    max-height: 90vh;
+    max-height: 85vh;
     overflow-y: auto;
     transform: scale(0.9);
     transition: transform var(--transition-normal);
@@ -1795,7 +1795,7 @@ body {
 }
 
 .setup-header {
-    padding: var(--spacing-2xl);
+    padding: var(--spacing-lg) var(--spacing-2xl) var(--spacing-md) var(--spacing-2xl);
     text-align: center;
     border-bottom: 1px solid var(--border-primary);
 }
@@ -1819,7 +1819,7 @@ body {
 }
 
 .setup-body {
-    padding: var(--spacing-2xl);
+    padding: var(--spacing-lg) var(--spacing-2xl) var(--spacing-xl) var(--spacing-2xl);
 }
 
 .setup-section {

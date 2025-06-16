@@ -396,6 +396,8 @@
                     modal.classList.remove('active');
                     modal.setAttribute('aria-hidden', 'true');
                     this.stopSetupTimeUpdate();
+                    // Scroll to top of main page after setup completion
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
             }
 

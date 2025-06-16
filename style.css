@@ -2839,6 +2839,9 @@ body {
     align-items: center;
     justify-content: center;
     padding: var(--spacing-lg);
+    cursor: pointer; /* Indicate clickable background */
+    /* Prevent body scroll when overlay is open */
+    overscroll-behavior: contain;
 }
 
 /* Desktop Enhancement - Beautiful fullscreen guide experience */
@@ -2904,6 +2907,9 @@ body {
     display: flex;
     flex-direction: column;
     box-shadow: var(--shadow-xl);
+    cursor: default; /* Reset cursor for container content */
+    /* Prevent container clicks from closing overlay */
+    pointer-events: auto;
 }
 
 .guide-fullscreen-header {
@@ -2980,6 +2986,11 @@ body {
     overflow-y: auto;
     padding: var(--spacing-xl);
     background: var(--bg-primary);
+    /* Enhanced mobile scrolling */
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    /* Ensure proper touch scrolling on iOS */
+    transform: translateZ(0);
 }
 
 .guide-fullscreen-section {
@@ -4019,3 +4030,36 @@ select:focus,
   padding: 8px;
   margin: -8px -8px 8px -8px;
 }
+
+
+/* Prevent body scroll when guide overlay is open */
+body.guide-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+}
+
+/* Mobile-specific guide overlay improvements */
+@media (max-width: 768px) {
+  .guide-fullscreen-overlay {
+    padding: var(--spacing-sm);
+    align-items: flex-start;
+    padding-top: calc(var(--spacing-lg) + env(safe-area-inset-top, 0px));
+  }
+  
+  .guide-fullscreen-container {
+    max-height: calc(100vh - var(--spacing-xl) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+    border-radius: var(--border-radius);
+  }
+  
+  .guide-fullscreen-content {
+    padding: var(--spacing-lg);
+    /* Ensure proper touch scrolling momentum */
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+  
+  /* Improve touch targets for mobile */
+  .guide-fullscreen-section-header {
+    min-height: 44px;

@@ -163,6 +163,7 @@
                     this.eventListenersSetup = true;
                     
                     this.setupSetupModalEvents();
+                    this.setupGuideOverlayEvents();
                     
                     // Settings dropdown
                     const settingsToggle = document.getElementById('settings-toggle');
@@ -2572,11 +2573,21 @@
                             document.body.classList.add('guide-open');
                             console.log('Guide opened in fullscreen');
                             
-                            // Scroll to top of fullscreen content
+                            // Scroll to top of fullscreen content and fix mobile scrolling
                             setTimeout(() => {
                                 const fullscreenContainer = content.querySelector('.guide-fullscreen-container');
                                 if (fullscreenContainer) {
                                     fullscreenContainer.scrollTop = 0;
+                                    
+                                    // MOBILE FIX: Ensure proper scrolling on mobile devices
+                                    if (window.innerWidth <= 768) {
+                                        // Force reflow to fix mobile scroll issues
+                                        fullscreenContainer.style.overflow = 'hidden';
+                                        requestAnimationFrame(() => {
+                                            fullscreenContainer.style.overflow = 'auto';
+                                            fullscreenContainer.style.webkitOverflowScrolling = 'touch';
+                                        });
+                                    }
                                 }
                             }, 50);
                         }
@@ -2587,6 +2598,48 @@
                     }
                 } catch (error) {
                     console.error('Guide expansion error:', error);
+                }
+            }
+
+            // NEW: Setup guide overlay click-outside-to-close functionality
+            setupGuideOverlayEvents() {
+                try {
+                    // Add click handler to document for overlay background clicks
+                    document.addEventListener('click', (e) => {
+                        // Check if click is on guide overlay background (not container)
+                        if (e.target.classList.contains('guide-fullscreen-overlay')) {
+                            // Find which guide is open and close it
+                            const openOverlay = e.target;
+                            const guideId = openOverlay.id; // format: guide-content-X
+                            const guideIndex = guideId.split('-')[2];
+                            if (guideIndex !== undefined) {
+                                this.toggleGuideExpansion(parseInt(guideIndex));
+                            }
+                        }
+                    });
+                    
+                    // Prevent clicks inside guide container from bubbling to overlay
+                    document.addEventListener('click', (e) => {
+                        if (e.target.closest('.guide-fullscreen-container')) {
+                            e.stopPropagation();
+                        }
+                    });
+                    
+                    // Add escape key to close guides
+                    document.addEventListener('keydown', (e) => {
+                        if (e.key === 'Escape') {
+                            const openGuides = document.querySelectorAll('.guide-fullscreen-overlay[style*="flex"]');
+                            openGuides.forEach(overlay => {
+                                const guideId = overlay.id;
+                                const guideIndex = guideId.split('-')[2];
+                                if (guideIndex !== undefined) {
+                                    this.toggleGuideExpansion(parseInt(guideIndex));
+                                }
+                            });
+                        }
+                    });
+                } catch (error) {
+                    console.error('Guide overlay events setup error:', error);
                 }
             }
 

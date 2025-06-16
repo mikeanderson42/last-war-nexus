@@ -308,15 +308,18 @@ button:active {
   text-decoration: none;
   transition: all var(--transition-normal);
   cursor: pointer;
-  min-width: 200px;
+  min-width: 180px;
+  min-height: 52px;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
+  word-wrap: break-word;
+  pointer-events: auto !important;
+  z-index: 100;
 }
 
 .tab-btn:hover:not(.active) {
-  background: var(--bg-elevated);
-  border-color: var(--border-secondary);
-  /* NO special styling on hover unless active */
+  background: var(--bg-elevated) !important;
+  border-color: var(--border-secondary) !important;
   box-shadow: none !important;
   outline: none !important;
   transform: none !important;
@@ -344,6 +347,9 @@ button:active {
   align-items: center;
   gap: var(--spacing-sm);
   width: 100%;
+  pointer-events: none;
+  position: relative;
+  z-index: 1;
 }
 
 .tab-icon-wrapper {
@@ -366,18 +372,25 @@ button:active {
   flex-direction: column;
   gap: 2px;
   min-width: 0;
+  flex: 1;
 }
 
 .tab-label {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
   line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .tab-description {
   font-size: var(--font-size-xs);
   opacity: 0.8;
   line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .tab-count {
@@ -797,13 +810,18 @@ button:active {
 .w-full {
   width: 100%;
 }
-/* Nuclear option - remove ALL button focus glows */
-button:focus,
-button:focus-visible,
-button:active,
-*:focus {
+/* Selective focus handling - only remove glows from specific elements */
+.tab-btn:focus,
+.tab-btn:focus-visible,
+.tab-btn:active {
     outline: none !important;
     box-shadow: none !important;
+}
+
+/* Keep focus visible for accessibility on other interactive elements */
+button:focus-visible:not(.tab-btn) {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
 }
 
 /* Specifically target the problematic navigation buttons */
@@ -832,4 +850,27 @@ button:active,
     border-left: 3px solid var(--accent-primary) !important;
     box-shadow: none !important;
     outline: none !important;
+}
+
+/* Ensure buttons are properly clickable with hover feedback */
+.tab-btn {
+    pointer-events: auto !important;
+    position: relative;
+    z-index: 1;
+}
+
+/* Hover style handled above for non-active buttons */
+
+/* Ensure tab content items don't interfere with clicks */
+.tab-content-item {
+    pointer-events: none;
+}
+
+.tab-content-item * {
+    pointer-events: none;
+}
+
+/* Debug: Add visible border when focused for testing */
+.tab-btn:focus {
+    border: 2px solid #ff0000 !important;
 }

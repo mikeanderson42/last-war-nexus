@@ -1880,32 +1880,53 @@
                         ];
                     }
                     
-                    // Generate compact, responsive guide HTML
+                    // Generate full-screen readable guide HTML
                     const html = guides.map((guide, index) => `
-                        <div class="guide-card-compact" data-guide-index="${index}">
-                            <div class="guide-header-compact" onclick="window.lastWarNexus.toggleGuideExpansion(${index})" role="button" tabindex="0">
-                                <div class="guide-header-top">
-                                    <span class="guide-icon-compact">${guide.icon}</span>
-                                    <h3 class="guide-title-compact">${guide.title}</h3>
-                                    <span class="guide-category-badge">${guide.category}</span>
-                                    <button class="guide-toggle-btn-compact" id="guide-toggle-${index}" aria-label="Toggle guide">
-                                        <span class="guide-toggle-icon">▼</span>
+                        <div class="guide-card-fullscreen" data-guide-index="${index}">
+                            <div class="guide-preview-card" onclick="window.lastWarNexus.toggleGuideExpansion(${index})" role="button" tabindex="0">
+                                <div class="guide-preview-header">
+                                    <span class="guide-preview-icon">${guide.icon}</span>
+                                    <div class="guide-preview-info">
+                                        <h3 class="guide-preview-title">${guide.title}</h3>
+                                        <div class="guide-preview-category">${guide.category}</div>
+                                    </div>
+                                    <button class="guide-preview-btn" id="guide-toggle-${index}" aria-label="Open guide">
+                                        <span class="guide-preview-text">Read Guide</span>
+                                        <span class="guide-toggle-icon">→</span>
                                     </button>
                                 </div>
-                                ${guide.keyTakeaway ? `<div class="guide-takeaway-compact">💡 ${guide.keyTakeaway}</div>` : ''}
+                                ${guide.keyTakeaway ? `<div class="guide-preview-takeaway">💡 ${guide.keyTakeaway}</div>` : ''}
                             </div>
-                            <div class="guide-content-compact" id="guide-content-${index}" style="display: none;">
-                                <div class="guide-sections-grid">
-                                    ${guide.sections.map((section, sIndex) => `
-                                        <div class="guide-section-compact">
-                                            <h4 class="guide-section-title-compact">${section.title}</h4>
-                                            <ul class="guide-items-compact">
-                                                ${section.items.map(item => `
-                                                    <li class="guide-item-compact">${item}</li>
-                                                `).join('')}
-                                            </ul>
+                            <div class="guide-fullscreen-overlay" id="guide-content-${index}" style="display: none;">
+                                <div class="guide-fullscreen-container">
+                                    <div class="guide-fullscreen-header">
+                                        <div class="guide-fullscreen-title-section">
+                                            <span class="guide-fullscreen-icon">${guide.icon}</span>
+                                            <div>
+                                                <h2 class="guide-fullscreen-title">${guide.title}</h2>
+                                                <div class="guide-fullscreen-category">${guide.category}</div>
+                                            </div>
                                         </div>
-                                    `).join('')}
+                                        <button class="guide-fullscreen-close" onclick="window.lastWarNexus.toggleGuideExpansion(${index})" aria-label="Close guide">
+                                            <span>×</span>
+                                        </button>
+                                    </div>
+                                    ${guide.keyTakeaway ? `<div class="guide-fullscreen-takeaway">💡 <strong>Key Point:</strong> ${guide.keyTakeaway}</div>` : ''}
+                                    <div class="guide-fullscreen-content">
+                                        ${guide.sections.map((section, sIndex) => `
+                                            <div class="guide-fullscreen-section">
+                                                <h3 class="guide-fullscreen-section-title">${section.title}</h3>
+                                                <div class="guide-fullscreen-items">
+                                                    ${section.items.map(item => `
+                                                        <div class="guide-fullscreen-item">
+                                                            <span class="guide-fullscreen-bullet">✓</span>
+                                                            <span class="guide-fullscreen-text">${item}</span>
+                                                        </div>
+                                                    `).join('')}
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1937,48 +1958,35 @@
                     const card = document.querySelector(`[data-guide-index="${index}"]`);
                     
                     if (content && toggleIcon && card) {
-                        const isExpanded = content.style.display === 'block';
+                        const isExpanded = content.style.display === 'flex';
                         console.log('Currently expanded:', isExpanded);
                         
-                        // Close all other guides first (accordion behavior)
-                        document.querySelectorAll('.guide-card-compact').forEach((otherCard, otherIndex) => {
-                            if (otherIndex !== parseInt(index)) {
-                                const otherContent = document.getElementById(`guide-content-${otherIndex}`);
-                                const otherIcon = document.getElementById(`guide-toggle-${otherIndex}`)?.querySelector('.guide-toggle-icon');
-                                if (otherContent) {
-                                    otherContent.style.display = 'none';
-                                    otherCard.classList.remove('expanded');
-                                }
-                                if (otherIcon) {
-                                    otherIcon.textContent = '▼';
-                                }
+                        // Close all other guides first (only one open at a time)
+                        document.querySelectorAll('.guide-fullscreen-overlay').forEach((otherOverlay, otherIndex) => {
+                            if (otherOverlay.id !== `guide-content-${index}`) {
+                                otherOverlay.style.display = 'none';
+                                document.body.classList.remove('guide-open');
                             }
                         });
                         
                         if (isExpanded) {
-                            // Collapse this guide
+                            // Close fullscreen guide
                             content.style.display = 'none';
-                            card.classList.remove('expanded');
-                            toggleIcon.textContent = '▼';
-                            console.log('Guide collapsed');
+                            document.body.classList.remove('guide-open');
+                            console.log('Guide closed');
                         } else {
-                            // Expand this guide
-                            content.style.display = 'block';
-                            card.classList.add('expanded');
-                            toggleIcon.textContent = '▲';
-                            console.log('Guide expanded');
+                            // Open fullscreen guide
+                            content.style.display = 'flex';
+                            document.body.classList.add('guide-open');
+                            console.log('Guide opened in fullscreen');
                             
-                            // Scroll to guide with proper spacing
+                            // Scroll to top of fullscreen content
                             setTimeout(() => {
-                                const headerHeight = 80; // Account for fixed header
-                                const cardTop = card.getBoundingClientRect().top + window.pageYOffset;
-                                const scrollTarget = cardTop - headerHeight;
-                                
-                                window.scrollTo({
-                                    top: scrollTarget,
-                                    behavior: 'smooth'
-                                });
-                            }, 100);
+                                const fullscreenContainer = content.querySelector('.guide-fullscreen-container');
+                                if (fullscreenContainer) {
+                                    fullscreenContainer.scrollTop = 0;
+                                }
+                            }, 50);
                         }
                     } else {
                         console.error('Missing guide elements for index:', index);

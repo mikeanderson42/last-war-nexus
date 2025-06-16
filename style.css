@@ -279,8 +279,7 @@ body {
     border-color: var(--border-accent);
 }
 
-.time-toggle-btn:active,
-.time-toggle-btn.active {
+.time-toggle-btn:active {
     background: var(--glass-bg-elevated);
     border: 1px solid var(--glass-border);
     border-left: 3px solid var(--accent-primary);
@@ -2862,6 +2861,9 @@ body {
     padding: var(--spacing-lg);
     cursor: pointer;
     transition: all var(--transition-normal);
+    display: flex;
+    flex-direction: column;
+    min-height: 200px;
 }
 
 .guide-preview-card:hover {
@@ -2885,6 +2887,9 @@ body {
 
 .guide-preview-info {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .guide-preview-title {
@@ -2907,13 +2912,17 @@ body {
     color: white;
     border: none;
     border-radius: var(--border-radius);
-    padding: var(--spacing-md) var(--spacing-lg);
+    padding: var(--spacing-sm) var(--spacing-md);
     cursor: pointer;
     font-weight: 600;
     display: flex;
     align-items: center;
     gap: var(--spacing-sm);
     transition: all var(--transition-fast);
+    white-space: nowrap;
+    font-size: 0.875rem;
+    min-height: 44px;
+    justify-content: center;
 }
 
 .guide-preview-btn:hover {
@@ -3312,6 +3321,7 @@ body.guide-open {
     .guide-preview-btn {
         align-self: stretch;
         justify-content: center;
+        margin-top: auto;
     }
 }
 

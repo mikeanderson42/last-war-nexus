@@ -2063,8 +2063,8 @@
                                 title: "Resource Strategy & Smart Spending Mastery",
                                 category: "Advanced Economics",
                                 icon: "💎",
-                                description: "Complete guide to resource optimization, strategic hoarding, and maximum ROI spending decisions",
-                                keyTakeaway: "Strategic resource management can increase your effectiveness by 200-400% compared to random spending",
+                                description: "Complete guide to resource optimization, strategic hoarding, spending timing, and maximum ROI decision making for competitive advantage",
+                                keyTakeaway: "Strategic resource management can increase your effectiveness by 200-400% compared to random spending patterns",
                                 collapsible: true,
                                 sections: [
                                     {
@@ -2183,7 +2183,7 @@
                                 title: "Building Priority & Construction Strategy Mastery",
                                 category: "Power Growth & Base Optimization",
                                 icon: "🏗️",
-                                description: "Complete guide to optimal building progression, construction timing, and power maximization strategies",
+                                description: "Complete guide to optimal building progression, construction timing, power maximization, and strategic upgrade sequencing for competitive advantage",
                                 keyTakeaway: "Strategic building priority with perfect timing can accelerate your progression by 4-6 months compared to random upgrades",
                                 collapsible: true,
                                 sections: [
@@ -2301,8 +2301,8 @@
                                 title: "Alliance Success & Strategic Cooperation Mastery",
                                 category: "Team Strategy & Leadership",
                                 icon: "🤝",
-                                description: "Complete guide to alliance selection, contribution optimization, leadership skills, and strategic coordination",
-                                keyTakeaway: "Strategic alliance cooperation can multiply your individual effectiveness by 500-1000% through coordinated events and shared knowledge",
+                                description: "Complete guide to alliance selection, contribution optimization, leadership skills, coordination strategies, and team building for competitive advantage",
+                                keyTakeaway: "Strategic alliance cooperation can multiply your individual effectiveness by 500-1000% through coordinated events",
                                 collapsible: true,
                                 sections: [
                                     {

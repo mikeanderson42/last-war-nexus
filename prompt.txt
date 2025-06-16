@@ -166,6 +166,92 @@ Last War Nexus is a VS Points & Arms Race optimizer for the mobile game "Last Wa
 - Update this prompt with lessons learned
 - Maintain CLAUDE.md with development guidelines
 
+## 💼 COLLABORATIVE WORKFLOW & ENVIRONMENT
+
+### Working Directory Setup:
+- **Primary Development:** `/home/tweak/last-war-nexus/` (WSL Linux environment)
+- **Windows Access:** `/mnt/c/Users/tw33k/OneDrive/Documents/GitHub/last-war-nexus/`
+- **Publish Script:** `C:\Users\tw33k\publish_changes.bat` (Windows batch file)
+- **Visual Feedback:** Screenshots in `C:\Users\tw33k\` (pic##.jpg files)
+
+### Design Feedback Loop:
+1. **User provides visual feedback** via screenshots showing layout issues
+2. **Analyze layout problems** using CSS debugging and visual inspection
+3. **Make targeted fixes** preserving functionality while improving design
+4. **Test across breakpoints** to ensure responsive behavior
+5. **Commit and publish** using ASCII-only batch file for reliability
+
+### Established Design Patterns:
+- **Desaturated color palette** (20% less saturation for professional look)
+- **Glass effects only on accent elements** (VS Points Optimizer title)
+- **Clean navigation focus states** (left border only, no outer glows)
+- **Consistent card spacing** using flexbox gap instead of margins
+- **Mobile-first scaling** (2x text size for important countdown elements)
+
+## 🎨 RECENT DESIGN SOLUTIONS & PATTERNS
+
+### 1. **Card Layout Consistency**
+- **Problem:** Uneven card heights in grid layouts
+- **Solution:** Extend content descriptions to match longest card
+- **Implementation:** Add more descriptive text maintaining same structure
+- **Example:** Season 1 description extended to match other seasons
+
+### 2. **Navigation Button Focus States**
+- **Problem:** Unwanted blue outer glows on desktop navigation
+- **Solution:** Remove from global focus rules, add specific overrides
+- **Pattern:** `.tab-btn:focus { outline: none !important; box-shadow: none !important; }`
+- **Result:** Clean left-side blue indicator only
+
+### 3. **Mobile Layout Optimization**
+- **Problem:** Title elements wrapping on mobile with glass effects
+- **Solution:** Flex layout with text overflow controls
+- **Pattern:** `flex: 1; min-width: 0; white-space: nowrap; text-overflow: ellipsis;`
+- **Mobile scaling:** Font sizes reduced appropriately (1rem, 0.75rem, 0.7rem)
+
+### 4. **Spacing Consistency**
+- **Problem:** Irregular gaps between cards due to individual margins
+- **Solution:** Remove individual margins, use flexbox gap property
+- **Pattern:** `.main-cards { gap: var(--spacing-md); }` 
+- **Result:** Uniform spacing matching left and right sides
+
+### 5. **Batch File Publishing**
+- **Problem:** Unicode characters causing Windows CMD errors
+- **Solution:** ASCII-only commit messages and clean batch structure
+- **Critical:** Never use emojis or Unicode in Windows batch files
+- **Pattern:** Simple, descriptive ASCII-only commit messages
+
+## 🚨 SESSION-SPECIFIC LESSONS LEARNED
+
+### 1. **Windows Batch File Compatibility**
+- Complex Unicode commit messages cause encoding errors
+- Keep batch files simple with ASCII-only content
+- User sees garbled text output when Unicode characters are used
+- Simple commit messages work reliably across all systems
+
+### 2. **Mobile Title Layout**
+- Glass effects on mobile require careful width management
+- Use row layout with flex controls rather than column stacking
+- Scale text appropriately: title (1rem), time (0.75rem), live (0.7rem)
+- Ensure all elements fit on single line with overflow handling
+
+### 3. **Card Height Alignment**
+- Visual consistency requires equal heights in card grids
+- Extend content descriptions rather than using min-height
+- Maintain similar word count and structure across parallel elements
+- Test visual alignment using screenshots for verification
+
+### 4. **Focus State Management**
+- Global focus styles can interfere with specific component needs
+- Use specific selectors with !important to override globals
+- Remove unwanted effects (outline, box-shadow) explicitly
+- Maintain accessibility while cleaning up visual appearance
+
+### 5. **Spacing Debugging Approach**
+- Visual inspection via screenshots reveals subtle spacing issues
+- Individual margins create inconsistent gaps
+- Flexbox gap property provides uniform spacing
+- Test spacing consistency across left/right columns
+
 ---
 
 **GOLDEN RULE: If it's working, be extremely careful about changing it. If it's not working, fix it with the minimal possible change.**

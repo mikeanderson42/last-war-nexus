@@ -1589,7 +1589,7 @@
                                 title: "Season 1: Crimson Plague Foundation",
                                 category: "New Player Complete Guide (Days 1-45)",
                                 icon: "🦠",
-                                description: "Master the critical foundation phase - mistakes here cost 3-6 months of progression",
+                                description: "Master essential foundation systems, resource management, building priorities, and early game progression strategies during Crimson Plague",
                                 keyTakeaway: "Perfect your first 30 days foundation or waste months catching up to optimal players",
                                 collapsible: true,
                                 sections: [

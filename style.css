@@ -1133,6 +1133,7 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: var(--spacing-xs) 0;
+    min-height: 2rem; /* Ensure enough height for larger text */
 }
 
 .time-row:not(:last-child) {
@@ -1146,10 +1147,11 @@ body {
 }
 
 .time-value {
-    font-size: 0.875rem;
+    font-size: 1.125rem; /* Increased from 0.875rem for better readability */
     color: var(--text-primary);
     font-weight: 600;
     font-family: var(--font-mono);
+    line-height: 1.2;
 }
 
 /* ENHANCED: Next Phase Preview */

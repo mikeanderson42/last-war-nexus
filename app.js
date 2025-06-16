@@ -1875,34 +1875,33 @@
                         ];
                     }
                     
-                    // Generate functional HTML with proper scrolling
+                    // Generate compact, responsive guide HTML
                     const html = guides.map((guide, index) => `
-                        <div class="priority-window-card guide-card" data-guide-index="${index}">
-                            <div class="guide-header" onclick="window.lastWarNexus.toggleGuideExpansion(${index})" role="button" tabindex="0">
-                                <div class="guide-main-info">
-                                    <div class="guide-icon">${guide.icon}</div>
-                                    <div class="guide-details">
-                                        <h3 class="guide-title">${guide.title}</h3>
-                                        <div class="guide-category">${guide.category}</div>
-                                        <p class="guide-description">${guide.description}</p>
-                                        ${guide.keyTakeaway ? `<div class="guide-takeaway">💡 <strong>Key Point:</strong> ${guide.keyTakeaway}</div>` : ''}
-                                    </div>
+                        <div class="guide-card-compact" data-guide-index="${index}">
+                            <div class="guide-header-compact" onclick="window.lastWarNexus.toggleGuideExpansion(${index})" role="button" tabindex="0">
+                                <div class="guide-header-top">
+                                    <span class="guide-icon-compact">${guide.icon}</span>
+                                    <h3 class="guide-title-compact">${guide.title}</h3>
+                                    <span class="guide-category-badge">${guide.category}</span>
+                                    <button class="guide-toggle-btn-compact" id="guide-toggle-${index}" aria-label="Toggle guide">
+                                        <span class="guide-toggle-icon">▼</span>
+                                    </button>
                                 </div>
-                                <button class="guide-toggle-btn" id="guide-toggle-${index}" aria-label="Toggle guide sections">
-                                    <span class="guide-toggle-icon">▼</span>
-                                </button>
+                                ${guide.keyTakeaway ? `<div class="guide-takeaway-compact">💡 ${guide.keyTakeaway}</div>` : ''}
                             </div>
-                            <div class="guide-content" id="guide-content-${index}" style="display: none;">
-                                ${guide.sections.map((section, sIndex) => `
-                                    <div class="guide-section">
-                                        <h4 class="guide-section-title">${section.title}</h4>
-                                        <ul class="guide-section-list">
-                                            ${section.items.map(item => `
-                                                <li class="guide-section-item">${item}</li>
-                                            `).join('')}
-                                        </ul>
-                                    </div>
-                                `).join('')}
+                            <div class="guide-content-compact" id="guide-content-${index}" style="display: none;">
+                                <div class="guide-sections-grid">
+                                    ${guide.sections.map((section, sIndex) => `
+                                        <div class="guide-section-compact">
+                                            <h4 class="guide-section-title-compact">${section.title}</h4>
+                                            <ul class="guide-items-compact">
+                                                ${section.items.map(item => `
+                                                    <li class="guide-item-compact">${item}</li>
+                                                `).join('')}
+                                            </ul>
+                                        </div>
+                                    `).join('')}
+                                </div>
                             </div>
                         </div>
                     `).join('');
@@ -1937,7 +1936,7 @@
                         console.log('Currently expanded:', isExpanded);
                         
                         // Close all other guides first (accordion behavior)
-                        document.querySelectorAll('.guide-card').forEach((otherCard, otherIndex) => {
+                        document.querySelectorAll('.guide-card-compact').forEach((otherCard, otherIndex) => {
                             if (otherIndex !== parseInt(index)) {
                                 const otherContent = document.getElementById(`guide-content-${otherIndex}`);
                                 const otherIcon = document.getElementById(`guide-toggle-${otherIndex}`)?.querySelector('.guide-toggle-icon');

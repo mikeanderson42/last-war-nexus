@@ -2422,14 +2422,16 @@
                     const html = guides.map((guide, index) => `
                         <div class="guide-card-fullscreen" data-guide-index="${index}">
                             <div class="guide-preview-card" onclick="window.lastWarNexus.toggleGuideExpansion(${index})" role="button" tabindex="0">
-                                <div class="guide-preview-header">
-                                    <span class="guide-preview-icon">${guide.icon}</span>
-                                    <div class="guide-preview-info">
-                                        <h3 class="guide-preview-title">${guide.title}</h3>
-                                        <div class="guide-preview-category">${guide.category}</div>
+                                <div class="guide-preview-content">
+                                    <div class="guide-preview-header">
+                                        <span class="guide-preview-icon">${guide.icon}</span>
+                                        <div class="guide-preview-info">
+                                            <h3 class="guide-preview-title">${guide.title}</h3>
+                                            <div class="guide-preview-category">${guide.category}</div>
+                                        </div>
                                     </div>
+                                    ${guide.keyTakeaway ? `<div class="guide-preview-takeaway">💡 ${guide.keyTakeaway}</div>` : ''}
                                 </div>
-                                ${guide.keyTakeaway ? `<div class="guide-preview-takeaway">💡 ${guide.keyTakeaway}</div>` : ''}
                                 <button class="guide-preview-btn" id="guide-toggle-${index}" aria-label="Open guide">
                                     <span class="guide-preview-text">Read Guide</span>
                                     <span class="guide-toggle-icon">→</span>

@@ -506,7 +506,7 @@ body {
 /* Removed duplicate vs-optimizer-card:hover rule */
 
 .optimizer-header {
-    padding: var(--spacing-md);
+    padding: var(--spacing-sm);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -933,7 +933,7 @@ body {
 
 /* ENHANCED: Card Content */
 .card-content {
-    padding: var(--spacing-md);
+    padding: var(--spacing-sm);
 }
 
 /* ENHANCED: Status Grid */
@@ -1141,13 +1141,13 @@ body {
 .time-label {
     font-size: 0.75rem;
     color: var(--text-tertiary);
-    font-weight: 600;
+    font-weight: normal;
 }
 
 .time-value {
     font-size: 0.875rem;
     color: var(--text-primary);
-    font-weight: 600;
+    font-weight: normal;
     font-family: var(--font-mono);
 }
 

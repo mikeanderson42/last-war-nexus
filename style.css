@@ -506,9 +506,7 @@ body {
 /* Removed duplicate vs-optimizer-card:hover rule */
 
 .optimizer-header {
-    background: var(--bg-surface);
-    padding: var(--spacing-lg);
-    border-bottom: 1px solid var(--border-primary);
+    padding: var(--spacing-md);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -524,6 +522,7 @@ body {
     font-size: 1.25rem;
     font-weight: 700;
     margin: 0;
+    padding: var(--spacing-sm) var(--spacing-md);
     background: linear-gradient(135deg, 
         rgba(51, 184, 212, 0.9) 0%, 
         rgba(45, 142, 166, 0.8) 25%,
@@ -537,6 +536,23 @@ body {
     color: transparent;
     animation: glassTitleShimmer 4s ease-in-out infinite;
     filter: drop-shadow(0 0 8px rgba(51, 184, 212, 0.4));
+    border-radius: var(--border-radius-lg);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(51, 184, 212, 0.2);
+    position: relative;
+}
+
+.optimizer-title h2::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(51, 184, 212, 0.05);
+    border-radius: var(--border-radius-lg);
+    z-index: -1;
 }
 
 
@@ -1135,13 +1151,6 @@ body {
     font-family: var(--font-mono);
 }
 
-/* Specific styling for phase end time countdown */
-#phase-end-time {
-    font-size: 1.125rem;
-    font-weight: 700;
-    color: var(--accent-primary);
-    line-height: 1.2;
-}
 
 /* ENHANCED: Next Phase Preview */
 .next-phase-preview {
@@ -1693,15 +1702,15 @@ body {
 /* Mobile Responsiveness for Banner */
 @media (max-width: 768px) {
     .banner-grid {
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: auto auto;
+        grid-template-columns: 1fr 1fr 1fr;
         gap: var(--spacing-xs);
         padding: var(--spacing-sm);
     }
     
     .banner-event-card {
         padding: var(--spacing-xs);
-        min-height: 40px;
+        min-height: 36px;
+        font-size: 0.75rem;
     }
     
     .banner-event-title {
@@ -2037,8 +2046,8 @@ body {
     }
     
     .banner-grid {
-        grid-template-columns: 1fr;
-        gap: var(--spacing-sm);
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: var(--spacing-xs);
     }
 }
 
@@ -2318,13 +2327,15 @@ body {
     }
     
     .banner-grid {
-        grid-template-columns: 1fr;
-        gap: var(--spacing-sm);
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: var(--spacing-xs);
     }
     
     .banner-event-card {
-        padding: var(--spacing-sm);
+        padding: var(--spacing-xs);
         text-align: center;
+        min-height: 32px;
+        font-size: 0.7rem;
     }
     
     /* Typography mobile adjustments */

@@ -135,10 +135,17 @@ button:focus-visible {
 }
 
 /* Remove blue glow from tab buttons - use clean border instead */
-.tab-btn:focus-visible {
-  outline: none;
-  box-shadow: none;
+.tab-btn:focus-visible,
+.tab-btn:focus,
+.tab-btn:active {
+  outline: none !important;
+  box-shadow: none !important;
   border-left: 3px solid var(--accent-primary);
+}
+
+/* Ensure no blue glow on any tab button interaction */
+.tab-btn {
+  -webkit-tap-highlight-color: transparent;
 }
 
 .btn:active,
@@ -285,6 +292,9 @@ button:active {
   background: var(--bg-elevated);
   border-color: var(--accent-primary);
   transform: translateY(-1px);
+  /* Ensure no glow on hover */
+  box-shadow: none !important;
+  outline: none !important;
 }
 
 .tab-btn.active {
@@ -377,7 +387,7 @@ button:active {
 
 .card-header {
   background: var(--bg-tertiary);
-  padding: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
   border-bottom: 1px solid var(--border-primary);
   display: flex;
   align-items: center;
@@ -417,7 +427,7 @@ button:active {
 
 .priority-window-header {
   background: var(--bg-tertiary);
-  padding: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
   border-bottom: 1px solid var(--border-primary);
   display: flex;
   align-items: flex-start;

@@ -1002,7 +1002,8 @@
                     this.updatePriorityDisplay();
                     this.updateSpendingDetails();
                     this.updateBanner();
-                    if (this.activeTab) {
+                    // FIXED: Don't auto-refresh guides tab to prevent closing open guides
+                    if (this.activeTab && this.activeTab !== 'guides') {
                         this.populateTabContent(this.activeTab);
                     }
                 } catch (error) {
@@ -1581,155 +1582,245 @@
                     let guides = [];
                     
                     if (this.activeGuideType === 'seasonal') {
-                        // REDESIGNED SEASONAL GUIDES: Clear, actionable, user-focused
+                        // COMPREHENSIVE SEASONAL GUIDES: Complete progression system based on lastwartutorial.com research
                         guides = [
                             {
-                                title: "Season 1: Foundation",
-                                category: "New Player (0-45 days)",
-                                icon: "🌱",
-                                description: "Essential first steps to build strong foundations and avoid common mistakes",
-                                keyTakeaway: "Focus on learning basics, join active alliance, save resources for perfect alignments",
+                                title: "Season 1: Crimson Plague Foundation",
+                                category: "New Player Complete Guide (Days 1-45)",
+                                icon: "🦠",
+                                description: "Master the critical foundation phase - mistakes here cost 3-6 months of progression",
+                                keyTakeaway: "Perfect your first 30 days foundation or waste months catching up to optimal players",
                                 sections: [
                                     {
-                                        title: "📋 Your First Week Checklist",
+                                        title: "🚨 Hour-by-Hour First 72 Hours (Make or Break Period)",
                                         items: [
-                                            "Complete tutorial completely (don't skip anything)",
-                                            "Join alliance with voice chat in your timezone",
-                                            "Bookmark this VS Points tool and check daily",
-                                            "Build only essential buildings (HQ, resource, army camp)"
+                                            "Hour 1-6: Complete tutorial completely, immediately search for most active alliance available",
+                                            "Day 1 Priority: Focus exclusively on Headquarters upgrades to HQ8+ to unlock alliance warehouse protection",
+                                            "Day 2 Critical: Complete ALL rookie challenges - provides 2-3 weeks worth of speedups and premium resources",
+                                            "Day 3 Foundation: Build all 4 basic resource types (farms, oil wells, steel mills, electronics) to level 5+",
+                                            "NEVER WASTE ROOKIE SPEEDUPS: Every speedup used randomly costs 24-48 hours of optimal progression",
+                                            "Alliance Selection: Join alliance with 40+ daily helps, active chat, and members in your timezone",
+                                            "Resource Protection Rule: Never hold more than 2 hours of production outside alliance warehouse"
                                         ]
                                     },
                                     {
-                                        title: "⚡ VS Points Basics (Week 2-4)",
+                                        title: "📋 Weeks 1-2: Foundation Building Priority System",
                                         items: [
-                                            "NEVER use speedups outside perfect alignment windows",
-                                            "Perfect alignment = 4x points (save everything for these)",
-                                            "Friday Total Mobilization = easiest 4x points day",
-                                            "Aim for 10,000+ VS Points weekly to help alliance"
+                                            "Priority 1: Headquarters to level 15+ (unlocks advanced features, alliance benefits, higher-tier buildings)",
+                                            "Priority 2: Alliance Center to maximum possible level (increases warehouse protection capacity to 8+ hours)",
+                                            "Priority 3: All 4 resource buildings to level 15+ (provides 300-500% increase in daily resource generation)",
+                                            "Priority 4: Research Institute to level 12+ (unlocks economic research tree essential for long-term efficiency)",
+                                            "Priority 5: Hospitals to level 12+ (protects 70%+ of troops from permanent death in combat)",
+                                            "NEVER BUILD: Walls, decorations, multiple training camps, or cosmetic buildings during foundation phase",
+                                            "Queue Management: Keep all 4 construction queues busy 24/7 using alliance help to reduce build times"
                                         ]
                                     },
                                     {
-                                        title: "🎯 Month 1 Goals",
+                                        title: "🔬 Weeks 1-4: Research Strategy & Specialization",
                                         items: [
-                                            "Reach HQ Level 15+ and 500k total power",
-                                            "Understand all 5 Arms Race phases and timing",
-                                            "Build steady resource income (farms, oil, steel)",
-                                            "Choose 2-3 main heroes and focus all upgrades there"
+                                            "Phase 1 Research: Economic tree FIRST - Resource Production I-IV, Construction Speed I-III, Research Speed I-III",
+                                            "Phase 2 Research: Basic Military research only after economic foundation complete - choose Infantry specialization",
+                                            "Alliance Research: Join economic projects first, military projects only after week 3-4",
+                                            "Speedup Timing: Use research speedups EXCLUSIVELY during Tech Research Arms Race phases for VS points",
+                                            "Troop Specialization: Choose Infantry for beginners (cheapest to maintain, most forgiving, easiest to master)",
+                                            "Long-term Impact: Completing economic research provides 200-400% efficiency gains for ALL future activities"
+                                        ]
+                                    },
+                                    {
+                                        title: "💰 Resource Management & VS Points Integration",
+                                        items: [
+                                            "Warehouse Strategy: Use alliance warehouse protection religiously - store ALL resources immediately upon collection",
+                                            "Production Optimization: Never let resource buildings reach maximum capacity - always have upgrades queued",
+                                            "Event Participation: Participate in ALL resource events - gathering missions, competitions, alliance donations",
+                                            "VS Points Integration: Convert excess resources during City Building Arms Race phases for bonus points",
+                                            "Strategic Stockpiling: Build up 2-3 days worth of premium resources before major perfect alignment windows",
+                                            "Alliance Coordination: Request specific resource types from alliance during major construction phases"
+                                        ]
+                                    },
+                                    {
+                                        title: "🚫 Critical Season 1 Mistakes That Destroy 3-6 Months of Progress",
+                                        items: [
+                                            "Decoration Trap: Building walls, decorations, cosmetic buildings (wastes 2-4 weeks of critical resources)",
+                                            "Specialization Error: Training multiple troop types instead of Infantry focus (reduces effectiveness by 50-70%)",
+                                            "Speedup Waste: Using speedups randomly vs Arms Race alignment windows (loses 25-50% potential VS points)",
+                                            "Alliance Mistake: Joining inactive alliance or staying solo (loses 40-60% of potential daily resources and help)",
+                                            "Hospital Neglect: Not building adequate hospitals before combat (permanent troop losses cost millions in resources)",
+                                            "Research Error: Prioritizing military research over economic research (reduces efficiency by 200-300%)",
+                                            "Protection Failure: Not using alliance warehouse protection (loses resources to attacks, raids, and capacity overflow)"
                                         ]
                                     }
                                 ]
                             },
                             {
-                                title: "Season 2: Growth",
-                                category: "Intermediate Player (45-120 days)",
-                                icon: "📈",
-                                description: "Accelerate power growth and master perfect alignment timing",
-                                keyTakeaway: "Master timing, reach top 100 rankings, become alliance contributor",
+                                title: "Season 2: Polar Storm Military Excellence",
+                                category: "Intermediate Strategy (Days 45-120)",
+                                icon: "❄️",
+                                description: "Master military specialization, hero development, and competitive participation during Polar Storm",
+                                keyTakeaway: "Military specialization mastery and competitive participation determine your viability for next 6-12 months",
                                 sections: [
                                     {
-                                        title: "🚀 Power Growth Strategy",
+                                        title: "⚔️ Military Specialization Mastery (Critical Choice Point)",
                                         items: [
-                                            "Target HQ 20+ and 2M+ power by season end",
-                                            "Use 100% of speedups only during 4x windows",
-                                            "Focus research on military + economic trees",
-                                            "Upgrade equipment systematically (not randomly)"
+                                            "Infantry Path: Tanky, cost-effective, beginner-friendly - best for defensive strategies and resource protection",
+                                            "Vehicle Path: Balanced offense/defense, moderate cost - best for adaptable players who change strategies",
+                                            "Aircraft Path: High damage, expensive, micro-intensive - best for experienced players with deep pockets",
+                                            "Research Distribution: Allocate 80% of military research to chosen specialization, 20% to counter-types",
+                                            "Facility Priority: Upgrade chosen specialization training camps to maximum level before touching others",
+                                            "Formation Technology: Research formation bonuses that specifically amplify your chosen troop type effectiveness",
+                                            "Hospital Scaling: Build hospital capacity to support 150% of maximum army size to prevent catastrophic losses"
                                         ]
                                     },
                                     {
-                                        title: "⏰ Perfect Timing Mastery",
+                                        title: "🦸 Hero Development System (Season 2 Advanced Strategy)",
                                         items: [
-                                            "Achieve 95%+ efficiency (track with this tool)",
-                                            "Plan major upgrades around alignment schedules",
-                                            "Set phone alarms for high-priority windows",
-                                            "Coordinate with alliance for maximum impact"
+                                            "Recruitment Strategy: Focus exclusively on heroes providing bonuses to your chosen troop specialization",
+                                            "Gear Progression Path: Weapons first (damage multipliers), armor second (survivability), accessories third (special bonuses)",
+                                            "Skill Point Optimization: Prioritize skills boosting main troop type damage and defense by 20-50%",
+                                            "Resource Timing: Use hero EXP items during Hero Advancement Arms Race phases for VS points multiplier bonus",
+                                            "Event Strategy: Focus participation on hero recruitment events for rare/legendary heroes matching specialization",
+                                            "Formation Mastery: Learn hero combinations creating synergistic bonuses and multiplicative effectiveness",
+                                            "Focus Discipline: Never spread hero resources thin - concentrate on 3-4 core heroes for primary formations"
                                         ]
                                     },
                                     {
-                                        title: "🏆 Competition Ready",
+                                        title: "🎯 Combat Strategy & Tactical Development",
                                         items: [
-                                            "Maintain top 100 VS Points ranking consistently",
-                                            "Take leadership role in alliance activities",
-                                            "Help newer players with optimization basics",
-                                            "Dominate seasonal events for better rewards"
+                                            "Intelligence Operations: Always scout targets before attacking - reconnaissance prevents 80% of combat disasters",
+                                            "Rock-Paper-Scissors: Master Infantry > Aircraft > Vehicles > Infantry advantage cycles",
+                                            "Counter-Intelligence: Use reconnaissance to identify enemy troop compositions and adapt formations accordingly",
+                                            "Medical Strategy: Wounded troops cost resources to heal but avoid permanent death - manage hospital capacity",
+                                            "PvE Progression: Focus on Infected zones for combat experience and rewards without PvP retaliation risks",
+                                            "Alliance Combat: Participate in alliance battles for tactical experience, better rewards, and strategic learning",
+                                            "Strategic Retreat: Learn optimal retreat timing - losing some troops beats losing entire armies"
+                                        ]
+                                    },
+                                    {
+                                        title: "❄️ Season 2 Exclusive Content: Polar Storm Mastery",
+                                        items: [
+                                            "Cold Wave Events: Master survival and resource management during harsh weather challenge periods",
+                                            "Titanium Alloy Factories: Essential facilities for crafting advanced military equipment and high-tier gear",
+                                            "Hero Promotions: Participate in special hero advancement events like Violet UR promotion for powerful upgrades",
+                                            "Nuclear Furnace Operations: Key facility for advanced resource processing and high-tier material production",
+                                            "Alliance Coordination: Coordinate with alliance for Season 2 group challenges and competitive event participation",
+                                            "Strategic Stockpiling: Save premium resources for Season 2 limited-time military advancement opportunities"
                                         ]
                                     }
                                 ]
                             },
                             {
-                                title: "Season 3: Competition",
-                                category: "Advanced Player (120+ days)",
-                                icon: "⚔️",
-                                description: "Server dominance through advanced tactics and alliance leadership",
-                                keyTakeaway: "Lead server strategies, top 50 rankings, advanced resource management",
+                                title: "Season 3: Golden Kingdom Technology Mastery",
+                                category: "Advanced Strategy (Days 120-200)",
+                                icon: "🏛️",
+                                description: "Master advanced research paths, Oasis Project exploration, and technology integration",
+                                keyTakeaway: "Technology mastery and research optimization separate truly competitive players from casual participants",
                                 sections: [
                                     {
-                                        title: "👑 Server Dominance",
+                                        title: "🔬 Advanced Research Path Optimization",
                                         items: [
-                                            "Achieve HQ 25+ and 5M+ power minimum",
-                                            "Secure top 50 server ranking consistently",
-                                            "Lead or co-lead top 5 alliance on server",
-                                            "Influence server-wide strategic decisions"
+                                            "Completion Strategy: Economic research tree to 100% completion before any advanced military research begins",
+                                            "Infrastructure Requirements: Research Center level 25+, Labs level 20+, Observatory unlocked and operational",
+                                            "Priority Hierarchy: Economic Research > Basic Military > Advanced Military > Specialized Technologies",
+                                            "VS Points Integration: Use research speedups EXCLUSIVELY during Tech Research Arms Race phases for 25-50% bonus",
+                                            "Alliance Research Coordination: Economic benefit projects first, then specialized military enhancement projects",
+                                            "Resource Allocation: 70% research resources on chosen specialization technologies, 30% on support systems",
+                                            "Strategic Planning: Never research randomly - follow structured 60-90 day research roadmaps and timelines"
                                         ]
                                     },
                                     {
-                                        title: "💎 Advanced Resource Strategy",
+                                        title: "🏜️ Season 3 Exclusive: Oasis Project & Desert Artifacts",
                                         items: [
-                                            "Master diamond spending for maximum ROI",
-                                            "Coordinate multi-alliance campaigns",
-                                            "Perfect alignment efficiency (98%+ activities)",
-                                            "Develop predictive event planning"
+                                            "Oasis Project Events: Participate for rare technological advancement materials and ancient technology blueprints",
+                                            "Desert Artifacts Exploration: Discover unique research bonuses and unlock advanced technology development paths",
+                                            "Sphinx Location Discovery: Unlock powerful permanent research bonuses providing 20-50% efficiency improvements",
+                                            "Profession System Advancement: Engineer and War Leader specializations unlock advanced technologies and capabilities",
+                                            "Golden Kingdom Events: Save premium resources for participation - provides technological leap opportunities",
+                                            "Alliance Expeditions: Coordinate with alliance for group exploration of high-level Oasis locations and challenges"
                                         ]
                                     },
                                     {
-                                        title: "🎖️ Elite Performance",
+                                        title: "⚙️ Technology Integration & Synergy Strategy",
                                         items: [
-                                            "Target #1 rankings in major seasonal events",
-                                            "Mentor alliance members in advanced tactics",
-                                            "Dominate world map conflicts and PvP",
-                                            "Create innovative meta strategies"
+                                            "Integration Principle: Every new technology should support and enhance your chosen specialization strategy",
+                                            "Building Synergy: Unlock advanced building functions that multiply effectiveness of existing infrastructure",
+                                            "Commander Skills Research: Abilities that boost overall base effectiveness by 20-50% through leadership bonuses",
+                                            "Efficiency Technologies: Construction and training time reduction research pays for itself within 2-4 weeks",
+                                            "Resource Multipliers: Production and capacity research provides exponential long-term growth benefits",
+                                            "Combat Balance: Maintain 60% offensive research, 40% defensive research for optimal competitive performance",
+                                            "Support Systems: Never neglect logistics, intelligence, and resource management technology development"
+                                        ]
+                                    },
+                                    {
+                                        title: "📊 Advanced Resource & Time Management",
+                                        items: [
+                                            "Resource Scale: Advanced research requires 10-20x more resources than basic research - plan resource allocation",
+                                            "Alliance Leverage: Use alliance technology projects to reduce individual research costs by 30-50%",
+                                            "VS Points Strategy: Research during Arms Race Tech phases provides enough points to dominate weekly competitions",
+                                            "Queue Management: Time research completion during priority windows for maximum point efficiency gains",
+                                            "Resource Conversion: Transform excess basic resources into advanced research materials through alliance systems",
+                                            "Long-term Planning: Map out 90-180 day research schedules aligned with seasonal events and competition cycles"
                                         ]
                                     }
                                 ]
                             },
                             {
-                                title: "Season 4: Mastery",
-                                category: "Expert Player (200+ days)",
-                                icon: "👑",
-                                description: "Veteran-level optimization and community leadership",
-                                keyTakeaway: "Server legend status, innovation leadership, community building",
+                                title: "Season 4: Evernight Isle Competitive Excellence",
+                                category: "Expert Mastery (Days 200+)",
+                                icon: "🌙",
+                                description: "Achieve competitive dominance through Season 4 systems mastery and alliance leadership",
+                                keyTakeaway: "Season 4 mastery requires perfect optimization of all systems plus leadership of alliance competitive strategies",
                                 sections: [
                                     {
-                                        title: "🏛️ Legend Status",
+                                        title: "🌙 Season 4 Advanced Systems: Evernight Isle Features",
                                         items: [
-                                            "Achieve HQ 30+ and 10M+ power milestone",
-                                            "Maintain top 10 ranking across all metrics",
-                                            "Attain server-wide recognition and respect",
-                                            "Influence game development through feedback"
+                                            "Blood Night Descend: Master new high-difficulty combat mode requiring specialized tactics and elite formations",
+                                            "Tactics Cards System: Collect and optimize card combinations providing temporary powerful combat and economic bonuses",
+                                            "Light and Darkness Resources: New resource types and production chains for crafting ultimate-tier equipment",
+                                            "Advanced Professions: Specialized skills reaching Level 100+ with game-changing abilities and server-wide bonuses",
+                                            "Evernight Isle Exploration: High-level content requiring coordinated alliance expeditions and strategic planning",
+                                            "First-Mover Advantage: Master new seasonal mechanics before competitors for significant strategic advantages"
                                         ]
                                     },
                                     {
-                                        title: "🧠 Innovation Leadership",
+                                        title: "🏆 Perfect VS Points Optimization (Expert Level)",
                                         items: [
-                                            "Develop new meta strategies for community",
-                                            "Create and share optimization tools",
-                                            "Guide multiple server communities",
-                                            "Establish mentorship programs"
+                                            "Efficiency Mastery: Achieve 95%+ efficiency in VS point generation through perfect timing and resource management",
+                                            "Alliance Coordination: Lead massive coordinated spending events during Total Mobilization Friday perfect alignments",
+                                            "Strategic Stockpiling: Maintain 4-8 weeks of premium resources for major competitive events and seasonal opportunities",
+                                            "Competitive Specialization: Focus alliance resources on VS point categories providing advantages over rival alliances",
+                                            "Advanced Strategies: Implement trap accounts, rally leadership systems, and complex resource protection protocols",
+                                            "Intelligence Operations: Monitor rival alliance patterns and adjust strategies for maximum competitive advantages",
+                                            "Seasonal Integration: Plan all major activities around optimal Arms Race phase alignments and seasonal event cycles"
                                         ]
                                     },
                                     {
-                                        title: "📊 Data-Driven Excellence",
+                                        title: "👥 Alliance Warfare & Strategic Leadership",
                                         items: [
-                                            "Track and optimize every activity with data",
-                                            "Perfect resource investment ROI strategies",
-                                            "Predict and prepare for upcoming events",
-                                            "Foster positive server culture and growth"
+                                            "Strategic Warfare Leadership: Command alliance vs alliance conflicts with coordinated attacks, resource sharing, strategic objectives",
+                                            "Advanced Tactical Mastery: Master complex combat tactics including rally timing, target prioritization, formation optimization",
+                                            "Communication Infrastructure: Establish real-time coordination systems for competitive events and large-scale warfare",
+                                            "Member Development: Train alliance members in advanced optimization strategies for collective competitive advantage",
+                                            "Resource Coordination: Manage alliance-wide resource sharing, strategic stockpiling, and emergency support systems",
+                                            "Mentorship Programs: Develop systematic approaches to rapidly advance newer members to competitive performance levels",
+                                            "Diplomatic Relations: Negotiate with rival alliances for mutual benefits, strategic advantages, or conflict resolution"
+                                        ]
+                                    },
+                                    {
+                                        title: "🌟 End-Game Excellence & Legacy Building",
+                                        items: [
+                                            "Elite Content Mastery: Coordinate alliance raids on ultimate-difficulty content for exclusive rewards and achievements",
+                                            "Seasonal Event Dominance: Perfect participation strategies in limited-time competitive events for maximum rewards",
+                                            "Sustained Excellence: Balance continuous growth, strategic stockpiling, and immediate competitive needs across seasons",
+                                            "Strategic Innovation: Develop new competitive strategies and adapt to meta changes ahead of competitor discovery",
+                                            "Long-term Vision: Create 6-12 month strategic plans incorporating seasonal changes and competitive evolution",
+                                            "Knowledge Legacy: Establish alliance systems, strategies, and training programs persisting beyond individual leadership",
+                                            "Community Leadership: Mentor other alliance leaders and contribute to server-wide strategic development"
                                         ]
                                     }
                                 ]
                             }
                         ];
                     } else {
-                        // REDESIGNED GENERAL TIPS: Clear, actionable, what users need most
+                        // COMPREHENSIVE TIPS GUIDES: Detailed, exhaustive content for maximum effectiveness
                         guides = [
                             {
                                 title: "VS Points Quick Start",

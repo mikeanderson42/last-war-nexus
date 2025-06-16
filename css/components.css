@@ -134,18 +134,26 @@ button:focus-visible {
   box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.3);
 }
 
-/* Remove blue glow from tab buttons - use clean border instead */
-.tab-btn:focus-visible,
+/* COMPLETELY remove all blue glows from tab buttons */
+.tab-btn,
 .tab-btn:focus,
-.tab-btn:active {
+.tab-btn:focus-visible,
+.tab-btn:active,
+.tab-btn:hover {
   outline: none !important;
   box-shadow: none !important;
-  border-left: 3px solid var(--accent-primary);
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-focus-ring-color: transparent !important;
 }
 
-/* Ensure no blue glow on any tab button interaction */
-.tab-btn {
-  -webkit-tap-highlight-color: transparent;
+/* Only show styling when SELECTED (.active class) */
+.tab-btn:focus:not(.active),
+.tab-btn:focus-visible:not(.active),
+.tab-btn:active:not(.active) {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-primary) !important;
+  color: var(--text-secondary) !important;
+  transform: none !important;
 }
 
 .btn:active,
@@ -288,13 +296,13 @@ button:active {
   overflow: hidden;
 }
 
-.tab-btn:hover {
+.tab-btn:hover:not(.active) {
   background: var(--bg-elevated);
-  border-color: var(--accent-primary);
-  transform: translateY(-1px);
-  /* Ensure no glow on hover */
+  border-color: var(--border-secondary);
+  /* NO special styling on hover unless active */
   box-shadow: none !important;
   outline: none !important;
+  transform: none !important;
 }
 
 .tab-btn.active {
@@ -395,7 +403,7 @@ button:active {
 }
 
 .card-content {
-  padding: var(--card-padding);
+  padding: var(--spacing-sm);
 }
 
 /* Priority Window Cards */

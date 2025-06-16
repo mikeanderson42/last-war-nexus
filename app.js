@@ -1920,22 +1920,16 @@
                                                 main: "The Mathematical Foundation of VS Points",
                                                 importance: "critical",
                                                 points: [
-                                                    { text: "Base Formula: VS Points = Resource Value × Phase Multiplier × Daily Bonus × Activity Type Modifier", importance: "critical" },
-                                                    { text: "Perfect Alignment: When your activity matches BOTH the Arms Race phase AND the daily VS focus event", importance: "critical" },
-                                                    { text: "Bonus Calculation: Perfect Alignment = 1.5x multiplier (50% bonus) applied to base activity points", importance: "important" },
-                                                    { text: "Compound Effect: 1000 diamonds base → 1500 VS points during perfect alignment (500 extra points)", importance: "important" },
-                                                    { text: "Annual Impact: Perfect timing can generate 200,000-500,000 additional VS points per year", importance: "critical" }
+                                                    { text: "Base Formula: VS Points = Resource Value × Phase Multiplier × Daily Bonus × Activity Type Modifier. Perfect Alignment occurs when your activity matches BOTH the Arms Race phase AND the daily VS focus event, providing a 1.5x multiplier (50% bonus).", importance: "critical" },
+                                                    { text: "Real Impact: A 1000 diamond spend becomes 1500 VS points during perfect alignment (500 extra points). This compounds annually to generate 200,000-500,000 additional VS points per year through optimal timing.", importance: "critical" }
                                                 ]
                                             },
                                             {
                                                 main: "Why Timing Creates Exponential Value",
                                                 importance: "critical",
                                                 points: [
-                                                    { text: "Resource Scarcity: Premium resources (speedups, legendary items) are limited - wasting them reduces long-term potential", importance: "important" },
-                                                    { text: "Competitive Advantage: 50% bonus compounds over time - consistent perfect timing beats larger random spending", importance: "critical" },
-                                                    { text: "Alliance Impact: Your optimized points contribute to alliance rankings and unlock better alliance rewards", importance: "important" },
-                                                    { text: "Event Qualification: Higher VS points qualify you for better tier rewards in seasonal events", importance: "important" },
-                                                    { text: "Progression Speed: Efficient VS point generation accelerates overall game progression by 3-6 months", importance: "critical" }
+                                                    { text: "Resource Scarcity & Competitive Edge: Premium resources (speedups, legendary items) are limited, making efficient use crucial. The 50% bonus compounds over time - consistent perfect timing beats larger random spending, creating a lasting competitive advantage.", importance: "critical" },
+                                                    { text: "Alliance & Event Benefits: Your optimized points contribute to alliance rankings, unlock better alliance rewards, and qualify you for higher tier rewards in seasonal events. This accelerates overall game progression by 3-6 months compared to random timing.", importance: "important" }
                                                 ]
                                             },
                                             {

@@ -1,5 +1,11 @@
 /* Last War Nexus - Production CSS - Enhanced Design */
 
+/* Import CSS modules in correct order */
+@import url('css/variables.css');
+@import url('css/base.css');
+@import url('css/components.css');
+@import url('css/mobile.css');
+
 /* ENHANCED: CSS Variables with better contrast and design */
 :root {
     /* Reference dark background tones */

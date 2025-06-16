@@ -2593,8 +2593,23 @@ body {
 .guide-description {
     font-size: 0.9rem;
     color: var(--text-secondary);
-    margin: 0;
+    margin: 0 0 var(--spacing-sm) 0;
     line-height: 1.5;
+}
+
+.guide-takeaway {
+    font-size: 0.875rem;
+    color: var(--accent-success);
+    background: rgba(0, 255, 136, 0.1);
+    border: 1px solid rgba(0, 255, 136, 0.3);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-sm);
+    margin-top: var(--spacing-sm);
+    line-height: 1.4;
+}
+
+.guide-takeaway strong {
+    color: var(--accent-success);
 }
 
 .guide-toggle-btn {
@@ -2656,12 +2671,14 @@ body {
 }
 
 .guide-section-title {
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 700;
     color: var(--accent-primary);
     margin: 0 0 var(--spacing-md) 0;
-    padding-bottom: var(--spacing-xs);
-    border-bottom: 2px solid var(--accent-primary);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: rgba(0, 212, 255, 0.1);
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    border-radius: var(--border-radius);
     display: flex;
     align-items: center;
     gap: var(--spacing-sm);
@@ -2681,12 +2698,13 @@ body {
     border: 1px solid var(--border-primary);
     border-left: 3px solid var(--accent-secondary);
     border-radius: var(--border-radius);
-    padding: var(--spacing-md);
-    font-size: 0.9rem;
-    line-height: 1.6;
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: 0.875rem;
+    line-height: 1.5;
     color: var(--text-primary);
     transition: all var(--transition-fast);
     position: relative;
+    margin-bottom: var(--spacing-xs);
 }
 
 .guide-section-item:hover {
@@ -2696,12 +2714,13 @@ body {
 }
 
 .guide-section-item::before {
-    content: "▶";
+    content: "✓";
     position: absolute;
-    left: var(--spacing-xs);
-    top: var(--spacing-md);
-    color: var(--accent-secondary);
-    font-size: 0.7rem;
+    left: var(--spacing-sm);
+    top: var(--spacing-sm);
+    color: var(--accent-success);
+    font-size: 0.75rem;
+    font-weight: bold;
 }
 
 .guide-section-item {

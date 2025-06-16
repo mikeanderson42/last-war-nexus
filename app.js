@@ -1576,293 +1576,298 @@
                     let guides = [];
                     
                     if (this.activeGuideType === 'seasonal') {
-                        // SEASONAL GUIDES: Individual seasons 1, 2, 3, 4
+                        // REDESIGNED SEASONAL GUIDES: Clear, actionable, user-focused
                         guides = [
                             {
-                                title: "Season 1: Foundation Building",
-                                category: "New Player Strategy",
-                                icon: "🏗️",
-                                description: "Master the fundamentals and establish strong foundations for future seasons",
+                                title: "Season 1: Foundation",
+                                category: "New Player (0-45 days)",
+                                icon: "🌱",
+                                description: "Essential first steps to build strong foundations and avoid common mistakes",
+                                keyTakeaway: "Focus on learning basics, join active alliance, save resources for perfect alignments",
                                 sections: [
                                     {
-                                        title: "🎯 Season 1 Core Objectives",
+                                        title: "📋 Your First Week Checklist",
                                         items: [
-                                            "Learn all game mechanics and reach HQ 15+",
-                                            "Join active alliance and contribute consistently", 
-                                            "Understand perfect alignment system",
-                                            "Achieve 500k+ total power by season end",
-                                            "Complete tutorial and establish resource income"
+                                            "Complete tutorial completely (don't skip anything)",
+                                            "Join alliance with voice chat in your timezone",
+                                            "Bookmark this VS Points tool and check daily",
+                                            "Build only essential buildings (HQ, resource, army camp)"
                                         ]
                                     },
                                     {
-                                        title: "📚 Learning Phase (Days 1-15)",
+                                        title: "⚡ VS Points Basics (Week 2-4)",
                                         items: [
-                                            "Complete ALL in-game tutorials without skipping",
-                                            "Build balanced resource and military buildings",
-                                            "Find active alliance in your timezone with voice chat",
-                                            "Use this VS Points Optimizer daily to track windows",
-                                            "Choose 2-3 main heroes and concentrate all resources"
+                                            "NEVER use speedups outside perfect alignment windows",
+                                            "Perfect alignment = 4x points (save everything for these)",
+                                            "Friday Total Mobilization = easiest 4x points day",
+                                            "Aim for 10,000+ VS Points weekly to help alliance"
                                         ]
                                     },
                                     {
-                                        title: "⚡ VS Points Strategy (Days 15-45)",
+                                        title: "🎯 Month 1 Goals",
                                         items: [
-                                            "Save ALL speedups for 4x point windows only",
-                                            "Complete all daily missions and participate in events",
-                                            "Never waste premium items outside alignments",
-                                            "Maintain steady power growth targeting 10k+ daily",
-                                            "Ensure consistent VS Points for alliance ranking"
+                                            "Reach HQ Level 15+ and 500k total power",
+                                            "Understand all 5 Arms Race phases and timing",
+                                            "Build steady resource income (farms, oil, steel)",
+                                            "Choose 2-3 main heroes and focus all upgrades there"
                                         ]
                                     }
                                 ]
                             },
                             {
-                                title: "Season 2: Power Acceleration",
-                                category: "Growth & Optimization",
-                                icon: "⚡",
-                                description: "Rapid power growth and mastering perfect alignments for competitive advantage",
+                                title: "Season 2: Growth",
+                                category: "Intermediate Player (45-120 days)",
+                                icon: "📈",
+                                description: "Accelerate power growth and master perfect alignment timing",
+                                keyTakeaway: "Master timing, reach top 100 rankings, become alliance contributor",
                                 sections: [
                                     {
-                                        title: "🎯 Season 2 Core Objectives",
+                                        title: "🚀 Power Growth Strategy",
                                         items: [
-                                            "Achieve HQ 20+ and 2M+ total power",
-                                            "Master perfect alignment timing (95%+ efficiency)",
-                                            "Secure top 100 personal VS Points ranking",
-                                            "Take active role in alliance leadership",
-                                            "Develop 4-5 specialized heroes for different roles"
+                                            "Target HQ 20+ and 2M+ power by season end",
+                                            "Use 100% of speedups only during 4x windows",
+                                            "Focus research on military + economic trees",
+                                            "Upgrade equipment systematically (not randomly)"
                                         ]
                                     },
                                     {
-                                        title: "💪 Power Growth Strategies",
+                                        title: "⏰ Perfect Timing Mastery",
                                         items: [
-                                            "Use 100% of speedups during 4x point windows only",
-                                            "Complete military and economic tech trees strategically",
-                                            "Implement systematic equipment enhancement program",
-                                            "Focus on hero specialization for combat scenarios",
-                                            "Optimize research paths for maximum power gains"
+                                            "Achieve 95%+ efficiency (track with this tool)",
+                                            "Plan major upgrades around alignment schedules",
+                                            "Set phone alarms for high-priority windows",
+                                            "Coordinate with alliance for maximum impact"
                                         ]
                                     },
                                     {
-                                        title: "🏆 Competition Excellence",
+                                        title: "🏆 Competition Ready",
                                         items: [
-                                            "Maintain consistent top 100 VS Points ranking",
-                                            "Lead alliance coordination activities",
-                                            "Mentor new players in optimization strategies",
-                                            "Dominate seasonal events for maximum rewards"
+                                            "Maintain top 100 VS Points ranking consistently",
+                                            "Take leadership role in alliance activities",
+                                            "Help newer players with optimization basics",
+                                            "Dominate seasonal events for better rewards"
                                         ]
                                     }
                                 ]
                             },
                             {
-                                title: "Season 3: Elite Competition",
-                                category: "Advanced Strategy & Leadership",
-                                icon: "🎖️",
-                                description: "Server dominance and advanced alliance tactics for top-tier players",
+                                title: "Season 3: Competition",
+                                category: "Advanced Player (120+ days)",
+                                icon: "⚔️",
+                                description: "Server dominance through advanced tactics and alliance leadership",
+                                keyTakeaway: "Lead server strategies, top 50 rankings, advanced resource management",
                                 sections: [
                                     {
-                                        title: "🎯 Season 3 Core Objectives",
+                                        title: "👑 Server Dominance",
                                         items: [
-                                            "Achieve HQ 25+ and 5M+ total power",
-                                            "Secure server top 50 ranking consistently",
-                                            "Lead or co-lead top 5 alliance",
+                                            "Achieve HQ 25+ and 5M+ power minimum",
+                                            "Secure top 50 server ranking consistently",
+                                            "Lead or co-lead top 5 alliance on server",
+                                            "Influence server-wide strategic decisions"
+                                        ]
+                                    },
+                                    {
+                                        title: "💎 Advanced Resource Strategy",
+                                        items: [
+                                            "Master diamond spending for maximum ROI",
+                                            "Coordinate multi-alliance campaigns",
                                             "Perfect alignment efficiency (98%+ activities)",
-                                            "Establish server-wide strategic influence"
+                                            "Develop predictive event planning"
                                         ]
                                     },
                                     {
-                                        title: "👑 Dominance Strategies",
+                                        title: "🎖️ Elite Performance",
                                         items: [
-                                            "Lead server-wide strategic coordination",
-                                            "Develop advanced diamond spending strategies",
-                                            "Organize multi-alliance campaigns",
-                                            "Optimize all activities for maximum efficiency",
-                                            "Create and share meta strategies with community"
-                                        ]
-                                    },
-                                    {
-                                        title: "🚀 Advanced Tactics",
-                                        items: [
-                                            "Secure #1 rankings in major events",
-                                            "Mentor alliance members in advanced optimization",
-                                            "Dominate world map and PvP conflicts",
-                                            "Develop innovative strategies for game evolution"
+                                            "Target #1 rankings in major seasonal events",
+                                            "Mentor alliance members in advanced tactics",
+                                            "Dominate world map conflicts and PvP",
+                                            "Create innovative meta strategies"
                                         ]
                                     }
                                 ]
                             },
                             {
-                                title: "Season 4: Veteran Mastery",
-                                category: "Expert Level Optimization",
+                                title: "Season 4: Mastery",
+                                category: "Expert Player (200+ days)",
                                 icon: "👑",
-                                description: "Maintaining dominance, innovation, and server-wide influence as a veteran player",
+                                description: "Veteran-level optimization and community leadership",
+                                keyTakeaway: "Server legend status, innovation leadership, community building",
                                 sections: [
                                     {
-                                        title: "🎯 Veteran Objectives",
+                                        title: "🏛️ Legend Status",
                                         items: [
-                                            "Achieve HQ 30+ and 10M+ total power",
-                                            "Attain server legend status and recognition",
-                                            "Lead innovative strategy development",
+                                            "Achieve HQ 30+ and 10M+ power milestone",
                                             "Maintain top 10 ranking across all metrics",
+                                            "Attain server-wide recognition and respect",
                                             "Influence game development through feedback"
                                         ]
                                     },
                                     {
-                                        title: "🧠 Innovation & Leadership",
+                                        title: "🧠 Innovation Leadership",
                                         items: [
                                             "Develop new meta strategies for community",
                                             "Create and share optimization tools",
-                                            "Guide entire server communities",
-                                            "Share strategies across multiple servers",
-                                            "Establish mentorship programs for new players"
+                                            "Guide multiple server communities",
+                                            "Establish mentorship programs"
                                         ]
                                     },
                                     {
-                                        title: "📊 Data Mastery",
+                                        title: "📊 Data-Driven Excellence",
                                         items: [
-                                            "Track and optimize every activity with analytics",
-                                            "Predict event schedules and prepare strategically",
+                                            "Track and optimize every activity with data",
                                             "Perfect resource investment ROI strategies",
-                                            "Create comprehensive strategy documentation",
-                                            "Foster positive server culture and community building"
+                                            "Predict and prepare for upcoming events",
+                                            "Foster positive server culture and growth"
                                         ]
                                     }
                                 ]
                             }
                         ];
                     } else {
-                        // GENERAL TIPS: Comprehensive strategy guides
+                        // REDESIGNED GENERAL TIPS: Clear, actionable, what users need most
                         guides = [
                             {
-                                title: "VS Points & Arms Race Mastery",
-                                category: "Event Optimization",
-                                icon: "🎯",
-                                description: "Master the core mechanics for maximum VS Points efficiency",
+                                title: "VS Points Quick Start",
+                                category: "Essential Knowledge",
+                                icon: "🚀",
+                                description: "The most important things every player needs to know",
+                                keyTakeaway: "Save speedups for 4x point windows, use this tool daily, Friday is best",
                                 sections: [
                                     {
-                                        title: "🔄 Arms Race Cycle (CRITICAL)",
+                                        title: "⚡ 4x Points Formula (MEMORIZE THIS)",
                                         items: [
-                                            "5-Phase System: City Building → Unit Progression → Tech Research → Drone Boost → Hero Advancement",
-                                            "Each phase lasts exactly 4 hours server time",
-                                            "Complete cycle takes 20 hours, NOT 24 hours",
-                                            "Always starts at 00:00 server time daily",
-                                            "Phase timing is consistent across all servers"
+                                            "Perfect Alignment = Arms Race phase + VS Day = 4x points",
+                                            "Friday Total Mobilization = 4x points with ANY phase",
+                                            "NEVER use speedups outside these windows",
+                                            "Check this tool daily for upcoming 4x windows"
                                         ]
                                     },
                                     {
-                                        title: "📅 Alliance VS Day Focus",
+                                        title: "📅 Weekly Schedule (Know Your Days)",
                                         items: [
-                                            "Monday - Radar Training: Stamina, hero EXP, drone activities (2x points)",
-                                            "Tuesday - Base Expansion: Construction speedups, building power (2x points)",
-                                            "Wednesday - Age of Science: Research speedups, tech advancement (2x points)",
-                                            "Thursday - Train Heroes: Hero recruitment, EXP, skills (2x points)",
-                                            "Friday - Total Mobilization: ALL activities count - SAVE FOR THIS (2x points)",
-                                            "Saturday - Enemy Buster: Military training, combat prep (2x points)",
-                                            "Sunday - Preparation Day: Plan for upcoming week"
+                                            "Monday: Radar Training (drone activities)",
+                                            "Tuesday: Base Expansion (construction)",
+                                            "Wednesday: Age of Science (research)",
+                                            "Thursday: Train Heroes (hero activities)",
+                                            "Friday: Total Mobilization (ALL activities)",
+                                            "Saturday: Enemy Buster (military training)"
                                         ]
                                     },
                                     {
-                                        title: "🎯 Perfect Alignment Strategy (4x Points)",
+                                        title: "🎯 Best Perfect Alignments",
                                         items: [
-                                            "Tech Research + Age of Science = 4x points for research activities",
-                                            "City Building + Base Expansion = 4x points for construction",
-                                            "Hero Advancement + Train Heroes = 4x points for hero activities",
-                                            "Drone Boost + Radar Training = 4x points for stamina usage",
-                                            "Unit Progression + Enemy Buster = 4x points for military training",
-                                            "Friday Total Mobilization = 4x points with ANY Arms Race phase"
+                                            "Wednesday 8am-12pm: Tech Research + Age of Science",
+                                            "Tuesday 12am-4am: City Building + Base Expansion", 
+                                            "Thursday 4pm-8pm: Hero Advancement + Train Heroes",
+                                            "Friday ANY TIME: Total Mobilization works with everything"
                                         ]
                                     }
                                 ]
                             },
                             {
-                                title: "Resource Management Strategy",
-                                category: "Efficiency Optimization", 
+                                title: "Resource Strategy",
+                                category: "Smart Spending",
                                 icon: "💎",
-                                description: "Master resource allocation and timing for maximum efficiency",
+                                description: "How to spend resources efficiently for maximum returns",
+                                keyTakeaway: "Hoard for perfect windows, use VIP store, diamonds work everywhere",
                                 sections: [
                                     {
-                                        title: "💎 Premium Resource Strategy",
+                                        title: "💰 Smart Spending Rules",
                                         items: [
-                                            "Save ALL speedups for perfect alignment windows",
-                                            "Diamond purchases provide points in ALL phases",
-                                            "VIP Store offers 30-50% better value than regular diamond store",
-                                            "Use premium items only during 4x point windows",
-                                            "Plan weekly resource expenditure around alignments"
+                                            "VIP Store = 30-50% better value than regular store",
+                                            "Diamond purchases count for points in ALL phases",
+                                            "Save ALL speedups for 4x point windows only",
+                                            "Emergency rule: Only spend if you're falling behind alliance"
                                         ]
                                     },
                                     {
-                                        title: "📦 Inventory Management",
+                                        title: "📦 What to Save vs Use",
                                         items: [
-                                            "Save resources for major events and perfect alignments",
-                                            "Plan major upgrades around alignment windows",
-                                            "Keep emergency speedups for unexpected opportunities",
-                                            "Monitor expiration dates and use items during appropriate phases",
-                                            "Coordinate with alliance for maximum efficiency"
+                                            "SAVE: All speedups, legendary items, premium resources",
+                                            "USE ANYTIME: Basic materials, free items with timers",
+                                            "COORDINATE: Big purchases with alliance events",
+                                            "PLAN: Major upgrades around alignment schedules"
                                         ]
                                     },
                                     {
-                                        title: "⏰ Timing Optimization",
+                                        title: "⏰ Timing Your Big Moves",
                                         items: [
-                                            "Plan major activities around perfect alignments",
-                                            "Always know your server time for accurate planning",
-                                            "Set alerts for high-priority periods",
-                                            "Sync activities with alliance members for maximum impact",
-                                            "Use this tool to track upcoming priority windows"
+                                            "Major building upgrades: City Building + Base Expansion",
+                                            "Research projects: Tech Research + Age of Science",
+                                            "Hero recruitment: Hero Advancement + Train Heroes",
+                                            "Equipment upgrades: Friday Total Mobilization"
                                         ]
                                     }
                                 ]
                             },
                             {
-                                title: "Building & Power Growth",
-                                category: "Development Strategy",
+                                title: "Building Priority",
+                                category: "Power Growth",
                                 icon: "🏗️",
-                                description: "Optimize building upgrades and power growth for maximum efficiency",
+                                description: "Which buildings to upgrade first for fastest progression",
+                                keyTakeaway: "HQ first always, then resource buildings, then military",
                                 sections: [
                                     {
-                                        title: "🎯 Priority Building Order",
+                                        title: "🎯 Must-Upgrade First (Priority Order)",
                                         items: [
-                                            "Headquarters (Critical): Always upgrade first - unlocks everything else",
-                                            "Resource Buildings: Oil Wells, Farms, Steel Mills for steady income",
-                                            "Army Camp: Increases troop capacity for larger battles",
-                                            "Research Institute: Enables crucial technology advancement",
-                                            "Hero Hall: Unlocks additional hero slots and abilities"
+                                            "1. Headquarters (unlocks everything else)",
+                                            "2. Resource buildings (steady income)",
+                                            "3. Army Camp (bigger armies)",
+                                            "4. Research Institute (technology tree)"
                                         ]
                                     },
                                     {
-                                        title: "⚡ Construction Timing",
+                                        title: "⚡ Construction Strategy",
                                         items: [
-                                            "Save construction for City Building + Base Expansion (4x points)",
-                                            "Plan queue of upgrades during construction phases",
-                                            "Use construction speedups only during building-focused phases",
-                                            "Gather building materials before major upgrade sessions",
-                                            "Coordinate major builds with alliance events"
+                                            "Queue multiple upgrades during City Building phase",
+                                            "Gather materials before perfect alignment windows",
+                                            "Use construction speedups ONLY during 4x periods",
+                                            "Focus on power-generating buildings first"
+                                        ]
+                                    },
+                                    {
+                                        title: "🚫 Common Building Mistakes",
+                                        items: [
+                                            "Don't build decorative buildings early",
+                                            "Don't upgrade everything equally (focus priorities)",
+                                            "Don't use speedups outside alignment windows",
+                                            "Don't neglect resource production buildings"
                                         ]
                                     }
                                 ]
                             },
                             {
-                                title: "Alliance & Social Strategy", 
-                                category: "Team Coordination",
+                                title: "Alliance Success",
+                                category: "Team Play",
                                 icon: "🤝",
-                                description: "Maximize alliance benefits and coordinate for mutual success",
+                                description: "How to find great alliances and be a valuable member",
+                                keyTakeaway: "Active timezone alliance, contribute consistently, coordinate timing",
                                 sections: [
                                     {
-                                        title: "🏆 Alliance Selection",
+                                        title: "🏆 Finding the Right Alliance",
                                         items: [
-                                            "Choose alliance with members in your timezone",
-                                            "Join alliance with active voice chat or Discord",
-                                            "Ensure consistent VS Points contribution expected",
-                                            "Find alliance with room for advancement and learning",
-                                            "Look for alliances with experienced mentors"
+                                            "Same timezone (can coordinate during events)",
+                                            "Active voice chat or Discord server",
+                                            "Reasonable VS Points requirements (not too high/low)",
+                                            "Helpful, experienced members willing to teach"
                                         ]
                                     },
                                     {
-                                        title: "🤝 Team Coordination",
+                                        title: "🤝 Being a Great Alliance Member",
                                         items: [
-                                            "Coordinate major activities during perfect alignments",
-                                            "Share VS Points strategies and optimization tips",
-                                            "Help with resource sharing and activity coordination",
-                                            "Plan alliance-wide strategies for seasonal events",
-                                            "Participate in alliance research and development"
+                                            "Contribute VS Points consistently (even small amounts help)",
+                                            "Coordinate major activities with alliance timing",
+                                            "Share optimization tips and strategies",
+                                            "Help newer members learn the basics"
+                                        ]
+                                    },
+                                    {
+                                        title: "⚡ Alliance Coordination",
+                                        items: [
+                                            "Plan big upgrades during same alignment windows",
+                                            "Share resource donations during events",
+                                            "Coordinate research and building timings",
+                                            "Work together on seasonal competitions"
                                         ]
                                     }
                                 ]
@@ -1880,6 +1885,7 @@
                                         <h3 class="guide-title">${guide.title}</h3>
                                         <div class="guide-category">${guide.category}</div>
                                         <p class="guide-description">${guide.description}</p>
+                                        ${guide.keyTakeaway ? `<div class="guide-takeaway">💡 <strong>Key Point:</strong> ${guide.keyTakeaway}</div>` : ''}
                                     </div>
                                 </div>
                                 <button class="guide-toggle-btn" id="guide-toggle-${index}" aria-label="Toggle guide sections">

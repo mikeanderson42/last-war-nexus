@@ -524,7 +524,6 @@ body {
     font-size: 1.25rem;
     font-weight: 700;
     margin: 0;
-    padding: var(--spacing-sm) var(--spacing-md);
     background: linear-gradient(135deg, 
         rgba(51, 184, 212, 0.9) 0%, 
         rgba(45, 142, 166, 0.8) 25%,
@@ -538,24 +537,8 @@ body {
     color: transparent;
     animation: glassTitleShimmer 4s ease-in-out infinite;
     filter: drop-shadow(0 0 8px rgba(51, 184, 212, 0.4));
-    border-radius: var(--border-radius-lg);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(51, 184, 212, 0.2);
-    position: relative;
 }
 
-.optimizer-title h2::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(51, 184, 212, 0.05);
-    border-radius: var(--border-radius-lg);
-    z-index: -1;
-}
 
 .live-indicator {
     display: flex;
@@ -934,7 +917,7 @@ body {
 
 /* ENHANCED: Card Content */
 .card-content {
-    padding: var(--spacing-lg);
+    padding: var(--spacing-md);
 }
 
 /* ENHANCED: Status Grid */
@@ -1133,7 +1116,6 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: var(--spacing-xs) 0;
-    min-height: 2rem; /* Ensure enough height for larger text */
 }
 
 .time-row:not(:last-child) {
@@ -1147,10 +1129,17 @@ body {
 }
 
 .time-value {
-    font-size: 1.125rem; /* Increased from 0.875rem for better readability */
+    font-size: 0.875rem;
     color: var(--text-primary);
     font-weight: 600;
     font-family: var(--font-mono);
+}
+
+/* Specific styling for phase end time countdown */
+#phase-end-time {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--accent-primary);
     line-height: 1.2;
 }
 

@@ -1832,30 +1832,73 @@
                                     {
                                         title: "⚡ 4x Points Formula (MEMORIZE THIS)",
                                         items: [
-                                            "Perfect Alignment = Arms Race phase + VS Day = 4x points",
-                                            "Friday Total Mobilization = 4x points with ANY phase",
-                                            "NEVER use speedups outside these windows",
-                                            "Check this tool daily for upcoming 4x windows"
+                                            {
+                                                main: "Perfect Alignment Formula",
+                                                subPoints: [
+                                                    "Perfect Alignment = Arms Race phase + VS Day = 50% bonus (4x effective points)",
+                                                    "Example: 1000 diamonds during perfect alignment = 1500 VS points instead of 1000",
+                                                    "Friday Total Mobilization = 50% bonus with ANY Arms Race phase",
+                                                    "This is the most important optimization rule in the entire game"
+                                                ]
+                                            },
+                                            {
+                                                main: "Critical Usage Rules",
+                                                subPoints: [
+                                                    "NEVER use speedups outside alignment windows (waste 25-50% potential points)",
+                                                    "Check this tool daily for upcoming perfect windows - set phone alarms",
+                                                    "Save ALL premium resources (speedups, legendary items) for alignment periods",
+                                                    "Emergency rule: Only break this if falling critically behind in alliance rankings"
+                                                ]
+                                            }
                                         ]
                                     },
                                     {
                                         title: "📅 Weekly Schedule (Know Your Days)",
                                         items: [
-                                            "Monday: Radar Training (drone activities)",
-                                            "Tuesday: Base Expansion (construction)",
-                                            "Wednesday: Age of Science (research)",
-                                            "Thursday: Train Heroes (hero activities)",
-                                            "Friday: Total Mobilization (ALL activities)",
-                                            "Saturday: Enemy Buster (military training)"
+                                            {
+                                                main: "Daily Focus Schedule",
+                                                subPoints: [
+                                                    "Monday: Radar Training (drone activities, stamina usage, hero EXP)",
+                                                    "Tuesday: Base Expansion (construction speedups, building upgrades)",
+                                                    "Wednesday: Age of Science (research speedups, tech upgrades)",
+                                                    "Thursday: Train Heroes (hero recruitment, EXP items, skill medals)",
+                                                    "Friday: Total Mobilization (ALL activities get bonus - biggest spending day)",
+                                                    "Saturday: Enemy Buster (military training, healing speedups, combat)",
+                                                    "Sunday: Planning day (review next week, stockpile resources)"
+                                                ]
+                                            },
+                                            {
+                                                main: "Daily Strategy Tips",
+                                                subPoints: [
+                                                    "Plan your entire week around Friday Total Mobilization opportunities",
+                                                    "Use Sunday to review upcoming priority windows and prepare resources",
+                                                    "Set calendar reminders for your timezone's peak alignment windows",
+                                                    "Coordinate with alliance members for synchronized spending on peak days"
+                                                ]
+                                            }
                                         ]
                                     },
                                     {
-                                        title: "🎯 Best Perfect Alignments",
+                                        title: "🎯 Best Perfect Alignments (Peak Opportunities)",
                                         items: [
-                                            "Wednesday 8am-12pm: Tech Research + Age of Science",
-                                            "Tuesday 12am-4am: City Building + Base Expansion", 
-                                            "Thursday 4pm-8pm: Hero Advancement + Train Heroes",
-                                            "Friday ANY TIME: Total Mobilization works with everything"
+                                            {
+                                                main: "Highest Value Windows",
+                                                subPoints: [
+                                                    "Wednesday 8am-12pm: Tech Research + Age of Science (research speedups)",
+                                                    "Tuesday 12am-4am: City Building + Base Expansion (construction speedups)",
+                                                    "Thursday 4pm-8pm: Hero Advancement + Train Heroes (hero items)",
+                                                    "Friday ANY TIME: Total Mobilization works with everything (universal bonus)"
+                                                ]
+                                            },
+                                            {
+                                                main: "Timing & Preparation Strategy",
+                                                subPoints: [
+                                                    "Set phone alarms 15 minutes before each peak window starts",
+                                                    "Prepare all resources 24-48 hours before major alignment events",
+                                                    "Queue long upgrades to complete during bonus periods for maximum overlap",
+                                                    "Use this tool daily to identify and plan around upcoming opportunities"
+                                                ]
+                                            }
                                         ]
                                     }
                                 ]
@@ -2008,12 +2051,35 @@
                                             <div class="guide-fullscreen-section">
                                                 <h3 class="guide-fullscreen-section-title">${section.title}</h3>
                                                 <div class="guide-fullscreen-items">
-                                                    ${section.items.map(item => `
-                                                        <div class="guide-fullscreen-item">
-                                                            <span class="guide-fullscreen-bullet">✓</span>
-                                                            <span class="guide-fullscreen-text">${item}</span>
-                                                        </div>
-                                                    `).join('')}
+                                                    ${section.items.map(item => {
+                                                        if (typeof item === 'string') {
+                                                            return `
+                                                                <div class="guide-fullscreen-item">
+                                                                    <span class="guide-fullscreen-bullet">✓</span>
+                                                                    <span class="guide-fullscreen-text">${item}</span>
+                                                                </div>
+                                                            `;
+                                                        } else {
+                                                            return `
+                                                                <div class="guide-fullscreen-item-group">
+                                                                    <div class="guide-fullscreen-main-item">
+                                                                        <span class="guide-fullscreen-main-bullet">▶</span>
+                                                                        <span class="guide-fullscreen-main-text">${item.main}</span>
+                                                                    </div>
+                                                                    ${item.subPoints && item.subPoints.length > 0 ? `
+                                                                        <div class="guide-fullscreen-sub-items">
+                                                                            ${item.subPoints.map(subPoint => `
+                                                                                <div class="guide-fullscreen-sub-item">
+                                                                                    <span class="guide-fullscreen-sub-bullet">•</span>
+                                                                                    <span class="guide-fullscreen-sub-text">${subPoint}</span>
+                                                                                </div>
+                                                                            `).join('')}
+                                                                        </div>
+                                                                    ` : ''}
+                                                                </div>
+                                                            `;
+                                                        }
+                                                    }).join('')}
                                                 </div>
                                             </div>
                                         `).join('')}

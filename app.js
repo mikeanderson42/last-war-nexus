@@ -2557,8 +2557,14 @@
                         const card = document.querySelector(`[data-guide-index="${index}"] .guide-preview-card`);
                         const mobileBtn = document.getElementById(`guide-toggle-${index}`);
                         
+                        // Check if device is mobile using multiple methods
+                        const isMobile = window.innerWidth <= 768 || 
+                                       window.matchMedia('(pointer: coarse)').matches ||
+                                       window.matchMedia('(hover: none)').matches ||
+                                       /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                        
                         // Desktop: card click handler
-                        if (card && window.innerWidth > 768) {
+                        if (card && !isMobile) {
                             card.addEventListener('click', () => {
                                 this.toggleGuideExpansion(index);
                             });

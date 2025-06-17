@@ -4428,8 +4428,25 @@ body.guide-open {
   display: none;
 }
 
-/* Mobile: Complete rewrite with isolated layout system */
-@media screen and (max-width: 768px) {
+/* Mobile: Complete rewrite with isolated layout system - Multiple detection methods */
+@media screen and (max-width: 768px), 
+       screen and (max-device-width: 768px),
+       (pointer: coarse),
+       (hover: none) {
+  
+  /* MOBILE DETECTION TEST - Should show green border on actual mobile */
+  body::before {
+    content: "MOBILE CSS ACTIVE" !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    background: green !important;
+    color: white !important;
+    padding: 5px !important;
+    z-index: 9999 !important;
+    font-size: 12px !important;
+  }
+  
   /* DISABLE FOCUS OUTLINE ON MOBILE CARDS */
   .guide-card-fullscreen .guide-preview-card:focus {
     outline: none !important;

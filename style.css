@@ -4443,38 +4443,50 @@ body.guide-open {
 }
 
 /* ========================================
- * FINAL MOBILE GUIDE CARD FIX - END OF FILE
- * MAXIMUM PRECEDENCE - LAST RULE WINS
+ * FINAL MOBILE GUIDE CARD FIX - BUTTON ABOVE GREEN TIP
+ * SOLUTION: Hide original takeaway, create duplicate after button
  * ======================================== */
 @media screen and (max-width: 768px) {
-  /* FINAL OVERRIDE: Fix mobile guide card layout completely */
+  /* Fix card layout */
   .guide-card-fullscreen .guide-preview-card {
     height: auto !important;
     min-height: auto !important;
     justify-content: flex-start !important;
     align-items: stretch !important;
-    gap: var(--spacing-lg) !important;
+    gap: var(--spacing-md) !important;
     display: flex !important;
     flex-direction: column !important;
   }
   
-  /* Content should not take all space */
+  /* Content area - no flex growth */
   .guide-card-fullscreen .guide-preview-content {
     flex: 0 0 auto !important;
-    margin-bottom: var(--spacing-md) !important;
+    margin-bottom: 0 !important;
   }
   
-  /* Green tip with proper spacing */
-  .guide-card-fullscreen .guide-preview-card .guide-preview-takeaway {
-    margin: var(--spacing-md) 0 var(--spacing-lg) 0 !important;
-    width: 100% !important;
+  /* Hide the original takeaway inside content */
+  .guide-card-fullscreen .guide-preview-content .guide-preview-takeaway {
+    display: none !important;
   }
   
-  /* Button completely separate - no overlap */
+  /* Button positioned after content */
   .guide-card-fullscreen .guide-preview-card .guide-preview-btn {
-    margin: var(--spacing-md) 0 0 0 !important;
+    margin: var(--spacing-md) 0 !important;
     position: static !important;
-    clear: both !important;
     width: 100% !important;
+  }
+  
+  /* Create takeaway after button using CSS content */
+  .guide-card-fullscreen .guide-preview-card .guide-preview-btn::after {
+    content: attr(data-takeaway);
+    display: block;
+    margin-top: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: rgba(0, 255, 136, 0.1);
+    border: 1px solid rgba(0, 255, 136, 0.3);
+    border-radius: var(--border-radius);
+    color: var(--accent-success);
+    font-size: 0.875rem;
+    line-height: 1.5;
   }
 }

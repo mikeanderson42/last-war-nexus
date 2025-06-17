@@ -4445,6 +4445,9 @@ body.guide-open {
     position: relative !important;
     pointer-events: none !important;
     cursor: default !important;
+    gap: 0 !important;
+    contain: layout !important;
+    width: 100% !important;
   }
   
   /* STEP 2: Content area with proper containment - OVERRIDE flex: 1 */
@@ -4457,6 +4460,8 @@ body.guide-open {
     box-sizing: border-box !important;
     overflow: hidden !important;
     position: relative !important;
+    justify-content: flex-start !important;
+    align-items: stretch !important;
   }
   
   /* STEP 3: Header section */
@@ -4491,6 +4496,11 @@ body.guide-open {
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
     position: relative !important;
+    
+    /* Prevent overflow beyond parent */
+    max-width: 100% !important;
+    overflow: hidden !important;
+    contain: layout style !important;
     
     /* Visual properties */
     background: rgba(0, 255, 136, 0.1) !important;

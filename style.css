@@ -2192,6 +2192,32 @@ body {
         font-size: 0.875rem;
     }
     
+    /* Phase header mobile restructure for better readability */
+    .phase-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-sm);
+        padding: var(--spacing-md);
+    }
+    
+    .phase-details {
+        order: 1;
+        width: 100%;
+    }
+    
+    .efficiency-badge {
+        order: 2;
+        align-self: flex-start;
+        font-size: 0.7rem;
+        padding: var(--spacing-xs) var(--spacing-sm);
+    }
+    
+    .phase-icon {
+        order: 3;
+        font-size: 1.5rem;
+        align-self: flex-end;
+    }
+    
     /* Tab navigation mobile - tightened */
     .tab-container {
         padding: 0 var(--spacing-xs); /* Reduced from sm */

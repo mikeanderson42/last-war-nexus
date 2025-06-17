@@ -4443,9 +4443,16 @@ body.guide-open {
 }
 
 /* ========================================
- * FINAL MOBILE GUIDE CARD FIX - BUTTON ABOVE GREEN TIP
- * SOLUTION: Hide original takeaway, create duplicate after button
+ * FINAL MOBILE GUIDE CARD FIX - BUTTON BELOW DESCRIPTION
+ * SOLUTION: Button moved inside content, natural flow order
  * ======================================== */
+
+/* Desktop: Hide the mobile-repositioned button (use old structure) */
+.guide-card-fullscreen .guide-preview-content .mobile-repositioned {
+  display: none;
+}
+
+/* Mobile: Show repositioned button, hide the old one */
 @media screen and (max-width: 768px) {
   /* Fix card layout */
   .guide-card-fullscreen .guide-preview-card {
@@ -4458,35 +4465,29 @@ body.guide-open {
     flex-direction: column !important;
   }
   
-  /* Content area - no flex growth */
+  /* Content area flows naturally */
   .guide-card-fullscreen .guide-preview-content {
     flex: 0 0 auto !important;
-    margin-bottom: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: var(--spacing-md) !important;
   }
   
-  /* Hide the original takeaway inside content */
-  .guide-card-fullscreen .guide-preview-content .guide-preview-takeaway {
-    display: none !important;
-  }
-  
-  /* Button positioned after content */
-  .guide-card-fullscreen .guide-preview-card .guide-preview-btn {
+  /* Show the repositioned button inside content */
+  .guide-card-fullscreen .guide-preview-content .mobile-repositioned {
+    display: flex !important;
     margin: var(--spacing-md) 0 !important;
-    position: static !important;
     width: 100% !important;
   }
   
-  /* Create takeaway after button using CSS content */
-  .guide-card-fullscreen .guide-preview-card .guide-preview-btn::after {
-    content: attr(data-takeaway);
-    display: block;
-    margin-top: var(--spacing-md);
-    padding: var(--spacing-md);
-    background: rgba(0, 255, 136, 0.1);
-    border: 1px solid rgba(0, 255, 136, 0.3);
-    border-radius: var(--border-radius);
-    color: var(--accent-success);
-    font-size: 0.875rem;
-    line-height: 1.5;
+  /* Green tip follows naturally after button */
+  .guide-card-fullscreen .guide-preview-content .guide-preview-takeaway {
+    margin: 0 !important;
+    width: 100% !important;
+  }
+  
+  /* Hide any old button outside content on mobile */
+  .guide-card-fullscreen .guide-preview-card > .guide-preview-btn:not(.mobile-repositioned) {
+    display: none !important;
   }
 }

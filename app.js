@@ -2552,6 +2552,17 @@
                     console.log('=== GUIDES POPULATED SUCCESSFULLY ===');
                     console.log('Total guides rendered:', guides.length);
                     
+                    // Add mobile button click handlers (separate from card onclick)
+                    guides.forEach((guide, index) => {
+                        const mobileBtn = document.getElementById(`guide-toggle-${index}`);
+                        if (mobileBtn) {
+                            mobileBtn.addEventListener('click', (e) => {
+                                e.stopPropagation(); // Prevent card click
+                                this.toggleGuideExpansion(index);
+                            });
+                        }
+                    });
+                    
                 } catch (error) {
                     console.error('Guides population error:', error);
                     const grid = document.getElementById('guides-content');

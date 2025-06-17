@@ -39,8 +39,7 @@ body {
 /* Text overflow prevention */
 .event-name-gaming,
 .event-action-gaming,
-.banner-title,
-.tab-label {
+.banner-title {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

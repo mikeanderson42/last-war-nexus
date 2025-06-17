@@ -1,5 +1,13 @@
 /* Last War Nexus - Production CSS - Enhanced Design */
 
+/* IMMEDIATE MOBILE TEST - Should show red border on mobile */
+@media screen and (max-width: 768px) {
+  html {
+    border: 10px solid red !important;
+    background: yellow !important;
+  }
+}
+
 /* ENHANCED: CSS Variables with better contrast and design */
 :root {
     /* Reference dark background tones - desaturated by 20% */
@@ -4601,5 +4609,12 @@ body.guide-open {
   /* MOBILE: Hide any desktop buttons */
   .guide-card-fullscreen .guide-preview-card > .guide-preview-btn:not(.mobile-repositioned) {
     display: none !important;
+  }
+}
+
+/* SIMPLE MOBILE TEST - This should work if media queries work at all */
+@media screen and (max-width: 768px) {
+  body {
+    border: 5px solid red !important;
   }
 }

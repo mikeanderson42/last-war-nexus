@@ -1,13 +1,5 @@
 /* Last War Nexus - Production CSS - Enhanced Design */
 
-/* IMMEDIATE MOBILE TEST - Should show red border on mobile */
-@media screen and (max-width: 768px) {
-  html {
-    border: 10px solid red !important;
-    background: yellow !important;
-  }
-}
-
 /* ENHANCED: CSS Variables with better contrast and design */
 :root {
     /* Reference dark background tones - desaturated by 20% */
@@ -4469,6 +4461,18 @@ body.guide-open {
     contain: layout style !important;
   }
   
+  /* UNIVERSAL SPACING FIX - Ensure ALL guide cards have identical spacing */
+  .guide-card-fullscreen .guide-preview-card,
+  .guide-card-fullscreen .guide-preview-card * {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  /* Re-apply only the specific spacing we want */
+  .guide-card-fullscreen .guide-preview-card {
+    padding: var(--spacing-lg) !important;
+  }
+  
   /* MOBILE CONTENT CONTAINER - Simple block layout */
   .guide-card-fullscreen .guide-preview-content {
     /* Reset inherited flex properties */
@@ -4490,6 +4494,8 @@ body.guide-open {
     margin-bottom: var(--spacing-lg) !important;
     width: 100% !important;
     box-sizing: border-box !important;
+    padding: 0 !important;
+    margin: 0 0 var(--spacing-lg) 0 !important;
   }
   
   /* MOBILE ICON */
@@ -4540,11 +4546,11 @@ body.guide-open {
     justify-content: center !important;
     gap: var(--spacing-sm) !important;
     
-    /* Sizing and spacing */
+    /* Sizing and spacing - CONSISTENT FOR ALL CARDS */
     width: 100% !important;
     min-height: 44px !important;
     padding: var(--spacing-sm) var(--spacing-md) !important;
-    margin: var(--spacing-lg) 0 !important;
+    margin: var(--spacing-lg) 0 var(--spacing-lg) 0 !important;
     box-sizing: border-box !important;
     
     /* Visual styling */
@@ -4575,15 +4581,12 @@ body.guide-open {
     /* Reset all inherited properties */
     all: unset !important;
     
-    /* DEBUG: Bright red background to verify this CSS is applied */
-    background: red !important;
-    
     /* Establish clean block layout */
     display: block !important;
     width: 100% !important;
     box-sizing: border-box !important;
     
-    /* Spacing and sizing */
+    /* CONSISTENT SPACING FOR ALL CARDS */
     padding: var(--spacing-md) !important;
     margin: 0 !important;
     
@@ -4609,12 +4612,5 @@ body.guide-open {
   /* MOBILE: Hide any desktop buttons */
   .guide-card-fullscreen .guide-preview-card > .guide-preview-btn:not(.mobile-repositioned) {
     display: none !important;
-  }
-}
-
-/* SIMPLE MOBILE TEST - This should work if media queries work at all */
-@media screen and (max-width: 768px) {
-  body {
-    border: 5px solid red !important;
   }
 }

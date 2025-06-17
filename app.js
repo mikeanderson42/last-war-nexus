@@ -1259,6 +1259,7 @@
                     
                     const activeNowElement = document.getElementById('active-now');
                     const badgeLabelElement = document.getElementById('badge-label');
+                    const priorityBannerTitleElement = document.getElementById('priority-banner-title');
                     const priorityTimeElement = document.getElementById('next-priority-time');
                     const priorityEventElement = document.getElementById('next-priority-event');
                     const currentActionElement = document.getElementById('current-action');
@@ -1269,6 +1270,7 @@
                     if (nextWindow.isActive) {
                         if (activeNowElement) activeNowElement.style.display = 'flex';
                         if (badgeLabelElement) badgeLabelElement.textContent = 'PEAK EFFICIENCY ACTIVE';
+                        if (priorityBannerTitleElement) priorityBannerTitleElement.textContent = 'CURRENT HIGH PRIORITY';
                         if (priorityTimeElement) priorityTimeElement.textContent = this.formatTime(nextWindow.timeRemaining);
                         if (priorityEventElement) priorityEventElement.textContent = `${nextWindow.phase.name} + ${nextWindow.vsDay.title}`;
                         if (currentActionElement) currentActionElement.textContent = `⚡ ${nextWindow.alignment.reason}`;
@@ -1278,6 +1280,7 @@
                     } else {
                         if (activeNowElement) activeNowElement.style.display = 'none';
                         if (badgeLabelElement) badgeLabelElement.textContent = 'NEXT HIGH PRIORITY';
+                        if (priorityBannerTitleElement) priorityBannerTitleElement.textContent = 'NEXT HIGH PRIORITY';
                         if (priorityTimeElement) priorityTimeElement.textContent = this.formatTime(nextWindow.timeRemaining);
                         if (priorityEventElement) priorityEventElement.textContent = `${nextWindow.phase.name} + ${nextWindow.vsDay.title}`;
                         if (currentActionElement) currentActionElement.textContent = nextWindow.alignment.reason;

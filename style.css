@@ -4471,7 +4471,8 @@ body.guide-open {
     display: flex !important;
     flex-direction: column !important;
     gap: var(--spacing-md) !important;
-    padding-bottom: var(--spacing-sm) !important;
+    padding-bottom: var(--spacing-lg) !important;
+    overflow: hidden !important;
   }
   
   /* Show the repositioned button inside content */
@@ -4483,9 +4484,12 @@ body.guide-open {
   
   /* Green tip follows naturally after button with proper bottom spacing */
   .guide-card-fullscreen .guide-preview-content .guide-preview-takeaway {
-    margin: 0 0 var(--spacing-md) 0 !important;
+    margin: 0 0 var(--spacing-lg) 0 !important;
     width: 100% !important;
     box-sizing: border-box !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    max-width: 100% !important;
   }
   
   /* Hide any old button outside content on mobile */

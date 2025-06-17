@@ -4305,44 +4305,104 @@ body.guide-open {
 }
 
 /* ========================================
- * MOBILE GUIDE CARD FIXES - ATTEMPT 10 - OVERRIDE JUSTIFY-CONTENT
- * ROOT CAUSE: height: 350px + justify-content: space-between forces button to bottom
+ * MOBILE GUIDE CARD FIXES - NUCLEAR OPTION - COMPLETE OVERRIDE
+ * ALL ROOT CAUSES: height: 350px + justify-content: space-between + flex: 1 on content
  * ======================================== */
 @media (max-width: 768px) {
-  /* Override the problematic base styles completely */
+  /* NUCLEAR OVERRIDE: Complete replacement of guide card layout */
   .guide-card-fullscreen .guide-preview-card {
+    /* Remove all problematic desktop layout */
     height: auto !important;
     min-height: auto !important;
     max-height: none !important;
     justify-content: flex-start !important;
+    align-items: stretch !important;
+    
+    /* Force proper mobile layout */
     display: flex !important;
     flex-direction: column !important;
     padding: var(--spacing-lg) !important;
-    gap: var(--spacing-lg) !important;
-  }
-  
-  /* Content container should take natural space */
-  .guide-card-fullscreen .guide-preview-content {
-    flex: none !important;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: var(--spacing-md) !important;
-  }
-  
-  /* Green tip bubble stays within content with proper spacing */
-  .guide-card-fullscreen .guide-preview-takeaway {
-    margin: var(--spacing-md) 0 0 0 !important;
-    padding: var(--spacing-md) !important;
-    width: 100% !important;
+    gap: 0 !important;
+    
+    /* Ensure no weird positioning */
+    position: relative !important;
     box-sizing: border-box !important;
   }
   
-  /* Button follows content naturally, no more space-between forcing to bottom */
-  .guide-card-fullscreen .guide-preview-btn {
-    flex: none !important;
+  /* CONTENT: Remove flex: 1 that was taking all space */
+  .guide-card-fullscreen .guide-preview-content {
+    flex: 0 0 auto !important;
+    flex-grow: 0 !important;
+    flex-shrink: 0 !important;
+    flex-basis: auto !important;
+    
+    display: flex !important;
+    flex-direction: column !important;
+    gap: var(--spacing-md) !important;
+    
+    /* Explicit spacing control */
     margin: 0 !important;
-    width: 100% !important;
+    margin-bottom: var(--spacing-lg) !important;
+    padding: 0 !important;
+    
     position: relative !important;
+    width: 100% !important;
+  }
+  
+  /* GREEN TIP: Ensure it stays within content boundaries */
+  .guide-card-fullscreen .guide-preview-takeaway {
+    /* Remove any positioning that could cause overlay */
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    
+    /* Proper spacing within content */
+    margin: var(--spacing-md) 0 0 0 !important;
+    padding: var(--spacing-md) !important;
+    
+    /* Ensure contained */
+    width: 100% !important;
+    box-sizing: border-box !important;
+    
+    /* Visual separation */
+    background: var(--bg-elevated) !important;
+    border-radius: var(--border-radius) !important;
+  }
+  
+  /* BUTTON: Completely separate from content, no overlap possible */
+  .guide-card-fullscreen .guide-preview-btn {
+    /* Remove all flex properties that could cause issues */
+    flex: 0 0 auto !important;
+    flex-grow: 0 !important;
+    flex-shrink: 0 !important;
+    flex-basis: auto !important;
+    
+    /* Remove any positioning that could cause overlay */
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    
+    /* Explicit spacing from content */
+    margin: 0 !important;
+    margin-top: var(--spacing-lg) !important;
+    padding: var(--spacing-md) !important;
+    
+    /* Full width but contained */
+    width: 100% !important;
+    box-sizing: border-box !important;
+    
+    /* Clear any float or other layout issues */
+    clear: both !important;
+    float: none !important;
+    
+    /* Ensure it's visible and clickable */
+    z-index: 1 !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
   }
 }
 

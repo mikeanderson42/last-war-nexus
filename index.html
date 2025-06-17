@@ -51,7 +51,65 @@
     <meta name="msapplication-tap-highlight" content="no">
     
     <!-- Load CSS files -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=mobile-fix-2024">
+    
+    <!-- CRITICAL INLINE MOBILE CSS - Bypass loading issues -->
+    <style>
+        /* MOBILE TEST - Should show purple background */
+        @media (max-width: 768px) {
+            html { background: purple !important; }
+            body::before {
+                content: "INLINE CSS WORKING" !important;
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                background: orange !important;
+                color: black !important;
+                padding: 10px !important;
+                z-index: 9999 !important;
+                font-size: 16px !important;
+                font-weight: bold !important;
+            }
+        }
+        
+        /* CRITICAL MOBILE CARD FIX - Inline to bypass loading issues */
+        @media (max-width: 768px) {
+            .guide-card-fullscreen .guide-preview-card {
+                height: auto !important;
+                min-height: 0 !important;
+                max-height: none !important;
+                display: block !important;
+                flex-direction: unset !important;
+                justify-content: unset !important;
+                align-items: unset !important;
+                background: red !important;
+                border: 3px solid lime !important;
+                overflow: hidden !important;
+                box-sizing: border-box !important;
+            }
+            
+            .guide-card-fullscreen .guide-preview-content {
+                display: block !important;
+                height: auto !important;
+                flex: unset !important;
+            }
+            
+            .guide-card-fullscreen .guide-preview-takeaway {
+                margin: 0 !important;
+                padding: 12px !important;
+                display: block !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+                background: rgba(0, 255, 136, 0.1) !important;
+                border: 1px solid rgba(0, 255, 136, 0.3) !important;
+                border-radius: 8px !important;
+                font-size: 14px !important;
+                line-height: 1.5 !important;
+                overflow: hidden !important;
+                word-wrap: break-word !important;
+            }
+        }
+    </style>
     
     <!-- Structured Data for SEO -->
     <script type="application/ld+json">

@@ -2943,7 +2943,7 @@ body {
     min-height: 44px;
     justify-content: center;
     width: 100%;
-    margin-top: auto;
+    margin-top: 0;
     flex-shrink: 0;
 }
 
@@ -3357,7 +3357,7 @@ body.guide-open {
     .guide-preview-btn {
         width: 100%;
         justify-content: center;
-        margin-top: auto;
+        margin-top: 0;
         flex-shrink: 0;
         min-width: 120px;
     }
@@ -4347,18 +4347,9 @@ body.guide-open {
  * ADSENSE INTEGRATION STYLES
  * ======================================== */
 
-/* Header Banner Ad */
+/* Header Banner Ad - TEMPORARILY HIDDEN */
 .header-ad-container {
-  background: var(--bg-card);
-  border: 1px solid var(--border-primary);
-  border-radius: var(--border-radius);
-  margin: var(--spacing-md) var(--spacing-lg);
-  padding: var(--spacing-md);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100px;
-  backdrop-filter: var(--backdrop-blur);
+  display: none !important;
 }
 
 .header-banner-ad {
@@ -4402,17 +4393,9 @@ body.guide-open {
   gap: var(--spacing-md);
 }
 
-/* Dashboard Break Ad */
+/* Dashboard Break Ad - TEMPORARILY HIDDEN */
 .dashboard-ad-container {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-primary);
-  border-radius: var(--border-radius);
-  margin: var(--spacing-lg) var(--spacing-lg) 0;
-  padding: var(--spacing-lg);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 120px;
+  display: none !important;
 }
 
 .dashboard-break-ad {

@@ -4430,7 +4430,7 @@ body.guide-open {
 
 /* Mobile: Complete card redesign for proper containment */
 @media screen and (max-width: 768px) {
-  /* STEP 1: Fix card container to grow naturally */
+  /* STEP 1: Fix card container to grow naturally and disable click */
   .guide-card-fullscreen .guide-preview-card {
     height: auto !important;
     min-height: auto !important;
@@ -4443,11 +4443,13 @@ body.guide-open {
     overflow: hidden !important;
     box-sizing: border-box !important;
     position: relative !important;
+    pointer-events: none !important;
+    cursor: default !important;
   }
   
-  /* STEP 2: Content area with proper containment */
+  /* STEP 2: Content area with proper containment - OVERRIDE flex: 1 */
   .guide-card-fullscreen .guide-preview-content {
-    flex: 1 !important;
+    flex: 0 0 auto !important;
     display: flex !important;
     flex-direction: column !important;
     gap: var(--spacing-md) !important;
@@ -4463,18 +4465,25 @@ body.guide-open {
     margin-bottom: var(--spacing-md) !important;
   }
   
-  /* STEP 4: Button positioning */
+  /* STEP 4: Button positioning and re-enable clicking */
   .guide-card-fullscreen .guide-preview-content .mobile-repositioned {
     display: flex !important;
     margin: 0 0 var(--spacing-md) 0 !important;
     width: 100% !important;
     flex-shrink: 0 !important;
     box-sizing: border-box !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
   }
   
-  /* STEP 5: Green tip contained within card */
+  /* STEP 5: Green tip contained within card - OVERRIDE PROBLEMATIC BASE CSS */
   .guide-card-fullscreen .guide-preview-content .guide-preview-takeaway {
+    /* CRITICAL: Override margin-bottom: auto that pushes to bottom */
     margin: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    
+    /* Containment properties */
     padding: var(--spacing-md) !important;
     width: 100% !important;
     box-sizing: border-box !important;
@@ -4482,12 +4491,15 @@ body.guide-open {
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
     position: relative !important;
+    
+    /* Visual properties */
     background: rgba(0, 255, 136, 0.1) !important;
     border: 1px solid rgba(0, 255, 136, 0.3) !important;
     border-radius: var(--border-radius) !important;
     color: var(--accent-success) !important;
     font-size: 0.875rem !important;
     line-height: 1.5 !important;
+    text-align: left !important;
   }
   
   /* STEP 6: Hide any old buttons */

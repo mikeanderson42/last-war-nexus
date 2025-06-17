@@ -4441,3 +4441,40 @@ body.guide-open {
   color: var(--text-tertiary);
   font-style: italic;
 }
+
+/* ========================================
+ * FINAL MOBILE GUIDE CARD FIX - END OF FILE
+ * MAXIMUM PRECEDENCE - LAST RULE WINS
+ * ======================================== */
+@media screen and (max-width: 768px) {
+  /* FINAL OVERRIDE: Fix mobile guide card layout completely */
+  .guide-card-fullscreen .guide-preview-card {
+    height: auto !important;
+    min-height: auto !important;
+    justify-content: flex-start !important;
+    align-items: stretch !important;
+    gap: var(--spacing-lg) !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  
+  /* Content should not take all space */
+  .guide-card-fullscreen .guide-preview-content {
+    flex: 0 0 auto !important;
+    margin-bottom: var(--spacing-md) !important;
+  }
+  
+  /* Green tip with proper spacing */
+  .guide-card-fullscreen .guide-preview-card .guide-preview-takeaway {
+    margin: var(--spacing-md) 0 var(--spacing-lg) 0 !important;
+    width: 100% !important;
+  }
+  
+  /* Button completely separate - no overlap */
+  .guide-card-fullscreen .guide-preview-card .guide-preview-btn {
+    margin: var(--spacing-md) 0 0 0 !important;
+    position: static !important;
+    clear: both !important;
+    width: 100% !important;
+  }
+}

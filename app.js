@@ -2453,7 +2453,7 @@
                     // Generate full-screen readable guide HTML
                     const html = guides.map((guide, index) => `
                         <div class="guide-card-fullscreen" data-guide-index="${index}">
-                            <div class="guide-preview-card" onclick="window.lastWarNexus.toggleGuideExpansion(${index})" role="button" tabindex="0">
+                            <div class="guide-preview-card" data-guide-index="${index}" role="button" tabindex="0">
                                 <div class="guide-preview-content">
                                     <div class="guide-preview-header">
                                         <span class="guide-preview-icon">${guide.icon}</span>
@@ -2552,12 +2552,22 @@
                     console.log('=== GUIDES POPULATED SUCCESSFULLY ===');
                     console.log('Total guides rendered:', guides.length);
                     
-                    // Add mobile button click handlers (separate from card onclick)
+                    // Add click handlers based on device type
                     guides.forEach((guide, index) => {
+                        const card = document.querySelector(`[data-guide-index="${index}"] .guide-preview-card`);
                         const mobileBtn = document.getElementById(`guide-toggle-${index}`);
+                        
+                        // Desktop: card click handler
+                        if (card && window.innerWidth > 768) {
+                            card.addEventListener('click', () => {
+                                this.toggleGuideExpansion(index);
+                            });
+                        }
+                        
+                        // Mobile: button click handler only
                         if (mobileBtn) {
                             mobileBtn.addEventListener('click', (e) => {
-                                e.stopPropagation(); // Prevent card click
+                                e.stopPropagation(); // Prevent any parent clicks
                                 this.toggleGuideExpansion(index);
                             });
                         }

@@ -4305,41 +4305,46 @@ body.guide-open {
 }
 
 /* ========================================
- * MOBILE GUIDE CARD FIXES - HIGH SPECIFICITY
+ * MOBILE GUIDE CARD FIXES - ATTEMPT 8 - COMPLETE REWRITE
  * ======================================== */
-@media (max-width: 767px) {
+@media (max-width: 768px) {
+  /* Force proper layout structure on mobile */
   .guide-card-fullscreen .guide-preview-card {
     height: auto !important;
     min-height: auto !important;
     max-height: none !important;
-    justify-content: flex-start !important;
     display: flex !important;
     flex-direction: column !important;
-    gap: var(--spacing-md) !important;
     padding: var(--spacing-lg) !important;
+    gap: 0 !important;
   }
   
+  /* Ensure content comes first and takes space */
   .guide-card-fullscreen .guide-preview-content {
-    flex: none !important;
-    justify-content: flex-start !important;
     order: 1 !important;
-    min-height: auto !important;
+    flex: 0 0 auto !important;
+    margin-bottom: var(--spacing-md) !important;
   }
   
+  /* Green tip bubble comes second with proper spacing */
   .guide-card-fullscreen .guide-preview-takeaway {
     order: 2 !important;
+    flex: 0 0 auto !important;
     margin: 0 !important;
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-    flex-shrink: 0 !important;
+    margin-bottom: var(--spacing-lg) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
   
+  /* Button comes last with clear separation */
   .guide-card-fullscreen .guide-preview-btn {
     order: 3 !important;
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-    flex-shrink: 0 !important;
+    flex: 0 0 auto !important;
+    margin: 0 !important;
+    margin-top: var(--spacing-md) !important;
     position: relative !important;
+    clear: both !important;
+    width: 100% !important;
   }
 }
 

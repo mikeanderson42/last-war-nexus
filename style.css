@@ -4321,13 +4321,13 @@ body.guide-open {
     flex: none !important;
   }
   
-  /* Ensure green tip has proper bottom margin */
-  .guide-card-fullscreen .guide-preview-takeaway {
+  /* Ensure green tip has proper bottom margin - HIGHER SPECIFICITY */
+  .guide-card-fullscreen .guide-preview-card .guide-preview-takeaway {
     margin-bottom: var(--spacing-lg) !important;
   }
   
-  /* Ensure button doesn't overlap */
-  .guide-card-fullscreen .guide-preview-btn {
+  /* Ensure button doesn't overlap - HIGHER SPECIFICITY */
+  .guide-card-fullscreen .guide-preview-card .guide-preview-btn {
     margin-top: var(--spacing-md) !important;
     position: static !important;
   }

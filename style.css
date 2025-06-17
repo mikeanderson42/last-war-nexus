@@ -1291,11 +1291,11 @@ body {
 }
 
 .tab-btn.active {
-    background: var(--glass-bg-elevated);
-    border: 1px solid var(--glass-border);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-secondary);
     border-left: 3px solid var(--accent-primary);
     color: var(--accent-primary);
-    box-shadow: var(--shadow-sm);
+    box-shadow: none !important;
 }
 
 .tab-content-item {
@@ -2607,6 +2607,9 @@ body {
     .btn:active {
         transform: scale(0.98);
         transition: transform 0.1s ease;
+        -webkit-tap-highlight-color: transparent !important;
+        outline: none !important;
+        box-shadow: none !important;
     }
     
     /* Special handling for guide nav buttons - better contrast */
@@ -3746,10 +3749,17 @@ select:focus,
     outline: none;
 }
 
-.tab-btn:focus {
+.tab-btn:focus,
+.tab-btn:focus-visible,
+.tab-btn:active,
+.tab-btn.active:focus,
+.tab-btn.active:focus-visible {
     outline: none !important;
     box-shadow: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+    border: 1px solid var(--border-secondary);
     border-left: 3px solid var(--accent-primary);
+    background: var(--bg-elevated);
 }
 
 /* ENHANCED: Print Styles */

@@ -3,9 +3,9 @@
  * Offline functionality and caching
  */
 
-const CACHE_NAME = 'last-war-nexus-v1.0.0';
-const STATIC_CACHE = 'lwn-static-v1';
-const DATA_CACHE = 'lwn-data-v1';
+const CACHE_NAME = 'last-war-nexus-v1.0.1';
+const STATIC_CACHE = 'lwn-static-v2';
+const DATA_CACHE = 'lwn-data-v2';
 
 // Static assets to cache
 const STATIC_ASSETS = [
@@ -14,7 +14,6 @@ const STATIC_ASSETS = [
   '/css/variables.css',
   '/css/base.css',
   '/css/components.css',
-  '/css/mobile.css',
   '/js/config.js',
   '/js/core.js',
   '/js/ui.js',

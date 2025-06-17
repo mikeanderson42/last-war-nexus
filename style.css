@@ -4297,10 +4297,10 @@ body.guide-open {
 }
 
 /* ========================================
- * MOBILE GUIDE CARD FIXES
+ * MOBILE GUIDE CARD FIXES - HIGH SPECIFICITY
  * ======================================== */
 @media (max-width: 767px) {
-  .guide-preview-card {
+  .guide-card-fullscreen .guide-preview-card {
     height: auto !important;
     min-height: auto !important;
     max-height: none !important;
@@ -4311,21 +4311,25 @@ body.guide-open {
     padding: var(--spacing-lg) !important;
   }
   
-  .guide-preview-content {
+  .guide-card-fullscreen .guide-preview-content {
     flex: none !important;
     justify-content: flex-start !important;
     order: 1 !important;
+    min-height: auto !important;
   }
   
-  .guide-preview-takeaway {
+  .guide-card-fullscreen .guide-preview-takeaway {
     order: 2 !important;
     margin: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
     flex-shrink: 0 !important;
   }
   
-  .guide-preview-btn {
+  .guide-card-fullscreen .guide-preview-btn {
     order: 3 !important;
     margin-top: 0 !important;
+    margin-bottom: 0 !important;
     flex-shrink: 0 !important;
     position: relative !important;
   }

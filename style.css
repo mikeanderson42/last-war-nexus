@@ -3363,6 +3363,14 @@ body.guide-open {
     }
 }
 
+/* MOBILE GUIDE CARD BUTTON FIX - Override margin-top: auto */
+@media (max-width: 768px) {
+    .guide-card-fullscreen .guide-preview-card .guide-preview-btn {
+        margin-top: 0 !important;
+        position: static !important;
+    }
+}
+
 .guide-card-compact.expanded {
     border-color: var(--accent-success);
     box-shadow: 0 8px 24px rgba(0, 255, 136, 0.15);

@@ -2961,7 +2961,7 @@ body {
     padding: var(--spacing-md);
     line-height: 1.5;
     margin-top: var(--spacing-lg);
-    margin-bottom: auto;
+    margin-bottom: 0;
     width: 100%;
     word-wrap: break-word;
     text-align: left;
@@ -2969,7 +2969,7 @@ body {
 }
 
 .guide-preview-content {
-    flex: 1;
+    flex: 0 0 auto;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;

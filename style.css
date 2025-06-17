@@ -4305,33 +4305,9 @@ body.guide-open {
 }
 
 /* ========================================
- * MOBILE GUIDE CARD FIXES - SIMPLE PRODUCTION FIX
- * SIMPLE APPROACH: Just fix the core issues causing overlap
+ * OLD MOBILE GUIDE CARD FIXES - REMOVED
+ * Replaced with comprehensive solution at end of file
  * ======================================== */
-@media screen and (max-width: 768px) {
-  /* Fix the card layout - remove problematic properties */
-  .guide-card-fullscreen .guide-preview-card {
-    height: auto !important;
-    justify-content: flex-start !important;
-    gap: var(--spacing-lg) !important;
-  }
-  
-  /* Stop content from taking all space */
-  .guide-card-fullscreen .guide-preview-content {
-    flex: none !important;
-  }
-  
-  /* Ensure green tip has proper bottom margin - HIGHER SPECIFICITY */
-  .guide-card-fullscreen .guide-preview-card .guide-preview-takeaway {
-    margin-bottom: var(--spacing-lg) !important;
-  }
-  
-  /* Ensure button doesn't overlap - HIGHER SPECIFICITY */
-  .guide-card-fullscreen .guide-preview-card .guide-preview-btn {
-    margin-top: var(--spacing-md) !important;
-    position: static !important;
-  }
-}
 
 /* ========================================
  * ADSENSE INTEGRATION STYLES
@@ -4443,8 +4419,8 @@ body.guide-open {
 }
 
 /* ========================================
- * FINAL MOBILE GUIDE CARD FIX - BUTTON BELOW DESCRIPTION
- * SOLUTION: Button moved inside content, natural flow order
+ * COMPREHENSIVE MOBILE GUIDE CARD FIX - COMPLETE SOLUTION
+ * ENSURE GREEN BUBBLE ALWAYS CONTAINED WITHIN CARD
  * ======================================== */
 
 /* Desktop: Hide the mobile-repositioned button (use old structure) */
@@ -4452,64 +4428,70 @@ body.guide-open {
   display: none;
 }
 
-/* Mobile: Show repositioned button, hide the old one */
+/* Mobile: Complete card redesign for proper containment */
 @media screen and (max-width: 768px) {
-  /* Fix card layout - remove ALL height constraints */
+  /* STEP 1: Fix card container to grow naturally */
   .guide-card-fullscreen .guide-preview-card {
     height: auto !important;
     min-height: auto !important;
     max-height: none !important;
     justify-content: flex-start !important;
     align-items: stretch !important;
-    gap: var(--spacing-md) !important;
     display: flex !important;
     flex-direction: column !important;
-    overflow: visible !important;
+    padding: var(--spacing-lg) !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+    position: relative !important;
   }
   
-  /* Content area flows naturally with proper spacing */
+  /* STEP 2: Content area with proper containment */
   .guide-card-fullscreen .guide-preview-content {
-    flex: 0 0 auto !important;
+    flex: 1 !important;
     display: flex !important;
     flex-direction: column !important;
     gap: var(--spacing-md) !important;
-    padding-bottom: var(--spacing-lg) !important;
-    overflow: visible !important;
-    min-height: auto !important;
-    height: auto !important;
-  }
-  
-  /* Show the repositioned button inside content */
-  .guide-card-fullscreen .guide-preview-content .mobile-repositioned {
-    display: flex !important;
-    margin: var(--spacing-md) 0 !important;
-    width: 100% !important;
-  }
-  
-  /* Green tip follows naturally after button with proper bottom spacing */
-  .guide-card-fullscreen .guide-preview-content .guide-preview-takeaway {
-    margin: 0 0 var(--spacing-lg) 0 !important;
     width: 100% !important;
     box-sizing: border-box !important;
+    overflow: hidden !important;
+    position: relative !important;
+  }
+  
+  /* STEP 3: Header section */
+  .guide-card-fullscreen .guide-preview-header {
+    flex-shrink: 0 !important;
+    margin-bottom: var(--spacing-md) !important;
+  }
+  
+  /* STEP 4: Button positioning */
+  .guide-card-fullscreen .guide-preview-content .mobile-repositioned {
+    display: flex !important;
+    margin: 0 0 var(--spacing-md) 0 !important;
+    width: 100% !important;
+    flex-shrink: 0 !important;
+    box-sizing: border-box !important;
+  }
+  
+  /* STEP 5: Green tip contained within card */
+  .guide-card-fullscreen .guide-preview-content .guide-preview-takeaway {
+    margin: 0 !important;
+    padding: var(--spacing-md) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    flex-shrink: 0 !important;
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
-    max-width: 100% !important;
+    position: relative !important;
+    background: rgba(0, 255, 136, 0.1) !important;
+    border: 1px solid rgba(0, 255, 136, 0.3) !important;
+    border-radius: var(--border-radius) !important;
+    color: var(--accent-success) !important;
+    font-size: 0.875rem !important;
+    line-height: 1.5 !important;
   }
   
-  /* Hide any old button outside content on mobile */
+  /* STEP 6: Hide any old buttons */
   .guide-card-fullscreen .guide-preview-card > .guide-preview-btn:not(.mobile-repositioned) {
     display: none !important;
-  }
-  
-  /* NUCLEAR OPTION: Remove ALL possible height constraints on mobile */
-  .guide-card-fullscreen,
-  .guide-card-fullscreen *,
-  .guide-card-fullscreen .guide-preview-card,
-  .guide-card-fullscreen .guide-preview-content,
-  .guide-card-fullscreen .guide-preview-header,
-  .guide-card-fullscreen .guide-preview-takeaway {
-    height: auto !important;
-    min-height: auto !important;
-    max-height: none !important;
   }
 }

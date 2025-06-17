@@ -2562,6 +2562,11 @@
                             card.addEventListener('click', () => {
                                 this.toggleGuideExpansion(index);
                             });
+                        } else if (card) {
+                            // Mobile: remove tabindex and disable focus
+                            card.removeAttribute('tabindex');
+                            card.removeAttribute('role');
+                            card.style.pointerEvents = 'none';
                         }
                         
                         // Mobile: button click handler only

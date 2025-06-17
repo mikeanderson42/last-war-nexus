@@ -4430,7 +4430,13 @@ body.guide-open {
 
 /* Mobile: Complete rewrite with isolated layout system */
 @media screen and (max-width: 768px) {
-  /* MOBILE CARD CONTAINER - Complete override */
+  /* DISABLE FOCUS OUTLINE ON MOBILE CARDS */
+  .guide-card-fullscreen .guide-preview-card:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+  
+  /* REMOVE TABINDEX FROM MOBILE CARDS */
   .guide-card-fullscreen .guide-preview-card {
     /* Reset all inherited properties */
     all: unset !important;
@@ -4560,6 +4566,9 @@ body.guide-open {
   .guide-card-fullscreen .guide-preview-content .guide-preview-takeaway {
     /* Reset all inherited properties */
     all: unset !important;
+    
+    /* DEBUG: Bright red background to verify this CSS is applied */
+    background: red !important;
     
     /* Establish clean block layout */
     display: block !important;

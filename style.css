@@ -1,5 +1,12 @@
 /* Last War Nexus - Production CSS - Enhanced Design */
 
+/* IMMEDIATE MOBILE TEST - Should work on ANY mobile device */
+@media (max-width: 768px) {
+  html {
+    background: purple !important;
+  }
+}
+
 /* ENHANCED: CSS Variables with better contrast and design */
 :root {
     /* Reference dark background tones - desaturated by 20% */
@@ -4466,10 +4473,28 @@ body.guide-open {
     border: 5px solid yellow !important;
   }
   
+  /* EMERGENCY MOBILE OVERRIDE - Force cards to expand to content */
+  .guide-card-fullscreen {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+  }
+  
   /* DISABLE FOCUS OUTLINE ON MOBILE CARDS */
   .guide-card-fullscreen .guide-preview-card:focus {
     outline: none !important;
     box-shadow: none !important;
+  }
+  
+  /* COMPREHENSIVE MOBILE HIERARCHY RESET */
+  .guide-card-fullscreen,
+  .guide-card-fullscreen .guide-preview-card,
+  .guide-card-fullscreen .guide-preview-content,
+  .guide-card-fullscreen .guide-preview-header,
+  .guide-card-fullscreen .guide-preview-takeaway {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
   }
   
   /* NUCLEAR MOBILE CARD OVERRIDE - Maximum specificity */
@@ -4480,8 +4505,8 @@ body.guide-open {
     justify-content: unset !important;
     align-items: unset !important;
     height: auto !important;
-    min-height: unset !important;
-    max-height: unset !important;
+    min-height: 0 !important;
+    max-height: none !important;
     
     /* Establish clean layout */
     width: 100% !important;

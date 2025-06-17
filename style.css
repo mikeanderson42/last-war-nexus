@@ -4342,3 +4342,125 @@ body.guide-open {
     position: relative !important;
   }
 }
+
+/* ========================================
+ * ADSENSE INTEGRATION STYLES
+ * ======================================== */
+
+/* Header Banner Ad */
+.header-ad-container {
+  background: var(--bg-card);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--border-radius);
+  margin: var(--spacing-md) var(--spacing-lg);
+  padding: var(--spacing-md);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100px;
+  backdrop-filter: var(--backdrop-blur);
+}
+
+.header-banner-ad {
+  max-width: 100%;
+  border-radius: var(--border-radius-sm);
+  overflow: hidden;
+}
+
+/* Priority Banner Ad - Desktop Only */
+.priority-ad-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 300px;
+  padding: var(--spacing-md);
+}
+
+.desktop-only {
+  display: block;
+}
+
+.priority-banner-ad {
+  border-radius: var(--border-radius-sm);
+  overflow: hidden;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-primary);
+}
+
+/* Update priority banner layout for ads */
+.next-priority-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+
+.priority-content {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: var(--spacing-md);
+}
+
+/* Dashboard Break Ad */
+.dashboard-ad-container {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--border-radius);
+  margin: var(--spacing-lg) var(--spacing-lg) 0;
+  padding: var(--spacing-lg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 120px;
+}
+
+.dashboard-break-ad {
+  max-width: 100%;
+  border-radius: var(--border-radius-sm);
+  overflow: hidden;
+}
+
+/* Mobile responsiveness for ads */
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none !important;
+  }
+  
+  .next-priority-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .priority-content {
+    width: 100%;
+  }
+  
+  .header-ad-container,
+  .dashboard-ad-container {
+    margin: var(--spacing-md);
+    padding: var(--spacing-sm);
+    min-height: 80px;
+  }
+}
+
+/* Ad loading states */
+.adsbygoogle {
+  transition: opacity var(--transition-normal);
+}
+
+.adsbygoogle:empty {
+  opacity: 0.6;
+  background: var(--bg-elevated);
+  border: 1px dashed var(--border-secondary);
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+.adsbygoogle:empty::before {
+  content: "Advertisement";
+  font-size: var(--font-size-sm);
+  color: var(--text-tertiary);
+  font-style: italic;
+}

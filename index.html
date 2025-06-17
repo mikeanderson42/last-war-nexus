@@ -53,27 +53,11 @@
     <!-- Load CSS files -->
     <link rel="stylesheet" href="style.css?v=mobile-fix-2024">
     
-    <!-- CRITICAL INLINE MOBILE CSS - Bypass loading issues -->
+    <!-- PRODUCTION MOBILE CSS - Inline for reliability -->
     <style>
-        /* MOBILE TEST - Should show purple background */
+        /* MOBILE GUIDE CARDS - Production fix for CSS loading issues */
         @media (max-width: 768px) {
-            html { background: purple !important; }
-            body::before {
-                content: "INLINE CSS WORKING" !important;
-                position: fixed !important;
-                top: 0 !important;
-                left: 0 !important;
-                background: orange !important;
-                color: black !important;
-                padding: 10px !important;
-                z-index: 9999 !important;
-                font-size: 16px !important;
-                font-weight: bold !important;
-            }
-        }
-        
-        /* CRITICAL MOBILE CARD FIX - Inline to bypass loading issues */
-        @media (max-width: 768px) {
+            /* Card container - Remove flexbox constraints */
             .guide-card-fullscreen .guide-preview-card {
                 height: auto !important;
                 min-height: 0 !important;
@@ -82,31 +66,86 @@
                 flex-direction: unset !important;
                 justify-content: unset !important;
                 align-items: unset !important;
-                background: red !important;
-                border: 3px solid lime !important;
                 overflow: hidden !important;
                 box-sizing: border-box !important;
+                background: var(--glass-bg) !important;
+                backdrop-filter: var(--backdrop-blur) !important;
+                border: 1px solid var(--glass-border) !important;
+                border-radius: var(--border-radius-lg) !important;
+                padding: var(--spacing-lg) !important;
+                pointer-events: none !important;
+                cursor: default !important;
             }
             
+            /* Content container - Simple block layout */
             .guide-card-fullscreen .guide-preview-content {
                 display: block !important;
                 height: auto !important;
                 flex: unset !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
             }
             
-            .guide-card-fullscreen .guide-preview-takeaway {
+            /* Header spacing */
+            .guide-card-fullscreen .guide-preview-header {
+                display: flex !important;
+                align-items: flex-start !important;
+                gap: var(--spacing-lg) !important;
+                margin-bottom: var(--spacing-lg) !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            
+            /* Button styling and positioning */
+            .guide-card-fullscreen .guide-preview-content .mobile-repositioned {
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: var(--spacing-sm) !important;
+                width: 100% !important;
+                min-height: 44px !important;
+                padding: var(--spacing-sm) var(--spacing-md) !important;
+                margin: var(--spacing-lg) 0 !important;
+                box-sizing: border-box !important;
+                background: var(--gradient-primary) !important;
+                color: white !important;
+                border: none !important;
+                border-radius: var(--border-radius) !important;
+                font-weight: 600 !important;
+                font-size: 0.875rem !important;
+                pointer-events: auto !important;
+                cursor: pointer !important;
+                transition: all var(--transition-fast) !important;
+            }
+            
+            /* Green tip bubble - Proper containment */
+            .guide-card-fullscreen .guide-preview-content .guide-preview-takeaway {
                 margin: 0 !important;
-                padding: 12px !important;
+                padding: var(--spacing-md) !important;
                 display: block !important;
                 width: 100% !important;
                 box-sizing: border-box !important;
                 background: rgba(0, 255, 136, 0.1) !important;
                 border: 1px solid rgba(0, 255, 136, 0.3) !important;
-                border-radius: 8px !important;
-                font-size: 14px !important;
+                border-radius: var(--border-radius) !important;
+                font-size: 0.875rem !important;
+                color: var(--accent-success) !important;
                 line-height: 1.5 !important;
+                text-align: left !important;
                 overflow: hidden !important;
                 word-wrap: break-word !important;
+                overflow-wrap: break-word !important;
+            }
+            
+            /* Hide desktop buttons on mobile */
+            .guide-card-fullscreen .guide-preview-card > .guide-preview-btn:not(.mobile-repositioned) {
+                display: none !important;
+            }
+            
+            /* Remove focus outline on mobile cards */
+            .guide-card-fullscreen .guide-preview-card:focus {
+                outline: none !important;
+                box-shadow: none !important;
             }
         }
     </style>

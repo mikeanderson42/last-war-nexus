@@ -4428,15 +4428,27 @@ body.guide-open {
   display: none;
 }
 
+/* DESKTOP FIX: Remove excess bottom padding from tip cards */
+@media screen and (min-width: 769px) {
+  .guide-card-fullscreen .guide-preview-card {
+    justify-content: flex-start !important;
+    gap: var(--spacing-lg) !important;
+  }
+  
+  .guide-card-fullscreen .guide-preview-content {
+    flex: 0 0 auto !important;
+  }
+}
+
 /* Mobile: Complete rewrite with isolated layout system - Multiple detection methods */
 @media screen and (max-width: 768px), 
        screen and (max-device-width: 768px),
        (pointer: coarse),
        (hover: none) {
   
-  /* MOBILE DETECTION TEST - Should show green border on actual mobile */
+  /* MOBILE DETECTION TEST - Multiple indicators */
   body::before {
-    content: "MOBILE CSS ACTIVE" !important;
+    content: "MOBILE CSS ACTIVE - CARDS SHOULD BE FIXED" !important;
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
@@ -4444,7 +4456,14 @@ body.guide-open {
     color: white !important;
     padding: 5px !important;
     z-index: 9999 !important;
-    font-size: 12px !important;
+    font-size: 14px !important;
+    width: 100% !important;
+  }
+  
+  /* DIRECT CARD TEST - Force all cards to have red background on mobile */
+  .guide-card-fullscreen .guide-preview-card {
+    background: red !important;
+    border: 5px solid yellow !important;
   }
   
   /* DISABLE FOCUS OUTLINE ON MOBILE CARDS */
@@ -4453,13 +4472,18 @@ body.guide-open {
     box-shadow: none !important;
   }
   
-  /* REMOVE TABINDEX FROM MOBILE CARDS */
-  .guide-card-fullscreen .guide-preview-card {
-    /* Reset all inherited properties */
-    all: unset !important;
-    
-    /* Establish new layout context */
+  /* NUCLEAR MOBILE CARD OVERRIDE - Maximum specificity */
+  .guide-card-fullscreen .guide-preview-card.guide-preview-card.guide-preview-card {
+    /* CRITICAL: Override base flexbox completely */
     display: block !important;
+    flex-direction: unset !important;
+    justify-content: unset !important;
+    align-items: unset !important;
+    height: auto !important;
+    min-height: unset !important;
+    max-height: unset !important;
+    
+    /* Establish clean layout */
     width: 100% !important;
     background: var(--glass-bg) !important;
     backdrop-filter: var(--backdrop-blur) !important;

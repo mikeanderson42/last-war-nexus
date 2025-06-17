@@ -4454,15 +4454,17 @@ body.guide-open {
 
 /* Mobile: Show repositioned button, hide the old one */
 @media screen and (max-width: 768px) {
-  /* Fix card layout */
+  /* Fix card layout - remove ALL height constraints */
   .guide-card-fullscreen .guide-preview-card {
     height: auto !important;
     min-height: auto !important;
+    max-height: none !important;
     justify-content: flex-start !important;
     align-items: stretch !important;
     gap: var(--spacing-md) !important;
     display: flex !important;
     flex-direction: column !important;
+    overflow: visible !important;
   }
   
   /* Content area flows naturally with proper spacing */
@@ -4472,7 +4474,9 @@ body.guide-open {
     flex-direction: column !important;
     gap: var(--spacing-md) !important;
     padding-bottom: var(--spacing-lg) !important;
-    overflow: hidden !important;
+    overflow: visible !important;
+    min-height: auto !important;
+    height: auto !important;
   }
   
   /* Show the repositioned button inside content */
@@ -4495,5 +4499,17 @@ body.guide-open {
   /* Hide any old button outside content on mobile */
   .guide-card-fullscreen .guide-preview-card > .guide-preview-btn:not(.mobile-repositioned) {
     display: none !important;
+  }
+  
+  /* NUCLEAR OPTION: Remove ALL possible height constraints on mobile */
+  .guide-card-fullscreen,
+  .guide-card-fullscreen *,
+  .guide-card-fullscreen .guide-preview-card,
+  .guide-card-fullscreen .guide-preview-content,
+  .guide-card-fullscreen .guide-preview-header,
+  .guide-card-fullscreen .guide-preview-takeaway {
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
   }
 }

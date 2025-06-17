@@ -395,18 +395,21 @@ body {
   
   /* Better mobile preview cards */
   .guide-preview-card {
-    padding: var(--spacing-lg);
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
+    padding: var(--spacing-lg) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: var(--spacing-md) !important;
+    height: auto !important;
+    justify-content: flex-start !important;
   }
   
   .guide-preview-content {
-    order: 1;
-    flex: none;
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
+    order: 1 !important;
+    flex: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: var(--spacing-md) !important;
+    justify-content: flex-start !important;
   }
   
   .guide-preview-header {
@@ -430,23 +433,26 @@ body {
   }
   
   .guide-preview-btn {
-    align-self: stretch;
-    justify-content: center;
-    padding: var(--spacing-lg);
+    align-self: stretch !important;
+    justify-content: center !important;
+    padding: var(--spacing-lg) !important;
     font-size: 1rem;
     font-weight: 600;
     min-height: 48px;
-    order: 3;
-    margin-top: var(--spacing-sm);
+    order: 3 !important;
+    margin-top: var(--spacing-sm) !important;
+    margin-bottom: 0 !important;
   }
   
   .guide-preview-takeaway {
-    padding: var(--spacing-md);
+    padding: var(--spacing-md) !important;
     background: var(--bg-elevated);
     border-radius: var(--border-radius);
     font-size: 0.9rem;
     line-height: 1.4;
-    order: 2;
+    order: 2 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
   }
 }
 

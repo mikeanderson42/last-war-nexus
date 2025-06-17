@@ -4305,12 +4305,12 @@ body.guide-open {
 }
 
 /* ========================================
- * MOBILE GUIDE CARD FIXES - NUCLEAR OPTION - COMPLETE OVERRIDE
+ * MOBILE GUIDE CARD FIXES - MAXIMUM SPECIFICITY OVERRIDE
  * ALL ROOT CAUSES: height: 350px + justify-content: space-between + flex: 1 on content
  * ======================================== */
-@media (max-width: 768px) {
+@media screen and (max-width: 768px) {
   /* NUCLEAR OVERRIDE: Complete replacement of guide card layout */
-  .guide-card-fullscreen .guide-preview-card {
+  div.guide-card-fullscreen div.guide-preview-card {
     /* Remove all problematic desktop layout */
     height: auto !important;
     min-height: auto !important;
@@ -4330,7 +4330,7 @@ body.guide-open {
   }
   
   /* CONTENT: Remove flex: 1 that was taking all space */
-  .guide-card-fullscreen .guide-preview-content {
+  div.guide-card-fullscreen div.guide-preview-content {
     flex: 0 0 auto !important;
     flex-grow: 0 !important;
     flex-shrink: 0 !important;
@@ -4350,7 +4350,7 @@ body.guide-open {
   }
   
   /* GREEN TIP: Ensure it stays within content boundaries */
-  .guide-card-fullscreen .guide-preview-takeaway {
+  div.guide-card-fullscreen div.guide-preview-takeaway {
     /* Remove any positioning that could cause overlay */
     position: relative !important;
     top: auto !important;
@@ -4372,7 +4372,7 @@ body.guide-open {
   }
   
   /* BUTTON: Completely separate from content, no overlap possible */
-  .guide-card-fullscreen .guide-preview-btn {
+  div.guide-card-fullscreen button.guide-preview-btn {
     /* Remove all flex properties that could cause issues */
     flex: 0 0 auto !important;
     flex-grow: 0 !important;

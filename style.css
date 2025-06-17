@@ -2194,28 +2194,42 @@ body {
     
     /* Phase header mobile restructure for better readability */
     .phase-header {
-        flex-direction: column;
+        flex-direction: row;
+        flex-wrap: wrap;
         align-items: flex-start;
         gap: var(--spacing-sm);
         padding: var(--spacing-md);
     }
     
+    .phase-icon {
+        font-size: 1.75rem;
+        flex-shrink: 0;
+        margin-right: var(--spacing-sm);
+    }
+    
     .phase-details {
-        order: 1;
-        width: 100%;
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .phase-details h4 {
+        font-size: 1rem;
+        margin-bottom: var(--spacing-xs);
+    }
+    
+    .phase-details p {
+        font-size: 0.8rem;
+        line-height: 1.4;
     }
     
     .efficiency-badge {
-        order: 2;
-        align-self: flex-start;
-        font-size: 0.7rem;
-        padding: var(--spacing-xs) var(--spacing-sm);
-    }
-    
-    .phase-icon {
-        order: 3;
-        font-size: 1.5rem;
-        align-self: flex-end;
+        width: 100%;
+        text-align: center;
+        margin-top: var(--spacing-sm);
+        font-size: 0.75rem;
+        padding: var(--spacing-xs) var(--spacing-md);
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
     }
     
     /* Tab navigation mobile - tightened */

@@ -4305,15 +4305,16 @@ body.guide-open {
 }
 
 /* ========================================
- * MOBILE GUIDE CARD FIXES - ATTEMPT 9 - STRUCTURAL FIX
- * Understanding: takeaway is INSIDE content, button is OUTSIDE content
+ * MOBILE GUIDE CARD FIXES - ATTEMPT 10 - OVERRIDE JUSTIFY-CONTENT
+ * ROOT CAUSE: height: 350px + justify-content: space-between forces button to bottom
  * ======================================== */
 @media (max-width: 768px) {
-  /* Force proper card layout */
+  /* Override the problematic base styles completely */
   .guide-card-fullscreen .guide-preview-card {
     height: auto !important;
     min-height: auto !important;
     max-height: none !important;
+    justify-content: flex-start !important;
     display: flex !important;
     flex-direction: column !important;
     padding: var(--spacing-lg) !important;
@@ -4322,14 +4323,13 @@ body.guide-open {
   
   /* Content container should take natural space */
   .guide-card-fullscreen .guide-preview-content {
-    flex: 0 0 auto !important;
+    flex: none !important;
     display: flex !important;
     flex-direction: column !important;
     gap: var(--spacing-md) !important;
-    margin-bottom: 0 !important;
   }
   
-  /* Green tip bubble has proper spacing within content */
+  /* Green tip bubble stays within content with proper spacing */
   .guide-card-fullscreen .guide-preview-takeaway {
     margin: var(--spacing-md) 0 0 0 !important;
     padding: var(--spacing-md) !important;
@@ -4337,13 +4337,12 @@ body.guide-open {
     box-sizing: border-box !important;
   }
   
-  /* Button is separate and below content with clear gap */
+  /* Button follows content naturally, no more space-between forcing to bottom */
   .guide-card-fullscreen .guide-preview-btn {
-    flex: 0 0 auto !important;
+    flex: none !important;
     margin: 0 !important;
-    position: relative !important;
     width: 100% !important;
-    align-self: stretch !important;
+    position: relative !important;
   }
 }
 
@@ -4410,7 +4409,8 @@ body.guide-open {
 
 /* Mobile responsiveness for ads */
 @media (max-width: 768px) {
-  .desktop-only {
+  .desktop-only,
+  .priority-ad-container {
     display: none !important;
   }
   

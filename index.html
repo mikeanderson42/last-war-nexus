@@ -55,8 +55,43 @@
     
     <!-- PRODUCTION MOBILE CSS - Inline for reliability -->
     <style>
+        /* ENSURE CONTENT SCROLLABLE ABOVE BOTTOM BANNER - All devices */
+        body {
+            padding-bottom: 160px !important; /* Extra space for bottom banner */
+        }
+        
+        .main-content {
+            padding-bottom: var(--spacing-xl) !important; /* Additional content spacing */
+        }
+        
+        .priority-grid {
+            padding-bottom: var(--spacing-lg) !important; /* Ensure grid content scrollable */
+        }
+        
+        /* Ensure last elements are fully visible above bottom banner */
+        .guide-card-fullscreen:last-child {
+            margin-bottom: var(--spacing-lg) !important;
+        }
+        
         /* MOBILE GUIDE CARDS - Production fix for CSS loading issues */
         @media (max-width: 768px) {
+            /* MOBILE SPECIFIC BOTTOM SPACING */
+            body {
+                padding-bottom: 180px !important; /* More space on mobile */
+            }
+            
+            .main-content {
+                padding-bottom: var(--spacing-2xl) !important; /* Extra mobile spacing */
+            }
+            
+            .priority-grid {
+                padding-bottom: var(--spacing-xl) !important; /* Extra mobile grid spacing */
+            }
+            
+            /* Extra mobile spacing for last elements */
+            .guide-card-fullscreen:last-child {
+                margin-bottom: var(--spacing-xl) !important;
+            }
             /* Card container - Remove flexbox constraints */
             .guide-card-fullscreen .guide-preview-card {
                 height: auto !important;

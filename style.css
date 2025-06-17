@@ -2960,8 +2960,8 @@ body {
     border-radius: var(--border-radius);
     padding: var(--spacing-md);
     line-height: 1.5;
-    margin-top: var(--spacing-md);
-    margin-bottom: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+    margin-bottom: auto;
     width: 100%;
     word-wrap: break-word;
     text-align: left;
@@ -2972,7 +2972,7 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start;
     min-height: 0;
 }
 

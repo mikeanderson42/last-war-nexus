@@ -425,7 +425,8 @@ body {
   }
   
   .guide-preview-takeaway {
-    margin-top: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+    margin-bottom: auto;
     padding: var(--spacing-md);
     background: var(--bg-elevated);
     border-radius: var(--border-radius);

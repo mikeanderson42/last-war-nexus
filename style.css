@@ -4465,12 +4465,13 @@ body.guide-open {
     flex-direction: column !important;
   }
   
-  /* Content area flows naturally */
+  /* Content area flows naturally with proper spacing */
   .guide-card-fullscreen .guide-preview-content {
     flex: 0 0 auto !important;
     display: flex !important;
     flex-direction: column !important;
     gap: var(--spacing-md) !important;
+    padding-bottom: var(--spacing-sm) !important;
   }
   
   /* Show the repositioned button inside content */
@@ -4480,10 +4481,11 @@ body.guide-open {
     width: 100% !important;
   }
   
-  /* Green tip follows naturally after button */
+  /* Green tip follows naturally after button with proper bottom spacing */
   .guide-card-fullscreen .guide-preview-content .guide-preview-takeaway {
-    margin: 0 !important;
+    margin: 0 0 var(--spacing-md) 0 !important;
     width: 100% !important;
+    box-sizing: border-box !important;
   }
   
   /* Hide any old button outside content on mobile */

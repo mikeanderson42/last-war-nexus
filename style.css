@@ -4305,10 +4305,11 @@ body.guide-open {
 }
 
 /* ========================================
- * MOBILE GUIDE CARD FIXES - ATTEMPT 8 - COMPLETE REWRITE
+ * MOBILE GUIDE CARD FIXES - ATTEMPT 9 - STRUCTURAL FIX
+ * Understanding: takeaway is INSIDE content, button is OUTSIDE content
  * ======================================== */
 @media (max-width: 768px) {
-  /* Force proper layout structure on mobile */
+  /* Force proper card layout */
   .guide-card-fullscreen .guide-preview-card {
     height: auto !important;
     min-height: auto !important;
@@ -4316,35 +4317,33 @@ body.guide-open {
     display: flex !important;
     flex-direction: column !important;
     padding: var(--spacing-lg) !important;
-    gap: 0 !important;
+    gap: var(--spacing-lg) !important;
   }
   
-  /* Ensure content comes first and takes space */
+  /* Content container should take natural space */
   .guide-card-fullscreen .guide-preview-content {
-    order: 1 !important;
     flex: 0 0 auto !important;
-    margin-bottom: var(--spacing-md) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: var(--spacing-md) !important;
+    margin-bottom: 0 !important;
   }
   
-  /* Green tip bubble comes second with proper spacing */
+  /* Green tip bubble has proper spacing within content */
   .guide-card-fullscreen .guide-preview-takeaway {
-    order: 2 !important;
-    flex: 0 0 auto !important;
-    margin: 0 !important;
-    margin-bottom: var(--spacing-lg) !important;
+    margin: var(--spacing-md) 0 0 0 !important;
+    padding: var(--spacing-md) !important;
     width: 100% !important;
     box-sizing: border-box !important;
   }
   
-  /* Button comes last with clear separation */
+  /* Button is separate and below content with clear gap */
   .guide-card-fullscreen .guide-preview-btn {
-    order: 3 !important;
     flex: 0 0 auto !important;
     margin: 0 !important;
-    margin-top: var(--spacing-md) !important;
     position: relative !important;
-    clear: both !important;
     width: 100% !important;
+    align-self: stretch !important;
   }
 }
 

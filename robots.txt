@@ -3,4 +3,4 @@ Disallow: /css/
 Disallow: /js/
 Allow: /ads.txt
 
-Sitemap: https://lastwar-nexus.com/sitemap.xml
+Sitemap: https://www.lastwarnexus.com/sitemap.xml

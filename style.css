@@ -4313,12 +4313,26 @@ body.guide-open {
  * ADSENSE INTEGRATION STYLES
  * ======================================== */
 
-/* ALL ADS HIDDEN - PRODUCTION READY */
-.header-ad-container,
-.dashboard-ad-container,
-.priority-ad-container,
-.adsbygoogle {
-  display: none !important;
+/* Ezoic Ad Container Styling */
+[id^="ezoic-pub-ad-placeholder"] {
+  min-height: 90px;
+  margin: var(--spacing-lg) 0;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--border-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Loading state for ads */
+[id^="ezoic-pub-ad-placeholder"]:empty::before {
+  content: "Advertisement";
+  font-size: var(--font-size-sm);
+  color: var(--text-tertiary);
+  font-style: italic;
 }
 
 .header-banner-ad {
@@ -4327,13 +4341,13 @@ body.guide-open {
   overflow: hidden;
 }
 
-/* Priority Banner Ad - Desktop Only */
+/* Priority Banner Ad Container */
 .priority-ad-container {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 300px;
-  padding: var(--spacing-md);
+  min-width: 250px;
+  padding: var(--spacing-sm);
 }
 
 .desktop-only {
@@ -4362,11 +4376,7 @@ body.guide-open {
   gap: var(--spacing-md);
 }
 
-/* Dashboard Break Ad - TEMPORARILY HIDDEN */
-.dashboard-ad-container {
-  display: none !important;
-}
-
+/* Dashboard Break Ad Container */
 .dashboard-break-ad {
   max-width: 100%;
   border-radius: var(--border-radius-sm);
@@ -4375,9 +4385,12 @@ body.guide-open {
 
 /* Mobile responsiveness for ads */
 @media (max-width: 768px) {
-  .desktop-only,
-  .priority-ad-container {
+  .desktop-only {
     display: none !important;
+  }
+  
+  .priority-ad-container {
+    display: none !important; /* Hide sidebar ad on mobile for better UX */
   }
   
   .next-priority-banner {
@@ -4389,33 +4402,25 @@ body.guide-open {
     width: 100%;
   }
   
-  .header-ad-container,
-  .dashboard-ad-container {
+  /* Adjust Ezoic ad containers for mobile */
+  [id^="ezoic-pub-ad-placeholder"] {
     margin: var(--spacing-md);
-    padding: var(--spacing-sm);
-    min-height: 80px;
+    min-height: 50px;
   }
 }
 
-/* Ad loading states */
-.adsbygoogle {
-  transition: opacity var(--transition-normal);
+/* Ezoic specific ad positioning */
+#ezoic-pub-ad-placeholder-118 { /* top_of_page */
+  margin-bottom: var(--spacing-xl);
 }
 
-.adsbygoogle:empty {
-  opacity: 0.6;
-  background: var(--bg-elevated);
-  border: 1px dashed var(--border-secondary);
-  display: flex !important;
-  align-items: center;
-  justify-content: center;
+#ezoic-pub-ad-placeholder-120 { /* mid_content */
+  margin: var(--spacing-xl) 0;
 }
 
-.adsbygoogle:empty::before {
-  content: "Advertisement";
-  font-size: var(--font-size-sm);
-  color: var(--text-tertiary);
-  font-style: italic;
+#ezoic-pub-ad-placeholder-121 { /* bottom_of_page */
+  margin-top: var(--spacing-xl);
+  margin-bottom: var(--spacing-lg);
 }
 
 /* ========================================

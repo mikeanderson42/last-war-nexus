@@ -719,23 +719,45 @@
         }
     </script>
 
-    <!-- Ezoic Ad Script - Temporarily Disabled for Debugging -->
-    <!--
+    <!-- Ezoic Ad Script - Safe Integration -->
     <script>
-        // Initialize Ezoic after page load to prevent interference
-        window.addEventListener('load', function() {
-            window.ezstandaloead = window.ezstandaloead || {};
-            window.ezstandaloead.cmd = window.ezstandaloead.cmd || [];
+        // Safe Ezoic integration that won't interfere with site functionality
+        (function() {
+            // Only load Ezoic after our app is fully initialized
+            function loadEzoicSafely() {
+                // Check if our main app is loaded and working
+                if (window.lastWarNexus && typeof window.lastWarNexus.updateAllDisplays === 'function') {
+                    console.log('App verified working - loading Ezoic safely');
+                    
+                    // Initialize Ezoic in isolated scope
+                    try {
+                        window.ezstandaloead = window.ezstandaloead || {};
+                        window.ezstandaloead.cmd = window.ezstandaloead.cmd || [];
+                        
+                        // Create isolated script loading
+                        var ezoicScript = document.createElement('script');
+                        ezoicScript.async = true;
+                        ezoicScript.defer = true;
+                        ezoicScript.src = '//www.ezojs.com/ezoic/ezoic.js';
+                        ezoicScript.onerror = function() {
+                            console.log('Ezoic script failed to load - site continues normally');
+                        };
+                        
+                        // Append to body instead of head to minimize interference
+                        document.body.appendChild(ezoicScript);
+                        
+                    } catch (e) {
+                        console.log('Ezoic initialization failed - site continues normally');
+                    }
+                } else {
+                    // App not ready yet, try again later
+                    setTimeout(loadEzoicSafely, 2000);
+                }
+            }
             
-            // Load Ezoic script after a short delay
-            setTimeout(function() {
-                var ezoicScript = document.createElement('script');
-                ezoicScript.async = true;
-                ezoicScript.src = '//www.ezojs.com/ezoic/ezoic.js';
-                document.head.appendChild(ezoicScript);
-            }, 1000); // 1 second delay
-        });
+            // Start the safe loading process after everything else
+            setTimeout(loadEzoicSafely, 3000);
+        })();
     </script>
-    -->
 </body>
 </html>

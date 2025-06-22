@@ -4410,15 +4410,19 @@ body.guide-open {
 }
 
 /* Ezoic specific ad positioning */
-#ezoic-pub-ad-placeholder-118 { /* top_of_page */
+#ezoic-pub-ad-placeholder-101 { /* top_of_page */
   margin-bottom: var(--spacing-xl);
 }
 
-#ezoic-pub-ad-placeholder-120 { /* mid_content */
+#ezoic-pub-ad-placeholder-102 { /* sidebar_middle */
+  min-width: 250px;
+}
+
+#ezoic-pub-ad-placeholder-103 { /* mid_content */
   margin: var(--spacing-xl) 0;
 }
 
-#ezoic-pub-ad-placeholder-121 { /* bottom_of_page */
+#ezoic-pub-ad-placeholder-104 { /* bottom_of_page */
   margin-top: var(--spacing-xl);
   margin-bottom: var(--spacing-lg);
 }

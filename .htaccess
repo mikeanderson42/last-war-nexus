@@ -1,4 +1,7 @@
-# Ensure ads.txt is served with correct MIME type
+# Ezoic ads.txt redirect
+Redirect 301 /ads.txt https://srv.adstxtmanager.com/19390/www.lastwarnexus.com
+
+# Ensure ads.txt is served with correct MIME type (backup)
 <Files "ads.txt">
     AddType text/plain .txt
     Header set Cache-Control "public, max-age=86400"

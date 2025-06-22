@@ -326,7 +326,7 @@
         </header>
 
         <!-- Ezoic - ezoic-pub-ad-placeholder-101 - top_of_page -->
-        <div id="ezoic-pub-ad-placeholder-101"></div>
+        <div id="ezoic-pub-ad-placeholder-101" data-ezoic-ad="banner"></div>
         <!-- End Ezoic - ezoic-pub-ad-placeholder-101 - top_of_page -->
 
         <!-- Dashboard Section -->
@@ -719,106 +719,12 @@
         }
     </script>
 
-    <!-- Ezoic Integration - 100% Isolated & Safe -->
+    <!-- Ezoic Standard Integration -->
     <script>
-        // BULLETPROOF: Ezoic integration that CANNOT break site functionality
-        (function() {
-            'use strict';
-            
-            // Create completely isolated namespace
-            var EzoicSafeLoader = {
-                scriptLoaded: false,
-                appVerified: false,
-                maxRetries: 5,
-                currentRetries: 0,
-                
-                // Verify our app is working perfectly before touching Ezoic
-                verifyApp: function() {
-                    try {
-                        return (
-                            window.lastWarNexus && 
-                            typeof window.lastWarNexus.updateAllDisplays === 'function' &&
-                            document.readyState === 'complete' &&
-                            !window.appHasErrors
-                        );
-                    } catch (e) {
-                        return false;
-                    }
-                },
-                
-                // Load Ezoic in the safest possible way
-                loadEzoic: function() {
-                    if (this.scriptLoaded) return;
-                    
-                    try {
-                        // Only proceed if app is 100% verified working
-                        if (!this.verifyApp()) {
-                            this.currentRetries++;
-                            if (this.currentRetries < this.maxRetries) {
-                                setTimeout(this.loadEzoic.bind(this), 3000);
-                            }
-                            return;
-                        }
-                        
-                        console.log('✅ App verified working - initializing Ezoic safely');
-                        
-                        // Initialize Ezoic in completely isolated way
-                        if (!window.ezstandaloead) {
-                            window.ezstandaloead = {};
-                        }
-                        if (!window.ezstandaloead.cmd) {
-                            window.ezstandaloead.cmd = [];
-                        }
-                        
-                        // Create script element with maximum safety
-                        var script = document.createElement('script');
-                        script.type = 'text/javascript';
-                        script.async = true;
-                        script.defer = true;
-                        script.crossOrigin = 'anonymous';
-                        script.src = '//www.ezojs.com/ezoic/ezoic.js';
-                        
-                        // Multiple error handlers for safety
-                        script.onerror = function() {
-                            console.log('🔴 Ezoic script failed - site continues normally');
-                        };
-                        
-                        script.onload = function() {
-                            console.log('✅ Ezoic script loaded successfully');
-                            EzoicSafeLoader.scriptLoaded = true;
-                        };
-                        
-                        // Use timeout to ensure script doesn't block
-                        setTimeout(function() {
-                            try {
-                                document.body.appendChild(script);
-                            } catch (e) {
-                                console.log('🔴 Ezoic script injection failed - site continues normally');
-                            }
-                        }, 100);
-                        
-                    } catch (error) {
-                        console.log('🔴 Ezoic initialization error - site continues normally:', error);
-                    }
-                },
-                
-                // Start the safe loading process
-                init: function() {
-                    // Wait for everything to be completely ready
-                    if (document.readyState === 'complete') {
-                        setTimeout(this.loadEzoic.bind(this), 5000); // 5 second safety buffer
-                    } else {
-                        window.addEventListener('load', function() {
-                            setTimeout(EzoicSafeLoader.loadEzoic.bind(EzoicSafeLoader), 5000);
-                        });
-                    }
-                }
-            };
-            
-            // Start the bulletproof initialization
-            EzoicSafeLoader.init();
-            
-        })();
+        // Standard Ezoic integration as recommended by Ezoic
+        window.ezstandaloead = window.ezstandaloead || {};
+        window.ezstandaloead.cmd = window.ezstandaloead.cmd || [];
     </script>
+    <script async src="//www.ezojs.com/ezoic/ezoic.js"></script>
 </body>
 </html>

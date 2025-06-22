@@ -1,1 +1,10 @@
+# Last War Nexus - Ads.txt
+# This file helps prevent unauthorized ad inventory sales
+
+# Google AdSense (legacy - kept for reference)
 google.com, pub-2898635719839576, DIRECT, f08c47fec0942fa0
+
+# Ezoic
+# Ezoic automatically manages and updates ads.txt entries through their system
+# After integrating with Ezoic, they will provide specific entries or manage this file
+# Visit https://pubdash.ezoic.com/adstxt for your specific Ezoic ads.txt entries

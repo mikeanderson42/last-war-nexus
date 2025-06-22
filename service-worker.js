@@ -88,6 +88,14 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   
+  // Skip caching for Ezoic ad content
+  if (url.hostname.includes('ezoic') || 
+      url.hostname.includes('googleads') || 
+      url.hostname.includes('googlesyndication') ||
+      url.pathname.includes('ezoic')) {
+    return;
+  }
+  
   // Handle navigation requests
   if (request.mode === 'navigate') {
     event.respondWith(handleNavigationRequest(request));

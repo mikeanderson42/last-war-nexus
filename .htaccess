@@ -1,4 +1,8 @@
-# Ezoic ads.txt redirect
+# Ezoic ads.txt redirect - Multiple methods for compatibility
+RewriteEngine On
+RewriteRule ^ads\.txt$ https://srv.adstxtmanager.com/19390/www.lastwarnexus.com [R=301,L]
+
+# Fallback redirect method
 Redirect 301 /ads.txt https://srv.adstxtmanager.com/19390/www.lastwarnexus.com
 
 # Ensure ads.txt is served with correct MIME type (backup)

@@ -188,13 +188,6 @@
         }
     </style>
     
-    <!-- Ezoic Ad Script -->
-    <script>
-        window.ezstandaloead = window.ezstandaloead || {};
-        window.ezstandaloead.cmd = window.ezstandaloead.cmd || [];
-    </script>
-    <script async src="//www.ezojs.com/ezoic/ezoic.js"></script>
-    
     <!-- Structured Data for SEO -->
     <script type="application/ld+json">
     {
@@ -724,6 +717,23 @@
                     });
             });
         }
+    </script>
+
+    <!-- Ezoic Ad Script - Load after everything else -->
+    <script>
+        // Initialize Ezoic after page load to prevent interference
+        window.addEventListener('load', function() {
+            window.ezstandaloead = window.ezstandaloead || {};
+            window.ezstandaloead.cmd = window.ezstandaloead.cmd || [];
+            
+            // Load Ezoic script after a short delay
+            setTimeout(function() {
+                var ezoicScript = document.createElement('script');
+                ezoicScript.async = true;
+                ezoicScript.src = '//www.ezojs.com/ezoic/ezoic.js';
+                document.head.appendChild(ezoicScript);
+            }, 1000); // 1 second delay
+        });
     </script>
 </body>
 </html>

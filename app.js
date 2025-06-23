@@ -3176,10 +3176,42 @@
             }
         };
 
+        // DEBUG: Functions to test setup modal and clear localStorage
+        window.testForceSetupModal = function() {
+            console.log('TEST: Forcing setup modal to appear');
+            if (window.lastWarNexus) {
+                window.lastWarNexus.showSetupModal();
+            } else {
+                console.log('TEST: lastWarNexus not found');
+            }
+        };
+
+        window.testClearLocalStorage = function() {
+            console.log('TEST: Clearing localStorage to force setup modal');
+            localStorage.removeItem('lwn-settings');
+            if (window.lastWarNexus) {
+                window.lastWarNexus.isSetupComplete = false;
+                window.lastWarNexus.showSetupModal();
+            }
+            console.log('TEST: localStorage cleared, reload page to see setup modal');
+        };
+
         window.addEventListener('error', (event) => {
             console.error('Global error:', event.error);
         });
 
         window.addEventListener('unhandledrejection', (event) => {
             console.error('Unhandled promise rejection:', event.reason);
+        });
+
+        // Initialize the application when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM Content Loaded - Initializing VSPointsOptimizer...');
+            try {
+                window.lastWarNexus = new VSPointsOptimizer();
+                window.lastWarNexus.init();
+                console.log('VSPointsOptimizer initialized successfully');
+            } catch (error) {
+                console.error('Failed to initialize VSPointsOptimizer:', error);
+            }
         });

@@ -3,11 +3,6 @@
          * PRODUCTION READY VERSION - Enhanced Design & Functionality
          */
 
-        // Guard against duplicate class declaration
-        if (typeof VSPointsOptimizer !== 'undefined') {
-            console.warn('⚠️ VSPointsOptimizer already declared - skipping redeclaration');
-        } else {
-
         class VSPointsOptimizer {
             constructor() {
                 this.timeOffset = 0;
@@ -3052,8 +3047,6 @@
             }
         }
 
-        } // End of VSPointsOptimizer class guard
-
         // Initialize the application - Handle both DOM ready and already loaded states
         function initializeApp() {
             try {
@@ -3259,6 +3252,13 @@
             
             try {
                 console.log('🏗️ Creating VSPointsOptimizer instance...');
+                
+                // Check if class is available
+                if (typeof VSPointsOptimizer === 'undefined') {
+                    console.error('💥 VSPointsOptimizer class not found - script may not have loaded properly');
+                    return;
+                }
+                
                 window.lastWarNexus = new VSPointsOptimizer();
                 console.log('🎯 VSPointsOptimizer instance created successfully');
                 
@@ -3310,6 +3310,13 @@
                     
                     if (missingElements.length === 0) {
                         console.log('🚀 FALLBACK: All elements ready, initializing...');
+                        
+                        // Check if class is available
+                        if (typeof VSPointsOptimizer === 'undefined') {
+                            console.error('💥 FALLBACK: VSPointsOptimizer class not found');
+                            return;
+                        }
+                        
                         window.lastWarNexus = new VSPointsOptimizer();
                         window.lastWarNexus.init();
                         console.log('✅ FALLBACK: Initialization successful!');

@@ -63,8 +63,18 @@ class VSPointsOptimizer {
                 }, 500);
             } else {
                 console.log('Setup complete, starting normal operation');
-                this.updateAllDisplays();
-                this.startUpdateLoop();
+                
+                // Comprehensive initialization for returning users
+                setTimeout(() => {
+                    this.updateAllDisplays();
+                    this.populatePriorityContent();
+                    this.populateScheduleContent();
+                    this.populateGuides();
+                    this.populateBanner();
+                    this.ensureAllNavigation();
+                    this.startUpdateLoop();
+                    console.log('✅ Normal operation initialization complete');
+                }, 200);
             }
         } catch (error) {
             console.error('Init error:', error);
@@ -323,13 +333,28 @@ class VSPointsOptimizer {
 
             console.log('✅ Setup completed successfully, hiding modal');
             this.hideSetupModal();
-            this.updateAllDisplays();
-            this.startUpdateLoop();
             
-            // Ensure all navigation works after setup
+            // Comprehensive post-setup initialization
             setTimeout(() => {
+                console.log('✅ Running post-setup initialization...');
+                
+                // Update all displays first
+                this.updateAllDisplays();
+                
+                // Populate all content areas
+                this.populatePriorityContent();
+                this.populateScheduleContent();
+                this.populateGuides();
+                this.populateBanner();
+                
+                // Ensure navigation works
                 this.ensureAllNavigation();
-            }, 500);
+                
+                // Start the update loop
+                this.startUpdateLoop();
+                
+                console.log('✅ Post-setup initialization complete');
+            }, 300);
 
         } catch (error) {
             console.error('Setup completion error:', error);
@@ -498,16 +523,6 @@ class VSPointsOptimizer {
         return { hours: hoursUntilNext, minutes: minutesUntilNext };
     }
 
-    updateAllDisplays() {
-        console.log('✅ Updating all displays');
-        try {
-            this.updateTimeDisplays();
-            this.updatePhaseDisplays();
-            this.updateLoadingElements();
-        } catch (error) {
-            console.error('Display update error:', error);
-        }
-    }
 
     updateTimeDisplays() {
         try {
@@ -580,6 +595,7 @@ class VSPointsOptimizer {
             const now = new Date();
             const serverTime = this.getServerTime();
             const currentPhase = this.getCurrentArmsPhase();
+            const nextPhase = this.getNextArmsPhase();
             const timeToNext = this.getTimeToNextPhase();
             
             // Calculate phase end time
@@ -592,36 +608,106 @@ class VSPointsOptimizer {
             const hoursToReset = Math.floor(timeUntilReset / (1000 * 60 * 60));
             const minutesToReset = Math.floor((timeUntilReset % (1000 * 60 * 60)) / (1000 * 60));
             
-            // Update all the loading elements
+            console.log('✅ Updating all loading elements with calculated data');
+            
+            // Update all the loading elements with comprehensive data
             const updates = {
+                // Main dashboard elements
+                'main-time-display': this.useLocalTime ? now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : serverTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                 'priority-countdown': `${timeToNext.hours}h ${timeToNext.minutes}m`,
+                'phase-title': currentPhase.name,
+                'phase-description': `Current ${currentPhase.name} phase - Optimize for ${currentPhase.category} activities`,
+                'phase-icon': currentPhase.icon,
                 'efficiency-badge': '✅ Optimal',
-                'spending-tags': 'City Building Focus',
+                'spending-tags': `${currentPhase.name} Focus`,
+                
+                // Server reset information
                 'next-server-reset': nextReset.toLocaleTimeString(),
                 'reset-local-time': new Date(nextReset.getTime() - this.timeOffset * 60 * 60 * 1000).toLocaleTimeString(),
                 'time-until-reset': `${hoursToReset}h ${minutesToReset}m`,
+                
+                // Phase countdown card elements
+                'countdown-timer': `${timeToNext.hours}h ${timeToNext.minutes}m`,
                 'current-phase': currentPhase.name,
+                'current-display-time': now.toLocaleTimeString(),
+                'server-display-time': serverTime.toLocaleTimeString(),
                 'phase-end-time': phaseEndTime.toLocaleTimeString(),
-                'next-phase-preview': `${currentPhase.icon} ${currentPhase.name}`,
-                'setup-server-time': serverTime.toLocaleTimeString(),
+                'next-phase-preview': `${nextPhase.icon} ${nextPhase.name}`,
+                'next-phase': `${nextPhase.icon} ${nextPhase.name}`,
+                
+                // Tab count indicators
                 'priority-count': '3',
                 'schedule-count': '6',
-                'guides-count': '12'
+                'guides-count': '12',
+                
+                // Setup elements
+                'setup-server-time': serverTime.toLocaleTimeString(),
+                'setup-timezone-offset': this.timeOffset >= 0 ? `+${this.timeOffset}` : this.timeOffset
             };
             
-            // Apply updates
+            // Apply updates to all elements
             Object.entries(updates).forEach(([id, value]) => {
                 const element = document.getElementById(id);
-                if (element && (element.textContent.includes('Loading') || element.textContent === 'Loading')) {
-                    element.textContent = value;
-                    console.log(`Updated ${id} to: ${value}`);
+                if (element) {
+                    const currentText = element.textContent || '';
+                    if (currentText.includes('Loading') || currentText === 'Loading' || currentText === 'Loading...') {
+                        element.textContent = value;
+                        console.log(`✅ Updated ${id}: ${currentText} -> ${value}`);
+                    }
+                } else {
+                    console.warn(`⚠️ Element not found: ${id}`);
                 }
             });
             
-            // Don't update loading messages here - let specific populate methods handle them
+            // Update spending tags with proper HTML structure
+            const spendingTagsEl = document.getElementById('spending-tags');
+            if (spendingTagsEl && spendingTagsEl.innerHTML.includes('Loading')) {
+                spendingTagsEl.innerHTML = `
+                    <div class="spending-tag primary">${currentPhase.name}</div>
+                    <div class="spending-tag secondary">2x Points Active</div>
+                `;
+                console.log('✅ Updated spending-tags with structured content');
+            }
 
         } catch (error) {
             console.error('Loading elements update error:', error);
+        }
+    }
+    
+    updateAllDisplays() {
+        console.log('✅ Updating all displays - comprehensive update');
+        try {
+            this.updateTimeDisplays();
+            this.updatePhaseDisplays();
+            this.updateLoadingElements();
+            
+            // Force update priority banner
+            this.updatePriorityBanner();
+            
+        } catch (error) {
+            console.error('Display update error:', error);
+        }
+    }
+    
+    updatePriorityBanner() {
+        try {
+            const currentPhase = this.getCurrentArmsPhase();
+            const timeToNext = this.getTimeToNextPhase();
+            
+            // Update priority banner elements
+            const priorityBannerTitle = document.getElementById('priority-banner-title');
+            if (priorityBannerTitle) {
+                priorityBannerTitle.textContent = 'NEXT HIGH PRIORITY';
+            }
+            
+            const priorityCountdown = document.getElementById('priority-countdown');
+            if (priorityCountdown && priorityCountdown.textContent.includes('Loading')) {
+                priorityCountdown.textContent = `${timeToNext.hours}h ${timeToNext.minutes}m`;
+            }
+            
+            console.log('✅ Priority banner updated');
+        } catch (error) {
+            console.error('Priority banner update error:', error);
         }
     }
 
@@ -929,11 +1015,16 @@ class VSPointsOptimizer {
         
         // Force all content to be visible and populated
         setTimeout(() => {
+            console.log('✅ Ensuring navigation - re-populating all content');
+            
             // Re-populate all content after navigation is ready
             this.populatePriorityContent();
             this.populateScheduleContent();
             this.populateGuides();
             this.populateBanner();
+            
+            // Update all displays to ensure loading elements are replaced
+            this.updateAllDisplays();
             
             // Force the priority tab to be visible
             this.switchTab('priority');
@@ -942,6 +1033,8 @@ class VSPointsOptimizer {
             document.querySelectorAll('.tab-panel').forEach(panel => {
                 console.log('Panel:', panel.id, 'Display:', panel.style.display, 'Class:', panel.className);
             });
+            
+            console.log('✅ Navigation setup and content population complete');
         }, 200);
     }
 

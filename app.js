@@ -3002,9 +3002,10 @@
             }
         }
 
-        // Initialize the application
-        document.addEventListener('DOMContentLoaded', async () => {
+        // Initialize the application - Handle both DOM ready and already loaded states
+        function initializeApp() {
             try {
+                console.log('Initializing VSPointsOptimizer...');
                 const app = new VSPointsOptimizer();
                 window.lastWarNexus = app;
                 
@@ -3051,7 +3052,15 @@
                 
                 document.body.insertAdjacentHTML('beforeend', errorHtml);
             }
-        });
+        }
+
+        // Check if DOM is already loaded or wait for it
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeApp);
+        } else {
+            // DOM is already ready, initialize immediately
+            initializeApp();
+        }
 
         window.addEventListener('error', (event) => {
             console.error('Global error:', event.error);

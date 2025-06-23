@@ -111,8 +111,6 @@
                         { vsDay: 6, armsPhase: "Unit Progression", reason: "Troop training supports combat preparation", benefit: "Strong Synergy" }
                     ]
                 };
-
-                this.init();
             }
 
             init() {
@@ -3206,12 +3204,64 @@
 
         // Initialize the application when DOM is ready
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('DOM Content Loaded - Initializing VSPointsOptimizer...');
+            console.log('🚀 DOM Content Loaded - Starting VSPointsOptimizer initialization...');
+            console.log('🔍 Checking required DOM elements...');
+            
+            // Verify critical elements exist
+            const criticalElements = ['setup-modal', 'settings-toggle', 'time-toggle-btn'];
+            const missingElements = [];
+            
+            criticalElements.forEach(id => {
+                const element = document.getElementById(id);
+                if (!element) {
+                    missingElements.push(id);
+                    console.error(`❌ Critical element missing: ${id}`);
+                } else {
+                    console.log(`✅ Found element: ${id}`);
+                }
+            });
+            
+            if (missingElements.length > 0) {
+                console.error('🚨 CRITICAL: Missing required DOM elements:', missingElements);
+                console.error('🚨 Cannot initialize app without these elements!');
+                return;
+            }
+            
             try {
+                console.log('🏗️ Creating VSPointsOptimizer instance...');
                 window.lastWarNexus = new VSPointsOptimizer();
+                console.log('🎯 VSPointsOptimizer instance created successfully');
+                
+                console.log('⚙️ Calling init() method...');
                 window.lastWarNexus.init();
-                console.log('VSPointsOptimizer initialized successfully');
+                console.log('🎉 VSPointsOptimizer initialized successfully!');
+                
+                // Additional verification
+                if (window.lastWarNexus.isSetupComplete === false) {
+                    console.log('📋 Setup not complete - setup modal should appear');
+                } else {
+                    console.log('✅ Setup already complete - normal operation');
+                }
+                
             } catch (error) {
-                console.error('Failed to initialize VSPointsOptimizer:', error);
+                console.error('💥 CRITICAL ERROR during initialization:', error);
+                console.error('💥 Stack trace:', error.stack);
+                
+                // Try to show a user-friendly error message
+                const errorDiv = document.createElement('div');
+                errorDiv.innerHTML = `
+                    <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                                background: #1f242c; border: 2px solid #ef4444; border-radius: 8px; 
+                                padding: 20px; color: white; text-align: center; z-index: 9999;">
+                        <h3>⚠️ Initialization Error</h3>
+                        <p>Failed to load Last War Nexus application.</p>
+                        <p style="font-size: 0.8em; opacity: 0.8;">Check console for details.</p>
+                        <button onclick="location.reload()" style="margin-top: 10px; padding: 8px 16px; 
+                                background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            Reload Page
+                        </button>
+                    </div>
+                `;
+                document.body.appendChild(errorDiv);
             }
         });

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Last War Nexus - Functionality Test</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0f;
+            color: #ffffff;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            background: #1a1a26;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #3a3a52;
+        }
+        .test-result {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 5px 0;
+        }
+        .pass { background: rgba(34, 197, 94, 0.2); border-left: 4px solid #22c55e; }
+        .fail { background: rgba(239, 68, 68, 0.2); border-left: 4px solid #ef4444; }
+        .warn { background: rgba(245, 158, 11, 0.2); border-left: 4px solid #f59e0b; }
+        button {
+            background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: 600;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        .status {
+            font-weight: bold;
+            display: inline-block;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎯 Last War Nexus - Comprehensive Functionality Test</h1>
+    <p>This page tests all critical functionality to ensure no regressions after enhancements.</p>
+
+    <div class="test-section">
+        <h2>🔧 Core App Functionality</h2>
+        <div id="core-tests"></div>
+        <button onclick="testCoreFunctionality()">Test Core Features</button>
+    </div>
+
+    <div class="test-section">
+        <h2>🔔 Notification System</h2>
+        <div id="notification-tests"></div>
+        <button onclick="testNotifications()">Test Notifications</button>
+        <button onclick="requestTestNotification()">Send Test Notification</button>
+    </div>
+
+    <div class="test-section">
+        <h2>📱 Mobile Compatibility</h2>
+        <div id="mobile-tests"></div>
+        <button onclick="testMobileFeatures()">Test Mobile Features</button>
+    </div>
+
+    <div class="test-section">
+        <h2>💰 Ad Integration</h2>
+        <div id="ad-tests"></div>
+        <button onclick="testAdIntegration()">Test Ad Integration</button>
+    </div>
+
+    <div class="test-section">
+        <h2>🗄️ Data Persistence</h2>
+        <div id="storage-tests"></div>
+        <button onclick="testDataPersistence()">Test Data Persistence</button>
+    </div>
+
+    <script>
+        // Test results display
+        function addTestResult(containerId, message, status) {
+            const container = document.getElementById(containerId);
+            const result = document.createElement('div');
+            result.className = `test-result ${status}`;
+            result.innerHTML = `${message} <span class="status">${status.toUpperCase()}</span>`;
+            container.appendChild(result);
+        }
+
+        // Core functionality tests
+        function testCoreFunctionality() {
+            const container = document.getElementById('core-tests');
+            container.innerHTML = '';
+
+            // Test if we can access the parent window's app
+            try {
+                if (window.opener && window.opener.lastWarNexus) {
+                    const app = window.opener.lastWarNexus;
+                    
+                    // Test core properties
+                    addTestResult('core-tests', 'VSPointsOptimizer instance found', 'pass');
+                    
+                    // Test data structure
+                    if (app.data && app.data.armsRacePhases) {
+                        addTestResult('core-tests', `Arms Race data loaded (${app.data.armsRacePhases.length} phases)`, 'pass');
+                    } else {
+                        addTestResult('core-tests', 'Arms Race data not found', 'fail');
+                    }
+                    
+                    // Test time calculation
+                    try {
+                        const serverTime = app.getServerTime();
+                        addTestResult('core-tests', `Server time calculation working: ${serverTime.toLocaleTimeString()}`, 'pass');
+                    } catch (e) {
+                        addTestResult('core-tests', 'Server time calculation failed', 'fail');
+                    }
+                    
+                    // Test phase detection
+                    try {
+                        const currentPhase = app.getCurrentArmsPhase();
+                        addTestResult('core-tests', `Current phase detection: ${currentPhase.name}`, 'pass');
+                    } catch (e) {
+                        addTestResult('core-tests', 'Phase detection failed', 'fail');
+                    }
+                    
+                    // Test priority window detection
+                    try {
+                        const nextWindow = app.findNextPriorityWindow();
+                        if (nextWindow) {
+                            addTestResult('core-tests', 'Priority window detection working', 'pass');
+                        } else {
+                            addTestResult('core-tests', 'No priority windows detected', 'warn');
+                        }
+                    } catch (e) {
+                        addTestResult('core-tests', 'Priority window detection failed', 'fail');
+                    }
+                    
+                } else {
+                    addTestResult('core-tests', 'App not accessible - open this from main site', 'fail');
+                }
+            } catch (e) {
+                addTestResult('core-tests', `Core test error: ${e.message}`, 'fail');
+            }
+        }
+
+        // Notification system tests
+        function testNotifications() {
+            const container = document.getElementById('notification-tests');
+            container.innerHTML = '';
+
+            // Test notification API support
+            if ('Notification' in window) {
+                addTestResult('notification-tests', 'Browser supports notifications', 'pass');
+                
+                // Test permission status
+                const permission = Notification.permission;
+                addTestResult('notification-tests', `Notification permission: ${permission}`, 
+                    permission === 'granted' ? 'pass' : permission === 'denied' ? 'fail' : 'warn');
+                
+                // Test app notification integration
+                if (window.opener && window.opener.lastWarNexus) {
+                    const app = window.opener.lastWarNexus;
+                    
+                    if (typeof app.showNotification === 'function') {
+                        addTestResult('notification-tests', 'showNotification method available', 'pass');
+                    } else {
+                        addTestResult('notification-tests', 'showNotification method missing', 'fail');
+                    }
+                    
+                    if (typeof app.checkNotifications === 'function') {
+                        addTestResult('notification-tests', 'Enhanced notification checking available', 'pass');
+                    } else {
+                        addTestResult('notification-tests', 'Enhanced notifications not implemented', 'warn');
+                    }
+                    
+                    addTestResult('notification-tests', `Notifications enabled: ${app.notificationsEnabled}`, 
+                        app.notificationsEnabled ? 'pass' : 'warn');
+                    
+                    if (app.advanceWarningMinutes) {
+                        addTestResult('notification-tests', `Advance warning: ${app.advanceWarningMinutes} minutes`, 'pass');
+                    }
+                }
+                
+            } else {
+                addTestResult('notification-tests', 'Browser does not support notifications', 'fail');
+            }
+        }
+
+        // Send test notification
+        function requestTestNotification() {
+            if (window.opener && window.opener.lastWarNexus) {
+                const app = window.opener.lastWarNexus;
+                if (app.showNotification) {
+                    app.showNotification('Test Notification', 'This is a test notification from the functionality checker.');
+                    addTestResult('notification-tests', 'Test notification sent', 'pass');
+                } else {
+                    addTestResult('notification-tests', 'Cannot send test notification', 'fail');
+                }
+            } else {
+                addTestResult('notification-tests', 'App not accessible for test notification', 'fail');
+            }
+        }
+
+        // Mobile feature tests
+        function testMobileFeatures() {
+            const container = document.getElementById('mobile-tests');
+            container.innerHTML = '';
+
+            // Test mobile detection
+            const isMobile = window.innerWidth <= 768 || 
+                           window.matchMedia('(pointer: coarse)').matches ||
+                           /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            addTestResult('mobile-tests', `Mobile device detected: ${isMobile}`, isMobile ? 'pass' : 'warn');
+            
+            // Test viewport
+            addTestResult('mobile-tests', `Viewport: ${window.innerWidth}x${window.innerHeight}`, 'pass');
+            
+            // Test touch support
+            const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+            addTestResult('mobile-tests', `Touch support: ${hasTouch}`, hasTouch ? 'pass' : 'warn');
+            
+            // Test vibration support (mobile)
+            if ('vibrate' in navigator) {
+                addTestResult('mobile-tests', 'Vibration API supported', 'pass');
+            } else {
+                addTestResult('mobile-tests', 'Vibration API not supported', 'warn');
+            }
+            
+            // Test orientation API
+            if ('orientation' in window) {
+                addTestResult('mobile-tests', `Screen orientation: ${window.orientation}°`, 'pass');
+            } else {
+                addTestResult('mobile-tests', 'Orientation API not available', 'warn');
+            }
+        }
+
+        // Ad integration tests
+        function testAdIntegration() {
+            const container = document.getElementById('ad-tests');
+            container.innerHTML = '';
+
+            // Test if parent window has ad placeholders
+            if (window.opener && window.opener.document) {
+                const parentDoc = window.opener.document;
+                
+                const adPlaceholders = [118, 119, 120, 121];
+                adPlaceholders.forEach(id => {
+                    const placeholder = parentDoc.getElementById(`ezoic-pub-ad-placeholder-${id}`);
+                    if (placeholder) {
+                        addTestResult('ad-tests', `Ad placeholder ${id} found`, 'pass');
+                    } else {
+                        addTestResult('ad-tests', `Ad placeholder ${id} missing`, 'fail');
+                    }
+                });
+                
+                // Test for Ezoic script
+                const scripts = parentDoc.querySelectorAll('script');
+                let ezoicScriptFound = false;
+                scripts.forEach(script => {
+                    if (script.src && script.src.includes('ezoic')) {
+                        ezoicScriptFound = true;
+                    }
+                });
+                
+                if (ezoicScriptFound) {
+                    addTestResult('ad-tests', 'Ezoic script detected', 'pass');
+                } else {
+                    addTestResult('ad-tests', 'Ezoic script not found', 'warn');
+                }
+                
+                // Test ads.txt
+                fetch('/ads.txt')
+                    .then(response => response.text())
+                    .then(text => {
+                        if (text.includes('ezoic.com')) {
+                            addTestResult('ad-tests', 'ads.txt contains Ezoic entries', 'pass');
+                        } else {
+                            addTestResult('ad-tests', 'ads.txt missing Ezoic entries', 'fail');
+                        }
+                    })
+                    .catch(() => {
+                        addTestResult('ad-tests', 'ads.txt not accessible', 'fail');
+                    });
+                
+            } else {
+                addTestResult('ad-tests', 'Cannot access parent window for ad testing', 'fail');
+            }
+        }
+
+        // Data persistence tests
+        function testDataPersistence() {
+            const container = document.getElementById('storage-tests');
+            container.innerHTML = '';
+
+            // Test localStorage
+            try {
+                localStorage.setItem('test-key', 'test-value');
+                const retrieved = localStorage.getItem('test-key');
+                localStorage.removeItem('test-key');
+                
+                if (retrieved === 'test-value') {
+                    addTestResult('storage-tests', 'localStorage working', 'pass');
+                } else {
+                    addTestResult('storage-tests', 'localStorage not working', 'fail');
+                }
+            } catch (e) {
+                addTestResult('storage-tests', 'localStorage not available', 'fail');
+            }
+
+            // Test app settings persistence
+            if (window.opener && window.opener.lastWarNexus) {
+                const app = window.opener.lastWarNexus;
+                const settings = localStorage.getItem('lwn-settings');
+                
+                if (settings) {
+                    try {
+                        const parsed = JSON.parse(settings);
+                        addTestResult('storage-tests', 'App settings found in localStorage', 'pass');
+                        
+                        if (parsed.isSetupComplete !== undefined) {
+                            addTestResult('storage-tests', `Setup completed: ${parsed.isSetupComplete}`, 'pass');
+                        }
+                        
+                        if (parsed.notificationsEnabled !== undefined) {
+                            addTestResult('storage-tests', `Notifications: ${parsed.notificationsEnabled}`, 'pass');
+                        }
+                        
+                    } catch (e) {
+                        addTestResult('storage-tests', 'App settings corrupted', 'fail');
+                    }
+                } else {
+                    addTestResult('storage-tests', 'No app settings found', 'warn');
+                }
+
+                // Test notification history
+                if (app.notificationHistory) {
+                    const historySize = Object.keys(app.notificationHistory).length;
+                    addTestResult('storage-tests', `Notification history: ${historySize} entries`, 'pass');
+                }
+            }
+
+            // Test service worker
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(registrations => {
+                    if (registrations.length > 0) {
+                        addTestResult('storage-tests', 'Service worker registered', 'pass');
+                    } else {
+                        addTestResult('storage-tests', 'No service worker registered', 'warn');
+                    }
+                });
+            } else {
+                addTestResult('storage-tests', 'Service worker not supported', 'warn');
+            }
+        }
+
+        // Auto-run tests on load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                testCoreFunctionality();
+                testNotifications();
+                testMobileFeatures();
+                testAdIntegration();
+                testDataPersistence();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

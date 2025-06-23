@@ -426,6 +426,9 @@ class VSPointsOptimizer {
             if (activePanel) {
                 activePanel.style.display = 'block';
                 activePanel.classList.add('active');
+                console.log('Showing panel:', tabName + '-tab');
+            } else {
+                console.error('Panel not found:', tabName + '-tab');
             }
 
             // Update tab buttons
@@ -438,9 +441,23 @@ class VSPointsOptimizer {
             if (activeBtn) {
                 activeBtn.classList.add('active');
                 activeBtn.setAttribute('aria-selected', 'true');
+                console.log('Activated button for:', tabName);
+            } else {
+                console.error('Button not found for:', tabName);
             }
 
             this.activeTab = tabName;
+            
+            // Force re-populate content for this tab
+            setTimeout(() => {
+                if (tabName === 'priority') {
+                    this.populatePriorityContent();
+                } else if (tabName === 'schedule') {
+                    this.populateScheduleContent();
+                } else if (tabName === 'guides') {
+                    this.populateGuides();
+                }
+            }, 100);
         } catch (error) {
             console.error('Tab switch error:', error);
         }
@@ -611,7 +628,11 @@ class VSPointsOptimizer {
     populateGuides() {
         console.log('✅ Populating guides content...');
         const guidesContent = document.getElementById('guides-content');
-        if (!guidesContent) return;
+        console.log('Guides content element:', guidesContent);
+        if (!guidesContent) {
+            console.error('Guides content element not found!');
+            return;
+        }
         
         const tipsContent = `
             <div class="priority-card">
@@ -680,6 +701,7 @@ class VSPointsOptimizer {
     populatePriorityContent() {
         console.log('✅ Populating priority content...');
         const priorityContent = document.getElementById('priority-grid');
+        console.log('Priority grid element:', priorityContent);
         if (priorityContent) {
             priorityContent.innerHTML = `
                 <div class="priority-card">
@@ -719,6 +741,7 @@ class VSPointsOptimizer {
     populateScheduleContent() {
         console.log('✅ Populating schedule content...');
         const scheduleContent = document.getElementById('schedule-content');
+        console.log('Schedule content element:', scheduleContent);
         if (scheduleContent) {
             scheduleContent.innerHTML = `
                 <div class="priority-card">
@@ -875,13 +898,22 @@ class VSPointsOptimizer {
         
         console.log('✅ All navigation backup listeners added');
         
-        // Re-populate all content after navigation is ready
-        this.populatePriorityContent();
-        this.populateScheduleContent();
-        this.populateGuides();
-        
-        // Test the first tab to make sure it's visible
-        this.switchTab('priority');
+        // Force all content to be visible and populated
+        setTimeout(() => {
+            // Re-populate all content after navigation is ready
+            this.populatePriorityContent();
+            this.populateScheduleContent();
+            this.populateGuides();
+            this.populateBanner();
+            
+            // Force the priority tab to be visible
+            this.switchTab('priority');
+            
+            // Debug: log all tab panels and their visibility
+            document.querySelectorAll('.tab-panel').forEach(panel => {
+                console.log('Panel:', panel.id, 'Display:', panel.style.display, 'Class:', panel.className);
+            });
+        }, 200);
     }
 
     updateSetupTime() {

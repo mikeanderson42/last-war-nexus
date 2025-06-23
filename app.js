@@ -358,9 +358,13 @@
 
                     const setupComplete = document.getElementById('setup-complete');
                     if (setupComplete) {
+                        console.log('DEBUG: Complete Setup button found, attaching event listener');
                         setupComplete.addEventListener('click', () => {
+                            console.log('DEBUG: Complete Setup button clicked!');
                             this.completeSetup();
                         });
+                    } else {
+                        console.error('ERROR: Complete Setup button not found!');
                     }
 
                     const setupSkip = document.getElementById('setup-skip');
@@ -387,11 +391,14 @@
                         });
                     }
 
-                    // Prevent modal content clicks from bubbling to backdrop
+                    // Prevent modal content clicks from bubbling to backdrop (but allow button clicks)
                     const modalContent = document.querySelector('.setup-modal-content');
                     if (modalContent) {
                         modalContent.addEventListener('click', (e) => {
-                            e.stopPropagation();
+                            // Don't stop propagation for buttons or interactive elements
+                            if (!e.target.matches('button, input, select, a, [role="button"]')) {
+                                e.stopPropagation();
+                            }
                         });
                     }
 
@@ -3097,6 +3104,17 @@
             // DOM is already ready, initialize immediately
             initializeApp();
         }
+
+        // TEMPORARY DEBUG: Add global function to test Complete Setup button
+        window.testCompleteSetup = function() {
+            console.log('TEST: testCompleteSetup called');
+            if (window.lastWarNexus) {
+                console.log('TEST: lastWarNexus found, calling completeSetup');
+                window.lastWarNexus.completeSetup();
+            } else {
+                console.log('TEST: lastWarNexus not found');
+            }
+        };
 
         window.addEventListener('error', (event) => {
             console.error('Global error:', event.error);

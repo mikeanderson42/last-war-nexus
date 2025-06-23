@@ -147,30 +147,10 @@ class VSPointsOptimizer {
                 `;
             }
 
-            // Guides tab content
-            const guidesTab = document.getElementById('guides-tab');
-            if (guidesTab) {
-                guidesTab.innerHTML = `
-                    <div style="padding: 1rem;">
-                        <h3 style="color: #60a5fa; margin-bottom: 1rem;">📖 Strategy Guides</h3>
-                        <div style="background: rgba(255,255,255,0.1); padding: 1rem; margin: 0.5rem 0; border-radius: 8px; border-left: 3px solid #3b82f6;">
-                            <h4 style="color: #60a5fa; margin: 0 0 0.5rem 0;">🏗️ City Building Optimization</h4>
-                            <p style="margin: 0; color: #e5e7eb;">Maximize construction efficiency during City Building phases</p>
-                        </div>
-                        <div style="background: rgba(255,255,255,0.1); padding: 1rem; margin: 0.5rem 0; border-radius: 8px; border-left: 3px solid #3b82f6;">
-                            <h4 style="color: #60a5fa; margin: 0 0 0.5rem 0;">⚔️ Unit Progression Strategy</h4>
-                            <p style="margin: 0; color: #e5e7eb;">Optimize military development and troop advancement</p>
-                        </div>
-                        <div style="background: rgba(255,255,255,0.1); padding: 1rem; margin: 0.5rem 0; border-radius: 8px; border-left: 3px solid #3b82f6;">
-                            <h4 style="color: #60a5fa; margin: 0 0 0.5rem 0;">🔬 Research Efficiency</h4>
-                            <p style="margin: 0; color: #e5e7eb;">Technology advancement tips and research priorities</p>
-                        </div>
-                        <div style="background: rgba(255,255,255,0.1); padding: 1rem; margin: 0.5rem 0; border-radius: 8px; border-left: 3px solid #3b82f6;">
-                            <h4 style="color: #60a5fa; margin: 0 0 0.5rem 0;">🚁 Drone Boost Maximization</h4>
-                            <p style="margin: 0; color: #e5e7eb;">Get the most out of drone boost periods</p>
-                        </div>
-                    </div>
-                `;
+            // Guides content (target the guides-content div, not the whole tab)
+            const guidesContent = document.getElementById('guides-content');
+            if (guidesContent) {
+                this.populateGuides();
             }
 
             console.log('✅ Tab content populated');
@@ -220,14 +200,6 @@ class VSPointsOptimizer {
                 });
             }
 
-            // Setup timezone change listener
-            const timezoneSelect = document.getElementById('setup-time-offset');
-            if (timezoneSelect) {
-                timezoneSelect.addEventListener('change', (e) => {
-                    this.timeOffset = parseFloat(e.target.value);
-                    this.updateSetupTime();
-                });
-            }
 
             // Time toggle
             const timeToggleBtn = document.getElementById('time-toggle-btn');
@@ -246,7 +218,20 @@ class VSPointsOptimizer {
                 btn.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
+                    console.log('Tab button clicked:', tab);
                     if (tab) this.switchTab(tab);
+                });
+            });
+            
+            // Guide navigation buttons
+            const guideButtons = document.querySelectorAll('.guide-nav-btn');
+            guideButtons.forEach(btn => {
+                const guideType = btn.getAttribute('data-guide-type');
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Guide button clicked:', guideType);
+                    if (guideType) this.switchGuideType(guideType);
                 });
             });
 
@@ -641,6 +626,75 @@ class VSPointsOptimizer {
         }
     }
 
+    populateGuides() {
+        console.log('✅ Populating guides content...');
+        const guidesContent = document.getElementById('guides-content');
+        if (!guidesContent) return;
+        
+        const tipsContent = `
+            <div class="priority-card">
+                <div class="card-header">
+                    <h3>🏗️ City Building Optimization</h3>
+                </div>
+                <div class="card-content">
+                    <p>Maximize construction efficiency during City Building phases by focusing on:</p>
+                    <ul>
+                        <li>Building upgrades during 2x Arms Race periods</li>
+                        <li>Saving speedups for perfect alignment windows</li>
+                        <li>Prioritizing resource buildings first</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="priority-card">
+                <div class="card-header">
+                    <h3>⚔️ Unit Progression Strategy</h3>
+                </div>
+                <div class="card-content">
+                    <p>Optimize military development with these tactics:</p>
+                    <ul>
+                        <li>Train troops during Unit Progression phases</li>
+                        <li>Use training speedups during 4x point windows</li>
+                        <li>Focus on tier upgrades over quantity</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="priority-card">
+                <div class="card-header">
+                    <h3>🔬 Research Efficiency</h3>
+                </div>
+                <div class="card-content">
+                    <p>Technology advancement priorities:</p>
+                    <ul>
+                        <li>Research during Tech Research phases for 2x points</li>
+                        <li>Prioritize economic technologies first</li>
+                        <li>Save research speedups for Friday alignments</li>
+                    </ul>
+                </div>
+            </div>
+        `;
+        
+        guidesContent.innerHTML = tipsContent;
+    }
+    
+    switchGuideType(guideType) {
+        console.log('✅ Switching guide type:', guideType);
+        
+        // Update active guide button
+        document.querySelectorAll('.guide-nav-btn').forEach(btn => {
+            btn.classList.remove('active');
+            btn.setAttribute('aria-selected', 'false');
+        });
+        
+        const activeBtn = document.querySelector(`[data-guide-type="${guideType}"]`);
+        if (activeBtn) {
+            activeBtn.classList.add('active');
+            activeBtn.setAttribute('aria-selected', 'true');
+        }
+        
+        this.activeGuideType = guideType;
+        this.populateGuides();
+    }
+
     updateSetupTime() {
         try {
             const serverTime = this.getServerTime();
@@ -694,6 +748,18 @@ class VSPointsOptimizer {
                 this.skipSetup();
             });
             setupSkip.setAttribute('data-listener-added', 'true');
+        }
+        
+        // Setup timezone change listener
+        const timezoneSelect = document.getElementById('setup-time-offset');
+        if (timezoneSelect && !timezoneSelect.hasAttribute('data-listener-added')) {
+            console.log('✅ Adding timezone change listener');
+            timezoneSelect.addEventListener('change', (e) => {
+                console.log('Timezone changed to:', e.target.value);
+                this.timeOffset = parseFloat(e.target.value);
+                this.updateSetupTime();
+            });
+            timezoneSelect.setAttribute('data-listener-added', 'true');
         }
     }
 

@@ -3,6 +3,11 @@
          * PRODUCTION READY VERSION - Enhanced Design & Functionality
          */
 
+        // Guard against duplicate class declaration
+        if (typeof VSPointsOptimizer !== 'undefined') {
+            console.warn('⚠️ VSPointsOptimizer already declared - skipping redeclaration');
+        } else {
+
         class VSPointsOptimizer {
             constructor() {
                 this.timeOffset = 0;
@@ -3046,6 +3051,8 @@
                 }
             }
         }
+
+        } // End of VSPointsOptimizer class guard
 
         // Initialize the application - Handle both DOM ready and already loaded states
         function initializeApp() {

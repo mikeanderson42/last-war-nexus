@@ -141,12 +141,16 @@
                         this.populateGuides();
                     }, 1000);
                     
-                    // Always show setup modal on first visit (when no settings saved)
+                    // Always start the update loop to populate data
+                    this.startUpdateLoop();
+                    
+                    // Show setup modal on first visit (when no settings saved)
                     const hasStoredSettings = localStorage.getItem('lwn-settings');
                     if (!hasStoredSettings || !this.isSetupComplete) {
-                        this.showSetupModal();
-                    } else {
-                        this.startUpdateLoop();
+                        // Delay modal show to prevent event conflicts
+                        setTimeout(() => {
+                            this.showSetupModal();
+                        }, 500);
                     }
                 } catch (error) {
                     console.error('Initialization error:', error);
@@ -308,8 +312,13 @@
                         });
                     }
 
-                    // Close dropdowns on outside click
+                    // Close dropdowns on outside click (but not when modal is open)
                     document.addEventListener('click', (e) => {
+                        // Don't close dropdowns if clicking inside setup modal
+                        if (e.target.closest('.setup-modal')) {
+                            return;
+                        }
+                        
                         if (!e.target.closest('.settings-dropdown-container')) {
                             this.closeAllDropdowns();
                         }
@@ -370,8 +379,19 @@
 
                     const backdrop = document.querySelector('.setup-modal-backdrop');
                     if (backdrop) {
-                        backdrop.addEventListener('click', () => {
-                            this.skipSetup();
+                        backdrop.addEventListener('click', (e) => {
+                            // Only close if clicking directly on backdrop, not on modal content
+                            if (e.target === backdrop) {
+                                this.skipSetup();
+                            }
+                        });
+                    }
+
+                    // Prevent modal content clicks from bubbling to backdrop
+                    const modalContent = document.querySelector('.setup-modal-content');
+                    if (modalContent) {
+                        modalContent.addEventListener('click', (e) => {
+                            e.stopPropagation();
                         });
                     }
 

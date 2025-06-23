@@ -204,6 +204,15 @@ class VSPointsOptimizer {
                 });
             }
 
+            // Setup timezone change listener
+            const timezoneSelect = document.getElementById('setup-time-offset');
+            if (timezoneSelect) {
+                timezoneSelect.addEventListener('change', (e) => {
+                    this.timeOffset = parseFloat(e.target.value);
+                    this.updateSetupTime();
+                });
+            }
+
             // Time toggle
             const timeToggleBtn = document.getElementById('time-toggle-btn');
             if (timeToggleBtn) {
@@ -286,9 +295,23 @@ class VSPointsOptimizer {
             const setupNextPhase = document.getElementById('setup-next-phase');
             const notificationRadios = document.querySelectorAll('input[name="notifications"]');
 
-            this.timeOffset = parseFloat(setupTimeOffset?.value || '0');
-            this.currentPhaseOverride = setupCurrentPhase?.value || null;
-            this.nextPhaseOverride = setupNextPhase?.value || null;
+            // Validate required fields
+            if (!setupTimeOffset?.value) {
+                alert('Please select a timezone adjustment');
+                return;
+            }
+            if (!setupCurrentPhase?.value) {
+                alert('Please select the current Arms Race phase');
+                return;
+            }
+            if (!setupNextPhase?.value) {
+                alert('Please select the next Arms Race phase');
+                return;
+            }
+
+            this.timeOffset = parseFloat(setupTimeOffset.value);
+            this.currentPhaseOverride = setupCurrentPhase.value;
+            this.nextPhaseOverride = setupNextPhase.value;
 
             const notificationChoice = Array.from(notificationRadios).find(r => r.checked)?.value;
             const wantsNotifications = notificationChoice === 'enabled';
@@ -302,12 +325,14 @@ class VSPointsOptimizer {
             this.isSetupComplete = true;
             this.saveSettings();
 
+            console.log('✅ Setup completed successfully');
             this.hideSetupModal();
             this.updateAllDisplays();
             this.startUpdateLoop();
 
         } catch (error) {
             console.error('Setup completion error:', error);
+            alert('Setup failed: ' + error.message);
         }
     }
 

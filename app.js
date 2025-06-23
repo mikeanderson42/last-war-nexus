@@ -1,9 +1,9 @@
 /**
  * Last War Nexus - VS Points & Arms Race Optimizer
- * EMERGENCY WORKING VERSION
+ * WORKING VERSION - Fixed white page issue
  */
 
-console.log('🚀 Loading emergency working version...');
+console.log('🚀 Loading fixed working version...');
 
 class VSPointsOptimizer {
     constructor() {
@@ -24,33 +24,32 @@ class VSPointsOptimizer {
         this.notificationHistory = {};
         this.advanceWarningMinutes = 15;
         
-        // Basic data structure
+        // Arms Race data
         this.data = {
             armsRacePhases: [
-                { id: 'city_building', name: "City Building", icon: "🏗️" },
-                { id: 'unit_progression', name: "Unit Progression", icon: "⚔️" },
-                { id: 'tech_research', name: "Tech Research", icon: "🔬" },
-                { id: 'drone_boost', name: "Drone Boost", icon: "🚁" },
-                { id: 'hero_advancement', name: "Hero Advancement", icon: "🦸" }
+                { id: 'city_building', name: "City Building", icon: "🏗️", category: "construction" },
+                { id: 'unit_progression', name: "Unit Progression", icon: "⚔️", category: "military" },
+                { id: 'tech_research', name: "Tech Research", icon: "🔬", category: "research" },
+                { id: 'drone_boost', name: "Drone Boost", icon: "🚁", category: "technology" },
+                { id: 'hero_advancement', name: "Hero Advancement", icon: "🦸", category: "heroes" }
             ],
             vsDays: [
-                { day: 1, name: "Monday", title: "Radar Training" },
-                { day: 2, name: "Tuesday", title: "Base Expansion" },
-                { day: 3, name: "Wednesday", title: "Age of Science" },
-                { day: 4, name: "Thursday", title: "Train Heroes" },
-                { day: 5, name: "Friday", title: "Total Mobilization" },
-                { day: 6, name: "Saturday", title: "Enemy Buster" }
+                { day: 1, name: "Monday", title: "Radar Training", description: "Focus on radar upgrades and surveillance" },
+                { day: 2, name: "Tuesday", title: "Base Expansion", description: "Expand your base infrastructure" },
+                { day: 3, name: "Wednesday", title: "Age of Science", description: "Research technologies and innovations" },
+                { day: 4, name: "Thursday", title: "Train Heroes", description: "Level up and train your heroes" },
+                { day: 5, name: "Friday", title: "Total Mobilization", description: "Prepare for battle scenarios" },
+                { day: 6, name: "Saturday", title: "Enemy Buster", description: "Engage in combat operations" }
             ]
         };
     }
 
     init() {
-        console.log('✅ VSPointsOptimizer init');
+        console.log('✅ VSPointsOptimizer init starting...');
         try {
             this.loadSettings();
             this.setupEventListeners();
             
-            // Show setup modal if not complete
             const hasStoredSettings = localStorage.getItem('lwn-settings');
             console.log('Setup check:', { hasStoredSettings, isSetupComplete: this.isSetupComplete });
             
@@ -78,6 +77,7 @@ class VSPointsOptimizer {
                 this.currentPhaseOverride = settings.currentPhaseOverride || null;
                 this.nextPhaseOverride = settings.nextPhaseOverride || null;
                 this.useLocalTime = settings.useLocalTime !== undefined ? settings.useLocalTime : true;
+                this.advanceWarningMinutes = settings.advanceWarningMinutes || 15;
             }
         } catch (error) {
             console.error('Settings load error:', error);
@@ -92,7 +92,8 @@ class VSPointsOptimizer {
                 isSetupComplete: this.isSetupComplete,
                 currentPhaseOverride: this.currentPhaseOverride,
                 nextPhaseOverride: this.nextPhaseOverride,
-                useLocalTime: this.useLocalTime
+                useLocalTime: this.useLocalTime,
+                advanceWarningMinutes: this.advanceWarningMinutes
             };
             localStorage.setItem('lwn-settings', JSON.stringify(settings));
         } catch (error) {
@@ -101,6 +102,8 @@ class VSPointsOptimizer {
     }
 
     setupEventListeners() {
+        if (this.eventListenersSetup) return;
+        
         console.log('✅ Setting up event listeners');
         try {
             // Setup modal events
@@ -144,6 +147,14 @@ class VSPointsOptimizer {
                 });
             });
 
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.dropdown-container')) {
+                    this.closeAllDropdowns();
+                }
+            });
+
+            this.eventListenersSetup = true;
         } catch (error) {
             console.error('Event listener setup error:', error);
         }
@@ -155,6 +166,7 @@ class VSPointsOptimizer {
         if (modal) {
             modal.classList.add('active');
             modal.setAttribute('aria-hidden', 'false');
+            modal.style.display = 'flex';
         } else {
             console.error('❌ Setup modal not found');
         }
@@ -166,6 +178,7 @@ class VSPointsOptimizer {
         if (modal) {
             modal.classList.remove('active');
             modal.setAttribute('aria-hidden', 'true');
+            modal.style.display = 'none';
         }
     }
 
@@ -232,8 +245,17 @@ class VSPointsOptimizer {
         const dropdown = document.getElementById(`${type}-dropdown`);
         if (dropdown) {
             const isOpen = dropdown.classList.contains('show');
-            dropdown.classList.toggle('show', !isOpen);
+            this.closeAllDropdowns();
+            if (!isOpen) {
+                dropdown.classList.add('show');
+            }
         }
+    }
+
+    closeAllDropdowns() {
+        document.querySelectorAll('.dropdown-menu').forEach(dropdown => {
+            dropdown.classList.remove('show');
+        });
     }
 
     toggleTimeMode() {
@@ -274,11 +296,47 @@ class VSPointsOptimizer {
         }
     }
 
+    getServerTime() {
+        return new Date(Date.now() + (this.timeOffset * 60 * 60 * 1000));
+    }
+
+    getCurrentArmsPhase() {
+        const serverTime = this.getServerTime();
+        const hour = serverTime.getUTCHours();
+        
+        // Arms Race phases run in 4-hour windows
+        let phaseIndex = Math.floor(hour / 4);
+        if (hour >= 20) phaseIndex = 0; // City Building restarts at 20:00 UTC
+        
+        return this.data.armsRacePhases[phaseIndex % this.data.armsRacePhases.length];
+    }
+
+    getNextArmsPhase() {
+        const currentPhase = this.getCurrentArmsPhase();
+        const currentIndex = this.data.armsRacePhases.findIndex(p => p.id === currentPhase.id);
+        const nextIndex = (currentIndex + 1) % this.data.armsRacePhases.length;
+        return this.data.armsRacePhases[nextIndex];
+    }
+
+    getTimeToNextPhase() {
+        const serverTime = this.getServerTime();
+        const hour = serverTime.getUTCHours();
+        const minute = serverTime.getUTCMinutes();
+        
+        // Calculate next 4-hour boundary
+        const nextPhaseHour = Math.ceil((hour + 1) / 4) * 4;
+        const hoursUntilNext = (nextPhaseHour - hour - 1 + 24) % 24;
+        const minutesUntilNext = 60 - minute;
+        
+        return { hours: hoursUntilNext, minutes: minutesUntilNext };
+    }
+
     updateAllDisplays() {
-        console.log('✅ Updating displays');
+        console.log('✅ Updating all displays');
         try {
             this.updateTimeDisplays();
             this.updatePhaseDisplays();
+            this.updatePriorityTab();
         } catch (error) {
             console.error('Display update error:', error);
         }
@@ -287,22 +345,25 @@ class VSPointsOptimizer {
     updateTimeDisplays() {
         try {
             const now = new Date();
-            const serverTime = new Date(now.getTime() + (this.timeOffset * 60 * 60 * 1000));
+            const serverTime = this.getServerTime();
             
             // Update main time display
             const mainTimeDisplay = document.getElementById('main-time-display');
             if (mainTimeDisplay) {
-                mainTimeDisplay.textContent = this.useLocalTime ? 
-                    now.toLocaleTimeString() : 
-                    serverTime.toLocaleTimeString();
+                const timeToShow = this.useLocalTime ? now : serverTime;
+                mainTimeDisplay.textContent = timeToShow.toLocaleTimeString([], { 
+                    hour: '2-digit', 
+                    minute: '2-digit'
+                });
             }
 
-            // Update other time displays
+            // Update current local time
             const currentDisplay = document.getElementById('current-display-time');
             if (currentDisplay) {
                 currentDisplay.textContent = now.toLocaleTimeString();
             }
 
+            // Update server time
             const serverDisplay = document.getElementById('server-display-time');
             if (serverDisplay) {
                 serverDisplay.textContent = serverTime.toLocaleTimeString();
@@ -315,32 +376,31 @@ class VSPointsOptimizer {
 
     updatePhaseDisplays() {
         try {
-            const serverTime = new Date(Date.now() + (this.timeOffset * 60 * 60 * 1000));
-            const hour = serverTime.getUTCHours();
+            const currentPhase = this.getCurrentArmsPhase();
+            const nextPhase = this.getNextArmsPhase();
+            const timeToNext = this.getTimeToNextPhase();
             
-            // Simple phase calculation
-            let phaseIndex = Math.floor(hour / 4);
-            if (hour >= 20) phaseIndex = 0; // City Building restarts at 20:00
-            
-            const phase = this.data.armsRacePhases[phaseIndex] || this.data.armsRacePhases[0];
-            
-            // Update phase display
+            // Update current phase
             const phaseTitle = document.getElementById('phase-title');
             if (phaseTitle) {
-                phaseTitle.textContent = phase.name;
+                phaseTitle.textContent = currentPhase.name;
             }
 
             const phaseIcon = document.getElementById('phase-icon');
             if (phaseIcon) {
-                phaseIcon.textContent = phase.icon;
+                phaseIcon.textContent = currentPhase.icon;
             }
 
             // Update countdown
-            const hoursRemaining = 4 - (hour % 4);
-            const minutesRemaining = 60 - serverTime.getUTCMinutes();
             const countdownTimer = document.getElementById('countdown-timer');
             if (countdownTimer) {
-                countdownTimer.textContent = `${hoursRemaining - 1}h ${minutesRemaining}m`;
+                countdownTimer.textContent = `${timeToNext.hours}h ${timeToNext.minutes}m`;
+            }
+
+            // Update next phase info
+            const nextPhaseElement = document.getElementById('next-phase');
+            if (nextPhaseElement) {
+                nextPhaseElement.textContent = `${nextPhase.icon} ${nextPhase.name}`;
             }
 
         } catch (error) {
@@ -348,16 +408,52 @@ class VSPointsOptimizer {
         }
     }
 
+    updatePriorityTab() {
+        try {
+            const currentPhase = this.getCurrentArmsPhase();
+            const serverTime = this.getServerTime();
+            
+            // Update priority content based on current phase and time
+            const priorityContent = document.getElementById('priority-content');
+            if (priorityContent) {
+                // This would contain logic to show priority windows
+                // For now, just ensure it shows current phase info
+            }
+        } catch (error) {
+            console.error('Priority tab update error:', error);
+        }
+    }
+
     startUpdateLoop() {
         console.log('✅ Starting update loop');
-        // Update every minute
         if (this.updateInterval) {
             clearInterval(this.updateInterval);
         }
         
         this.updateInterval = setInterval(() => {
             this.updateAllDisplays();
-        }, 60000);
+        }, 60000); // Update every minute
+    }
+
+    showNotification(title, body, options = {}) {
+        if (!this.notificationsEnabled || !('Notification' in window)) {
+            return;
+        }
+
+        if (Notification.permission === 'granted') {
+            const notification = new Notification(title, {
+                body: body,
+                icon: '/favicon.ico',
+                badge: '/favicon.ico',
+                requireInteraction: false,
+                ...options
+            });
+
+            // Auto-close after 10 seconds
+            setTimeout(() => {
+                notification.close();
+            }, 10000);
+        }
     }
 }
 
@@ -380,7 +476,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Add debugging functions
+// Debugging functions
 window.debugAppState = function() {
     console.log('=== DEBUG APP STATE ===');
     console.log('window.lastWarNexus exists:', !!window.lastWarNexus);
@@ -393,14 +489,10 @@ window.debugAppState = function() {
     }
 };
 
-window.testClearLocalStorage = function() {
-    console.log('Clearing localStorage');
-    localStorage.removeItem('lwn-settings');
+window.forceShowSetup = function() {
     if (window.lastWarNexus) {
-        window.lastWarNexus.isSetupComplete = false;
         window.lastWarNexus.showSetupModal();
     }
-    console.log('localStorage cleared - reload to test setup');
 };
 
-console.log('✅ Emergency app loaded successfully');
+console.log('✅ Fixed working app loaded successfully');

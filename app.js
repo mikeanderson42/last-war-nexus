@@ -56,7 +56,11 @@ class VSPointsOptimizer {
             
             if (!hasStoredSettings || !this.isSetupComplete) {
                 console.log('Showing setup modal');
-                setTimeout(() => this.showSetupModal(), 500);
+                setTimeout(() => {
+                    this.showSetupModal();
+                    this.updateSetupTime();
+                    this.startSetupTimeUpdates();
+                }, 500);
             } else {
                 console.log('Setup complete, starting normal operation');
                 this.updateAllDisplays();
@@ -250,6 +254,9 @@ class VSPointsOptimizer {
             modal.style.zIndex = '10000';
             modal.style.justifyContent = 'center';
             modal.style.alignItems = 'center';
+            
+            // Update setup time immediately
+            this.updateSetupTime();
         } else {
             console.error('❌ Setup modal not found');
         }
@@ -262,6 +269,12 @@ class VSPointsOptimizer {
             modal.classList.remove('active');
             modal.setAttribute('aria-hidden', 'true');
             modal.style.display = 'none';
+        }
+        
+        // Stop setup time updates
+        if (this.setupTimeInterval) {
+            clearInterval(this.setupTimeInterval);
+            this.setupTimeInterval = null;
         }
     }
 
@@ -561,6 +574,34 @@ class VSPointsOptimizer {
         } catch (error) {
             console.error('Loading elements update error:', error);
         }
+    }
+
+    updateSetupTime() {
+        try {
+            const serverTime = this.getServerTime();
+            const setupTimeElement = document.getElementById('setup-server-time');
+            if (setupTimeElement) {
+                setupTimeElement.textContent = serverTime.toLocaleTimeString();
+            }
+            
+            const offsetElement = document.getElementById('setup-timezone-offset');
+            if (offsetElement) {
+                const offset = this.timeOffset >= 0 ? `+${this.timeOffset}` : this.timeOffset;
+                offsetElement.textContent = offset;
+            }
+        } catch (error) {
+            console.error('Setup time update error:', error);
+        }
+    }
+
+    startSetupTimeUpdates() {
+        if (this.setupTimeInterval) {
+            clearInterval(this.setupTimeInterval);
+        }
+        
+        this.setupTimeInterval = setInterval(() => {
+            this.updateSetupTime();
+        }, 1000); // Update every second for setup
     }
 
     startUpdateLoop() {

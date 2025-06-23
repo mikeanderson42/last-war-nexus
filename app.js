@@ -206,15 +206,37 @@ class VSPointsOptimizer {
             
             // Guide navigation buttons
             const guideButtons = document.querySelectorAll('.guide-nav-btn');
+            console.log('✅ Found', guideButtons.length, 'guide navigation buttons');
             guideButtons.forEach(btn => {
                 const guideType = btn.getAttribute('data-guide-type');
+                console.log('Setting up guide button:', guideType);
                 btn.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log('Guide button clicked:', guideType);
+                    console.log('✅ Guide button clicked:', guideType);
                     if (guideType) this.switchGuideType(guideType);
                 });
             });
+            
+            if (guideButtons.length === 0) {
+                console.error('❌ No guide navigation buttons found! Checking in 1 second...');
+                setTimeout(() => {
+                    const delayedButtons = document.querySelectorAll('.guide-nav-btn');
+                    console.log('Delayed check found', delayedButtons.length, 'guide buttons');
+                    delayedButtons.forEach(btn => {
+                        const guideType = btn.getAttribute('data-guide-type');
+                        if (!btn.hasAttribute('data-listener-added')) {
+                            btn.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                console.log('✅ Delayed guide button clicked:', guideType);
+                                if (guideType) this.switchGuideType(guideType);
+                            });
+                            btn.setAttribute('data-listener-added', 'true');
+                        }
+                    });
+                }, 1000);
+            }
 
             // Close dropdowns when clicking outside
             document.addEventListener('click', (e) => {
@@ -473,14 +495,42 @@ class VSPointsOptimizer {
 
             this.activeTab = tabName;
             
-            // Force re-populate content for this tab
+            // Force re-populate content for this tab and ensure visibility
             setTimeout(() => {
+                console.log('✅ Re-populating content for active tab:', tabName);
                 if (tabName === 'priority') {
                     this.populatePriorityContent();
                 } else if (tabName === 'schedule') {
                     this.populateScheduleContent();
                 } else if (tabName === 'guides') {
                     this.populateGuides();
+                    
+                    // Ensure guide navigation buttons are set up
+                    setTimeout(() => {
+                        const guideButtons = document.querySelectorAll('.guide-nav-btn');
+                        console.log('📚 Setting up guide buttons after guides tab switch:', guideButtons.length);
+                        guideButtons.forEach(btn => {
+                            if (!btn.hasAttribute('data-guide-listener')) {
+                                const guideType = btn.getAttribute('data-guide-type');
+                                btn.addEventListener('click', (e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    console.log('📚 Guide nav clicked:', guideType);
+                                    this.switchGuideType(guideType);
+                                });
+                                btn.setAttribute('data-guide-listener', 'true');
+                                console.log('✅ Guide button listener added for:', guideType);
+                            }
+                        });
+                    }, 200);
+                }
+                
+                // Double-check that the panel is visible
+                const panel = document.getElementById(tabName + '-tab');
+                if (panel) {
+                    panel.style.display = 'block';
+                    panel.classList.add('active');
+                    console.log('✅ Ensured panel visibility for:', tabName);
                 }
             }, 100);
         } catch (error) {
@@ -633,12 +683,8 @@ class VSPointsOptimizer {
                 'server-display-time': serverTime.toLocaleTimeString(),
                 'phase-end-time': phaseEndTime.toLocaleTimeString(),
                 'next-phase-preview': `${nextPhase.icon} ${nextPhase.name}`,
-                'next-phase': `${nextPhase.icon} ${nextPhase.name}`,
-                
-                // Tab count indicators
+                // Tab count indicators (only update if they exist)
                 'priority-count': '3',
-                'schedule-count': '6',
-                'guides-count': '12',
                 
                 // Setup elements
                 'setup-server-time': serverTime.toLocaleTimeString(),
@@ -712,7 +758,7 @@ class VSPointsOptimizer {
     }
 
     populateGuides() {
-        console.log('✅ Populating guides content...');
+        console.log('✅ Populating guides content for type:', this.activeGuideType);
         const guidesContent = document.getElementById('guides-content');
         console.log('Guides content element:', guidesContent);
         if (!guidesContent) {
@@ -726,50 +772,97 @@ class VSPointsOptimizer {
             loadingMsg.remove();
         }
         
-        const tipsContent = `
-            <div class="priority-card">
-                <div class="card-header">
-                    <h3>🏗️ City Building Optimization</h3>
-                </div>
-                <div class="card-content">
-                    <p>Maximize construction efficiency during City Building phases by focusing on:</p>
-                    <ul>
-                        <li>Building upgrades during 2x Arms Race periods</li>
-                        <li>Saving speedups for perfect alignment windows</li>
-                        <li>Prioritizing resource buildings first</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="priority-card">
-                <div class="card-header">
-                    <h3>⚔️ Unit Progression Strategy</h3>
-                </div>
-                <div class="card-content">
-                    <p>Optimize military development with these tactics:</p>
-                    <ul>
-                        <li>Train troops during Unit Progression phases</li>
-                        <li>Use training speedups during 4x point windows</li>
-                        <li>Focus on tier upgrades over quantity</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="priority-card">
-                <div class="card-header">
-                    <h3>🔬 Research Efficiency</h3>
-                </div>
-                <div class="card-content">
-                    <p>Technology advancement priorities:</p>
-                    <ul>
-                        <li>Research during Tech Research phases for 2x points</li>
-                        <li>Prioritize economic technologies first</li>
-                        <li>Save research speedups for Friday alignments</li>
-                    </ul>
-                </div>
-            </div>
-        `;
+        let content = '';
         
-        guidesContent.innerHTML = tipsContent;
-        console.log('✅ Guides content populated with', guidesContent.children.length, 'cards');
+        if (this.activeGuideType === 'seasonal') {
+            content = `
+                <div class="priority-card">
+                    <div class="card-header">
+                        <h3>🎄 Winter Season Strategy</h3>
+                    </div>
+                    <div class="card-content">
+                        <p>Optimize for winter seasonal events and bonuses:</p>
+                        <ul>
+                            <li>Focus on resource gathering during winter events</li>
+                            <li>Save premium items for seasonal multipliers</li>
+                            <li>Coordinate alliance activities for group bonuses</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="priority-card">
+                    <div class="card-header">
+                        <h3>🌸 Spring Growth Events</h3>
+                    </div>
+                    <div class="card-content">
+                        <p>Spring season brings construction and growth bonuses:</p>
+                        <ul>
+                            <li>Accelerated building during spring construction events</li>
+                            <li>Double rewards for completing daily objectives</li>
+                            <li>Enhanced hero recruitment opportunities</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="priority-card">
+                    <div class="card-header">
+                        <h3>🌞 Summer Combat Season</h3>
+                    </div>
+                    <div class="card-content">
+                        <p>Summer emphasizes military and combat activities:</p>
+                        <ul>
+                            <li>Increased PvP rewards and combat bonuses</li>
+                            <li>Alliance war seasons with territory control</li>
+                            <li>Elite troop training cost reductions</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+        } else {
+            // Default to tips content
+            content = `
+                <div class="priority-card">
+                    <div class="card-header">
+                        <h3>🏗️ City Building Optimization</h3>
+                    </div>
+                    <div class="card-content">
+                        <p>Maximize construction efficiency during City Building phases by focusing on:</p>
+                        <ul>
+                            <li>Building upgrades during 2x Arms Race periods</li>
+                            <li>Saving speedups for perfect alignment windows</li>
+                            <li>Prioritizing resource buildings first</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="priority-card">
+                    <div class="card-header">
+                        <h3>⚔️ Unit Progression Strategy</h3>
+                    </div>
+                    <div class="card-content">
+                        <p>Optimize military development with these tactics:</p>
+                        <ul>
+                            <li>Train troops during Unit Progression phases</li>
+                            <li>Use training speedups during 4x point windows</li>
+                            <li>Focus on tier upgrades over quantity</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="priority-card">
+                    <div class="card-header">
+                        <h3>🔬 Research Efficiency</h3>
+                    </div>
+                    <div class="card-content">
+                        <p>Technology advancement priorities:</p>
+                        <ul>
+                            <li>Research during Tech Research phases for 2x points</li>
+                            <li>Prioritize economic technologies first</li>
+                            <li>Save research speedups for Friday alignments</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+        }
+        
+        guidesContent.innerHTML = content;
+        console.log('✅ Guides content populated with', guidesContent.children.length, 'cards for type:', this.activeGuideType);
     }
     
     switchGuideType(guideType) {
@@ -997,19 +1090,26 @@ class VSPointsOptimizer {
         }
         
         // Ensure guide buttons work
-        document.querySelectorAll('.guide-nav-btn').forEach(btn => {
+        const guideButtons = document.querySelectorAll('.guide-nav-btn');
+        console.log('📖 Ensuring guide navigation - found', guideButtons.length, 'buttons');
+        guideButtons.forEach(btn => {
             if (!btn.hasAttribute('data-nav-listener')) {
                 const guideType = btn.getAttribute('data-guide-type');
                 console.log('Adding backup guide listener for:', guideType);
                 btn.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log('Backup guide clicked:', guideType);
+                    console.log('📖 Backup guide clicked:', guideType);
                     this.switchGuideType(guideType);
                 });
                 btn.setAttribute('data-nav-listener', 'true');
             }
         });
+        
+        // If no guide buttons found, the guides tab might not be active yet
+        if (guideButtons.length === 0) {
+            console.warn('⚠️ No guide buttons found during navigation setup - will retry after tab switch');
+        }
         
         console.log('✅ All navigation backup listeners added');
         
@@ -1031,8 +1131,29 @@ class VSPointsOptimizer {
             
             // Debug: log all tab panels and their visibility
             document.querySelectorAll('.tab-panel').forEach(panel => {
-                console.log('Panel:', panel.id, 'Display:', panel.style.display, 'Class:', panel.className);
+                const computedStyle = window.getComputedStyle(panel);
+                console.log('Panel:', panel.id, {
+                    styleDisplay: panel.style.display,
+                    computedDisplay: computedStyle.display,
+                    className: panel.className,
+                    hasActive: panel.classList.contains('active'),
+                    visible: computedStyle.display !== 'none'
+                });
             });
+            
+            // Also check tab-content container
+            const tabContent = document.querySelector('.tab-content');
+            if (tabContent) {
+                const computedStyle = window.getComputedStyle(tabContent);
+                console.log('Tab-content container:', {
+                    display: computedStyle.display,
+                    visibility: computedStyle.visibility,
+                    opacity: computedStyle.opacity,
+                    height: computedStyle.height
+                });
+            } else {
+                console.error('Tab-content container not found!');
+            }
             
             console.log('✅ Navigation setup and content population complete');
         }, 200);

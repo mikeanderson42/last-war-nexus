@@ -411,13 +411,29 @@
             }
 
             hideSetupModal() {
-                const modal = document.getElementById('setup-modal');
-                if (modal) {
-                    modal.classList.remove('active');
-                    modal.setAttribute('aria-hidden', 'true');
-                    this.stopSetupTimeUpdate();
-                    // Scroll to top of main page after setup completion
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                try {
+                    console.log('Attempting to hide setup modal...');
+                    const modal = document.getElementById('setup-modal');
+                    if (modal) {
+                        console.log('Setup modal found, removing active class...');
+                        modal.classList.remove('active');
+                        modal.setAttribute('aria-hidden', 'true');
+                        console.log('Setup modal hidden successfully');
+                        
+                        this.stopSetupTimeUpdate();
+                        
+                        // Scroll to top of main page after setup completion
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    } else {
+                        console.error('Setup modal element not found!');
+                    }
+                } catch (error) {
+                    console.error('Error hiding setup modal:', error);
+                    // Force hide modal as fallback
+                    const modal = document.querySelector('#setup-modal, .setup-modal');
+                    if (modal) {
+                        modal.style.display = 'none';
+                    }
                 }
             }
 

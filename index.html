@@ -688,6 +688,21 @@
                         </select>
                     </div>
 
+                    <div class="setup-section">
+                        <h3>Priority Notifications</h3>
+                        <p class="setup-help">Get notified when high-priority VS point windows are active</p>
+                        <div style="display: flex; flex-direction: column; gap: var(--spacing-sm);">
+                            <label style="display: flex; align-items: center; gap: var(--spacing-sm); cursor: pointer; padding: var(--spacing-sm); border: 1px solid var(--border-primary); border-radius: var(--border-radius-sm); background: var(--bg-surface); transition: all var(--transition-normal);" onmouseover="this.style.borderColor='var(--accent-primary)'" onmouseout="this.style.borderColor='var(--border-primary)'">
+                                <input type="radio" name="notifications" value="enabled" checked style="accent-color: var(--accent-primary);">
+                                <span style="font-size: 0.85rem; font-weight: 500; color: var(--text-primary);">Enable Notifications</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: var(--spacing-sm); cursor: pointer; padding: var(--spacing-sm); border: 1px solid var(--border-primary); border-radius: var(--border-radius-sm); background: var(--bg-surface); transition: all var(--transition-normal);" onmouseover="this.style.borderColor='var(--accent-primary)'" onmouseout="this.style.borderColor='var(--border-primary)'">
+                                <input type="radio" name="notifications" value="disabled" style="accent-color: var(--accent-primary);">
+                                <span style="font-size: 0.85rem; font-weight: 500; color: var(--text-primary);">Skip for Now</span>
+                            </label>
+                        </div>
+                    </div>
+
                     <div class="setup-actions">
                         <button type="button" class="btn btn-primary" id="setup-complete">
                             Complete Setup

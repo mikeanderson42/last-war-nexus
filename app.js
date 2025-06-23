@@ -187,12 +187,28 @@ class VSPointsOptimizer {
             // Setup modal events
             const setupComplete = document.getElementById('setup-complete');
             if (setupComplete) {
-                setupComplete.addEventListener('click', () => this.completeSetup());
+                console.log('✅ Setup complete button found, adding listener');
+                setupComplete.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('✅ Setup complete button clicked');
+                    this.completeSetup();
+                });
+            } else {
+                console.error('❌ Setup complete button not found');
             }
 
             const setupSkip = document.getElementById('setup-skip');
             if (setupSkip) {
-                setupSkip.addEventListener('click', () => this.skipSetup());
+                console.log('✅ Setup skip button found, adding listener');
+                setupSkip.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('✅ Setup skip button clicked');
+                    this.skipSetup();
+                });
+            } else {
+                console.error('❌ Setup skip button not found');
             }
 
             // Settings toggle with improved functionality
@@ -266,6 +282,11 @@ class VSPointsOptimizer {
             
             // Update setup time immediately
             this.updateSetupTime();
+            
+            // Ensure setup button listeners are attached (backup)
+            setTimeout(() => {
+                this.ensureSetupButtonListeners();
+            }, 100);
         } else {
             console.error('❌ Setup modal not found');
         }
@@ -288,23 +309,33 @@ class VSPointsOptimizer {
     }
 
     async completeSetup() {
-        console.log('✅ Completing setup');
+        console.log('✅ completeSetup() called');
         try {
             const setupTimeOffset = document.getElementById('setup-time-offset');
             const setupCurrentPhase = document.getElementById('setup-current-phase');
             const setupNextPhase = document.getElementById('setup-next-phase');
             const notificationRadios = document.querySelectorAll('input[name="notifications"]');
 
+            console.log('Setup form values:', {
+                timeOffset: setupTimeOffset?.value,
+                currentPhase: setupCurrentPhase?.value,
+                nextPhase: setupNextPhase?.value,
+                notificationRadios: notificationRadios.length
+            });
+
             // Validate required fields
             if (!setupTimeOffset?.value) {
+                console.error('Missing timezone offset');
                 alert('Please select a timezone adjustment');
                 return;
             }
             if (!setupCurrentPhase?.value) {
+                console.error('Missing current phase');
                 alert('Please select the current Arms Race phase');
                 return;
             }
             if (!setupNextPhase?.value) {
+                console.error('Missing next phase');
                 alert('Please select the next Arms Race phase');
                 return;
             }
@@ -313,10 +344,19 @@ class VSPointsOptimizer {
             this.currentPhaseOverride = setupCurrentPhase.value;
             this.nextPhaseOverride = setupNextPhase.value;
 
+            console.log('Setting values:', {
+                timeOffset: this.timeOffset,
+                currentPhaseOverride: this.currentPhaseOverride,
+                nextPhaseOverride: this.nextPhaseOverride
+            });
+
             const notificationChoice = Array.from(notificationRadios).find(r => r.checked)?.value;
             const wantsNotifications = notificationChoice === 'enabled';
 
+            console.log('Notification choice:', notificationChoice, 'wants:', wantsNotifications);
+
             if (wantsNotifications) {
+                console.log('Requesting notification permission...');
                 await this.requestNotificationPermission();
             } else {
                 this.notificationsEnabled = false;
@@ -325,7 +365,7 @@ class VSPointsOptimizer {
             this.isSetupComplete = true;
             this.saveSettings();
 
-            console.log('✅ Setup completed successfully');
+            console.log('✅ Setup completed successfully, hiding modal');
             this.hideSetupModal();
             this.updateAllDisplays();
             this.startUpdateLoop();
@@ -627,6 +667,34 @@ class VSPointsOptimizer {
         this.setupTimeInterval = setInterval(() => {
             this.updateSetupTime();
         }, 1000); // Update every second for setup
+    }
+
+    ensureSetupButtonListeners() {
+        console.log('✅ Ensuring setup button listeners...');
+        
+        const setupComplete = document.getElementById('setup-complete');
+        if (setupComplete && !setupComplete.hasAttribute('data-listener-added')) {
+            console.log('✅ Adding setup complete listener');
+            setupComplete.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('✅ Setup complete clicked (backup listener)');
+                this.completeSetup();
+            });
+            setupComplete.setAttribute('data-listener-added', 'true');
+        }
+        
+        const setupSkip = document.getElementById('setup-skip');
+        if (setupSkip && !setupSkip.hasAttribute('data-listener-added')) {
+            console.log('✅ Adding setup skip listener');
+            setupSkip.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('✅ Setup skip clicked (backup listener)');
+                this.skipSetup();
+            });
+            setupSkip.setAttribute('data-listener-added', 'true');
+        }
     }
 
     startUpdateLoop() {

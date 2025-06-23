@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimal Test - Last War Nexus</title>
+    <style>
+        .setup-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; }
+        .setup-modal.active { display: flex; align-items: center; justify-content: center; }
+        .setup-modal-content { background: white; padding: 20px; border-radius: 8px; color: black; }
+    </style>
+</head>
+<body>
+    <h1>Minimal Test</h1>
+    <p>Testing basic class and setup modal functionality</p>
+    
+    <!-- Setup Modal -->
+    <div class="setup-modal" id="setup-modal">
+        <div class="setup-modal-content">
+            <h2>Setup Modal Test</h2>
+            <p>This should appear automatically if class loads correctly</p>
+            <button onclick="if(window.lastWarNexus) window.lastWarNexus.isSetupComplete = true; document.getElementById('setup-modal').classList.remove('active');">Complete Setup</button>
+        </div>
+    </div>
+    
+    <button onclick="console.log('App:', typeof window.lastWarNexus); console.log('Class:', typeof VSPointsOptimizer);">Check Status</button>
+    
+    <script src="minimal-app.js"></script>
+</body>
+</html>

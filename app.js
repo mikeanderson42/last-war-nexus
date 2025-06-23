@@ -109,43 +109,11 @@ class VSPointsOptimizer {
     populateTabContent() {
         console.log('✅ Populating tab content...');
         try {
-            // Priority tab content
-            const priorityTab = document.getElementById('priority-tab');
-            if (priorityTab) {
-                priorityTab.innerHTML = `
-                    <div style="padding: 1rem;">
-                        <h3 style="color: #60a5fa; margin-bottom: 1rem;">🎯 Priority Windows</h3>
-                        <div style="background: rgba(255,255,255,0.1); padding: 1rem; margin: 0.5rem 0; border-radius: 8px; border-left: 3px solid #3b82f6;">
-                            <h4 style="color: #60a5fa; margin: 0 0 0.5rem 0;">Next High-Value Window</h4>
-                            <p style="margin: 0.25rem 0;">⏰ In 2h 30m: Arms Race + Alliance Duel Alignment</p>
-                            <p style="margin: 0.25rem 0;">📈 Expected VS Points: +150% efficiency</p>
-                        </div>
-                        <div style="background: rgba(255,255,255,0.1); padding: 1rem; margin: 0.5rem 0; border-radius: 8px; border-left: 3px solid #3b82f6;">
-                            <h4 style="color: #60a5fa; margin: 0 0 0.5rem 0;">Today's Remaining Windows</h4>
-                            <p style="margin: 0.25rem 0;">🏗️ City Building Peak: 6h 15m</p>
-                            <p style="margin: 0.25rem 0;">⚔️ Unit Training Boost: 8h 45m</p>
-                        </div>
-                    </div>
-                `;
-            }
-
-            // Schedule tab content
-            const scheduleTab = document.getElementById('schedule-tab');
-            if (scheduleTab) {
-                scheduleTab.innerHTML = `
-                    <div style="padding: 1rem;">
-                        <h3 style="color: #60a5fa; margin-bottom: 1rem;">📅 Weekly Event Schedule</h3>
-                        <div style="background: rgba(255,255,255,0.1); padding: 1rem; margin: 0.5rem 0; border-radius: 8px;">
-                            <p style="margin: 0.5rem 0;"><strong style="color: #60a5fa;">Monday:</strong> 🎯 Radar Training - Focus on surveillance upgrades</p>
-                            <p style="margin: 0.5rem 0;"><strong style="color: #60a5fa;">Tuesday:</strong> 🏗️ Base Expansion - Infrastructure development</p>
-                            <p style="margin: 0.5rem 0;"><strong style="color: #60a5fa;">Wednesday:</strong> 🔬 Age of Science - Research and technology</p>
-                            <p style="margin: 0.5rem 0;"><strong style="color: #60a5fa;">Thursday:</strong> 🦸 Train Heroes - Hero development focus</p>
-                            <p style="margin: 0.5rem 0;"><strong style="color: #60a5fa;">Friday:</strong> ⚔️ Total Mobilization - Military preparation</p>
-                            <p style="margin: 0.5rem 0;"><strong style="color: #60a5fa;">Saturday:</strong> 💥 Enemy Buster - Combat operations</p>
-                        </div>
-                    </div>
-                `;
-            }
+            // Priority tab content - target the specific content area
+            this.populatePriorityContent();
+            
+            // Schedule tab content - target the specific content area  
+            this.populateScheduleContent();
 
             // Guides content (target the guides-content div, not the whole tab)
             const guidesContent = document.getElementById('guides-content');
@@ -630,12 +598,7 @@ class VSPointsOptimizer {
                 }
             });
             
-            // Also update any generic loading elements
-            document.querySelectorAll('.loading-message, .banner-loading').forEach(el => {
-                if (el.textContent.includes('Loading')) {
-                    el.textContent = 'Content loaded successfully';
-                }
-            });
+            // Don't update loading messages here - let specific populate methods handle them
 
         } catch (error) {
             console.error('Loading elements update error:', error);
@@ -711,6 +674,90 @@ class VSPointsOptimizer {
         this.populateGuides();
     }
     
+    populatePriorityContent() {
+        console.log('✅ Populating priority content...');
+        const priorityContent = document.getElementById('priority-grid');
+        if (priorityContent) {
+            priorityContent.innerHTML = `
+                <div class="priority-card">
+                    <div class="card-header">
+                        <h3>🎯 Next High-Value Window</h3>
+                    </div>
+                    <div class="card-content">
+                        <p>⏰ In 2h 30m: Arms Race + Alliance Duel Alignment</p>
+                        <p>📈 Expected VS Points: +150% efficiency</p>
+                        <p>🎯 Perfect timing for maximum point gain</p>
+                    </div>
+                </div>
+                <div class="priority-card">
+                    <div class="card-header">
+                        <h3>🔥 Today's Remaining Windows</h3>
+                    </div>
+                    <div class="card-content">
+                        <p>🏗️ City Building Peak: 6h 15m</p>
+                        <p>⚔️ Unit Training Boost: 8h 45m</p>
+                        <p>🔬 Research Efficiency: 12h 30m</p>
+                    </div>
+                </div>
+                <div class="priority-card">
+                    <div class="card-header">
+                        <h3>💎 Premium Opportunities</h3>
+                    </div>
+                    <div class="card-content">
+                        <p>💰 VIP Store: 30-50% better value than regular store</p>
+                        <p>🔥 Diamond purchases: Always 2x base points</p>
+                        <p>✨ Weekend bonuses: Extra VS point multipliers</p>
+                    </div>
+                </div>
+            `;
+        }
+    }
+    
+    populateScheduleContent() {
+        console.log('✅ Populating schedule content...');
+        const scheduleContent = document.getElementById('schedule-content');
+        if (scheduleContent) {
+            scheduleContent.innerHTML = `
+                <div class="priority-card">
+                    <div class="card-header">
+                        <h3>📅 Weekly VS Days Schedule</h3>
+                    </div>
+                    <div class="card-content">
+                        <p><strong>Monday:</strong> 🎯 Radar Training - Focus on surveillance upgrades</p>
+                        <p><strong>Tuesday:</strong> 🏗️ Base Expansion - Infrastructure development</p>
+                        <p><strong>Wednesday:</strong> 🔬 Age of Science - Research and technology</p>
+                        <p><strong>Thursday:</strong> 🦸 Train Heroes - Hero development focus</p>
+                        <p><strong>Friday:</strong> ⚔️ Total Mobilization - Military preparation</p>
+                        <p><strong>Saturday:</strong> 💥 Enemy Buster - Combat operations</p>
+                    </div>
+                </div>
+                <div class="priority-card">
+                    <div class="card-header">
+                        <h3>⏰ Arms Race Phase Schedule</h3>
+                    </div>
+                    <div class="card-content">
+                        <p><strong>00:00-04:00 UTC:</strong> 🏗️ City Building</p>
+                        <p><strong>04:00-08:00 UTC:</strong> ⚔️ Unit Progression</p>
+                        <p><strong>08:00-12:00 UTC:</strong> 🔬 Tech Research</p>
+                        <p><strong>12:00-16:00 UTC:</strong> 🚁 Drone Boost</p>
+                        <p><strong>16:00-20:00 UTC:</strong> 🦸 Hero Advancement</p>
+                        <p><strong>20:00-00:00 UTC:</strong> 🏗️ City Building</p>
+                    </div>
+                </div>
+                <div class="priority-card">
+                    <div class="card-header">
+                        <h3>📈 Optimization Tips</h3>
+                    </div>
+                    <div class="card-content">
+                        <p>🔥 <strong>4x Point Windows:</strong> Friday + Any Arms Race = Maximum efficiency</p>
+                        <p>✨ <strong>Perfect Alignment:</strong> VS Day matches Arms Race phase</p>
+                        <p>💰 <strong>Diamond Strategy:</strong> Always spend during 2x+ windows</p>
+                    </div>
+                </div>
+            `;
+        }
+    }
+    
     ensureAllNavigation() {
         console.log('✅ Ensuring all navigation is working...');
         
@@ -771,6 +818,11 @@ class VSPointsOptimizer {
         });
         
         console.log('✅ All navigation backup listeners added');
+        
+        // Re-populate all content after navigation is ready
+        this.populatePriorityContent();
+        this.populateScheduleContent();
+        this.populateGuides();
         
         // Test the first tab to make sure it's visible
         this.switchTab('priority');

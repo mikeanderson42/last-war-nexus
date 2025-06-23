@@ -125,34 +125,13 @@
                     this.setupEventListeners();
                     console.log('CRITICAL DEBUG: Event listeners setup completed!');
                     
-                    // FIXED: Always update displays on initialization
-                    this.updateAllDisplays();
-                    
-                    // FIXED: Initialize all content including guides
-                    try {
-                        this.initializeAllContent();
-                    } catch (error) {
-                        console.error('Content initialization failed:', error);
-                    }
-                    console.log('All content initialized successfully');
-                    
-                    // FIXED: Force populate guides after DOM is ready
-                    setTimeout(() => {
-                        console.log('=== FORCED GUIDE POPULATION ON STARTUP ===');
-                        console.log('activeGuideType:', this.activeGuideType);
-                        this.populateGuides();
-                    }, 1000);
-                    
-                    // Always start the update loop to populate data
-                    this.startUpdateLoop();
-                    
-                    // Show setup modal on first visit (when no settings saved)
+                    // Show setup modal on first visit or start normal operation
                     const hasStoredSettings = localStorage.getItem('lwn-settings');
                     if (!hasStoredSettings || !this.isSetupComplete) {
-                        // Delay modal show to prevent event conflicts
-                        setTimeout(() => {
-                            this.showSetupModal();
-                        }, 500);
+                        this.showSetupModal();
+                    } else {
+                        this.updateAllDisplays();
+                        this.startUpdateLoop();
                     }
                 } catch (error) {
                     console.error('Initialization error:', error);
@@ -163,16 +142,9 @@
             setupEventListeners() {
                 try {
                     console.log('CRITICAL DEBUG: setupEventListeners() called');
-                    // Prevent setting up listeners multiple times
-                    if (this.eventListenersSetup) {
-                        console.log('CRITICAL DEBUG: Event listeners already setup, skipping');
-                        return;
-                    }
-                    this.eventListenersSetup = true;
                     console.log('CRITICAL DEBUG: Starting event listener setup...');
                     
                     this.setupSetupModalEvents();
-                    this.setupGuideOverlayEvents();
                     
                     // Settings dropdown
                     const settingsToggle = document.getElementById('settings-toggle');
@@ -689,7 +661,7 @@
                 const toggle = document.getElementById(`${type}-toggle`);
                 
                 if (dropdown && toggle) {
-                    const isOpen = dropdown.classList.contains('active');
+                    const isOpen = dropdown.classList.contains('show');
                     this.closeAllDropdowns();
                     
                     if (!isOpen) {
@@ -699,7 +671,7 @@
                         }
                         // Position dropdown safely within viewport
                         this.positionDropdownSafely(dropdown, toggle);
-                        dropdown.classList.add('active');
+                        dropdown.classList.add('show');
                         toggle.classList.add('active');
                         toggle.setAttribute('aria-expanded', 'true');
                     }

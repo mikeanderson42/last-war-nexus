@@ -3,6 +3,8 @@
          * PRODUCTION READY VERSION - Enhanced Design & Functionality
          */
 
+        console.log('📦 Loading VSPointsOptimizer class definition...');
+
         class VSPointsOptimizer {
             constructor() {
                 this.timeOffset = 0;
@@ -3046,6 +3048,8 @@
                 }
             }
         }
+
+        console.log('✅ VSPointsOptimizer class definition completed');
 
         // Initialize the application - Handle both DOM ready and already loaded states
         function initializeApp() {

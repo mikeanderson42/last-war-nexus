@@ -127,9 +127,18 @@
                     
                     // Show setup modal on first visit or start normal operation
                     const hasStoredSettings = localStorage.getItem('lwn-settings');
+                    console.log('=== SETUP MODAL DECISION ===');
+                    console.log('hasStoredSettings:', hasStoredSettings);
+                    console.log('this.isSetupComplete:', this.isSetupComplete);
+                    console.log('!hasStoredSettings:', !hasStoredSettings);
+                    console.log('!this.isSetupComplete:', !this.isSetupComplete);
+                    console.log('Should show modal:', !hasStoredSettings || !this.isSetupComplete);
+                    
                     if (!hasStoredSettings || !this.isSetupComplete) {
+                        console.log('DECISION: Showing setup modal');
                         this.showSetupModal();
                     } else {
+                        console.log('DECISION: Skipping setup modal - setup already complete');
                         this.updateAllDisplays();
                         this.startUpdateLoop();
                     }
@@ -3115,6 +3124,23 @@
                 console.log('toggleDropdown exists:', typeof window.lastWarNexus.toggleDropdown === 'function'); 
                 console.log('toggleBanner exists:', typeof window.lastWarNexus.toggleBanner === 'function');
                 console.log('switchTab exists:', typeof window.lastWarNexus.switchTab === 'function');
+            } else {
+                console.log('lastWarNexus not found');
+            }
+        };
+
+        // DEBUG: Clear localStorage to test first-time user experience
+        window.clearStorageAndReload = function() {
+            console.log('Clearing localStorage and reloading...');
+            localStorage.removeItem('lwn-settings');
+            window.location.reload();
+        };
+
+        // DEBUG: Show setup modal manually
+        window.forceShowSetupModal = function() {
+            console.log('Forcing setup modal to show...');
+            if (window.lastWarNexus) {
+                window.lastWarNexus.showSetupModal();
             } else {
                 console.log('lastWarNexus not found');
             }

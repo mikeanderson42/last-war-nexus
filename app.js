@@ -634,6 +634,12 @@ class VSPointsOptimizer {
             return;
         }
         
+        // Only replace the loading message, keep the container structure
+        const loadingMsg = guidesContent.querySelector('.loading-message');
+        if (loadingMsg) {
+            loadingMsg.remove();
+        }
+        
         const tipsContent = `
             <div class="priority-card">
                 <div class="card-header">
@@ -677,6 +683,7 @@ class VSPointsOptimizer {
         `;
         
         guidesContent.innerHTML = tipsContent;
+        console.log('✅ Guides content populated with', guidesContent.children.length, 'cards');
     }
     
     switchGuideType(guideType) {
@@ -703,6 +710,13 @@ class VSPointsOptimizer {
         const priorityContent = document.getElementById('priority-grid');
         console.log('Priority grid element:', priorityContent);
         if (priorityContent) {
+            // Only replace the loading message, keep the container structure
+            const loadingMsg = priorityContent.querySelector('.loading-message');
+            if (loadingMsg) {
+                loadingMsg.remove();
+            }
+            
+            // Add content cards to the existing priority-grid container
             priorityContent.innerHTML = `
                 <div class="priority-card">
                     <div class="card-header">
@@ -735,6 +749,7 @@ class VSPointsOptimizer {
                     </div>
                 </div>
             `;
+            console.log('✅ Priority content populated with', priorityContent.children.length, 'cards');
         }
     }
     
@@ -743,6 +758,12 @@ class VSPointsOptimizer {
         const scheduleContent = document.getElementById('schedule-content');
         console.log('Schedule content element:', scheduleContent);
         if (scheduleContent) {
+            // Only replace the loading message, keep the container structure
+            const loadingMsg = scheduleContent.querySelector('.loading-message');
+            if (loadingMsg) {
+                loadingMsg.remove();
+            }
+            
             scheduleContent.innerHTML = `
                 <div class="priority-card">
                     <div class="card-header">
@@ -781,6 +802,7 @@ class VSPointsOptimizer {
                     </div>
                 </div>
             `;
+            console.log('✅ Schedule content populated with', scheduleContent.children.length, 'cards');
         }
     }
     
@@ -790,6 +812,12 @@ class VSPointsOptimizer {
         const bannerCount = document.getElementById('banner-count');
         
         if (bannerGrid) {
+            // Only replace the loading message, keep the container structure
+            const loadingMsg = bannerGrid.querySelector('.banner-loading');
+            if (loadingMsg) {
+                loadingMsg.remove();
+            }
+            
             bannerGrid.innerHTML = `
                 <div class="banner-event-card">
                     <div class="event-time">⏰ In 1h 30m</div>
@@ -807,6 +835,7 @@ class VSPointsOptimizer {
                     <div class="event-details">Tech Research phase + science bonus day</div>
                 </div>
             `;
+            console.log('✅ Banner populated with', bannerGrid.children.length, 'event cards');
         }
         
         if (bannerCount) {

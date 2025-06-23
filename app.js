@@ -3194,6 +3194,29 @@
             console.log('TEST: localStorage cleared, reload page to see setup modal');
         };
 
+        // EMERGENCY DEBUG: Function to check app state
+        window.debugAppState = function() {
+            console.log('=== DEBUG APP STATE ===');
+            console.log('window.lastWarNexus exists:', !!window.lastWarNexus);
+            console.log('localStorage lwn-settings:', localStorage.getItem('lwn-settings'));
+            
+            if (window.lastWarNexus) {
+                console.log('App initialized:', !!window.lastWarNexus.init);
+                console.log('Setup complete:', window.lastWarNexus.isSetupComplete);
+                console.log('Time offset:', window.lastWarNexus.timeOffset);
+                console.log('Notifications enabled:', window.lastWarNexus.notificationsEnabled);
+            } else {
+                console.log('❌ App not initialized!');
+            }
+            
+            // Check critical DOM elements
+            const criticalElements = ['setup-modal', 'settings-toggle', 'time-toggle-btn', 'current-display-time'];
+            criticalElements.forEach(id => {
+                const el = document.getElementById(id);
+                console.log(`Element ${id}:`, !!el, el ? 'visible' : 'missing');
+            });
+        };
+
         window.addEventListener('error', (event) => {
             console.error('Global error:', event.error);
         });

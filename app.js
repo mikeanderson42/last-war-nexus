@@ -172,18 +172,26 @@
                     // Settings dropdown
                     const settingsToggle = document.getElementById('settings-toggle');
                     if (settingsToggle) {
+                        console.log('DEBUG: Settings toggle button found, attaching event listener');
                         settingsToggle.addEventListener('click', (e) => {
+                            console.log('DEBUG: Settings toggle button clicked!');
                             e.stopPropagation();
                             this.toggleDropdown('settings');
                         });
+                    } else {
+                        console.error('ERROR: Settings toggle button not found!');
                     }
 
                     // FIXED: Tab navigation with proper event handling
-                    document.querySelectorAll('.tab-btn').forEach(btn => {
+                    const tabButtons = document.querySelectorAll('.tab-btn');
+                    console.log(`DEBUG: Found ${tabButtons.length} tab buttons`);
+                    tabButtons.forEach((btn, index) => {
+                        const tab = btn.getAttribute('data-tab');
+                        console.log(`DEBUG: Tab button ${index}: data-tab="${tab}"`);
                         btn.addEventListener('click', (e) => {
+                            console.log(`DEBUG: Tab button clicked: ${tab}`);
                             e.preventDefault();
                             e.stopPropagation();
-                            const tab = e.currentTarget.getAttribute('data-tab');
                             if (tab) {
                                 this.switchTab(tab);
                             }
@@ -242,11 +250,15 @@
                     // FIXED: Time toggle button
                     const timeToggleBtn = document.getElementById('time-toggle-btn');
                     if (timeToggleBtn) {
+                        console.log('DEBUG: Time toggle button found, attaching event listener');
                         timeToggleBtn.addEventListener('click', (e) => {
+                            console.log('DEBUG: Time toggle button clicked!');
                             e.preventDefault();
                             e.stopPropagation();
                             this.toggleTimeMode();
                         });
+                    } else {
+                        console.error('ERROR: Time toggle button not found!');
                     }
 
                     // FIXED: Guide navigation buttons with robust mobile support
@@ -305,11 +317,15 @@
                     // FIXED: Banner toggle functionality
                     const bannerHeader = document.querySelector('.banner-header');
                     if (bannerHeader) {
+                        console.log('DEBUG: Banner header found, attaching event listener');
                         bannerHeader.addEventListener('click', (e) => {
+                            console.log('DEBUG: Banner header clicked!');
                             e.preventDefault();
                             e.stopPropagation();
                             this.toggleBanner();
                         });
+                    } else {
+                        console.error('ERROR: Banner header not found!');
                     }
 
                     // Close dropdowns on outside click (but not when modal is open)
@@ -3105,12 +3121,42 @@
             initializeApp();
         }
 
-        // TEMPORARY DEBUG: Add global function to test Complete Setup button
+        // TEMPORARY DEBUG: Add global functions to test functionality
         window.testCompleteSetup = function() {
             console.log('TEST: testCompleteSetup called');
             if (window.lastWarNexus) {
                 console.log('TEST: lastWarNexus found, calling completeSetup');
                 window.lastWarNexus.completeSetup();
+            } else {
+                console.log('TEST: lastWarNexus not found');
+            }
+        };
+
+        window.testTimeToggle = function() {
+            console.log('TEST: testTimeToggle called');
+            if (window.lastWarNexus) {
+                console.log('TEST: lastWarNexus found, calling toggleTimeMode');
+                window.lastWarNexus.toggleTimeMode();
+            } else {
+                console.log('TEST: lastWarNexus not found');
+            }
+        };
+
+        window.testSettingsToggle = function() {
+            console.log('TEST: testSettingsToggle called');
+            if (window.lastWarNexus) {
+                console.log('TEST: lastWarNexus found, calling toggleDropdown');
+                window.lastWarNexus.toggleDropdown('settings');
+            } else {
+                console.log('TEST: lastWarNexus not found');
+            }
+        };
+
+        window.testBannerToggle = function() {
+            console.log('TEST: testBannerToggle called');
+            if (window.lastWarNexus) {
+                console.log('TEST: lastWarNexus found, calling toggleBanner');
+                window.lastWarNexus.toggleBanner();
             } else {
                 console.log('TEST: lastWarNexus not found');
             }

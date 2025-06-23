@@ -3288,3 +3288,41 @@
                 document.body.appendChild(errorDiv);
             }
         });
+
+        // FALLBACK: Also try initialization after a short delay in case DOMContentLoaded already fired
+        setTimeout(() => {
+            if (!window.lastWarNexus) {
+                console.log('🔄 FALLBACK: DOMContentLoaded may have missed, trying delayed initialization...');
+                try {
+                    const criticalElements = ['setup-modal', 'settings-toggle', 'time-toggle-btn'];
+                    const missingElements = [];
+                    
+                    criticalElements.forEach(id => {
+                        if (!document.getElementById(id)) missingElements.push(id);
+                    });
+                    
+                    if (missingElements.length === 0) {
+                        console.log('🚀 FALLBACK: All elements ready, initializing...');
+                        window.lastWarNexus = new VSPointsOptimizer();
+                        window.lastWarNexus.init();
+                        console.log('✅ FALLBACK: Initialization successful!');
+                    } else {
+                        console.error('❌ FALLBACK: Missing elements:', missingElements);
+                    }
+                } catch (error) {
+                    console.error('💥 FALLBACK: Initialization failed:', error);
+                }
+            } else {
+                console.log('✅ App already initialized via DOMContentLoaded');
+            }
+        }, 1000);
+
+        window.addEventListener('error', (event) => {
+            console.error('🚨 Global JavaScript error:', event.error);
+            console.error('🚨 Error details:', event);
+        });
+
+        window.addEventListener('unhandledrejection', (event) => {
+            console.error('🚨 Unhandled promise rejection:', event.reason);
+            console.error('🚨 Promise rejection details:', event);
+        });

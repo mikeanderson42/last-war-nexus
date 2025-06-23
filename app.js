@@ -120,8 +120,10 @@
                     console.log('=== VSPointsOptimizer INIT START ===');
                     this.loadSettings();
                     console.log('Settings loaded successfully');
+                    
+                    console.log('CRITICAL DEBUG: About to setup event listeners...');
                     this.setupEventListeners();
-                    console.log('Event listeners setup successfully');
+                    console.log('CRITICAL DEBUG: Event listeners setup completed!');
                     
                     // FIXED: Always update displays on initialization
                     this.updateAllDisplays();
@@ -160,11 +162,14 @@
 
             setupEventListeners() {
                 try {
+                    console.log('CRITICAL DEBUG: setupEventListeners() called');
                     // Prevent setting up listeners multiple times
                     if (this.eventListenersSetup) {
+                        console.log('CRITICAL DEBUG: Event listeners already setup, skipping');
                         return;
                     }
                     this.eventListenersSetup = true;
+                    console.log('CRITICAL DEBUG: Starting event listener setup...');
                     
                     this.setupSetupModalEvents();
                     this.setupGuideOverlayEvents();
@@ -356,8 +361,10 @@
                         }
                     });
 
+                    console.log('CRITICAL DEBUG: All event listeners setup completed successfully');
                 } catch (error) {
-                    console.error('Event listener setup error:', error);
+                    console.error('CRITICAL ERROR: Event listener setup failed:', error);
+                    console.error('Error details:', error.stack);
                 }
             }
 
@@ -3113,13 +3120,9 @@
             }
         }
 
-        // Check if DOM is already loaded or wait for it
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initializeApp);
-        } else {
-            // DOM is already ready, initialize immediately
-            initializeApp();
-        }
+        // Initialize immediately like original version (no DOM ready check)
+        console.log('CRITICAL DEBUG: Starting immediate initialization');
+        initializeApp();
 
         // TEMPORARY DEBUG: Add global functions to test functionality
         window.testCompleteSetup = function() {
@@ -3129,6 +3132,19 @@
                 window.lastWarNexus.completeSetup();
             } else {
                 console.log('TEST: lastWarNexus not found');
+            }
+        };
+
+        // DEBUG: Check if all methods exist after initialization
+        window.debugCheckMethods = function() {
+            if (window.lastWarNexus) {
+                console.log('Method check results:');
+                console.log('toggleTimeMode exists:', typeof window.lastWarNexus.toggleTimeMode === 'function');
+                console.log('toggleDropdown exists:', typeof window.lastWarNexus.toggleDropdown === 'function'); 
+                console.log('toggleBanner exists:', typeof window.lastWarNexus.toggleBanner === 'function');
+                console.log('switchTab exists:', typeof window.lastWarNexus.switchTab === 'function');
+            } else {
+                console.log('lastWarNexus not found');
             }
         };
 

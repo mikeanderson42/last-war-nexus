@@ -727,8 +727,20 @@ class VSPointsOptimizer {
             this.updatePhaseDisplays();
             this.updateLoadingElements();
             
-            // Force update priority banner
+            // Always update priority banner with live countdown
             this.updatePriorityBanner();
+            
+            // Update main time display
+            const mainTimeDisplay = document.getElementById('main-time-display');
+            if (mainTimeDisplay) {
+                const now = new Date();
+                const serverTime = this.getServerTime();
+                const timeToShow = this.useLocalTime ? now : serverTime;
+                mainTimeDisplay.textContent = timeToShow.toLocaleTimeString([], { 
+                    hour: '2-digit', 
+                    minute: '2-digit'
+                });
+            }
             
         } catch (error) {
             console.error('Display update error:', error);
@@ -746,12 +758,13 @@ class VSPointsOptimizer {
                 priorityBannerTitle.textContent = 'NEXT HIGH PRIORITY';
             }
             
+            // Always update the priority countdown (not just on loading)
             const priorityCountdown = document.getElementById('priority-countdown');
-            if (priorityCountdown && priorityCountdown.textContent.includes('Loading')) {
+            if (priorityCountdown) {
                 priorityCountdown.textContent = `${timeToNext.hours}h ${timeToNext.minutes}m`;
             }
             
-            console.log('✅ Priority banner updated');
+            console.log('✅ Priority banner updated with time:', `${timeToNext.hours}h ${timeToNext.minutes}m`);
         } catch (error) {
             console.error('Priority banner update error:', error);
         }
@@ -776,7 +789,7 @@ class VSPointsOptimizer {
         
         if (this.activeGuideType === 'seasonal') {
             content = `
-                <div class="priority-card">
+                <div class="priority-window-card peak">
                     <div class="card-header">
                         <h3>🎄 Winter Season Strategy</h3>
                     </div>
@@ -789,7 +802,7 @@ class VSPointsOptimizer {
                         </ul>
                     </div>
                 </div>
-                <div class="priority-card">
+                <div class="priority-window-card active">
                     <div class="card-header">
                         <h3>🌸 Spring Growth Events</h3>
                     </div>
@@ -802,7 +815,7 @@ class VSPointsOptimizer {
                         </ul>
                     </div>
                 </div>
-                <div class="priority-card">
+                <div class="priority-window-card">
                     <div class="card-header">
                         <h3>🌞 Summer Combat Season</h3>
                     </div>
@@ -819,7 +832,7 @@ class VSPointsOptimizer {
         } else {
             // Default to tips content
             content = `
-                <div class="priority-card">
+                <div class="priority-window-card">
                     <div class="card-header">
                         <h3>🏗️ City Building Optimization</h3>
                     </div>
@@ -832,7 +845,7 @@ class VSPointsOptimizer {
                         </ul>
                     </div>
                 </div>
-                <div class="priority-card">
+                <div class="priority-window-card active">
                     <div class="card-header">
                         <h3>⚔️ Unit Progression Strategy</h3>
                     </div>
@@ -845,7 +858,7 @@ class VSPointsOptimizer {
                         </ul>
                     </div>
                 </div>
-                <div class="priority-card">
+                <div class="priority-window-card">
                     <div class="card-header">
                         <h3>🔬 Research Efficiency</h3>
                     </div>
@@ -897,7 +910,7 @@ class VSPointsOptimizer {
             
             // Add content cards to the existing priority-grid container
             priorityContent.innerHTML = `
-                <div class="priority-card">
+                <div class="priority-window-card active">
                     <div class="card-header">
                         <h3>🎯 Next High-Value Window</h3>
                     </div>
@@ -907,7 +920,7 @@ class VSPointsOptimizer {
                         <p>🎯 Perfect timing for maximum point gain</p>
                     </div>
                 </div>
-                <div class="priority-card">
+                <div class="priority-window-card">
                     <div class="card-header">
                         <h3>🔥 Today's Remaining Windows</h3>
                     </div>
@@ -917,7 +930,7 @@ class VSPointsOptimizer {
                         <p>🔬 Research Efficiency: 12h 30m</p>
                     </div>
                 </div>
-                <div class="priority-card">
+                <div class="priority-window-card peak">
                     <div class="card-header">
                         <h3>💎 Premium Opportunities</h3>
                     </div>
@@ -944,7 +957,7 @@ class VSPointsOptimizer {
             }
             
             scheduleContent.innerHTML = `
-                <div class="priority-card">
+                <div class="priority-window-card">
                     <div class="card-header">
                         <h3>📅 Weekly VS Days Schedule</h3>
                     </div>
@@ -957,7 +970,7 @@ class VSPointsOptimizer {
                         <p><strong>Saturday:</strong> 💥 Enemy Buster - Combat operations</p>
                     </div>
                 </div>
-                <div class="priority-card">
+                <div class="priority-window-card active">
                     <div class="card-header">
                         <h3>⏰ Arms Race Phase Schedule</h3>
                     </div>
@@ -970,7 +983,7 @@ class VSPointsOptimizer {
                         <p><strong>20:00-00:00 UTC:</strong> 🏗️ City Building</p>
                     </div>
                 </div>
-                <div class="priority-card">
+                <div class="priority-window-card peak">
                     <div class="card-header">
                         <h3>📈 Optimization Tips</h3>
                     </div>

@@ -120,6 +120,9 @@ class VSPointsOptimizer {
             if (guidesContent) {
                 this.populateGuides();
             }
+            
+            // Populate banner content
+            this.populateBanner();
 
             console.log('✅ Tab content populated');
         } catch (error) {
@@ -755,6 +758,59 @@ class VSPointsOptimizer {
                     </div>
                 </div>
             `;
+        }
+    }
+    
+    populateBanner() {
+        console.log('✅ Populating priority events banner...');
+        const bannerGrid = document.getElementById('banner-grid');
+        const bannerCount = document.getElementById('banner-count');
+        
+        if (bannerGrid) {
+            bannerGrid.innerHTML = `
+                <div class="banner-event-card">
+                    <div class="event-time">⏰ In 1h 30m</div>
+                    <div class="event-title">Perfect Alignment Window</div>
+                    <div class="event-details">Arms Race + VS Day alignment for 4x points</div>
+                </div>
+                <div class="banner-event-card">
+                    <div class="event-time">📅 Today 8:00 PM</div>
+                    <div class="event-title">City Building Peak</div>
+                    <div class="event-details">2x Arms Race bonus + construction focus</div>
+                </div>
+                <div class="banner-event-card">
+                    <div class="event-time">🔥 Tomorrow 12:00 PM</div>
+                    <div class="event-title">Research Efficiency</div>
+                    <div class="event-details">Tech Research phase + science bonus day</div>
+                </div>
+            `;
+        }
+        
+        if (bannerCount) {
+            bannerCount.textContent = '3';
+        }
+        
+        // Add banner toggle functionality
+        const bannerHeader = document.querySelector('.banner-header');
+        const bannerContent = document.getElementById('banner-content');
+        const bannerToggle = document.getElementById('banner-toggle');
+        const banner = document.getElementById('priority-events-banner');
+        
+        if (bannerHeader && !bannerHeader.hasAttribute('data-banner-listener')) {
+            bannerHeader.addEventListener('click', () => {
+                const isExpanded = banner.getAttribute('aria-expanded') === 'true';
+                
+                if (isExpanded) {
+                    banner.classList.add('collapsed');
+                    banner.setAttribute('aria-expanded', 'false');
+                    bannerToggle.textContent = '▼';
+                } else {
+                    banner.classList.remove('collapsed');
+                    banner.setAttribute('aria-expanded', 'true');
+                    bannerToggle.textContent = '▲';
+                }
+            });
+            bannerHeader.setAttribute('data-banner-listener', 'true');
         }
     }
     

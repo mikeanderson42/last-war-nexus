@@ -573,9 +573,9 @@ class VSPointsOptimizer {
             setTimeout(() => {
                 console.log('✅ Re-populating content for active tab:', tabName);
                 if (tabName === 'priority') {
-                    this.populatePriorityWindows();
+                    this.populatePriorityContent();
                 } else if (tabName === 'schedule') {
-                    this.populateSchedule();
+                    this.populateScheduleContent();
                 } else if (tabName === 'guides') {
                     this.populateGuides();
                     

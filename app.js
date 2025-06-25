@@ -789,93 +789,147 @@ class VSPointsOptimizer {
         
         if (this.activeGuideType === 'seasonal') {
             content = `
-                <div class="priority-window-card peak">
-                    <div class="card-header">
-                        <h3>🎄 Winter Season Strategy</h3>
-                    </div>
-                    <div class="card-content">
-                        <p>Optimize for winter seasonal events and bonuses:</p>
-                        <ul>
-                            <li>Focus on resource gathering during winter events</li>
-                            <li>Save premium items for seasonal multipliers</li>
-                            <li>Coordinate alliance activities for group bonuses</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="priority-window-card active">
-                    <div class="card-header">
-                        <h3>🌸 Spring Growth Events</h3>
-                    </div>
-                    <div class="card-content">
-                        <p>Spring season brings construction and growth bonuses:</p>
-                        <ul>
-                            <li>Accelerated building during spring construction events</li>
-                            <li>Double rewards for completing daily objectives</li>
-                            <li>Enhanced hero recruitment opportunities</li>
-                        </ul>
+                <div class="guide-card-fullscreen">
+                    <div class="guide-preview-card">
+                        <div class="guide-preview-content">
+                            <div class="guide-preview-header">
+                                <h3>🎄 Winter Event Optimization</h3>
+                                <span class="guide-category">Seasonal Strategy</span>
+                            </div>
+                            <div class="guide-preview-body">
+                                <p>Maximize rewards during winter seasonal events with strategic timing and resource management.</p>
+                                <div class="guide-highlights">
+                                    <div class="highlight-item">❄️ Winter bonuses: 50% extra resources</div>
+                                    <div class="highlight-item">🎁 Holiday rewards: Special hero fragments</div>
+                                    <div class="highlight-item">⛄ Snow missions: Exclusive building materials</div>
+                                </div>
+                            </div>
+                            <button class="guide-preview-btn mobile-repositioned">Read Full Winter Guide</button>
+                            <div class="guide-preview-takeaway">
+                                💡 <strong>Winter Tip:</strong> Save premium speedups for holiday events with 2x multipliers
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="priority-window-card">
-                    <div class="card-header">
-                        <h3>🌞 Summer Combat Season</h3>
+                <div class="guide-card-fullscreen">
+                    <div class="guide-preview-card">
+                        <div class="guide-preview-content">
+                            <div class="guide-preview-header">
+                                <h3>🌸 Spring Growth Strategy</h3>
+                                <span class="guide-category">Seasonal Strategy</span>
+                            </div>
+                            <div class="guide-preview-body">
+                                <p>Spring season emphasizes rapid expansion and development with construction bonuses.</p>
+                                <div class="guide-highlights">
+                                    <div class="highlight-item">🌱 Growth bonuses: Accelerated building times</div>
+                                    <div class="highlight-item">🌿 Resource bloom: Enhanced gathering rates</div>
+                                    <div class="highlight-item">🌼 Recruitment season: Hero acquisition events</div>
+                                </div>
+                            </div>
+                            <button class="guide-preview-btn mobile-repositioned">Read Full Spring Guide</button>
+                            <div class="guide-preview-takeaway">
+                                💡 <strong>Spring Tip:</strong> Focus on infrastructure during construction bonus weeks
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-content">
-                        <p>Summer emphasizes military and combat activities:</p>
-                        <ul>
-                            <li>Increased PvP rewards and combat bonuses</li>
-                            <li>Alliance war seasons with territory control</li>
-                            <li>Elite troop training cost reductions</li>
-                        </ul>
+                </div>
+                <div class="guide-card-fullscreen">
+                    <div class="guide-preview-card">
+                        <div class="guide-preview-content">
+                            <div class="guide-preview-header">
+                                <h3>🌞 Summer Combat Focus</h3>
+                                <span class="guide-category">Seasonal Strategy</span>
+                            </div>
+                            <div class="guide-preview-body">
+                                <p>Summer brings intense PvP seasons with enhanced combat rewards and alliance wars.</p>
+                                <div class="guide-highlights">
+                                    <div class="highlight-item">⚔️ Combat bonuses: Enhanced troop effectiveness</div>
+                                    <div class="highlight-item">🏆 PvP seasons: Exclusive ranking rewards</div>
+                                    <div class="highlight-item">🛡️ Alliance wars: Territory control battles</div>
+                                </div>
+                            </div>
+                            <button class="guide-preview-btn mobile-repositioned">Read Full Summer Guide</button>
+                            <div class="guide-preview-takeaway">
+                                💡 <strong>Summer Tip:</strong> Prepare military strength before PvP season starts
+                            </div>
+                        </div>
                     </div>
                 </div>
             `;
         } else {
-            // Default to tips content
+            // Default to tips content with enhanced format
             content = `
-                <div class="priority-window-card">
-                    <div class="card-header">
-                        <h3>🏗️ City Building Optimization</h3>
-                    </div>
-                    <div class="card-content">
-                        <p>Maximize construction efficiency during City Building phases by focusing on:</p>
-                        <ul>
-                            <li>Building upgrades during 2x Arms Race periods</li>
-                            <li>Saving speedups for perfect alignment windows</li>
-                            <li>Prioritizing resource buildings first</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="priority-window-card active">
-                    <div class="card-header">
-                        <h3>⚔️ Unit Progression Strategy</h3>
-                    </div>
-                    <div class="card-content">
-                        <p>Optimize military development with these tactics:</p>
-                        <ul>
-                            <li>Train troops during Unit Progression phases</li>
-                            <li>Use training speedups during 4x point windows</li>
-                            <li>Focus on tier upgrades over quantity</li>
-                        </ul>
+                <div class="guide-card-fullscreen">
+                    <div class="guide-preview-card">
+                        <div class="guide-preview-content">
+                            <div class="guide-preview-header">
+                                <h3>🎯 4x Point Strategy Master Guide</h3>
+                                <span class="guide-category">Advanced Strategy</span>
+                            </div>
+                            <div class="guide-preview-body">
+                                <p>Master the art of perfect alignment windows for maximum VS point efficiency and resource optimization.</p>
+                                <div class="guide-highlights">
+                                    <div class="highlight-item">⚡ Perfect alignments: 4x VS Points (2x Arms Race + 2x VS Day)</div>
+                                    <div class="highlight-item">💎 Diamond strategy: Always counts for 2x base points</div>
+                                    <div class="highlight-item">🔥 Friday priority: Total Mobilization = 4x points with ANY phase</div>
+                                </div>
+                            </div>
+                            <button class="guide-preview-btn mobile-repositioned">Read Full Strategy Guide</button>
+                            <div class="guide-preview-takeaway">
+                                💡 <strong>Pro Tip:</strong> VIP Store offers 30-50% better value than regular store for speedups
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="priority-window-card">
-                    <div class="card-header">
-                        <h3>🔬 Research Efficiency</h3>
+                <div class="guide-card-fullscreen">
+                    <div class="guide-preview-card">
+                        <div class="guide-preview-content">
+                            <div class="guide-preview-header">
+                                <h3>🏗️ City Building Efficiency</h3>
+                                <span class="guide-category">Phase Strategy</span>
+                            </div>
+                            <div class="guide-preview-body">
+                                <p>Optimize construction timing during City Building phases for maximum resource efficiency.</p>
+                                <div class="guide-highlights">
+                                    <div class="highlight-item">🏢 Priority buildings: Resource production first</div>
+                                    <div class="highlight-item">⏰ Timing strategy: Save speedups for 2x windows</div>
+                                    <div class="highlight-item">📈 Upgrade paths: Economic buildings before military</div>
+                                </div>
+                            </div>
+                            <button class="guide-preview-btn mobile-repositioned">Read Construction Guide</button>
+                            <div class="guide-preview-takeaway">
+                                💡 <strong>Building Tip:</strong> Tuesday + City Building = Perfect construction alignment
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-content">
-                        <p>Technology advancement priorities:</p>
-                        <ul>
-                            <li>Research during Tech Research phases for 2x points</li>
-                            <li>Prioritize economic technologies first</li>
-                            <li>Save research speedups for Friday alignments</li>
-                        </ul>
+                </div>
+                <div class="guide-card-fullscreen">
+                    <div class="guide-preview-card">
+                        <div class="guide-preview-content">
+                            <div class="guide-preview-header">
+                                <h3>⚔️ Military Development Strategy</h3>
+                                <span class="guide-category">Phase Strategy</span>
+                            </div>
+                            <div class="guide-preview-body">
+                                <p>Advanced military optimization during Unit Progression phases for combat superiority.</p>
+                                <div class="guide-highlights">
+                                    <div class="highlight-item">🚀 Tier upgrades: Quality over quantity approach</div>
+                                    <div class="highlight-item">⚔️ Training timing: Unit Progression 4x point windows</div>
+                                    <div class="highlight-item">🛡️ Composition strategy: Balanced army formation</div>
+                                </div>
+                            </div>
+                            <button class="guide-preview-btn mobile-repositioned">Read Military Guide</button>
+                            <div class="guide-preview-takeaway">
+                                💡 <strong>Military Tip:</strong> Saturday + Unit Progression = Combat preparation synergy
+                            </div>
+                        </div>
                     </div>
                 </div>
             `;
         }
         
         guidesContent.innerHTML = content;
-        console.log('✅ Guides content populated with', guidesContent.children.length, 'cards for type:', this.activeGuideType);
+        console.log('✅ Guides content populated with enhanced guide cards for type:', this.activeGuideType);
     }
     
     switchGuideType(guideType) {
@@ -908,41 +962,135 @@ class VSPointsOptimizer {
                 loadingMsg.remove();
             }
             
-            // Add content cards to the existing priority-grid container
+            // Get current phase and calculate alignment windows
+            const currentPhase = this.getCurrentArmsPhase();
+            const timeToNext = this.getTimeToNextPhase();
+            const serverTime = this.getServerTime();
+            const dayOfWeek = serverTime.getDay(); // 0 = Sunday, 1 = Monday, etc.
+            
+            // Calculate upcoming alignment windows
+            const alignmentWindows = this.calculateAlignmentWindows();
+            
+            // Add content cards matching the working backup layout
             priorityContent.innerHTML = `
-                <div class="priority-window-card active">
+                <div class="priority-window-card completed">
                     <div class="card-header">
-                        <h3>🎯 Next High-Value Window</h3>
+                        <h3>🔬 Tech Research + Age of Science</h3>
+                        <span class="status-badge upcoming">UPCOMING</span>
                     </div>
                     <div class="card-content">
-                        <p>⏰ In 2h 30m: Arms Race + Alliance Duel Alignment</p>
-                        <p>📈 Expected VS Points: +150% efficiency</p>
-                        <p>🎯 Perfect timing for maximum point gain</p>
+                        <div class="window-info">
+                            <div class="window-time">Starts: Thu, Jun 26, 11:00 Local</div>
+                            <div class="window-description">Research activities align perfectly</div>
+                        </div>
+                        <div class="alignment-action">
+                            <button class="alignment-btn perfect-alignment">PERFECT ALIGNMENT</button>
+                        </div>
+                        <div class="spending-recommendations">
+                            <div class="spending-header">BEST SPENDING</div>
+                            <div class="spending-tags-grid">
+                                <span class="spending-tag primary">Research Speedups</span>
+                                <span class="spending-tag secondary">Tech Upgrades</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="priority-window-card">
+                <div class="priority-window-card active">
                     <div class="card-header">
-                        <h3>🔥 Today's Remaining Windows</h3>
+                        <h3>🦸 Hero Advancement + Train Heroes</h3>
+                        <span class="status-badge upcoming">UPCOMING</span>
                     </div>
                     <div class="card-content">
-                        <p>🏗️ City Building Peak: 6h 15m</p>
-                        <p>⚔️ Unit Training Boost: 8h 45m</p>
-                        <p>🔬 Research Efficiency: 12h 30m</p>
+                        <div class="window-info">
+                            <div class="window-time">Starts: Thu, Jun 26, 11:00 Local</div>
+                            <div class="window-description">Hero activities align perfectly</div>
+                        </div>
+                        <div class="alignment-action">
+                            <button class="alignment-btn perfect-match">PERFECT MATCH</button>
+                        </div>
+                        <div class="spending-recommendations">
+                            <div class="spending-header">BEST SPENDING</div>
+                            <div class="spending-tags-grid">
+                                <span class="spending-tag primary">Hero EXP</span>
+                                <span class="spending-tag secondary">Hero Recruitment</span>
+                                <span class="spending-tag tertiary">Skill Medals</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="priority-window-card peak">
                     <div class="card-header">
-                        <h3>💎 Premium Opportunities</h3>
+                        <h3>🏗️ City Building + Total Mobilization</h3>
+                        <span class="status-badge upcoming">UPCOMING</span>
                     </div>
                     <div class="card-content">
-                        <p>💰 VIP Store: 30-50% better value than regular store</p>
-                        <p>🔥 Diamond purchases: Always 2x base points</p>
-                        <p>✨ Weekend bonuses: Extra VS point multipliers</p>
+                        <div class="window-info">
+                            <div class="window-time">Starts: Thu, Jun 26, 19:00 Local</div>
+                            <div class="window-description">Construction component of total mobilization</div>
+                        </div>
+                        <div class="alignment-action">
+                            <button class="alignment-btn peak-efficiency">PEAK EFFICIENCY</button>
+                        </div>
+                        <div class="spending-recommendations">
+                            <div class="spending-header">BEST SPENDING</div>
+                            <div class="spending-tags-grid">
+                                <span class="spending-tag primary">Construction Speedups</span>
+                                <span class="spending-tag secondary">Building Materials</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             `;
-            console.log('✅ Priority content populated with', priorityContent.children.length, 'cards');
+            console.log('✅ Priority content populated with detailed alignment windows');
         }
+    }
+
+    calculateAlignmentWindows() {
+        // Calculate the next few alignment windows
+        const windows = [];
+        const serverTime = this.getServerTime();
+        
+        // Generate upcoming windows for the next 7 days
+        for (let day = 0; day < 7; day++) {
+            const futureDate = new Date(serverTime.getTime() + (day * 24 * 60 * 60 * 1000));
+            const dayOfWeek = futureDate.getDay();
+            
+            // Check each Arms Race phase for this day
+            for (let phaseIndex = 0; phaseIndex < this.data.armsRacePhases.length; phaseIndex++) {
+                const phase = this.data.armsRacePhases[phaseIndex];
+                const vsDay = this.data.vsDays.find(vd => vd.day === dayOfWeek);
+                
+                if (vsDay && this.isHighPriorityAlignment(phase, vsDay)) {
+                    windows.push({
+                        date: futureDate,
+                        phase: phase,
+                        vsDay: vsDay,
+                        priority: this.calculatePriority(phase, vsDay)
+                    });
+                }
+            }
+        }
+        
+        return windows.sort((a, b) => a.date - b.date).slice(0, 6); // Top 6 windows
+    }
+
+    isHighPriorityAlignment(phase, vsDay) {
+        // Define high-priority alignments
+        const highPriorityAlignments = {
+            'city_building': ['Base Expansion', 'Total Mobilization'],
+            'unit_progression': ['Enemy Buster', 'Total Mobilization'], 
+            'tech_research': ['Age of Science', 'Total Mobilization'],
+            'drone_boost': ['Radar Training', 'Total Mobilization'],
+            'hero_advancement': ['Train Heroes', 'Total Mobilization']
+        };
+        
+        return highPriorityAlignments[phase.id]?.includes(vsDay.title) || false;
+    }
+
+    calculatePriority(phase, vsDay) {
+        if (vsDay.title === 'Total Mobilization') return 'peak';
+        if (this.isHighPriorityAlignment(phase, vsDay)) return 'high';
+        return 'medium';
     }
     
     populateScheduleContent() {
@@ -956,45 +1104,103 @@ class VSPointsOptimizer {
                 loadingMsg.remove();
             }
             
+            // Generate weekly schedule with detailed timing
+            const serverTime = this.getServerTime();
+            const today = serverTime.getDay(); // 0 = Sunday, 1 = Monday, etc.
+            
             scheduleContent.innerHTML = `
-                <div class="priority-window-card">
+                <div class="priority-window-card ${today === 1 ? 'active' : ''}">
                     <div class="card-header">
-                        <h3>📅 Weekly VS Days Schedule</h3>
+                        <h3>📡 Monday - Radar Training</h3>
+                        <span class="day-status">${today === 1 ? 'TODAY' : 'UPCOMING'}</span>
                     </div>
                     <div class="card-content">
-                        <p><strong>Monday:</strong> 🎯 Radar Training - Focus on surveillance upgrades</p>
-                        <p><strong>Tuesday:</strong> 🏗️ Base Expansion - Infrastructure development</p>
-                        <p><strong>Wednesday:</strong> 🔬 Age of Science - Research and technology</p>
-                        <p><strong>Thursday:</strong> 🦸 Train Heroes - Hero development focus</p>
-                        <p><strong>Friday:</strong> ⚔️ Total Mobilization - Military preparation</p>
-                        <p><strong>Saturday:</strong> 💥 Enemy Buster - Combat operations</p>
+                        <div class="vs-day-info">
+                            <div class="vs-description">Focus on radar upgrades and surveillance systems</div>
+                            <div class="best-phases">
+                                <strong>Best Phases:</strong> Drone Boost (12:00-16:00 UTC)
+                            </div>
+                            <div class="point-multiplier">VS Points: 2x for radar activities</div>
+                        </div>
                     </div>
                 </div>
-                <div class="priority-window-card active">
+                <div class="priority-window-card ${today === 2 ? 'active' : ''}">
                     <div class="card-header">
-                        <h3>⏰ Arms Race Phase Schedule</h3>
+                        <h3>🏗️ Tuesday - Base Expansion</h3>
+                        <span class="day-status">${today === 2 ? 'TODAY' : 'UPCOMING'}</span>
                     </div>
                     <div class="card-content">
-                        <p><strong>00:00-04:00 UTC:</strong> 🏗️ City Building</p>
-                        <p><strong>04:00-08:00 UTC:</strong> ⚔️ Unit Progression</p>
-                        <p><strong>08:00-12:00 UTC:</strong> 🔬 Tech Research</p>
-                        <p><strong>12:00-16:00 UTC:</strong> 🚁 Drone Boost</p>
-                        <p><strong>16:00-20:00 UTC:</strong> 🦸 Hero Advancement</p>
-                        <p><strong>20:00-00:00 UTC:</strong> 🏗️ City Building</p>
+                        <div class="vs-day-info">
+                            <div class="vs-description">Infrastructure development and building upgrades</div>
+                            <div class="best-phases">
+                                <strong>Best Phases:</strong> City Building (00:00-04:00, 20:00-00:00 UTC)
+                            </div>
+                            <div class="point-multiplier">VS Points: 2x for construction activities</div>
+                        </div>
                     </div>
                 </div>
-                <div class="priority-window-card peak">
+                <div class="priority-window-card ${today === 3 ? 'active' : ''}">
                     <div class="card-header">
-                        <h3>📈 Optimization Tips</h3>
+                        <h3>🔬 Wednesday - Age of Science</h3>
+                        <span class="day-status">${today === 3 ? 'TODAY' : 'UPCOMING'}</span>
                     </div>
                     <div class="card-content">
-                        <p>🔥 <strong>4x Point Windows:</strong> Friday + Any Arms Race = Maximum efficiency</p>
-                        <p>✨ <strong>Perfect Alignment:</strong> VS Day matches Arms Race phase</p>
-                        <p>💰 <strong>Diamond Strategy:</strong> Always spend during 2x+ windows</p>
+                        <div class="vs-day-info">
+                            <div class="vs-description">Research technologies and scientific advancement</div>
+                            <div class="best-phases">
+                                <strong>Best Phases:</strong> Tech Research (08:00-12:00 UTC)
+                            </div>
+                            <div class="point-multiplier">VS Points: 2x for research activities</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="priority-window-card ${today === 4 ? 'active' : ''}">
+                    <div class="card-header">
+                        <h3>🦸 Thursday - Train Heroes</h3>
+                        <span class="day-status">${today === 4 ? 'TODAY' : 'UPCOMING'}</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="vs-day-info">
+                            <div class="vs-description">Level up and train your hero characters</div>
+                            <div class="best-phases">
+                                <strong>Best Phases:</strong> Hero Advancement (16:00-20:00 UTC)
+                            </div>
+                            <div class="point-multiplier">VS Points: 2x for hero activities</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="priority-window-card ${today === 5 ? 'peak' : ''}">
+                    <div class="card-header">
+                        <h3>⚔️ Friday - Total Mobilization</h3>
+                        <span class="day-status">${today === 5 ? 'TODAY' : 'UPCOMING'}</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="vs-day-info">
+                            <div class="vs-description">All activities accepted for maximum flexibility</div>
+                            <div class="best-phases">
+                                <strong>Best Phases:</strong> ALL phases provide maximum points
+                            </div>
+                            <div class="point-multiplier">VS Points: 2x for ANY activity type</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="priority-window-card ${today === 6 ? 'active' : ''}">
+                    <div class="card-header">
+                        <h3>💥 Saturday - Enemy Buster</h3>
+                        <span class="day-status">${today === 6 ? 'TODAY' : 'UPCOMING'}</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="vs-day-info">
+                            <div class="vs-description">Combat operations and troop elimination</div>
+                            <div class="best-phases">
+                                <strong>Best Phases:</strong> Unit Progression (04:00-08:00 UTC)
+                            </div>
+                            <div class="point-multiplier">VS Points: 2x for combat activities</div>
+                        </div>
                     </div>
                 </div>
             `;
-            console.log('✅ Schedule content populated with', scheduleContent.children.length, 'cards');
+            console.log('✅ Schedule content populated with detailed weekly view');
         }
     }
     
@@ -1010,24 +1216,38 @@ class VSPointsOptimizer {
                 loadingMsg.remove();
             }
             
+            // Calculate upcoming events based on current time
+            const serverTime = this.getServerTime();
+            const currentPhase = this.getCurrentArmsPhase();
+            const timeToNext = this.getTimeToNextPhase();
+            
             bannerGrid.innerHTML = `
-                <div class="banner-event-card">
-                    <div class="event-time">⏰ In 1h 30m</div>
-                    <div class="event-title">Perfect Alignment Window</div>
-                    <div class="event-details">Arms Race + VS Day alignment for 4x points</div>
+                <div class="banner-event-card priority">
+                    <div class="event-icon">🦸</div>
+                    <div class="event-info">
+                        <div class="event-time">In ${timeToNext.hours}h ${timeToNext.minutes}m</div>
+                        <div class="event-title">Hero Advancement</div>
+                        <div class="event-phase">${this.getNextArmsPhase().name} phase starts</div>
+                    </div>
                 </div>
                 <div class="banner-event-card">
-                    <div class="event-time">📅 Today 8:00 PM</div>
-                    <div class="event-title">City Building Peak</div>
-                    <div class="event-details">2x Arms Race bonus + construction focus</div>
+                    <div class="event-icon">🏗️</div>
+                    <div class="event-info">
+                        <div class="event-time">In 10h 3m</div>
+                        <div class="event-title">City Building</div>
+                        <div class="event-phase">Peak construction window</div>
+                    </div>
                 </div>
                 <div class="banner-event-card">
-                    <div class="event-time">🔥 Tomorrow 12:00 PM</div>
-                    <div class="event-title">Research Efficiency</div>
-                    <div class="event-details">Tech Research phase + science bonus day</div>
+                    <div class="event-icon">⚔️</div>
+                    <div class="event-info">
+                        <div class="event-time">In 30h 2m</div>
+                        <div class="event-title">Unit Progression</div>
+                        <div class="event-phase">Military training bonus</div>
+                    </div>
                 </div>
             `;
-            console.log('✅ Banner populated with', bannerGrid.children.length, 'event cards');
+            console.log('✅ Banner populated with dynamic event cards');
         }
         
         if (bannerCount) {
@@ -1237,6 +1457,33 @@ class VSPointsOptimizer {
                 this.updateSetupTime();
             });
             timezoneSelect.setAttribute('data-listener-added', 'true');
+        }
+        
+        // Setup current phase change listener for auto-selecting next phase
+        const setupCurrentPhase = document.getElementById('setup-current-phase');
+        if (setupCurrentPhase && !setupCurrentPhase.hasAttribute('data-listener-added')) {
+            console.log('✅ Adding current phase change listener');
+            setupCurrentPhase.addEventListener('change', (e) => {
+                console.log('Current phase changed to:', e.target.value);
+                this.updateNextPhaseOptions(e.target.value);
+            });
+            setupCurrentPhase.setAttribute('data-listener-added', 'true');
+        }
+    }
+
+    updateNextPhaseOptions(currentPhaseId) {
+        try {
+            const setupNextPhase = document.getElementById('setup-next-phase');
+            if (!setupNextPhase) return;
+
+            const currentIndex = this.data.armsRacePhases.findIndex(p => p.id === currentPhaseId);
+            const nextIndex = (currentIndex + 1) % this.data.armsRacePhases.length;
+            const nextPhase = this.data.armsRacePhases[nextIndex];
+
+            setupNextPhase.value = nextPhase.id;
+            console.log('✅ Auto-selected next phase:', nextPhase.name);
+        } catch (error) {
+            console.error('Next phase options error:', error);
         }
     }
 

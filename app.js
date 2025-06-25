@@ -1248,7 +1248,45 @@ class VSPointsOptimizer {
         
         this.updateInterval = setInterval(() => {
             this.updateAllDisplays();
+            this.checkForPriorityNotifications();
         }, 60000); // Update every minute
+    }
+
+    checkForPriorityNotifications() {
+        if (!this.notificationsEnabled) return;
+        
+        try {
+            const timeToNext = this.getTimeToNextPhase();
+            const totalMinutes = timeToNext.hours * 60 + timeToNext.minutes;
+            
+            // Notify 15 minutes before phase change
+            if (totalMinutes === this.advanceWarningMinutes) {
+                const nextPhase = this.getNextArmsPhase();
+                this.showNotification(
+                    'High Priority Window Approaching!',
+                    `${nextPhase.name} phase starts in ${this.advanceWarningMinutes} minutes. Prepare your activities for maximum VS points!`,
+                    { 
+                        tag: 'priority-window',
+                        icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🎯</text></svg>'
+                    }
+                );
+            }
+            
+            // Notify at phase start
+            if (totalMinutes === 0) {
+                const currentPhase = this.getCurrentArmsPhase();
+                this.showNotification(
+                    'New Arms Race Phase Started!',
+                    `${currentPhase.name} is now active. Focus on ${currentPhase.category} activities for 2x points!`,
+                    { 
+                        tag: 'phase-start',
+                        icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">⚡</text></svg>'
+                    }
+                );
+            }
+        } catch (error) {
+            console.error('Notification check error:', error);
+        }
     }
 
     showNotification(title, body, options = {}) {

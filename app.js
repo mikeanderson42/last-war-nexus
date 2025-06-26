@@ -472,6 +472,12 @@
                     const timeElement = document.getElementById('setup-server-time');
                     if (timeElement) {
                         timeElement.textContent = timeString;
+
+                    // Update live server time display
+                    const liveTimeElement = document.getElementById('setup-live-time');
+                    if (liveTimeElement) {
+                        liveTimeElement.textContent = timeString + ' (UTC' + (this.timeOffset >= 0 ? '+' : '') + this.timeOffset + ')';
+                    }
                     }
                 } catch (error) {
                     console.error('Setup time update error:', error);
@@ -1154,10 +1160,21 @@
                         mainTimeDisplay.style.fontWeight = '600';
                     }
                     
-                    // Update priority countdown
+                    // Update priority countdown and banner text based on active vs upcoming
                     const priorityCountdown = document.getElementById('priority-countdown');
+                    const priorityBannerText = document.querySelector('.next-priority-banner h3');
+                    const priorityRemainingText = document.querySelector('.priority-remaining');
+                    
                     if (priorityCountdown && nextWindow) {
                         priorityCountdown.textContent = this.formatTime(nextWindow.timeRemaining);
+                        
+                        if (nextWindow.isActive) {
+                            if (priorityBannerText) priorityBannerText.textContent = 'HIGH PRIORITY ACTIVE';
+                            if (priorityRemainingText) priorityRemainingText.textContent = 'TIME REMAINING';
+                        } else {
+                            if (priorityBannerText) priorityBannerText.textContent = 'NEXT HIGH PRIORITY';
+                            if (priorityRemainingText) priorityRemainingText.textContent = 'TIME REMAINING';
+                        }
                     }
                     
                     // Update phase information
@@ -2797,15 +2814,42 @@
             async requestNotificationPermission() {
                 try {
                     if ('Notification' in window) {
+                        // Check current permission first
+                        if (Notification.permission === 'granted') {
+                            this.notificationsEnabled = true;
+                            this.saveSettings();
+                            return true;
+                        }
+                        
+                        if (Notification.permission === 'denied') {
+                            this.notificationsEnabled = false;
+                            this.saveSettings();
+                            return false;
+                        }
+                        
+                        // Request permission with user interaction
                         const permission = await Notification.requestPermission();
                         const granted = permission === 'granted';
                         this.notificationsEnabled = granted;
                         this.saveSettings();
+                        
+                        if (granted) {
+                            console.log('Notification permission granted');
+                        } else {
+                            console.log('Notification permission denied');
+                        }
+                        
                         return granted;
+                    } else {
+                        console.log('Notifications not supported');
+                        this.notificationsEnabled = false;
+                        this.saveSettings();
+                        return false;
                     }
-                    return false;
                 } catch (error) {
                     console.error('Notification permission error:', error);
+                    this.notificationsEnabled = false;
+                    this.saveSettings();
                     return false;
                 }
             }

@@ -77,27 +77,29 @@
     }
     </script>
     
-    <!-- Ezoic Privacy Scripts (MUST load before main Ezoic script) -->
-    <script src="https://the.gatekeeperconsent.com/cmp.min.js" data-cfasync="false"></script>
-    <script data-cfasync="false">
-    window._sp_ = {
-        config: {
-            accountId: 1584,
-            baseEndpoint: 'https://cdn.privacy-mgmt.com'
-        }
-    }
+    <!-- Ezoic Ad Integration -->
+    <script data-cfasync="false" type="text/javascript">
+        (function() {
+            var cid = "1";
+            var pid = "lastwar-nexus.com";
+            var zoneid = "5379378";
+            var w = window;
+            w.ezstandalone = w.ezstandalone || {};
+            w.ezstandalone.cmd = w.ezstandalone.cmd || [];
+            w.ezstandalone.cmd.push(function() {
+                w.ezstandalone.define(zoneid);
+                w.ezstandalone.enable();
+                w.ezstandalone.showAds();
+            });
+            var ezoicScript = document.createElement('script');
+            ezoicScript.src = '//www.ezojs.com/ezoic/sa.min.js';
+            ezoicScript.defer = true;
+            document.head.appendChild(ezoicScript);
+        })();
     </script>
-    <script src="https://cdn.privacy-mgmt.com/wrapperMessagingWithoutDetection.js" data-cfasync="false"></script>
     
-    <!-- Main Ezoic Ad Script -->
-    <script data-ezoic-ad="medrectangle" defer>
-    (function() {
-        var script = document.createElement('script');
-        script.src = 'https://www.googletagservices.com/tag/js/gpt.js';
-        script.async = true;
-        document.head.appendChild(script);
-    })();
-    </script>
+    <!-- Ezoic Privacy Compliance -->
+    <script src="https://the.gatekeeperconsent.com/cmp.min.js" data-cfasync="false"></script>
 </head>
 <body>
     
@@ -556,6 +558,15 @@
                         </select>
                     </div>
 
+                    <div class="setup-section">
+                        <label for="setup-notifications">Priority Event Notifications</label>
+                        <p class="setup-help">Get notified of high-priority VS point windows</p>
+                        <select id="setup-notifications" class="form-select">
+                            <option value="enabled">Enable Notifications (Recommended)</option>
+                            <option value="disabled">Disable Notifications</option>
+                        </select>
+                    </div>
+
                     <div class="setup-actions">
                         <button type="button" class="btn btn-primary" id="setup-complete">
                             Complete Setup
@@ -587,24 +598,5 @@
         }
     </script>
     
-    <!-- Ezoic Ad Container (loads ads after page content) -->
-    <script data-cfasync="false">
-    (function() {
-        // Initialize Ezoic ads after page load
-        window.ezstandalone = window.ezstandalone || {};
-        window.ezstandalone.cmd = window.ezstandalone.cmd || [];
-        window.ezstandalone.cmd.push(function() {
-            window.ezstandalone.define(1);
-            window.ezstandalone.enable();
-            window.ezstandalone.showAds();
-        });
-        
-        // Load Ezoic standalone script
-        var ezoicScript = document.createElement('script');
-        ezoicScript.src = 'https://www.ezojs.com/ezoic/sa.min.js';
-        ezoicScript.defer = true;
-        document.head.appendChild(ezoicScript);
-    })();
-    </script>
 </body>
 </html>

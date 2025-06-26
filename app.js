@@ -10,7 +10,7 @@
                 this.updateInterval = null;
                 this.setupTimeInterval = null;
                 this.activeTab = 'priority';
-                this.notificationsEnabled = false;
+                this.notificationsEnabled = true;
                 this.lastNotifiedWindow = null;
                 this.isSetupComplete = false;
                 this.currentPhaseOverride = null;
@@ -478,19 +478,19 @@
                     const setupTimeOffset = document.getElementById('setup-time-offset');
                     const setupCurrentPhase = document.getElementById('setup-current-phase');
                     const setupNextPhase = document.getElementById('setup-next-phase');
-                    const notificationRadios = document.querySelectorAll('input[name="notifications"]');
+                    const setupNotifications = document.getElementById('setup-notifications');
 
                     this.timeOffset = parseFloat(setupTimeOffset?.value || '0');
                     this.currentPhaseOverride = setupCurrentPhase?.value || null;
                     this.nextPhaseOverride = setupNextPhase?.value || null;
 
-                    const notificationChoice = Array.from(notificationRadios).find(r => r.checked)?.value;
+                    const notificationChoice = setupNotifications?.value || 'enabled';
                     const wantsNotifications = notificationChoice === 'enabled';
 
                     if (wantsNotifications) {
                         await this.requestNotificationPermission();
                     } else {
-                        this.notificationsEnabled = false;
+                        this.notificationsEnabled = true;
                     }
 
                     this.isSetupComplete = true;
@@ -512,7 +512,7 @@
                     this.timeOffset = 0;
                     this.currentPhaseOverride = null;
                     this.nextPhaseOverride = null;
-                    this.notificationsEnabled = false;
+                    this.notificationsEnabled = true;
                     this.isSetupComplete = true;
 
                     this.saveSettings();
@@ -533,7 +533,7 @@
                         const permission = await this.requestNotificationPermission();
                         this.notificationsEnabled = permission;
                     } else {
-                        this.notificationsEnabled = false;
+                        this.notificationsEnabled = true;
                     }
                     
                     this.saveSettings();

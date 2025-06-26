@@ -1172,16 +1172,7 @@
                     const currentArmsPhase = this.getCurrentArmsPhase();
                     const nextWindow = this.findNextPriorityWindow();
                     
-                    // Update main time display with clear mode indicator
-                    const mainTimeDisplay = document.getElementById('main-time-display');
-                    if (mainTimeDisplay) {
-                        const timeString = this.useLocalTime ? 
-                            new Date().toLocaleTimeString('en-US', { hour12: false }) + ' LOCAL' :
-                            serverTime.toUTCString().slice(17, 25) + ' SERVER';
-                        mainTimeDisplay.textContent = timeString;
-                        mainTimeDisplay.style.fontSize = '0.875rem';
-                        mainTimeDisplay.style.fontWeight = '600';
-                    }
+                    // Main time display is now updated every second in updateCountdowns()
                     
                     // Update priority countdown and banner text based on active vs upcoming
                     const priorityCountdown = document.getElementById('priority-countdown');
@@ -1379,42 +1370,6 @@
                 }
             }
 
-            updateBannerOld() {
-                try {
-                    const banner = document.getElementById('priority-banner');
-                    if (!banner) return;
-                    
-                    const nextWindow = this.findNextPriorityWindow();
-                    
-                    if (nextWindow && nextWindow.isActive) {
-                        const titleElement = document.getElementById('banner-title');
-                        const timeElement = document.getElementById('banner-time');
-                        
-                        if (titleElement) titleElement.textContent = 'Peak Efficiency Active!';
-                        if (timeElement) timeElement.textContent = this.formatTime(nextWindow.timeRemaining);
-                        
-                        banner.classList.add('peak-priority', 'show');
-                        
-                        if (this.notificationsEnabled && this.lastNotifiedWindow !== nextWindow.alignment.reason) {
-                            this.showNotification('High Priority Active!', `${nextWindow.phase.name} + ${nextWindow.vsDay.title}`);
-                            this.lastNotifiedWindow = nextWindow.alignment.reason;
-                        }
-                    } else if (nextWindow && nextWindow.timeRemaining < 2 * 60 * 60 * 1000) {
-                        const titleElement = document.getElementById('banner-title');
-                        const timeElement = document.getElementById('banner-time');
-                        
-                        if (titleElement) titleElement.textContent = 'High Priority Soon';
-                        if (timeElement) timeElement.textContent = this.formatTime(nextWindow.timeRemaining);
-                        
-                        banner.classList.remove('peak-priority');
-                        banner.classList.add('show');
-                    } else {
-                        this.hideBanner();
-                    }
-                } catch (error) {
-                    console.error('Banner update error:', error);
-                }
-            }
 
             populateTabContent(tabName) {
                 try {
@@ -1526,7 +1481,7 @@
                         
                         return `
                         <div class="priority-window-card ${window.isActive ? 'active' : ''} ${window.isPeak ? 'peak' : ''}">
-                            <div style="background: var(--bg-surface); padding: var(--spacing-lg); border-bottom: 1px solid var(--border-primary);">
+                            <div style="padding: var(--spacing-lg); border-bottom: 1px solid var(--border-primary);">
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-sm);">
                                     <div style="font-family: var(--font-mono); font-size: 0.9rem; font-weight: 700; color: var(--text-primary);">${window.timeDisplay}</div>
                                     <div style="padding: 4px var(--spacing-sm); border-radius: var(--border-radius-sm); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; background: ${window.isActive ? 'var(--gradient-success)' : 'var(--gradient-secondary)'}; color: white;">
@@ -1586,66 +1541,41 @@
                                      { name: "Sunday", title: "Preparation Day", focus: "Prepare for the week" };
                         
                         const phases = [];
-                        // Calculate phases starting from current phase for today, normal rotation for future days
-                        let startPhaseIndex = 0;
-                        if (isToday) {
-                            // For today, start from current phase
-                            const currentPhase = this.getCurrentArmsPhase();
-                            startPhaseIndex = currentPhase.position;
-                        } else {
-                            // For future days, calculate offset based on day progression
-                            const currentPhase = this.getCurrentArmsPhase();
-                            const currentHour = now.getUTCHours();
-                            
-                            // Calculate how many phases will complete today
-                            let phasesRemainingToday = 0;
-                            if (currentHour >= 20) {
-                                phasesRemainingToday = 1; // Just city building left
-                            } else {
-                                const currentPhaseIndex = Math.floor(currentHour / 4);
-                                phasesRemainingToday = 5 - currentPhaseIndex; // Including city building
-                            }
-                            
-                            // Calculate starting phase for this future day
-                            const totalPhaseOffset = (phasesRemainingToday + (dayOffset - 1) * 5) % 5;
-                            startPhaseIndex = totalPhaseOffset;
-                        }
                         
-                        // Generate 5 phases starting from the calculated start phase
+                        // Use a simplified, consistent phase schedule for all days
+                        // The 20-hour cycle runs: 0-4, 4-8, 8-12, 12-16, 16-20 (then 4-hour break)
+                        const phaseSchedule = [
+                            { hours: [0, 4], name: 'City Building' },
+                            { hours: [4, 8], name: 'Unit Progression' }, 
+                            { hours: [8, 12], name: 'Tech Research' },
+                            { hours: [12, 16], name: 'Drone Boost' },
+                            { hours: [16, 20], name: 'Hero Advancement' }
+                        ];
+                        
                         for (let i = 0; i < 5; i++) {
-                            const phaseIndex = (startPhaseIndex + i) % 5;
-                            const phase = this.data.armsRacePhases[phaseIndex];
+                            const phaseInfo = phaseSchedule[i];
+                            const phaseData = this.data.armsRacePhases.find(p => p.name === phaseInfo.name);
                             
                             const isPriority = this.data.priorityAlignments.some(a => 
-                                a.vsDay === dayOfWeek && a.armsPhase === phase.name
+                                a.vsDay === dayOfWeek && a.armsPhase === phaseInfo.name
                             );
                             
-                            const startHour = i * 4;
-                            const endHour = (i * 4 + 4) % 24;
+                            const startHour = phaseInfo.hours[0];
+                            const endHour = phaseInfo.hours[1];
                             const isActive = isToday && 
                                 now.getUTCHours() >= startHour && 
-                                now.getUTCHours() < (startHour + 4);
+                                now.getUTCHours() < endHour;
                             
                             phases.push({
-                                ...phase,
-                                position: phaseIndex,
+                                ...phaseData,
+                                position: i,
                                 isPriority,
                                 isActive,
                                 timeRange: `${String(startHour).padStart(2, '0')}:00-${String(endHour).padStart(2, '0')}:00`
                             });
                         }
                         
-                        // Add the City Building phase that runs from 20:00-00:00
-                        const cityBuildingRepeat = {
-                            ...this.data.armsRacePhases[0],
-                            position: 5,
-                            isPriority: this.data.priorityAlignments.some(a => 
-                                a.vsDay === dayOfWeek && a.armsPhase === "City Building"
-                            ),
-                            isActive: isToday && now.getUTCHours() >= 20,
-                            timeRange: "20:00-00:00"
-                        };
-                        phases.push(cityBuildingRepeat);
+                        // Note: City Building phase is already included in the rotation above (0-4 hours and 20-24 hours)
                         
                         schedule.push({
                             vsDay,
@@ -1657,7 +1587,7 @@
                     
                     const html = schedule.map(day => `
                         <div class="priority-window-card ${day.isToday ? 'active' : ''}">
-                            <div style="background: var(--bg-surface); padding: var(--spacing-lg); border-bottom: 1px solid var(--border-primary); text-align: center;">
+                            <div style="padding: var(--spacing-lg); border-bottom: 1px solid var(--border-primary); text-align: center;">
                                 <h3 style="font-size: 1.125rem; font-weight: 700; color: var(--text-primary); margin-bottom: var(--spacing-xs);">${day.vsDay.name}</h3>
                                 <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: var(--spacing-xs);">${day.vsDay.title}</div>
                                 <div style="font-size: 0.75rem; color: var(--text-tertiary);">${day.date}</div>
@@ -3039,6 +2969,9 @@
                     // Update time displays every second and countdown elements efficiently
                     this.updateTimeDisplay();
                     
+                    // FIXED: Update main card time display every second for consistency
+                    this.updateMainCardTime();
+                    
                     const countdownElement = document.getElementById('countdown-timer');
                     const priorityCountdown = document.getElementById('priority-countdown');
                     const timeUntilReset = document.getElementById('time-until-reset');
@@ -3051,6 +2984,25 @@
                     }
                 } catch (error) {
                     console.error('Countdown update error:', error);
+                }
+            }
+
+            updateMainCardTime() {
+                try {
+                    const serverTime = this.getServerTime();
+                    
+                    // Update main time display with clear mode indicator
+                    const mainTimeDisplay = document.getElementById('main-time-display');
+                    if (mainTimeDisplay) {
+                        const timeString = this.useLocalTime ? 
+                            new Date().toLocaleTimeString('en-US', { hour12: false }) + ' LOCAL' :
+                            serverTime.toUTCString().slice(17, 25) + ' SERVER';
+                        mainTimeDisplay.textContent = timeString;
+                        mainTimeDisplay.style.fontSize = '0.875rem';
+                        mainTimeDisplay.style.fontWeight = '600';
+                    }
+                } catch (error) {
+                    console.error('Main card time update error:', error);
                 }
             }
 

@@ -215,38 +215,17 @@ class VSPointsOptimizer {
     }
 
     setupEventListeners() {
-        if (this.eventListenersSetup) return;
-        
-        console.log('✅ Setting up event listeners');
         try {
-            // Setup modal events
-            const setupComplete = document.getElementById('setup-complete');
-            if (setupComplete) {
-                console.log('✅ Setup complete button found, adding listener');
-                setupComplete.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log('✅ Setup complete button clicked');
-                    this.completeSetup();
-                });
-            } else {
-                console.error('❌ Setup complete button not found');
+            // Prevent setting up listeners multiple times
+            if (this.eventListenersSetup) {
+                return;
             }
-
-            const setupSkip = document.getElementById('setup-skip');
-            if (setupSkip) {
-                console.log('✅ Setup skip button found, adding listener');
-                setupSkip.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log('✅ Setup skip button clicked');
-                    this.skipSetup();
-                });
-            } else {
-                console.error('❌ Setup skip button not found');
-            }
-
-            // Settings toggle with improved functionality
+            this.eventListenersSetup = true;
+            
+            this.setupSetupModalEvents();
+            this.setupGuideOverlayEvents();
+            
+            // Settings dropdown
             const settingsToggle = document.getElementById('settings-toggle');
             if (settingsToggle) {
                 settingsToggle.addEventListener('click', (e) => {
@@ -255,8 +234,68 @@ class VSPointsOptimizer {
                 });
             }
 
+            // FIXED: Tab navigation with proper event handling
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const tab = e.currentTarget.getAttribute('data-tab');
+                    if (tab) {
+                        this.switchTab(tab);
+                    }
+                });
+            });
 
-            // Time toggle
+            // Settings changes
+            const timeOffsetSelect = document.getElementById('time-offset');
+            if (timeOffsetSelect) {
+                timeOffsetSelect.addEventListener('change', (e) => {
+                    this.timeOffset = parseFloat(e.target.value);
+                    this.updateAllDisplays();
+                });
+            }
+
+            const notificationsToggle = document.getElementById('notifications-toggle');
+            if (notificationsToggle) {
+                notificationsToggle.addEventListener('change', (e) => {
+                    const enabled = e.target.value === 'enabled';
+                    this.setNotifications(enabled);
+                });
+            }
+
+            const currentPhaseSelect = document.getElementById('current-phase-select');
+            if (currentPhaseSelect) {
+                currentPhaseSelect.addEventListener('change', (e) => {
+                    this.currentPhaseOverride = e.target.value;
+                    this.updateAllDisplays();
+                });
+            }
+
+            const nextPhaseSelect = document.getElementById('next-phase-select');
+            if (nextPhaseSelect) {
+                nextPhaseSelect.addEventListener('change', (e) => {
+                    this.nextPhaseOverride = e.target.value;
+                    this.updateAllDisplays();
+                });
+            }
+
+            // Save button
+            const saveButton = document.getElementById('save-settings');
+            if (saveButton) {
+                saveButton.addEventListener('click', () => {
+                    this.saveAllSettings();
+                });
+            }
+
+            // Setup button
+            const setupButton = document.getElementById('setup-button');
+            if (setupButton) {
+                setupButton.addEventListener('click', () => {
+                    this.showSetupModal();
+                });
+            }
+
+            // FIXED: Time toggle button
             const timeToggleBtn = document.getElementById('time-toggle-btn');
             if (timeToggleBtn) {
                 timeToggleBtn.addEventListener('click', (e) => {
@@ -266,107 +305,231 @@ class VSPointsOptimizer {
                 });
             }
 
-            // Tab navigation with proper display control
-            const tabButtons = document.querySelectorAll('.tab-btn');
-            tabButtons.forEach(btn => {
-                const tab = btn.getAttribute('data-tab');
-                btn.addEventListener('click', (e) => {
+            // FIXED: Guide navigation buttons with robust mobile support
+            const handleGuideNavigation = (e) => {
+                const btn = e.target.closest('.guide-nav-btn');
+                if (btn) {
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log('Tab button clicked:', tab);
-                    if (tab) this.switchTab(tab);
-                });
-            });
-            
-            // Guide navigation buttons
-            const guideButtons = document.querySelectorAll('.guide-nav-btn');
-            console.log('✅ Found', guideButtons.length, 'guide navigation buttons');
-            guideButtons.forEach(btn => {
-                const guideType = btn.getAttribute('data-guide-type');
-                console.log('Setting up guide button:', guideType);
-                btn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log('✅ Guide button clicked:', guideType);
-                    if (guideType) this.switchGuideType(guideType);
-                });
-            });
-            
-            if (guideButtons.length === 0) {
-                console.error('❌ No guide navigation buttons found! Checking in 1 second...');
-                setTimeout(() => {
-                    const delayedButtons = document.querySelectorAll('.guide-nav-btn');
-                    console.log('Delayed check found', delayedButtons.length, 'guide buttons');
-                    delayedButtons.forEach(btn => {
-                        const guideType = btn.getAttribute('data-guide-type');
-                        if (!btn.hasAttribute('data-listener-added')) {
-                            btn.addEventListener('click', (e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                console.log('✅ Delayed guide button clicked:', guideType);
-                                if (guideType) this.switchGuideType(guideType);
-                            });
-                            btn.setAttribute('data-listener-added', 'true');
+                    e.stopImmediatePropagation();
+                    
+                    // Prevent multiple rapid clicks
+                    if (btn.hasAttribute('data-processing')) {
+                        return;
+                    }
+                    btn.setAttribute('data-processing', 'true');
+                    
+                    const guideType = btn.getAttribute('data-guide-type');
+                    if (guideType) {
+                        console.log('=== GUIDE NAV CLICK ===');
+                        console.log('Guide type:', guideType);
+                        console.log('Current activeGuideType:', this.activeGuideType);
+                        console.log('Current activeTab:', this.activeTab);
+                        
+                        // Ensure we're on the guides tab
+                        if (this.activeTab !== 'guides') {
+                            console.log('Switching to guides tab first');
+                            this.switchTab('guides');
                         }
-                    });
-                }, 1000);
-            }
+                        
+                        // Capture previous guide type before switching
+                        const previousGuideType = this.activeGuideType;
+                        
+                        // Then switch guide type
+                        this.switchGuideType(guideType);
+                        
+                        // Only refresh if guide type actually changed (prevent auto-closing)
+                        if (guideType !== previousGuideType) {
+                            console.log('Guide type changed, refreshing content...');
+                            this.populateGuides();
+                        } else {
+                            console.log('Same guide type, no refresh needed');
+                        }
+                    }
+                    
+                    // Remove processing flag after delay
+                    setTimeout(() => {
+                        btn.removeAttribute('data-processing');
+                    }, 500);
+                }
+            };
+            
+            // Handle both click and touch events for mobile
+            document.addEventListener('click', handleGuideNavigation.bind(this));
+            document.addEventListener('touchend', handleGuideNavigation.bind(this));
 
             // Close dropdowns when clicking outside
             document.addEventListener('click', (e) => {
-                if (!e.target.closest('.settings-dropdown-container')) {
+                if (!e.target.closest('.settings-dropdown-container') && !e.target.closest('.guide-nav-btn')) {
                     this.closeAllDropdowns();
                 }
             });
 
-            this.eventListenersSetup = true;
         } catch (error) {
-            console.error('Event listener setup error:', error);
+            console.error('Event listeners setup error:', error);
+        }
+    }
+
+    setupSetupModalEvents() {
+        try {
+            const setupTimeOffset = document.getElementById('setup-time-offset');
+            if (setupTimeOffset) {
+                setupTimeOffset.addEventListener('change', (e) => {
+                    this.timeOffset = parseFloat(e.target.value);
+                    this.updateSetupTimezone();
+                    this.updateSetupTime();
+                });
+            }
+
+            const setupComplete = document.getElementById('setup-complete');
+            if (setupComplete) {
+                setupComplete.addEventListener('click', () => {
+                    this.completeSetup();
+                });
+            }
+
+            const setupSkip = document.getElementById('setup-skip');
+            if (setupSkip) {
+                setupSkip.addEventListener('click', () => {
+                    this.skipSetup();
+                });
+            }
+
+            const setupCurrentPhase = document.getElementById('setup-current-phase');
+            if (setupCurrentPhase) {
+                setupCurrentPhase.addEventListener('change', (e) => {
+                    this.updateNextPhaseOptions(e.target.value);
+                });
+            }
+
+            const backdrop = document.querySelector('.setup-modal-backdrop');
+            if (backdrop) {
+                backdrop.addEventListener('click', () => {
+                    this.skipSetup();
+                });
+            }
+
+        } catch (error) {
+            console.error('Setup modal events error:', error);
+        }
+    }
+
+    setupGuideOverlayEvents() {
+        try {
+            // Add click handler to document for overlay background clicks
+            document.addEventListener('click', (e) => {
+                // Check if click is on guide overlay background (not container)
+                if (e.target.classList.contains('guide-fullscreen-overlay')) {
+                    // Find which guide is open and close it
+                    const openOverlay = e.target;
+                    const guideId = openOverlay.id; // format: guide-content-X
+                    const guideIndex = guideId.split('-')[2];
+                    if (guideIndex !== undefined) {
+                        this.toggleGuideExpansion(parseInt(guideIndex));
+                    }
+                }
+            });
+            
+            // Prevent clicks inside guide container from bubbling to overlay
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('.guide-fullscreen-container')) {
+                    e.stopPropagation();
+                }
+            });
+            
+            // Add escape key to close guides
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    const openGuides = document.querySelectorAll('.guide-fullscreen-overlay[style*="flex"]');
+                    openGuides.forEach(overlay => {
+                        const guideId = overlay.id;
+                        const guideIndex = guideId.split('-')[2];
+                        if (guideIndex !== undefined) {
+                            this.toggleGuideExpansion(parseInt(guideIndex));
+                        }
+                    });
+                }
+            });
+        } catch (error) {
+            console.error('Guide overlay events setup error:', error);
+        }
+    }
+
+    updateSetupTimezone() {
+        const offsetElement = document.getElementById('setup-timezone-offset');
+        if (offsetElement) {
+            const sign = this.timeOffset >= 0 ? '+' : '';
+            offsetElement.textContent = `${sign}${this.timeOffset}`;
+        }
+    }
+
+    startSetupTimeUpdate() {
+        this.stopSetupTimeUpdate();
+        this.updateSetupTime();
+        this.setupTimeInterval = setInterval(() => {
+            this.updateSetupTime();
+        }, 1000);
+    }
+
+    stopSetupTimeUpdate() {
+        if (this.setupTimeInterval) {
+            clearInterval(this.setupTimeInterval);
+            this.setupTimeInterval = null;
+        }
+    }
+
+    updateSetupTime() {
+        try {
+            const serverTime = this.getServerTime();
+            const timeString = serverTime.toUTCString().slice(17, 25);
+            
+            const timeElement = document.getElementById('setup-server-time');
+            if (timeElement) {
+                timeElement.textContent = timeString;
+            }
+        } catch (error) {
+            console.error('Setup time update error:', error);
         }
     }
 
     showSetupModal() {
-        console.log('✅ Showing setup modal');
         const modal = document.getElementById('setup-modal');
         if (modal) {
             modal.classList.add('active');
             modal.setAttribute('aria-hidden', 'false');
-            modal.style.display = 'flex';
-            modal.style.position = 'fixed';
-            modal.style.top = '0';
-            modal.style.left = '0';
-            modal.style.width = '100%';
-            modal.style.height = '100%';
-            modal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-            modal.style.zIndex = '10000';
-            modal.style.justifyContent = 'center';
-            modal.style.alignItems = 'center';
-            
-            // Update setup time immediately
-            this.updateSetupTime();
-            
-            // Ensure setup button listeners are attached (backup)
-            setTimeout(() => {
-                this.ensureSetupButtonListeners();
-            }, 100);
-        } else {
-            console.error('❌ Setup modal not found');
+            this.startSetupTimeUpdate();
+            this.populateSetupDefaults();
         }
     }
 
     hideSetupModal() {
-        console.log('✅ Hiding setup modal');
         const modal = document.getElementById('setup-modal');
         if (modal) {
             modal.classList.remove('active');
             modal.setAttribute('aria-hidden', 'true');
-            modal.style.display = 'none';
+            this.stopSetupTimeUpdate();
+            // Scroll to top of main page after setup completion
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-        
-        // Stop setup time updates
-        if (this.setupTimeInterval) {
-            clearInterval(this.setupTimeInterval);
-            this.setupTimeInterval = null;
+    }
+
+    populateSetupDefaults() {
+        try {
+            const setupTimeOffset = document.getElementById('setup-time-offset');
+            if (setupTimeOffset) {
+                setupTimeOffset.value = this.timeOffset.toString();
+            }
+
+            const autoPhase = this.getCurrentArmsPhase();
+            const setupCurrentPhase = document.getElementById('setup-current-phase');
+            if (setupCurrentPhase && !this.currentPhaseOverride) {
+                setupCurrentPhase.value = autoPhase.id;
+            }
+
+            this.updateNextPhaseOptions(setupCurrentPhase?.value || autoPhase.id);
+            this.updateSetupTimezone();
+        } catch (error) {
+            console.error('Setup defaults error:', error);
         }
     }
 
@@ -465,6 +628,74 @@ class VSPointsOptimizer {
         this.hideSetupModal();
         this.updateAllDisplays();
         this.startUpdateLoop();
+    }
+
+    async setNotifications(enabled) {
+        try {
+            if (enabled) {
+                const permission = await this.requestNotificationPermission();
+                this.notificationsEnabled = permission;
+            } else {
+                this.notificationsEnabled = false;
+            }
+            
+            this.saveSettings();
+            this.syncSettingsToUI();
+            
+        } catch (error) {
+            console.error('Notification setting error:', error);
+        }
+    }
+
+    saveAllSettings() {
+        try {
+            const timeOffsetSelect = document.getElementById('time-offset');
+            const notificationsToggle = document.getElementById('notifications-toggle');
+            const currentPhaseSelect = document.getElementById('current-phase-select');
+            const nextPhaseSelect = document.getElementById('next-phase-select');
+
+            if (timeOffsetSelect) this.timeOffset = parseFloat(timeOffsetSelect.value);
+            if (notificationsToggle) this.notificationsEnabled = notificationsToggle.value === 'enabled';
+            if (currentPhaseSelect) this.currentPhaseOverride = currentPhaseSelect.value;
+            if (nextPhaseSelect) this.nextPhaseOverride = nextPhaseSelect.value;
+
+            this.saveSettings();
+            this.updateAllDisplays();
+            
+            const saveButton = document.getElementById('save-settings');
+            if (saveButton) {
+                const originalText = saveButton.textContent;
+                saveButton.textContent = 'Saved!';
+                saveButton.style.background = 'var(--gradient-success)';
+                
+                setTimeout(() => {
+                    saveButton.textContent = originalText;
+                    saveButton.style.background = '';
+                }, 2000);
+            }
+
+            this.closeAllDropdowns();
+
+        } catch (error) {
+            console.error('Save settings error:', error);
+        }
+    }
+
+    syncSettingsToUI() {
+        try {
+            // Sync all settings to UI elements
+            const timeOffsetSelect = document.getElementById('time-offset');
+            const notificationsToggle = document.getElementById('notifications-toggle');
+            const currentPhaseSelect = document.getElementById('current-phase-select');
+            const nextPhaseSelect = document.getElementById('next-phase-select');
+
+            if (timeOffsetSelect) timeOffsetSelect.value = this.timeOffset;
+            if (notificationsToggle) notificationsToggle.value = this.notificationsEnabled ? 'enabled' : 'disabled';
+            if (currentPhaseSelect) currentPhaseSelect.value = this.currentPhaseOverride || '';
+            if (nextPhaseSelect) nextPhaseSelect.value = this.nextPhaseOverride || '';
+        } catch (error) {
+            console.error('Settings UI sync error:', error);
+        }
     }
 
     async requestNotificationPermission() {

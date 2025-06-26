@@ -4304,6 +4304,36 @@ select:focus,
     }
 }
 
+/* PREVENT HORIZONTAL SCROLL */
+html {
+    overflow-x: hidden;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+.settings-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-lg);
+    z-index: 1000;
+    min-width: 280px;
+    max-width: 300px;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all var(--transition-normal);
+    /* Prevent horizontal overflow */
+    max-width: calc(100vw - 32px);
+    right: 16px;
+}
+
 /* CRITICAL: Final Mobile Scrolling Fixes */
 @media screen and (max-width: 768px) {
     /* Reset any problematic styles for mobile */

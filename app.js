@@ -120,6 +120,11 @@
                     console.log('=== VSPointsOptimizer INIT START ===');
                     this.loadSettings();
                     console.log('Settings loaded successfully');
+
+                    // Auto-request notification permissions if enabled
+                    if (this.notificationsEnabled && this.isSetupComplete) {
+                        this.requestNotificationPermission();
+                    }
                     this.setupEventListeners();
                     console.log('Event listeners setup successfully');
                     
@@ -489,8 +494,14 @@
 
                     if (wantsNotifications) {
                         await this.requestNotificationPermission();
+                        // Send test notification if granted
+                        if (this.notificationsEnabled) {
+                            setTimeout(() => {
+                                this.showNotification('Last War Nexus Ready!', 'You will now receive high-priority VS point alerts');
+                            }, 1000);
+                        }
                     } else {
-                        this.notificationsEnabled = true;
+                        this.notificationsEnabled = false;
                     }
 
                     this.isSetupComplete = true;
@@ -595,6 +606,10 @@
                     if (nextPhaseSelect && this.nextPhaseOverride) {
                         nextPhaseSelect.value = this.nextPhaseOverride;
                     }
+
+                    // Sync setup modal notifications field
+                    const setupNotifications = document.getElementById('setup-notifications');
+                    if (setupNotifications) setupNotifications.value = this.notificationsEnabled ? 'enabled' : 'disabled';
                     
                     // Sync time mode labels
                     const timeMode = this.useLocalTime ? 'Local Time' : 'Server Time';

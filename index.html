@@ -461,23 +461,21 @@
                         <span class="brand-subtitle">VS Points Optimizer</span>
                     </div>
                 </div>
-                <h2 id="setup-modal-title">Welcome to Last War Nexus</h2>
-                <p>Configure your server time to maximize VS points efficiency</p>
+                <p class="setup-subtitle">Configure Server Time, Arms Race, and Notifications</p>
             </div>
             
             <div class="setup-body">
                 <div class="setup-section">
                     <h3>Current Server Time</h3>
                     <div class="server-time-display">
-                        <div id="setup-server-time" class="setup-time">Loading...</div>
-                        <div class="setup-timezone">UTC <span id="setup-timezone-offset">+0</span></div>
+                        <div id="setup-server-time" class="setup-time-inline">Loading...</div>
                     </div>
                 </div>
 
                 <form class="setup-form" id="setup-form">
                     <div class="setup-section">
-                        <label for="setup-time-offset">Time Zone Adjustment</label>
-                        <p class="setup-help">Adjust to match your server's time zone</p>
+                        <label for="setup-time-offset">Server Time Zone Adjustment</label>
+                        <p class="setup-help">Set the server offset so the server time matches in game</p>
                         <select id="setup-time-offset" class="form-select" required>
                             <option value="-12">UTC -12 hours</option>
                             <option value="-11">UTC -11 hours</option>
@@ -510,7 +508,6 @@
 
                     <div class="setup-section">
                         <label for="setup-current-phase">Current Arms Race Phase</label>
-                        <p class="setup-help">Select current phase</p>
                         <select id="setup-current-phase" class="form-select">
                             
                             <option value="city_building">🏗️ City Building</option>
@@ -522,8 +519,7 @@
                     </div>
 
                     <div class="setup-section">
-                        <label for="setup-next-phase">Next Phase</label>
-                        <p class="setup-help">Select next phase</p>
+                        <label for="setup-next-phase">Upcoming Arms Race Phase</label>
                         <select id="setup-next-phase" class="form-select">
                             
                             <option value="city_building">🏗️ City Building</option>
@@ -536,7 +532,6 @@
 
                     <div class="setup-section">
                         <label for="setup-notifications">Notifications</label>
-                        <p class="setup-help">Get priority alerts</p>
                         <select id="setup-notifications" class="form-select">
                             <option value="enabled" selected>Enabled</option>
                             <option value="disabled">Disabled</option>

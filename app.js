@@ -471,7 +471,7 @@
                     
                     const timeElement = document.getElementById('setup-server-time');
                     if (timeElement) {
-                        timeElement.textContent = timeString;
+                        timeElement.textContent = timeString + ' UTC ' + (this.timeOffset >= 0 ? '+' : '') + this.timeOffset;
 
                     // Update live server time display
                     const liveTimeElement = document.getElementById('setup-live-time');

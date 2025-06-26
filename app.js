@@ -1421,7 +1421,7 @@ class VSPointsOptimizer {
         return 'medium';
     }
     
-    populateSchedule() {
+    populateScheduleContent() {
         try {
             const grid = document.getElementById('schedule-content');
             if (!grid) return;

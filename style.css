@@ -4936,3 +4936,33 @@ body.guide-open {
     display: none !important;
   }
 }
+
+/* Settings dropdown live time styling */
+.settings-footer {
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-sm);
+    border-top: 1px solid var(--border-primary);
+}
+
+.live-server-time {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+}
+
+.live-server-time .time-label {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.live-server-time .time-value {
+    color: var(--accent-primary);
+    font-weight: 600;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.5px;
+}
+

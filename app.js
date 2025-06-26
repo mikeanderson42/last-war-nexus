@@ -1253,6 +1253,14 @@
                         currentPhaseElement.textContent = `${currentArmsPhase.name} Active`;
                     }
                     
+                    // CRITICAL: Check for notifications immediately when phases change
+                    if (nextWindow && nextWindow.isActive && this.notificationsEnabled && 
+                        this.lastNotifiedWindow !== nextWindow.alignment.reason) {
+                        this.showNotification('High Priority Active!', `${nextWindow.phase.name} + ${nextWindow.vsDay.title}`);
+                        this.lastNotifiedWindow = nextWindow.alignment.reason;
+                        console.log('Notification triggered for active priority:', nextWindow.phase.name);
+                    }
+                    
                     // Update server reset information
                     this.updateServerResetInfo();
                     
@@ -3071,6 +3079,7 @@
                     if (isPhaseTransitionTime || needsUpdate) {
                         console.log('Phase change detected, updating main cards immediately');
                         this.updateCurrentStatus();
+                        this.updateBanner(); // Also update priority banner immediately
                         this.lastPhaseCheck = currentTime.getTime();
                     }
                 } catch (error) {

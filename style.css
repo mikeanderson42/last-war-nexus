@@ -4247,6 +4247,63 @@ select:focus,
     padding: var(--spacing-sm) var(--spacing-md);
 }
 
+/* BANNER EVENT CARD STYLES */
+.banner-event-card {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--border-radius);
+    margin-bottom: var(--spacing-sm);
+    transition: all var(--transition-normal);
+}
+
+.banner-event-card:hover {
+    background: var(--bg-elevated);
+    border-color: var(--accent-primary);
+}
+
+.banner-event-card.active {
+    background: rgba(34, 197, 94, 0.1);
+    border-color: var(--accent-success);
+}
+
+.banner-event-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.banner-event-info {
+    flex: 1;
+}
+
+.banner-event-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.banner-event-time {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+}
+
+/* Mobile responsive banner */
+@media (max-width: 768px) {
+    .banner-event-card {
+        padding: var(--spacing-sm);
+        gap: var(--spacing-sm);
+    }
+    
+    .banner-event-icon {
+        font-size: 1.25rem;
+    }
+}
+
 /* CRITICAL: Final Mobile Scrolling Fixes */
 @media screen and (max-width: 768px) {
     /* Reset any problematic styles for mobile */

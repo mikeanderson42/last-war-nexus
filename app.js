@@ -516,64 +516,64 @@ class VSPointsOptimizer {
             const viewportWidth = window.innerWidth;
             const margin = 16; // Minimum margin from edge
             
-            // Calculate safe left position
-            let leftPos = toggleRect.right - dropdownWidth;
+            // Reset any custom positioning
+            dropdown.style.left = '';
+            dropdown.style.right = '0';
             
-            // Ensure dropdown doesn't go off left edge
-            if (leftPos < margin) {
-                leftPos = margin;
-            }
-            
-            // Ensure dropdown doesn't go off right edge
-            if (leftPos + dropdownWidth > viewportWidth - margin) {
-                leftPos = viewportWidth - dropdownWidth - margin;
-            }
-            
-            // Apply safe position
-            dropdown.style.left = `${leftPos}px`;
-            dropdown.style.right = 'auto';
-            
-            // For mobile, center the dropdown
-            if (viewportWidth <= 480) {
-                dropdown.style.left = '50%';
-                dropdown.style.transform = 'translateX(-50%)';
-                dropdown.style.width = `${viewportWidth - (margin * 2)}px`;
-                dropdown.style.maxWidth = '320px';
+            // Check if dropdown would go off-screen to the right
+            if (toggleRect.right - dropdownWidth < margin) {
+                // Position from left edge instead
+                dropdown.style.right = '';
+                dropdown.style.left = `${Math.max(margin, toggleRect.left)}px`;
+                dropdown.style.position = 'fixed';
+                dropdown.style.top = `${toggleRect.bottom + 8}px`;
+            } else if (toggleRect.left + dropdownWidth > viewportWidth - margin) {
+                // Position from right edge but constrained
+                dropdown.style.right = `${Math.max(margin, viewportWidth - toggleRect.right)}px`;
             }
         } catch (error) {
-            console.error('Error positioning dropdown:', error);
+            console.error('Dropdown positioning error:', error);
         }
     }
 
     closeAllDropdowns() {
-        // Close settings dropdown
-        const settingsDropdown = document.getElementById('settings-dropdown');
-        const settingsToggle = document.getElementById('settings-toggle');
-        if (settingsDropdown) {
-            settingsDropdown.classList.remove('active');
-            settingsDropdown.style.transform = '';
-            settingsDropdown.style.left = '';
-            settingsDropdown.style.width = '';
-            settingsDropdown.style.maxWidth = '';
-        }
-        if (settingsToggle) {
-            settingsToggle.classList.remove('active');
-            settingsToggle.setAttribute('aria-expanded', 'false');
-        }
+        document.querySelectorAll('.settings-dropdown').forEach(dropdown => {
+            dropdown.classList.remove('active', 'show');
+        });
+        document.querySelectorAll('.settings-btn').forEach(btn => {
+            btn.classList.remove('active');
+            btn.setAttribute('aria-expanded', 'false');
+        });
     }
 
     toggleTimeMode() {
-        console.log('✅ Toggle time mode');
-        this.useLocalTime = !this.useLocalTime;
-        this.saveSettings();
-        
-        // Update button label
-        const timeToggleLabel = document.getElementById('time-toggle-label');
-        if (timeToggleLabel) {
-            timeToggleLabel.textContent = this.useLocalTime ? 'Local Time' : 'Server Time';
+        try {
+            console.log('✅ Toggle time mode');
+            this.useLocalTime = !this.useLocalTime;
+            
+            // Update button text and styling
+            const timeToggleLabel = document.getElementById('time-toggle-label');
+            const timeToggleBtn = document.getElementById('time-toggle-btn');
+            if (timeToggleLabel) {
+                timeToggleLabel.textContent = this.useLocalTime ? 'Local Time' : 'Server Time';
+            }
+            if (timeToggleBtn) {
+                // Remove any inline styles to let CSS handle appearance
+                timeToggleBtn.style.background = '';
+                timeToggleBtn.style.color = '';
+                // Add visual indication with left border only for server time
+                if (this.useLocalTime) {
+                    timeToggleBtn.classList.remove('active');
+                } else {
+                    timeToggleBtn.classList.add('active');
+                }
+            }
+            
+            this.saveSettings();
+            this.updateAllDisplays();
+        } catch (error) {
+            console.error('Time toggle error:', error);
         }
-        
-        this.updateAllDisplays();
     }
 
     switchTab(tabName) {
@@ -1509,55 +1509,101 @@ class VSPointsOptimizer {
         }
     }
     
+    populatePriorityBanner() {
+        try {
+            const bannerGrid = document.getElementById('banner-grid');
+            const bannerCount = document.getElementById('banner-count');
+            if (!bannerGrid) return;
+            
+            const now = this.getServerTime();
+            const priorityWindows = [];
+            
+            // Get next 3 priority windows
+            for (let dayOffset = 0; dayOffset < 3; dayOffset++) {
+                const checkDate = new Date(now);
+                checkDate.setUTCDate(now.getUTCDate() + dayOffset);
+                const dayOfWeek = checkDate.getUTCDay();
+                
+                const vsDay = this.data.vsDays.find(day => day.day === dayOfWeek);
+                if (!vsDay) continue;
+                
+                const dayAlignments = this.data.priorityAlignments.filter(a => a.vsDay === dayOfWeek);
+                
+                for (const alignment of dayAlignments) {
+                    const phase = this.data.armsRacePhases.find(p => p.name === alignment.armsPhase);
+                    if (!phase) continue;
+                    
+                    const phaseIndex = this.data.armsRacePhases.findIndex(p => p.name === phase.name);
+                    const startTime = new Date(checkDate);
+                    startTime.setUTCHours(phaseIndex * 4, 0, 0, 0);
+                    
+                    const timeDiff = startTime.getTime() - now.getTime();
+                    const isActive = now >= startTime && now < new Date(startTime.getTime() + (4 * 60 * 60 * 1000));
+                    
+                    if (timeDiff > -240 * 60 * 1000) { // Show if within 4 hours or upcoming
+                        priorityWindows.push({
+                            startTime,
+                            timeDiff,
+                            isActive,
+                            phase,
+                            vsDay,
+                            alignment,
+                            timeDisplay: isActive ? 'Active Now' : timeDiff > 0 ? `in ${this.formatTime(timeDiff)}` : 'Recently ended'
+                        });
+                    }
+                }
+            }
+            
+            priorityWindows.sort((a, b) => Math.abs(a.timeDiff) - Math.abs(b.timeDiff));
+            const displayWindows = priorityWindows.slice(0, 3);
+            
+            if (bannerCount) {
+                bannerCount.textContent = displayWindows.length;
+            }
+            
+            if (displayWindows.length === 0) {
+                bannerGrid.innerHTML = `
+                    <div class="banner-event-card">
+                        <div class="banner-event-icon">⏰</div>
+                        <div class="banner-event-info">
+                            <div class="banner-event-title">No Priority Events</div>
+                            <div class="banner-event-time">Next 3 days clear</div>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Take only first 3 events
+            const events = displayWindows.slice(0, 3);
+            const html = events.map(window => `
+                <div class="banner-event-card ${window.isActive ? 'active' : ''}">
+                    <div class="banner-event-icon">${window.phase.icon}</div>
+                    <div class="banner-event-info">
+                        <div class="banner-event-title">${window.phase.name}</div>
+                        <div class="banner-event-time">${window.timeDisplay}</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            bannerGrid.innerHTML = html;
+            
+        } catch (error) {
+            console.error('Priority banner population error:', error);
+            const bannerGrid = document.getElementById('banner-grid');
+            if (bannerGrid) {
+                bannerGrid.innerHTML = '<div style="padding: var(--spacing-lg); text-align: center; color: var(--text-secondary);">Unable to load priority events</div>';
+            }
+        }
+    }
+
     populateBanner() {
         console.log('✅ Populating priority events banner...');
         const bannerGrid = document.getElementById('banner-grid');
         const bannerCount = document.getElementById('banner-count');
         
-        if (bannerGrid) {
-            // Only replace the loading message, keep the container structure
-            const loadingMsg = bannerGrid.querySelector('.banner-loading');
-            if (loadingMsg) {
-                loadingMsg.remove();
-            }
-            
-            // Calculate upcoming events based on current time
-            const serverTime = this.getServerTime();
-            const currentPhase = this.getCurrentArmsPhase();
-            const timeToNext = this.getTimeToNextPhase();
-            
-            bannerGrid.innerHTML = `
-                <div class="banner-event-card priority">
-                    <div class="event-icon">🦸</div>
-                    <div class="event-info">
-                        <div class="event-time">In ${timeToNext.hours}h ${timeToNext.minutes}m</div>
-                        <div class="event-title">Hero Advancement</div>
-                        <div class="event-phase">${this.getNextArmsPhase().name} phase starts</div>
-                    </div>
-                </div>
-                <div class="banner-event-card">
-                    <div class="event-icon">🏗️</div>
-                    <div class="event-info">
-                        <div class="event-time">In 10h 3m</div>
-                        <div class="event-title">City Building</div>
-                        <div class="event-phase">Peak construction window</div>
-                    </div>
-                </div>
-                <div class="banner-event-card">
-                    <div class="event-icon">⚔️</div>
-                    <div class="event-info">
-                        <div class="event-time">In 30h 2m</div>
-                        <div class="event-title">Unit Progression</div>
-                        <div class="event-phase">Military training bonus</div>
-                    </div>
-                </div>
-            `;
-            console.log('✅ Banner populated with dynamic event cards');
-        }
-        
-        if (bannerCount) {
-            bannerCount.textContent = '3';
-        }
+        // Populate the priority events banner using the working backup method
+        this.populatePriorityBanner();
         
         // Add banner toggle functionality
         const bannerHeader = document.querySelector('.banner-header');

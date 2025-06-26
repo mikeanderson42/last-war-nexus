@@ -1542,36 +1542,76 @@
                         
                         const phases = [];
                         
-                        // Use a simplified, consistent phase schedule for all days
-                        // The 20-hour cycle runs: 0-4, 4-8, 8-12, 12-16, 16-20 (then 4-hour break)
-                        const phaseSchedule = [
-                            { hours: [0, 4], name: 'City Building' },
-                            { hours: [4, 8], name: 'Unit Progression' }, 
-                            { hours: [8, 12], name: 'Tech Research' },
-                            { hours: [12, 16], name: 'Drone Boost' },
-                            { hours: [16, 20], name: 'Hero Advancement' }
-                        ];
+                        // Generate complete 6-phase schedule starting from current active phase for today
+                        let startPhaseIndex = 0;
+                        if (isToday) {
+                            // For today, start from current active phase
+                            const currentPhase = this.getCurrentArmsPhase();
+                            const currentHour = now.getUTCHours();
+                            
+                            // Determine current phase index based on time
+                            if (currentHour >= 20 || currentHour < 4) {
+                                startPhaseIndex = 0; // City Building
+                            } else {
+                                startPhaseIndex = Math.floor(currentHour / 4);
+                            }
+                        } else {
+                            // For future days, calculate phase offset
+                            const currentHour = now.getUTCHours();
+                            let phasesRemainingToday = 0;
+                            
+                            if (currentHour >= 20) {
+                                phasesRemainingToday = 1; // Just City Building overnight
+                            } else if (currentHour < 4) {
+                                phasesRemainingToday = 5; // Full cycle ahead
+                            } else {
+                                const currentPhaseIndex = Math.floor(currentHour / 4);
+                                phasesRemainingToday = 5 - currentPhaseIndex;
+                            }
+                            
+                            startPhaseIndex = (phasesRemainingToday + (dayOffset - 1) * 5) % 5;
+                        }
                         
-                        for (let i = 0; i < 5; i++) {
-                            const phaseInfo = phaseSchedule[i];
-                            const phaseData = this.data.armsRacePhases.find(p => p.name === phaseInfo.name);
+                        // Generate 6 phases (full daily schedule including next day transition)
+                        const basePhaseNames = ['City Building', 'Unit Progression', 'Tech Research', 'Drone Boost', 'Hero Advancement'];
+                        
+                        for (let i = 0; i < 6; i++) {
+                            let phaseIndex, startHour, endHour;
+                            
+                            if (i < 5) {
+                                // Regular 20-hour cycle phases
+                                phaseIndex = (startPhaseIndex + i) % 5;
+                                startHour = i * 4;
+                                endHour = (i + 1) * 4;
+                            } else {
+                                // Next day's first phase (20:00-00:00 + 00:00-04:00)
+                                phaseIndex = (startPhaseIndex + 5) % 5;
+                                startHour = 20;
+                                endHour = 24; // Show as 24:00 to indicate next day
+                            }
+                            
+                            const phaseName = basePhaseNames[phaseIndex];
+                            const phaseData = this.data.armsRacePhases.find(p => p.name === phaseName);
                             
                             const isPriority = this.data.priorityAlignments.some(a => 
-                                a.vsDay === dayOfWeek && a.armsPhase === phaseInfo.name
+                                a.vsDay === dayOfWeek && a.armsPhase === phaseName
                             );
                             
-                            const startHour = phaseInfo.hours[0];
-                            const endHour = phaseInfo.hours[1];
                             const isActive = isToday && 
-                                now.getUTCHours() >= startHour && 
-                                now.getUTCHours() < endHour;
+                                ((i < 5 && now.getUTCHours() >= startHour && now.getUTCHours() < endHour) ||
+                                 (i === 5 && now.getUTCHours() >= 20));
+                            
+                            const timeRange = i === 5 ? 
+                                "20:00-04:00*" : 
+                                `${String(startHour).padStart(2, '0')}:00-${String(endHour).padStart(2, '0')}:00`;
                             
                             phases.push({
                                 ...phaseData,
-                                position: i,
+                                position: phaseIndex,
                                 isPriority,
                                 isActive,
-                                timeRange: `${String(startHour).padStart(2, '0')}:00-${String(endHour).padStart(2, '0')}:00`
+                                timeRange,
+                                isNextDay: i === 5
                             });
                         }
                         
@@ -1587,10 +1627,12 @@
                     
                     const html = schedule.map(day => `
                         <div class="priority-window-card ${day.isToday ? 'active' : ''}">
-                            <div style="padding: var(--spacing-lg); border-bottom: 1px solid var(--border-primary); text-align: center;">
+                            <div style="padding: var(--spacing-md); border-bottom: 1px solid var(--border-primary); text-align: center;">
                                 <h3 style="font-size: 1.125rem; font-weight: 700; color: var(--text-primary); margin-bottom: var(--spacing-xs);">${day.vsDay.name}</h3>
-                                <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: var(--spacing-xs);">${day.vsDay.title}</div>
-                                <div style="font-size: 0.75rem; color: var(--text-tertiary);">${day.date}</div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; gap: var(--spacing-sm);">
+                                    <div style="font-size: 0.875rem; color: var(--text-secondary); font-weight: 600;">${day.vsDay.title}</div>
+                                    <div style="font-size: 0.75rem; color: var(--text-tertiary); font-family: var(--font-mono);">${day.date}</div>
+                                </div>
                             </div>
                             <div style="padding: var(--spacing-md);">
                                 ${day.phases.map(phase => `

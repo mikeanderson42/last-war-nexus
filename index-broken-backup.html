@@ -21,18 +21,18 @@
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://lastwar-nexus.com/">
+    <meta property="og:url" content="https://www.lastwarnexus.com/">
     <meta property="og:title" content="Last War Nexus - VS Points Optimizer">
     <meta property="og:description" content="Maximize VS points efficiency by tracking Arms Race phases and Alliance Duel alignment windows for Last War: Survival players.">
-    <meta property="og:image" content="https://lastwar-nexus.com/og-image.png">
+    <meta property="og:image" content="https://www.lastwarnexus.com/og-image.png">
     <meta property="og:site_name" content="Last War Nexus">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://lastwar-nexus.com/">
+    <meta property="twitter:url" content="https://www.lastwarnexus.com/">
     <meta property="twitter:title" content="Last War Nexus - VS Points Optimizer">
     <meta property="twitter:description" content="Maximize VS points efficiency by tracking Arms Race phases and Alliance Duel alignment windows for Last War: Survival players.">
-    <meta property="twitter:image" content="https://lastwar-nexus.com/og-image.png">
+    <meta property="twitter:image" content="https://www.lastwarnexus.com/og-image.png">
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
@@ -50,6 +50,38 @@
     <meta name="msapplication-TileColor" content="#0ea5e9">
     <meta name="msapplication-tap-highlight" content="no">
     
+    <!-- Ezoic Site Verification -->
+    <meta name="ezoic-site-verification" content="CoxUDBfa0p5gRIezES1SbgSPK252Lg" />
+    
+    <!-- Ezoic Privacy Scripts (MUST load before main Ezoic script) -->
+    <script src="https://the.gatekeeperconsent.com/cmp.min.js" data-cfasync="false"></script>
+    <script data-cfasync="false">
+    window._sp_ = {
+        config: {
+            accountId: 1584,
+            baseEndpoint: 'https://cdn.privacy-mgmt.com'
+        }
+    }
+    </script>
+    <script src="https://cdn.privacy-mgmt.com/wrapperMessagingWithoutDetection.js" data-cfasync="false"></script>
+    
+    <!-- Ezoic Main Integration -->
+    <script data-cfasync="false">
+    window.ezstandalone = window.ezstandalone || {};
+    ezstandalone.cmd = ezstandalone.cmd || [];
+    </script>
+    <script data-cfasync="false" src="//www.ezojs.com/ezoic/sa.min.js"></script>
+    
+    <!-- Ezoic Configuration -->
+    <script data-cfasync="false">
+    ezstandalone.cmd.push(function() {
+      ezstandalone.config({
+        limitCookies: true,
+        anchorAdPosition: "bottom"
+      });
+    });
+    </script>
+    
     <!-- Load CSS files -->
     <link rel="stylesheet" href="style.css">
     
@@ -60,7 +92,7 @@
         "@type": "WebApplication",
         "name": "Last War Nexus",
         "description": "VS Points & Arms Race optimization tool for Last War: Survival players",
-        "url": "https://lastwar-nexus.com",
+        "url": "https://www.lastwarnexus.com",
         "applicationCategory": "GameApplication",
         "operatingSystem": "Web Browser",
         "browserRequirements": "Requires JavaScript. Requires HTML5.",
@@ -75,28 +107,6 @@
             "name": "Last War Nexus"
         }
     }
-    </script>
-    
-    <!-- Ezoic Privacy Scripts (MUST load before main Ezoic script) -->
-    <script src="https://the.gatekeeperconsent.com/cmp.min.js" data-cfasync="false"></script>
-    <script data-cfasync="false">
-    window._sp_ = {
-        config: {
-            accountId: 1584,
-            baseEndpoint: 'https://cdn.privacy-mgmt.com'
-        }
-    }
-    </script>
-    <script src="https://cdn.privacy-mgmt.com/wrapperMessagingWithoutDetection.js" data-cfasync="false"></script>
-    
-    <!-- Main Ezoic Ad Script -->
-    <script data-ezoic-ad="medrectangle" defer>
-    (function() {
-        var script = document.createElement('script');
-        script.src = 'https://www.googletagservices.com/tag/js/gpt.js';
-        script.async = true;
-        document.head.appendChild(script);
-    })();
     </script>
 </head>
 <body>
@@ -212,6 +222,11 @@
             </nav>
         </header>
 
+        <!-- Ezoic Ad - Top Banner -->
+        <div style="margin: 15px 0; text-align: center;">
+            <div id="ezoic-pub-ad-placeholder-101"></div>
+        </div>
+
         <!-- Dashboard Section -->
         <section class="dashboard-section" id="main-content">
             <div class="dashboard-grid-compact">
@@ -235,11 +250,13 @@
                         <div class="optimizer-content">
                             <!-- Next High Priority Section -->
                             <div class="next-priority-banner">
-                                <div class="priority-icon">⚡</div>
-                                <div class="priority-text">
-                                    <h3>NEXT HIGH PRIORITY</h3>
-                                    <div class="priority-countdown" id="priority-countdown">Loading...</div>
-                                    <div class="priority-remaining">TIME REMAINING</div>
+                                <div class="priority-content">
+                                    <div class="priority-icon">⚡</div>
+                                    <div class="priority-text">
+                                        <h3 id="priority-banner-title">NEXT HIGH PRIORITY</h3>
+                                        <div class="priority-countdown" id="priority-countdown">Loading...</div>
+                                        <div class="priority-remaining">TIME REMAINING</div>
+                                    </div>
                                 </div>
                             </div>
                             
@@ -334,6 +351,11 @@
                         </div>
                     </div>
 
+                    <!-- Ezoic Ad - Sidebar -->
+                    <div style="margin: 15px 0; text-align: center;">
+                        <div id="ezoic-pub-ad-placeholder-102"></div>
+                    </div>
+
                     <!-- Strategy Tips Card -->
                     <div class="strategy-card-compact">
                         <div class="card-header">
@@ -357,6 +379,11 @@
                 </div>
             </div>
         </section>
+
+        <!-- Ezoic Ad - Mid Content -->
+        <div style="margin: 20px 0; text-align: center;">
+            <div id="ezoic-pub-ad-placeholder-103"></div>
+        </div>
 
         <!-- Tab Navigation -->
         <nav class="tab-navigation" role="navigation" aria-label="Main sections">
@@ -472,6 +499,11 @@
         </div>
     </aside>
 
+    <!-- Ezoic Ad - Bottom -->
+    <div style="margin: 30px 0; text-align: center; padding-bottom: 20px;">
+        <div id="ezoic-pub-ad-placeholder-104"></div>
+    </div>
+
     <!-- Setup Modal -->
     <div class="setup-modal" id="setup-modal" role="dialog" aria-labelledby="setup-modal-title" aria-hidden="true">
         <div class="setup-modal-backdrop"></div>
@@ -533,6 +565,44 @@
                         </select>
                     </div>
 
+                    <div class="setup-section">
+                        <label for="setup-current-phase">Current Arms Race Phase</label>
+                        <p class="setup-help">Select your current Arms Race phase</p>
+                        <select id="setup-current-phase" class="form-select" required>
+                            <option value="city_building">🏗️ City Building</option>
+                            <option value="unit_progression">⚔️ Unit Progression</option>
+                            <option value="tech_research">🔬 Tech Research</option>
+                            <option value="drone_boost">🚁 Drone Boost</option>
+                            <option value="hero_advancement">🦸 Hero Advancement</option>
+                        </select>
+                    </div>
+
+                    <div class="setup-section">
+                        <label for="setup-next-phase">Next Arms Race Phase</label>
+                        <p class="setup-help">Select the next Arms Race phase</p>
+                        <select id="setup-next-phase" class="form-select" required>
+                            <option value="city_building">🏗️ City Building</option>
+                            <option value="unit_progression">⚔️ Unit Progression</option>
+                            <option value="tech_research">🔬 Tech Research</option>
+                            <option value="drone_boost">🚁 Drone Boost</option>
+                            <option value="hero_advancement">🦸 Hero Advancement</option>
+                        </select>
+                    </div>
+
+                    <div class="setup-section">
+                        <h3>Priority Notifications</h3>
+                        <p class="setup-help">Get notified when high-priority VS point windows are active</p>
+                        <div style="display: flex; flex-direction: column; gap: var(--spacing-sm);">
+                            <label style="display: flex; align-items: center; gap: var(--spacing-sm); cursor: pointer; padding: var(--spacing-sm); border: 1px solid var(--border-primary); border-radius: var(--border-radius-sm); background: var(--bg-surface); transition: all var(--transition-normal);" onmouseover="this.style.borderColor='var(--accent-primary)'" onmouseout="this.style.borderColor='var(--border-primary)'">
+                                <input type="radio" name="notifications" value="enabled" checked style="accent-color: var(--accent-primary);">
+                                <span style="font-size: 0.85rem; font-weight: 500; color: var(--text-primary);">Enable Notifications</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: var(--spacing-sm); cursor: pointer; padding: var(--spacing-sm); border: 1px solid var(--border-primary); border-radius: var(--border-radius-sm); background: var(--bg-surface); transition: all var(--transition-normal);" onmouseover="this.style.borderColor='var(--accent-primary)'" onmouseout="this.style.borderColor='var(--border-primary)'">
+                                <input type="radio" name="notifications" value="disabled" style="accent-color: var(--accent-primary);">
+                                <span style="font-size: 0.85rem; font-weight: 500; color: var(--text-primary);">Skip for Now</span>
+                            </label>
+                        </div>
+                    </div>
 
                     <div class="setup-actions">
                         <button type="button" class="btn btn-primary" id="setup-complete">
@@ -564,25 +634,12 @@
             });
         }
     </script>
-    
-    <!-- Ezoic Ad Container (loads ads after page content) -->
+
+    <!-- Ezoic ShowAds Implementation -->
     <script data-cfasync="false">
-    (function() {
-        // Initialize Ezoic ads after page load
-        window.ezstandalone = window.ezstandalone || {};
-        window.ezstandalone.cmd = window.ezstandalone.cmd || [];
-        window.ezstandalone.cmd.push(function() {
-            window.ezstandalone.define(1);
-            window.ezstandalone.enable();
-            window.ezstandalone.showAds();
-        });
-        
-        // Load Ezoic standalone script
-        var ezoicScript = document.createElement('script');
-        ezoicScript.src = 'https://www.ezojs.com/ezoic/sa.min.js';
-        ezoicScript.defer = true;
-        document.head.appendChild(ezoicScript);
-    })();
+    ezstandalone.cmd.push(function() {
+      ezstandalone.showAds(101, 102, 103, 104);
+    });
     </script>
 </body>
 </html>

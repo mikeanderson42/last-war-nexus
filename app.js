@@ -18,6 +18,7 @@
                 this.useLocalTime = true;
                 this.activeGuideType = 'tips';
                 this.eventListenersSetup = false;
+                this.lastPhaseCheck = 0;
 
                 // ENHANCED: Detailed spending information for each phase
                 this.data = {
@@ -3014,6 +3015,9 @@
                     // FIXED: Update main card time display every second for consistency
                     this.updateMainCardTime();
                     
+                    // CRITICAL: Check for phase changes every second for immediate updates
+                    this.checkForPhaseChanges();
+                    
                     const countdownElement = document.getElementById('countdown-timer');
                     const priorityCountdown = document.getElementById('priority-countdown');
                     const timeUntilReset = document.getElementById('time-until-reset');
@@ -3045,6 +3049,32 @@
                     }
                 } catch (error) {
                     console.error('Main card time update error:', error);
+                }
+            }
+
+            checkForPhaseChanges() {
+                try {
+                    const currentTime = this.getServerTime();
+                    const currentHour = currentTime.getUTCHours();
+                    const currentMinute = currentTime.getUTCMinutes();
+                    
+                    // Check if we're at a phase boundary (00:00, 04:00, 08:00, 12:00, 16:00, 20:00)
+                    const isPhaseTransitionTime = (currentMinute === 0) && 
+                        (currentHour === 0 || currentHour === 4 || currentHour === 8 || 
+                         currentHour === 12 || currentHour === 16 || currentHour === 20);
+                    
+                    // Also check if we haven't updated recently (for missed transitions)
+                    const lastUpdate = this.lastPhaseCheck || 0;
+                    const timeSinceLastUpdate = currentTime.getTime() - lastUpdate;
+                    const needsUpdate = timeSinceLastUpdate > 60000; // More than 1 minute since last check
+                    
+                    if (isPhaseTransitionTime || needsUpdate) {
+                        console.log('Phase change detected, updating main cards immediately');
+                        this.updateCurrentStatus();
+                        this.lastPhaseCheck = currentTime.getTime();
+                    }
+                } catch (error) {
+                    console.error('Phase change check error:', error);
                 }
             }
 

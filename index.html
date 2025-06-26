@@ -205,6 +205,12 @@
                                     </button>
                                     <button type="button" class="btn btn-secondary" data-action="reset-settings">
                                         Reset to Defaults
+                                </div>
+                                <div class="settings-footer">
+                                    <div class="live-server-time">
+                                        <span class="time-label">Live Server Time:</span>
+                                        <span id="settings-live-time" class="time-value">Loading...</span>
+                                    </div>
                                     </button>
                                 </div>
                             </div>
@@ -536,7 +542,7 @@
                         <label for="setup-current-phase">Current Arms Race Phase (Optional)</label>
                         <p class="setup-help">Override if auto-detection is incorrect</p>
                         <select id="setup-current-phase" class="form-select">
-                            <option value="">Auto-detect (recommended)</option>
+                            <option value="">None (recommended)</option>
                             <option value="city_building">🏗️ City Building</option>
                             <option value="unit_progression">⚔️ Unit Progression</option>
                             <option value="tech_research">🔬 Tech Research</option>
@@ -549,7 +555,7 @@
                         <label for="setup-next-phase">Next Phase Override (Optional)</label>
                         <p class="setup-help">For testing or manual verification</p>
                         <select id="setup-next-phase" class="form-select">
-                            <option value="">Auto-detect (recommended)</option>
+                            <option value="">None (recommended)</option>
                             <option value="city_building">🏗️ City Building</option>
                             <option value="unit_progression">⚔️ Unit Progression</option>
                             <option value="tech_research">🔬 Tech Research</option>

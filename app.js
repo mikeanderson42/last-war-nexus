@@ -1094,6 +1094,13 @@
                         const serverDisplay = this.useLocalTime ? 
                             serverTime.toUTCString().slice(17, 25) : displayTimeString;
                         serverDisplayTime.textContent = `${serverDisplay} (${serverLabel})`;
+
+                    // Update settings dropdown live time
+                    const settingsLiveTime = document.getElementById('settings-live-time');
+                    if (settingsLiveTime) {
+                        const serverTimeString = serverTime.toUTCString().slice(17, 25);
+                        settingsLiveTime.textContent = serverTimeString + ' (UTC' + (this.timeOffset >= 0 ? '+' : '') + this.timeOffset + ')';
+                    }
                     }
 
                     // Phase end time

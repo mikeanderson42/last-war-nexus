@@ -76,30 +76,6 @@
         }
     }
     </script>
-    
-    <!-- Ezoic Ad Integration -->
-    <script data-cfasync="false" type="text/javascript">
-        (function() {
-            var cid = "1";
-            var pid = "lastwar-nexus.com";
-            var zoneid = "5379378";
-            var w = window;
-            w.ezstandalone = w.ezstandalone || {};
-            w.ezstandalone.cmd = w.ezstandalone.cmd || [];
-            w.ezstandalone.cmd.push(function() {
-                w.ezstandalone.define(zoneid);
-                w.ezstandalone.enable();
-                w.ezstandalone.showAds();
-            });
-            var ezoicScript = document.createElement('script');
-            ezoicScript.src = '//www.ezojs.com/ezoic/sa.min.js';
-            ezoicScript.defer = true;
-            document.head.appendChild(ezoicScript);
-        })();
-    </script>
-    
-    <!-- Ezoic Privacy Compliance -->
-    <script src="https://the.gatekeeperconsent.com/cmp.min.js" data-cfasync="false"></script>
 </head>
 <body>
     
@@ -173,7 +149,8 @@
                                 <div class="setting-item">
                                     <label for="current-phase-select">Current Arms Race Phase Override</label>
                                     <select id="current-phase-select" class="form-select">
-                            <option value="city_building">🏗️ City Building</option>
+                                        <option value="">Use server time calculation</option>
+                                        <option value="city_building">🏗️ City Building</option>
                                         <option value="unit_progression">⚔️ Unit Progression</option>
                                         <option value="tech_research">🔬 Tech Research</option>
                                         <option value="drone_boost">🚁 Drone Boost</option>
@@ -183,7 +160,8 @@
                                 <div class="setting-item">
                                     <label for="next-phase-select">Next Arms Race Phase Override</label>
                                     <select id="next-phase-select" class="form-select">
-                            <option value="city_building">🏗️ City Building</option>
+                                        <option value="">Use calculated next phase</option>
+                                        <option value="city_building">🏗️ City Building</option>
                                         <option value="unit_progression">⚔️ Unit Progression</option>
                                         <option value="tech_research">🔬 Tech Research</option>
                                         <option value="drone_boost">🚁 Drone Boost</option>
@@ -203,12 +181,6 @@
                                     </button>
                                     <button type="button" class="btn btn-secondary" data-action="reset-settings">
                                         Reset to Defaults
-                                </div>
-                                <div class="settings-footer">
-                                    <div class="live-server-time">
-                                        <span class="time-label">Live Server Time:</span>
-                                        <span id="settings-live-time" class="time-value">Loading...</span>
-                                    </div>
                                     </button>
                                 </div>
                             </div>
@@ -504,8 +476,8 @@
 
                 <form class="setup-form" id="setup-form">
                     <div class="setup-section">
-                        <label for="setup-time-offset">Server Timezone</label>
-                        <p class="setup-help">Select your server timezone</p>
+                        <label for="setup-time-offset">Time Zone Adjustment</label>
+                        <p class="setup-help">Adjust to match your server's time zone</p>
                         <select id="setup-time-offset" class="form-select" required>
                             <option value="-12">UTC -12 hours</option>
                             <option value="-11">UTC -11 hours</option>
@@ -537,16 +509,28 @@
                     </div>
 
                     <div class="setup-section">
-                        <p class="setup-help">For testing purposes</p>
+                        <label for="setup-current-phase">Current Arms Race Phase (Optional)</label>
+                        <p class="setup-help">Override if auto-detection is incorrect</p>
+                        <select id="setup-current-phase" class="form-select">
+                            <option value="">Auto-detect (recommended)</option>
+                            <option value="city_building">🏗️ City Building</option>
+                            <option value="unit_progression">⚔️ Unit Progression</option>
+                            <option value="tech_research">🔬 Tech Research</option>
+                            <option value="drone_boost">🚁 Drone Boost</option>
+                            <option value="hero_advancement">🦸 Hero Advancement</option>
                         </select>
                     </div>
 
                     <div class="setup-section">
-                        <label for="setup-notifications">Notifications</label>
-                        <p class="setup-help">Get priority alerts</p>
-                        <select id="setup-notifications" class="form-select">
-                            <option value="enabled">Enable Notifications (Recommended)</option>
-                            <option value="disabled">Disable Notifications</option>
+                        <label for="setup-next-phase">Next Phase Override (Optional)</label>
+                        <p class="setup-help">For testing or manual verification</p>
+                        <select id="setup-next-phase" class="form-select">
+                            <option value="">Auto-detect (recommended)</option>
+                            <option value="city_building">🏗️ City Building</option>
+                            <option value="unit_progression">⚔️ Unit Progression</option>
+                            <option value="tech_research">🔬 Tech Research</option>
+                            <option value="drone_boost">🚁 Drone Boost</option>
+                            <option value="hero_advancement">🦸 Hero Advancement</option>
                         </select>
                     </div>
 
@@ -557,8 +541,6 @@
                         <button type="button" class="btn btn-secondary" id="setup-skip">
                             Skip for Now
                         </button>
-                    </div>
-                        </div>
                     </div>
                 </form>
             </div>
@@ -582,6 +564,5 @@
             });
         }
     </script>
-    
 </body>
 </html>

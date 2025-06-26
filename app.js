@@ -2899,7 +2899,7 @@
                         const now = this.useLocalTime ? new Date() : this.getServerTime();
                         
                         // Update only countdown displays without full refresh
-                        this.updateTimeDisplays(now);
+                        this.updateTimeDisplay(now);
                     }
                 } catch (error) {
                     console.error('Countdown update error:', error);

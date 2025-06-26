@@ -149,7 +149,7 @@
                                 <div class="setting-item">
                                     <label for="current-phase-select">Current Arms Race Phase Override</label>
                                     <select id="current-phase-select" class="form-select">
-                                        <option value="">Use server time calculation</option>
+                                        
                                         <option value="city_building">🏗️ City Building</option>
                                         <option value="unit_progression">⚔️ Unit Progression</option>
                                         <option value="tech_research">🔬 Tech Research</option>
@@ -160,7 +160,7 @@
                                 <div class="setting-item">
                                     <label for="next-phase-select">Next Arms Race Phase Override</label>
                                     <select id="next-phase-select" class="form-select">
-                                        <option value="">Use calculated next phase</option>
+                                        
                                         <option value="city_building">🏗️ City Building</option>
                                         <option value="unit_progression">⚔️ Unit Progression</option>
                                         <option value="tech_research">🔬 Tech Research</option>
@@ -171,8 +171,8 @@
                                 <div class="setting-item">
                                     <label for="notifications-toggle">Priority Notifications</label>
                                     <select id="notifications-toggle" class="form-select">
+                                        <option value="enabled" selected>Enabled</option>
                                         <option value="disabled">Disabled</option>
-                                        <option value="enabled">Enabled</option>
                                     </select>
                                 </div>
                                 <div class="setting-actions">
@@ -509,10 +509,10 @@
                     </div>
 
                     <div class="setup-section">
-                        <label for="setup-current-phase">Current Arms Race Phase (Optional)</label>
-                        <p class="setup-help">Override if auto-detection is incorrect</p>
+                        <label for="setup-current-phase">Current Arms Race Phase</label>
+                        <p class="setup-help">Select current phase</p>
                         <select id="setup-current-phase" class="form-select">
-                            <option value="">Auto-detect (recommended)</option>
+                            
                             <option value="city_building">🏗️ City Building</option>
                             <option value="unit_progression">⚔️ Unit Progression</option>
                             <option value="tech_research">🔬 Tech Research</option>
@@ -522,15 +522,24 @@
                     </div>
 
                     <div class="setup-section">
-                        <label for="setup-next-phase">Next Phase Override (Optional)</label>
-                        <p class="setup-help">For testing or manual verification</p>
+                        <label for="setup-next-phase">Next Phase</label>
+                        <p class="setup-help">Select next phase</p>
                         <select id="setup-next-phase" class="form-select">
-                            <option value="">Auto-detect (recommended)</option>
+                            
                             <option value="city_building">🏗️ City Building</option>
                             <option value="unit_progression">⚔️ Unit Progression</option>
                             <option value="tech_research">🔬 Tech Research</option>
                             <option value="drone_boost">🚁 Drone Boost</option>
                             <option value="hero_advancement">🦸 Hero Advancement</option>
+                        </select>
+                    </div>
+
+                    <div class="setup-section">
+                        <label for="setup-notifications">Notifications</label>
+                        <p class="setup-help">Get priority alerts</p>
+                        <select id="setup-notifications" class="form-select">
+                            <option value="enabled" selected>Enabled</option>
+                            <option value="disabled">Disabled</option>
                         </select>
                     </div>
 

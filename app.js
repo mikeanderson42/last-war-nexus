@@ -314,7 +314,7 @@ class VSPointsOptimizer {
 
             // Close dropdowns when clicking outside
             document.addEventListener('click', (e) => {
-                if (!e.target.closest('.dropdown-container')) {
+                if (!e.target.closest('.settings-dropdown-container')) {
                     this.closeAllDropdowns();
                 }
             });
@@ -485,51 +485,94 @@ class VSPointsOptimizer {
 
     toggleDropdown(type) {
         console.log('✅ Toggle dropdown:', type);
-        const dropdown = document.getElementById(type + '-dropdown');
-        if (dropdown) {
-            const isOpen = dropdown.classList.contains('show');
+        const dropdown = document.getElementById(`${type}-dropdown`);
+        const toggle = document.getElementById(`${type}-toggle`);
+        
+        if (dropdown && toggle) {
+            const isOpen = dropdown.classList.contains('active');
+            this.closeAllDropdowns();
             
-            if (isOpen) {
-                // Close dropdown - remove class AND forced styles
-                dropdown.classList.remove('show');
-                dropdown.style.display = '';
-                dropdown.style.visibility = '';
-                dropdown.style.opacity = '';
-                console.log('Dropdown closed and styles cleared');
-            } else {
-                // Close all others first
-                document.querySelectorAll('.dropdown-menu').forEach(d => {
-                    d.classList.remove('show');
-                    d.style.display = '';
-                    d.style.visibility = '';
-                    d.style.opacity = '';
-                });
-                
-                // Open this dropdown
-                dropdown.classList.add('show');
-                dropdown.style.display = 'block';
-                dropdown.style.visibility = 'visible';
-                dropdown.style.opacity = '1';
-                console.log('Dropdown opened');
+            if (!isOpen) {
+                // Scroll to top when opening settings dropdown to keep it in view
+                if (type === 'settings') {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+                // Position dropdown safely within viewport
+                this.positionDropdownSafely(dropdown, toggle);
+                dropdown.classList.add('active');
+                toggle.classList.add('active');
+                toggle.setAttribute('aria-expanded', 'true');
             }
         } else {
-            console.log('Dropdown not found:', type + '-dropdown');
+            console.log('Dropdown or toggle not found:', type);
+        }
+    }
+    
+    // Ensure dropdown stays within viewport bounds
+    positionDropdownSafely(dropdown, toggle) {
+        try {
+            const toggleRect = toggle.getBoundingClientRect();
+            const dropdownWidth = 320; // Default width
+            const viewportWidth = window.innerWidth;
+            const margin = 16; // Minimum margin from edge
+            
+            // Calculate safe left position
+            let leftPos = toggleRect.right - dropdownWidth;
+            
+            // Ensure dropdown doesn't go off left edge
+            if (leftPos < margin) {
+                leftPos = margin;
+            }
+            
+            // Ensure dropdown doesn't go off right edge
+            if (leftPos + dropdownWidth > viewportWidth - margin) {
+                leftPos = viewportWidth - dropdownWidth - margin;
+            }
+            
+            // Apply safe position
+            dropdown.style.left = `${leftPos}px`;
+            dropdown.style.right = 'auto';
+            
+            // For mobile, center the dropdown
+            if (viewportWidth <= 480) {
+                dropdown.style.left = '50%';
+                dropdown.style.transform = 'translateX(-50%)';
+                dropdown.style.width = `${viewportWidth - (margin * 2)}px`;
+                dropdown.style.maxWidth = '320px';
+            }
+        } catch (error) {
+            console.error('Error positioning dropdown:', error);
         }
     }
 
     closeAllDropdowns() {
-        document.querySelectorAll('.dropdown-menu').forEach(dropdown => {
-            dropdown.classList.remove('show');
-            dropdown.style.display = '';
-            dropdown.style.visibility = '';
-            dropdown.style.opacity = '';
-        });
+        // Close settings dropdown
+        const settingsDropdown = document.getElementById('settings-dropdown');
+        const settingsToggle = document.getElementById('settings-toggle');
+        if (settingsDropdown) {
+            settingsDropdown.classList.remove('active');
+            settingsDropdown.style.transform = '';
+            settingsDropdown.style.left = '';
+            settingsDropdown.style.width = '';
+            settingsDropdown.style.maxWidth = '';
+        }
+        if (settingsToggle) {
+            settingsToggle.classList.remove('active');
+            settingsToggle.setAttribute('aria-expanded', 'false');
+        }
     }
 
     toggleTimeMode() {
         console.log('✅ Toggle time mode');
         this.useLocalTime = !this.useLocalTime;
         this.saveSettings();
+        
+        // Update button label
+        const timeToggleLabel = document.getElementById('time-toggle-label');
+        if (timeToggleLabel) {
+            timeToggleLabel.textContent = this.useLocalTime ? 'Local Time' : 'Server Time';
+        }
+        
         this.updateAllDisplays();
     }
 

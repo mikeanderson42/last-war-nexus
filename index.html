@@ -53,6 +53,35 @@
     <!-- Ezoic Site Verification -->
     <meta name="ezoic-site-verification" content="CoxUDBfa0p5gRIezES1SbgSPK252Lg" />
     
+    <!-- Ezoic Privacy Scripts (MUST load before main Ezoic script) -->
+    <script src="https://the.gatekeeperconsent.com/cmp.min.js" data-cfasync="false"></script>
+    <script data-cfasync="false">
+    window._sp_ = {
+        config: {
+            accountId: 1584,
+            baseEndpoint: 'https://cdn.privacy-mgmt.com'
+        }
+    }
+    </script>
+    <script src="https://cdn.privacy-mgmt.com/wrapperMessagingWithoutDetection.js" data-cfasync="false"></script>
+    
+    <!-- Ezoic Main Integration -->
+    <script data-cfasync="false">
+    window.ezstandalone = window.ezstandalone || {};
+    ezstandalone.cmd = ezstandalone.cmd || [];
+    </script>
+    <script data-cfasync="false" src="//www.ezojs.com/ezoic/sa.min.js"></script>
+    
+    <!-- Ezoic Configuration -->
+    <script data-cfasync="false">
+    ezstandalone.cmd.push(function() {
+      ezstandalone.config({
+        limitCookies: true,
+        anchorAdPosition: "bottom"
+      });
+    });
+    </script>
+    
     <!-- Load CSS files -->
     <link rel="stylesheet" href="style.css">
     
@@ -317,6 +346,11 @@
                                 <strong>Next:</strong> <span id="next-phase-preview">Loading...</span>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Ezoic Ad - Sidebar -->
+                    <div style="margin: 15px 0; text-align: center;">
+                        <div id="ezoic-pub-ad-placeholder-102"></div>
                     </div>
 
                     <!-- Strategy Tips Card -->
@@ -598,20 +632,11 @@
         }
     </script>
 
-    <!-- Ezoic Integration - Proper Implementation -->
-    <script>
-        // Ezoic ad configuration - only load after DOM is ready to avoid blocking
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize Ezoic variables
-            window.ezstandaloead = window.ezstandaloead || {};
-            window.ezstandaloead.cmd = window.ezstandaloead.cmd || [];
-            
-            // Load Ezoic script asynchronously
-            var ezoicScript = document.createElement('script');
-            ezoicScript.async = true;
-            ezoicScript.src = '//www.ezojs.com/ezoic/ezoic.js';
-            document.head.appendChild(ezoicScript);
-        });
+    <!-- Ezoic ShowAds Implementation -->
+    <script data-cfasync="false">
+    ezstandalone.cmd.push(function() {
+      ezstandalone.showAds(101, 102, 103, 104);
+    });
     </script>
 </body>
 </html>

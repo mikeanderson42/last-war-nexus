@@ -1051,7 +1051,7 @@
             // ENHANCED: Update all displays including server time in settings
             updateAllDisplays() {
                 try {
-                    this.updateTimeDisplay();
+                    // Move time display to countdown interval for 1-second updates
                     this.updateSettingsTime();
                     this.updateCurrentStatus();
                     this.updatePriorityDisplay();
@@ -1107,13 +1107,29 @@
                     const phaseEndTime = document.getElementById('phase-end-time');
                     if (phaseEndTime) {
                         const currentPhase = this.getCurrentArmsPhase();
-                        const phaseEndMs = (currentPhase.hoursRemaining * 60 * 60 * 1000) + 
-                                         (currentPhase.minutesRemaining * 60 * 1000);
-                        const phaseEndDate = new Date(Date.now() + phaseEndMs);
+                        const serverTime = this.getServerTime();
                         
-                        // Convert to appropriate timezone for display
-                        const displayEndTime = this.useLocalTime ? phaseEndDate : 
-                            new Date(phaseEndDate.getTime() + (this.timeOffset * 60 * 60 * 1000));
+                        // Calculate absolute phase end time based on phase schedule
+                        const hour = serverTime.getUTCHours();
+                        let endHour;
+                        
+                        if (hour >= 20) {
+                            // City Building phase ends at 00:00 next day
+                            endHour = 24;
+                        } else {
+                            // Regular 4-hour phases
+                            const phaseIndex = Math.floor(hour / 4);
+                            endHour = (phaseIndex + 1) * 4;
+                        }
+                        
+                        const phaseEndDate = new Date(serverTime);
+                        phaseEndDate.setUTCHours(endHour % 24, 0, 0, 0);
+                        if (endHour === 24) phaseEndDate.setUTCDate(phaseEndDate.getUTCDate() + 1);
+                        
+                        // Convert to display timezone
+                        const displayEndTime = this.useLocalTime ? 
+                            new Date(phaseEndDate.getTime() + (this.timeOffset * 60 * 60 * 1000)) : 
+                            phaseEndDate;
                         
                         phaseEndTime.textContent = displayEndTime.toLocaleTimeString('en-US', { 
                             hour12: false, 
@@ -1570,16 +1586,42 @@
                                      { name: "Sunday", title: "Preparation Day", focus: "Prepare for the week" };
                         
                         const phases = [];
-                        // Handle the 5-phase system with 20-hour cycle
-                        for (let phaseIndex = 0; phaseIndex < 5; phaseIndex++) {
+                        // Calculate phases starting from current phase for today, normal rotation for future days
+                        let startPhaseIndex = 0;
+                        if (isToday) {
+                            // For today, start from current phase
+                            const currentPhase = this.getCurrentArmsPhase();
+                            startPhaseIndex = currentPhase.position;
+                        } else {
+                            // For future days, calculate offset based on day progression
+                            const currentPhase = this.getCurrentArmsPhase();
+                            const currentHour = now.getUTCHours();
+                            
+                            // Calculate how many phases will complete today
+                            let phasesRemainingToday = 0;
+                            if (currentHour >= 20) {
+                                phasesRemainingToday = 1; // Just city building left
+                            } else {
+                                const currentPhaseIndex = Math.floor(currentHour / 4);
+                                phasesRemainingToday = 5 - currentPhaseIndex; // Including city building
+                            }
+                            
+                            // Calculate starting phase for this future day
+                            const totalPhaseOffset = (phasesRemainingToday + (dayOffset - 1) * 5) % 5;
+                            startPhaseIndex = totalPhaseOffset;
+                        }
+                        
+                        // Generate 5 phases starting from the calculated start phase
+                        for (let i = 0; i < 5; i++) {
+                            const phaseIndex = (startPhaseIndex + i) % 5;
                             const phase = this.data.armsRacePhases[phaseIndex];
                             
                             const isPriority = this.data.priorityAlignments.some(a => 
                                 a.vsDay === dayOfWeek && a.armsPhase === phase.name
                             );
                             
-                            const startHour = phaseIndex * 4;
-                            const endHour = (phaseIndex * 4 + 4) % 24;
+                            const startHour = i * 4;
+                            const endHour = (i * 4 + 4) % 24;
                             const isActive = isToday && 
                                 now.getUTCHours() >= startHour && 
                                 now.getUTCHours() < (startHour + 4);
@@ -2957,7 +2999,9 @@
             
             updateCountdowns() {
                 try {
-                    // Update only time-sensitive countdown elements efficiently
+                    // Update time displays every second and countdown elements efficiently
+                    this.updateTimeDisplay();
+                    
                     const countdownElement = document.getElementById('countdown-timer');
                     const priorityCountdown = document.getElementById('priority-countdown');
                     const timeUntilReset = document.getElementById('time-until-reset');
@@ -2965,12 +3009,17 @@
                     if (countdownElement || priorityCountdown || timeUntilReset) {
                         const now = this.useLocalTime ? new Date() : this.getServerTime();
                         
-                        // Update only countdown displays without full refresh
-                        this.updateTimeDisplay(now);
+                        // Update countdown-specific elements
+                        this.updateCountdownElements(now);
                     }
                 } catch (error) {
                     console.error('Countdown update error:', error);
                 }
+            }
+
+            updateCountdownElements(now) {
+                // Update only countdown-specific elements without full display refresh
+                // This method keeps countdown logic separated from time display
             }
 
             handleError(message, error = null) {

@@ -2797,10 +2797,47 @@
                             
                             const phaseIndex = this.data.armsRacePhases.findIndex(p => p.name === phase.name);
                             const startTime = new Date(checkDate);
-                            startTime.setUTCHours(phaseIndex * 4, 0, 0, 0);
+                            
+                            // Use same logic as getCurrentArmsPhase() for phase timing
+                            if (phaseIndex === 0 && alignment.armsPhase === "City Building") {
+                                // Check both regular City Building (00:00-04:00) and evening (20:00-00:00)
+                                const morningStart = new Date(checkDate);
+                                morningStart.setUTCHours(0, 0, 0, 0);
+                                const eveningStart = new Date(checkDate);
+                                eveningStart.setUTCHours(20, 0, 0, 0);
+                                
+                                // Determine which City Building period we're checking
+                                const currentHour = dayOffset === 0 ? now.getUTCHours() : 0;
+                                if (currentHour >= 20 || currentHour < 4) {
+                                    // Use evening period if current time suggests it
+                                    startTime.setTime(currentHour >= 20 ? eveningStart.getTime() : morningStart.getTime());
+                                } else {
+                                    // Use morning period
+                                    startTime.setTime(morningStart.getTime());
+                                }
+                            } else {
+                                // Regular 4-hour phases
+                                startTime.setUTCHours(phaseIndex * 4, 0, 0, 0);
+                            }
                             
                             const timeDiff = startTime.getTime() - now.getTime();
-                            const isActive = now >= startTime && now < new Date(startTime.getTime() + (4 * 60 * 60 * 1000));
+                            let isActive = false;
+                            
+                            // For today, check if this phase actually matches the current active phase
+                            if (dayOffset === 0) {
+                                const currentPhase = this.getCurrentArmsPhase();
+                                isActive = (currentPhase.name === alignment.armsPhase);
+                            } else {
+                                // For future days, use time-based calculation
+                                if (phaseIndex === 0 && alignment.armsPhase === "City Building") {
+                                    // City Building active periods: 00:00-04:00 OR 20:00-00:00
+                                    const hour = now.getUTCHours();
+                                    isActive = (hour >= 0 && hour < 4) || (hour >= 20 && hour < 24);
+                                } else {
+                                    // Regular 4-hour phases
+                                    isActive = now >= startTime && now < new Date(startTime.getTime() + (4 * 60 * 60 * 1000));
+                                }
+                            }
                             
                             if (timeDiff > -240 * 60 * 1000) { // Show if within 4 hours or upcoming
                                 priorityWindows.push({

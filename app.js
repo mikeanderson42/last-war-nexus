@@ -599,11 +599,9 @@
                     // Sync time mode labels
                     const timeMode = this.useLocalTime ? 'Local Time' : 'Server Time';
                     const timeToggleLabel = document.getElementById('time-toggle-label');
-                    const mainTimeModeLabel = document.getElementById('main-time-mode-label');
                     const timeToggleBtn = document.getElementById('time-toggle-btn');
                     
                     if (timeToggleLabel) timeToggleLabel.textContent = timeMode;
-                    if (mainTimeModeLabel) mainTimeModeLabel.textContent = timeMode;
 
                     // Sync time toggle button state
                     if (timeToggleBtn) {
@@ -727,14 +725,10 @@
                     // Update button text and styling
                     const timeToggleLabel = document.getElementById('time-toggle-label');
                     const timeToggleBtn = document.getElementById('time-toggle-btn');
-                    const mainTimeModeLabel = document.getElementById('main-time-mode-label');
                     
                     const timeMode = this.useLocalTime ? 'Local Time' : 'Server Time';
                     if (timeToggleLabel) {
                         timeToggleLabel.textContent = timeMode;
-                    }
-                    if (mainTimeModeLabel) {
-                        mainTimeModeLabel.textContent = timeMode;
                     }
                     if (timeToggleBtn) {
                         // Remove any inline styles to let CSS handle appearance

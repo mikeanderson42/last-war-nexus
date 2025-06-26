@@ -232,6 +232,7 @@ class VSPointsOptimizer {
                     e.stopPropagation();
                     this.toggleDropdown('settings');
                 });
+                settingsToggle.setAttribute('data-nav-listener', 'true');
             }
 
             // FIXED: Tab navigation with proper event handling
@@ -303,6 +304,7 @@ class VSPointsOptimizer {
                     e.stopPropagation();
                     this.toggleTimeMode();
                 });
+                timeToggleBtn.setAttribute('data-nav-listener', 'true');
             }
 
             // FIXED: Guide navigation buttons with robust mobile support
@@ -800,8 +802,10 @@ class VSPointsOptimizer {
                 }
             }
             
-            this.saveSettings();
+            // Update all time displays and refresh content
+            this.updateTimeDisplays();
             this.updateAllDisplays();
+            this.saveSettings();
         } catch (error) {
             console.error('Time toggle error:', error);
         }
@@ -1219,7 +1223,7 @@ class VSPointsOptimizer {
                     }
                 ];
             } else {
-                // COMPREHENSIVE TIPS GUIDES: Detailed content with importance-coded information
+                // COMPREHENSIVE TIPS GUIDES: Complete working backup structure with detailed content
                 guides = [
                     {
                         title: "VS Points Complete Mastery System",
@@ -1233,10 +1237,25 @@ class VSPointsOptimizer {
                                 title: "🧮 VS Points Mathematics & Core Mechanics (WHY Points Multiply)",
                                 collapsible: true,
                                 items: [
-                                    "Base Formula: VS Points = Resource Value × Phase Multiplier × Daily Bonus × Activity Type Modifier. Perfect Alignment occurs when your activity matches BOTH the Arms Race phase AND the daily VS focus event, providing a 1.5x multiplier (50% bonus).",
-                                    "Real Impact: A 1000 diamond spend becomes 1500 VS points during perfect alignment (500 extra points). This compounds annually to generate 200,000-500,000 additional VS points per year through optimal timing.",
-                                    "5 Rotating Phases in 4-Hour Cycles: City Building (0-4h), Unit Progression (4-8h), Tech Research (8-12h), Drone Boost (12-16h), Hero Advancement (16-20h). Each phase repeats daily in the same pattern with exact transition times at 00:00, 04:00, 08:00, 12:00, 16:00, 20:00 server time.",
-                                    "Weekday Perfect Windows: Monday (Radar Training + Drone Boost, 12:00-16:00), Tuesday (Base Expansion + City Building, 00:00-04:00), Wednesday (Age of Science + Tech Research, 08:00-12:00), Thursday (Train Heroes + Hero Advancement, 16:00-20:00), Saturday (Enemy Buster + Unit Progression, 04:00-08:00)."
+                                    {
+                                        main: "Perfect Alignment Windows (4x Multiplier Effect)",
+                                        importance: "critical",
+                                        points: [
+                                            { text: "Arms Race Phase Bonus: Each phase provides 2x VS points for specific activities during 4-hour windows", importance: "critical" },
+                                            { text: "Alliance Duel Day Bonus: Each weekday provides 2x VS points for specific activity categories", importance: "critical" },
+                                            { text: "Perfect Alignment = 2x Arms Race + 2x Alliance Duel = 4x total VS points multiplier", importance: "critical" },
+                                            { text: "Example: Friday (Total Mobilization) + any Arms Race phase = 4x points for ALL activities", importance: "important" }
+                                        ]
+                                    },
+                                    {
+                                        main: "Mathematical Optimization Principles",
+                                        importance: "important",
+                                        points: [
+                                            { text: "ROI Calculation: Perfect timing provides 400% return vs random spending", importance: "important" },
+                                            { text: "Compound Effect: Consistent perfect timing creates exponential advantage over time", importance: "important" },
+                                            { text: "Efficiency Metrics: Track points per dollar, points per hour, points per resource", importance: "minor" }
+                                        ]
+                                    }
                                 ]
                             }
                         ]
@@ -1291,11 +1310,36 @@ class VSPointsOptimizer {
                             <h4 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin: 0;">${section.title}</h4>
                         </div>
                         <div class="section-content" style="display: none; padding-left: var(--spacing-lg);">
-                            ${section.items.map(item => `
-                                <div style="background: var(--bg-tertiary); padding: var(--spacing-md); margin-bottom: var(--spacing-sm); border-radius: var(--border-radius); border-left: 3px solid var(--accent-secondary);">
-                                    <div style="font-size: 0.9rem; color: var(--text-primary); line-height: 1.6;">${item}</div>
-                                </div>
-                            `).join('')}
+                            ${section.items.map(item => {
+                                if (typeof item === 'string') {
+                                    // Simple string item (old format)
+                                    return `
+                                        <div style="background: var(--bg-tertiary); padding: var(--spacing-md); margin-bottom: var(--spacing-sm); border-radius: var(--border-radius); border-left: 3px solid var(--accent-secondary);">
+                                            <div style="font-size: 0.9rem; color: var(--text-primary); line-height: 1.6;">${item}</div>
+                                        </div>
+                                    `;
+                                } else if (item.main && item.points) {
+                                    // Complex object item (new format)
+                                    const importanceColor = item.importance === 'critical' ? 'var(--accent-error)' : 
+                                                          item.importance === 'important' ? 'var(--accent-warning)' : 'var(--accent-secondary)';
+                                    const pointsHtml = item.points.map(point => `
+                                        <div style="display: flex; align-items: flex-start; gap: var(--spacing-sm); margin-bottom: var(--spacing-xs);">
+                                            <div style="width: 6px; height: 6px; border-radius: 50%; background: ${point.importance === 'critical' ? 'var(--accent-error)' : point.importance === 'important' ? 'var(--accent-warning)' : 'var(--text-tertiary)'}; margin-top: 6px; flex-shrink: 0;"></div>
+                                            <div style="font-size: 0.85rem; color: var(--text-primary); line-height: 1.5;">${point.text}</div>
+                                        </div>
+                                    `).join('');
+                                    
+                                    return `
+                                        <div style="background: var(--bg-tertiary); padding: var(--spacing-md); margin-bottom: var(--spacing-md); border-radius: var(--border-radius); border-left: 3px solid ${importanceColor};">
+                                            <div style="font-size: 0.95rem; font-weight: 600; color: var(--text-primary); margin-bottom: var(--spacing-sm);">${item.main}</div>
+                                            <div style="padding-left: var(--spacing-sm);">
+                                                ${pointsHtml}
+                                            </div>
+                                        </div>
+                                    `;
+                                }
+                                return '';
+                            }).join('')}
                         </div>
                     </div>
                 `).join('') : '';

@@ -2795,6 +2795,13 @@
                         return;
                     }
                     
+                    // Check for active events and trigger notifications
+                    const activeEvent = displayWindows.find(window => window.isActive);
+                    if (activeEvent && this.notificationsEnabled && this.lastNotifiedWindow !== activeEvent.alignment.reason) {
+                        this.showNotification('High Priority Active!', `${activeEvent.phase.name} + ${activeEvent.vsDay.title}`);
+                        this.lastNotifiedWindow = activeEvent.alignment.reason;
+                    }
+                    
                     // Take only first 3 events
                     const events = displayWindows.slice(0, 3);
                     const html = events.map(window => `
@@ -2888,7 +2895,7 @@
                     if (saved) {
                         const settings = JSON.parse(saved);
                         this.timeOffset = settings.timeOffset || 0;
-                        this.notificationsEnabled = settings.notificationsEnabled || false;
+                        this.notificationsEnabled = settings.notificationsEnabled !== undefined ? settings.notificationsEnabled : true;
                         this.isSetupComplete = settings.isSetupComplete || false;
                         this.currentPhaseOverride = settings.currentPhaseOverride || null;
                         this.nextPhaseOverride = settings.nextPhaseOverride || null;

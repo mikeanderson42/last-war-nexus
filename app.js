@@ -1081,8 +1081,7 @@
                     
                     if (currentAlignment) {
                         const currentPhase = this.getCurrentArmsPhase();
-                        const timeRemaining = (currentPhase.hoursRemaining * 60 * 60 * 1000) + 
-                                            (currentPhase.minutesRemaining * 60 * 1000);
+                        const timeRemaining = this.getTimeUntilNextPhase();
                         
                         return {
                             isActive: true,
@@ -1674,16 +1673,11 @@
                         // Generate complete 6-phase schedule starting from current active phase for today
                         let startPhaseIndex = 0;
                         if (isToday) {
-                            // For today, start from current active phase
+                            // For today, start from current active phase (respects overrides)
                             const currentPhase = this.getCurrentArmsPhase();
-                            const currentHour = now.getUTCHours();
-                            
-                            // Determine current phase index based on time
-                            if (currentHour >= 20 || currentHour < 4) {
-                                startPhaseIndex = 0; // City Building
-                            } else {
-                                startPhaseIndex = Math.floor(currentHour / 4);
-                            }
+                            // Find the index of the current phase in the phases array
+                            startPhaseIndex = this.data.armsRacePhases.findIndex(p => p.name === currentPhase.name);
+                            if (startPhaseIndex === -1) startPhaseIndex = 0; // Fallback
                         } else {
                             // For future days, calculate phase offset
                             const currentHour = now.getUTCHours();
@@ -1726,9 +1720,9 @@
                                 a.vsDay === dayOfWeek && a.armsPhase === phaseName
                             );
                             
-                            const isActive = isToday && 
-                                ((i < 5 && now.getUTCHours() >= startHour && now.getUTCHours() < endHour) ||
-                                 (i === 5 && now.getUTCHours() >= 20));
+                            // Check if this phase is currently active (respects overrides)
+                            const currentActivePhase = this.getCurrentArmsPhase();
+                            const isActive = isToday && currentActivePhase.name === phaseName;
                             
                             const timeRange = i === 5 ? 
                                 "20:00-04:00*" : 

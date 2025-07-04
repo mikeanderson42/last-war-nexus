@@ -3106,6 +3106,14 @@ body {
     pointer-events: auto;
 }
 
+/* Ensure mobile popup containers allow full scrolling */
+@media (max-width: 768px) {
+    .guide-fullscreen-container {
+        max-height: calc(100vh - 60px) !important; /* More generous height */
+        overflow: visible !important; /* Allow content overflow */
+    }
+}
+
 .guide-fullscreen-header {
     background: var(--bg-elevated);
     border-bottom: 1px solid var(--border-primary);
@@ -4521,13 +4529,16 @@ body.guide-open {
 @media (max-width: 768px) {
   .guide-fullscreen-overlay {
     padding: var(--spacing-sm);
-    align-items: flex-start;
-    padding-top: calc(var(--spacing-lg) + env(safe-area-inset-top, 0px));
+    align-items: flex-start !important; /* Start from top to allow tall content */
+    justify-content: flex-start !important; /* Allow content to start from top */
+    padding-top: calc(var(--spacing-sm) + env(safe-area-inset-top, 0px));
+    padding-bottom: calc(var(--spacing-sm) + env(safe-area-inset-bottom, 0px));
   }
   
   .guide-fullscreen-container {
-    max-height: calc(100vh - var(--spacing-xl) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+    max-height: calc(100vh - var(--spacing-sm) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
     border-radius: var(--border-radius);
+    overflow: visible !important; /* Allow content to be fully visible */
   }
   
   .guide-fullscreen-content {
@@ -4535,6 +4546,8 @@ body.guide-open {
     /* Ensure proper touch scrolling momentum */
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
+    overflow-y: auto !important; /* Enable vertical scrolling */
+    max-height: calc(100vh - 120px) !important; /* Ensure scrollable area */
   }
   
   /* Improve touch targets for mobile */

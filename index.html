@@ -363,10 +363,13 @@
             </div>
         </section>
 
-        <!-- Ad Placement 1: Between Dashboard and Tab Navigation -->
-        <div class="ezoic-ad-container" style="margin: 20px auto; text-align: center; max-width: 728px;">
-            <div id="ezoic-pub-ad-placeholder-100"></div>
-        </div>
+        <!-- Ad Placement 1: Top of Page - Between Dashboard and Tab Navigation -->
+        <div id="ezoic-pub-ad-placeholder-118"></div>
+        <script>
+            ezstandalone.cmd.push(function () {
+                ezstandalone.showAds(118);
+            });
+        </script>
 
         <!-- Tab Navigation -->
         <nav class="tab-navigation" role="navigation" aria-label="Main sections">
@@ -424,9 +427,14 @@
                     </div>
                 </div>
 
-                <!-- Ad Placement 2: Between Priority and Schedule Tabs -->
-                <div class="ezoic-ad-container" id="priority-tab-ad" style="display: block; margin: 20px auto; text-align: center; max-width: 728px;">
-                    <div id="ezoic-pub-ad-placeholder-101"></div>
+                <!-- Ad Placement 2: Mid Content - Below Priority Windows -->
+                <div id="priority-tab-ad" style="display: block;">
+                    <div id="ezoic-pub-ad-placeholder-120"></div>
+                    <script>
+                        ezstandalone.cmd.push(function () {
+                            ezstandalone.showAds(120);
+                        });
+                    </script>
                 </div>
 
                 <!-- Schedule Tab -->
@@ -466,9 +474,14 @@
                         <div class="loading-message">Loading guides...</div>
                     </div>
                     
-                    <!-- Ad Placement 3: At bottom of guides -->
-                    <div class="ezoic-ad-container" id="guides-tab-ad" style="display: none; margin: 20px auto; text-align: center; max-width: 728px;">
-                        <div id="ezoic-pub-ad-placeholder-102"></div>
+                    <!-- Ad Placement 3: Bottom of Page - Below Guides -->
+                    <div id="guides-tab-ad" style="display: none;">
+                        <div id="ezoic-pub-ad-placeholder-121"></div>
+                        <script>
+                            ezstandalone.cmd.push(function () {
+                                ezstandalone.showAds(121);
+                            });
+                        </script>
                     </div>
                 </div>
             </div>
@@ -648,9 +661,9 @@
             try {
                 ezstandalone.cmd.push(function () {
                     try {
-                        // Initialize ads with IDs
-                        ezstandalone.showAds([100, 101, 102]);
-                        console.log('Ezoic ads command queued for placeholders 100, 101, 102');
+                        // Ads are now initialized with individual script tags for each placeholder
+                        // IDs in use: 118 (top_of_page), 120 (mid_content), 121 (bottom_of_page)
+                        console.log('Ezoic ads initialized with individual showAds calls');
                         window.ezoicLoaded = true;
                         
                         // Monitor for any performance issues

@@ -764,8 +764,8 @@
             updateAdVisibility(activeTab) {
                 try {
                     // Hide all tab-specific ads first
-                    const priorityAd = document.getElementById('priority-tab-ad');
-                    const guidesAd = document.getElementById('guides-tab-ad');
+                    const priorityAd = document.getElementById('priority-tab-ad'); // Contains placeholder 120 (mid_content)
+                    const guidesAd = document.getElementById('guides-tab-ad'); // Contains placeholder 121 (bottom_of_page)
                     
                     if (priorityAd) priorityAd.style.display = 'none';
                     if (guidesAd) guidesAd.style.display = 'none';
@@ -776,6 +776,7 @@
                     } else if (activeTab === 'guides' && guidesAd) {
                         guidesAd.style.display = 'block';
                     }
+                    // Placeholder 118 (top_of_page) is always visible
                     // No ad for schedule tab by design
                 } catch (error) {
                     console.warn('Ad visibility update error:', error);

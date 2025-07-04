@@ -1,22 +1,8 @@
         /**
          * Last War Nexus - VS Points & Arms Race Optimizer
          * PRODUCTION READY VERSION - Enhanced Design & Functionality
-         * WITH EZOIC AD INTEGRATION - Namespace Protected
          */
 
-        // Namespace isolation to protect from ad script conflicts
-        window.LastWarNexus = window.LastWarNexus || {};
-        
-        // Store critical timer functions before any external scripts load
-        LastWarNexus.originalTimers = {
-            setInterval: window.setInterval,
-            setTimeout: window.setTimeout,
-            requestAnimationFrame: window.requestAnimationFrame
-        };
-        
-        // Mark when core app is ready
-        LastWarNexus.isReady = false;
-        
         class VSPointsOptimizer {
             constructor() {
                 this.timeOffset = 0;
@@ -168,11 +154,6 @@
                     } else {
                         this.startUpdateLoop();
                     }
-                    
-                    // Mark core app as ready for Ezoic integration
-                    LastWarNexus.isReady = true;
-                    console.log('LastWarNexus core app is ready');
-                    
                 } catch (error) {
                     console.error('Initialization error:', error);
                     this.handleError('Failed to initialize application');
@@ -753,33 +734,8 @@
                     // Populate content
                     this.populateTabContent(tabName);
                     
-                    // Handle ad visibility based on active tab
-                    this.updateAdVisibility(tabName);
-                    
                 } catch (error) {
                     console.error('Tab switch error:', error);
-                }
-            }
-            
-            updateAdVisibility(activeTab) {
-                try {
-                    // Hide all tab-specific ads first
-                    const priorityAd = document.getElementById('priority-tab-ad');
-                    const guidesAd = document.getElementById('guides-tab-ad');
-                    
-                    if (priorityAd) priorityAd.style.display = 'none';
-                    if (guidesAd) guidesAd.style.display = 'none';
-                    
-                    // Show ad for active tab
-                    if (activeTab === 'priority' && priorityAd) {
-                        priorityAd.style.display = 'block';
-                    } else if (activeTab === 'guides' && guidesAd) {
-                        guidesAd.style.display = 'block';
-                    }
-                    // No ad for schedule tab by design
-                } catch (error) {
-                    console.warn('Ad visibility update error:', error);
-                    // Non-critical error, continue
                 }
             }
 
@@ -3213,9 +3169,6 @@
                 const app = new VSPointsOptimizer();
                 window.lastWarNexus = app;
                 
-                // Store app instance in namespace for Ezoic integration
-                LastWarNexus.app = app;
-                
                 // Add guide expansion function to window
                 // Remove duplicate toggleGuideExpansion definition
 
@@ -3262,21 +3215,9 @@
         });
 
         window.addEventListener('error', (event) => {
-            // Filter out Ezoic-related errors to prevent them from breaking the app
-            if (event.filename && event.filename.includes('ezoic')) {
-                console.warn('Ezoic error detected, continuing without ads:', event.error);
-                event.preventDefault(); // Prevent the error from propagating
-                return;
-            }
             console.error('Global error:', event.error);
         });
 
         window.addEventListener('unhandledrejection', (event) => {
-            // Filter out Ezoic-related promise rejections
-            if (event.reason && event.reason.toString().includes('ezoic')) {
-                console.warn('Ezoic promise rejection, continuing without ads:', event.reason);
-                event.preventDefault();
-                return;
-            }
             console.error('Unhandled promise rejection:', event.reason);
         });

@@ -53,6 +53,36 @@
     <!-- Load CSS files -->
     <link rel="stylesheet" href="style.css">
     
+    <!-- Ezoic Integration Scripts - Critical Order -->
+    <!-- STEP 1: Privacy/Consent Scripts FIRST (Required for GDPR compliance) -->
+    <script src="https://cmp.gatekeeperconsent.com/min.js" data-cfasync="false"></script>
+    <script src="https://the.gatekeeperconsent.com/cmp.min.js" data-cfasync="false"></script>
+    
+    <!-- STEP 2: Main Ezoic Script with async loading -->
+    <script async src="//www.ezojs.com/ezoic/sa.min.js"></script>
+    
+    <!-- STEP 3: Initialize Ezoic command queue with error handling -->
+    <script>
+        // Initialize Ezoic command queue
+        window.ezstandalone = window.ezstandalone || {};
+        ezstandalone.cmd = ezstandalone.cmd || [];
+        
+        // Track if Ezoic is loaded successfully
+        window.ezoicLoaded = false;
+        
+        // Add error handling for Ezoic initialization
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                if (!window.ezoicLoaded && window.ezstandalone && window.ezstandalone.define) {
+                    window.ezoicLoaded = true;
+                    console.log('Ezoic loaded successfully');
+                } else if (!window.ezoicLoaded) {
+                    console.warn('Ezoic failed to load - site continuing without ads');
+                }
+            }, 3000);
+        });
+    </script>
+    
     <!-- Structured Data for SEO -->
     <script type="application/ld+json">
     {
@@ -333,6 +363,11 @@
             </div>
         </section>
 
+        <!-- Ad Placement 1: Between Dashboard and Tab Navigation -->
+        <div class="ezoic-ad-container" style="margin: 20px auto; text-align: center; max-width: 728px;">
+            <div id="ezoic-pub-ad-placeholder-100"></div>
+        </div>
+
         <!-- Tab Navigation -->
         <nav class="tab-navigation" role="navigation" aria-label="Main sections">
             <div class="tab-container" role="tablist">
@@ -389,6 +424,11 @@
                     </div>
                 </div>
 
+                <!-- Ad Placement 2: Between Priority and Schedule Tabs -->
+                <div class="ezoic-ad-container" id="priority-tab-ad" style="display: block; margin: 20px auto; text-align: center; max-width: 728px;">
+                    <div id="ezoic-pub-ad-placeholder-101"></div>
+                </div>
+
                 <!-- Schedule Tab -->
                 <div id="schedule-tab" class="tab-panel" role="tabpanel" aria-labelledby="schedule-tab-btn">
                     <div class="section-header">
@@ -424,6 +464,11 @@
                     <!-- Guide Content -->
                     <div id="guides-content" class="priority-grid">
                         <div class="loading-message">Loading guides...</div>
+                    </div>
+                    
+                    <!-- Ad Placement 3: At bottom of guides -->
+                    <div class="ezoic-ad-container" id="guides-tab-ad" style="display: none; margin: 20px auto; text-align: center; max-width: 728px;">
+                        <div id="ezoic-pub-ad-placeholder-102"></div>
                     </div>
                 </div>
             </div>
@@ -566,6 +611,96 @@
                         console.log('SW registration failed: ', registrationError);
                     });
             });
+        }
+    </script>
+    
+    <!-- Ezoic Ad Initialization with Protection -->
+    <script>
+        // Function to safely initialize ads after core app is ready
+        function initializeEzoicAds() {
+            try {
+                // Only initialize if core app is ready
+                if (typeof LastWarNexus !== 'undefined' && LastWarNexus.isReady) {
+                    console.log('Initializing Ezoic ads - core app is ready');
+                    
+                    // Use requestIdleCallback for non-blocking ad loading
+                    if ('requestIdleCallback' in window) {
+                        requestIdleCallback(function() {
+                            loadEzoicAds();
+                        }, { timeout: 2000 });
+                    } else {
+                        // Fallback for browsers without requestIdleCallback
+                        setTimeout(loadEzoicAds, 1000);
+                    }
+                } else {
+                    // Core app not ready, wait and retry
+                    console.log('Core app not ready, delaying ad initialization');
+                    setTimeout(initializeEzoicAds, 500);
+                }
+            } catch (error) {
+                console.warn('Error initializing Ezoic ads:', error);
+                // Site continues without ads
+            }
+        }
+        
+        // Function to load Ezoic ads with error handling
+        function loadEzoicAds() {
+            try {
+                ezstandalone.cmd.push(function () {
+                    try {
+                        // Initialize ads with IDs
+                        ezstandalone.showAds([100, 101, 102]);
+                        console.log('Ezoic ads command queued for placeholders 100, 101, 102');
+                        window.ezoicLoaded = true;
+                        
+                        // Monitor for any performance issues
+                        monitorAdPerformance();
+                    } catch (ezoicError) {
+                        console.warn('Ezoic ad loading failed:', ezoicError);
+                        // Site continues functioning normally
+                    }
+                });
+            } catch (globalError) {
+                console.warn('Ezoic initialization failed:', globalError);
+                // Fallback: site works without ads
+            }
+        }
+        
+        // Performance monitoring for real-time app protection
+        function monitorAdPerformance() {
+            let lastCheck = performance.now();
+            
+            setInterval(function() {
+                const now = performance.now();
+                const timeSinceLastCheck = now - lastCheck;
+                
+                // If main thread is blocked for more than 100ms, warn
+                if (timeSinceLastCheck > 150) {
+                    console.warn('Performance degradation detected:', timeSinceLastCheck + 'ms delay');
+                }
+                
+                lastCheck = now;
+                
+                // Check if critical functions still work
+                if (typeof LastWarNexus !== 'undefined' && LastWarNexus.app) {
+                    // Verify core functionality is intact
+                    if (!LastWarNexus.app.updateInterval || !LastWarNexus.app.countdownInterval) {
+                        console.error('Critical timers compromised - disabling ads');
+                        if (window.ezstandalone && window.ezstandalone.disable) {
+                            ezstandalone.disable();
+                        }
+                    }
+                }
+            }, 30000); // Check every 30 seconds
+        }
+        
+        // Start initialization process after DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(initializeEzoicAds, 1000); // Wait 1 second after DOM ready
+            });
+        } else {
+            setTimeout(initializeEzoicAds, 1000);
         }
     </script>
 </body>

@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notification Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #333;
+            border-radius: 8px;
+        }
+        button {
+            background: #0ea5e9;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0284c7;
+        }
+        .log {
+            background: #2a2a2a;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success { background: #065f46; color: #10b981; }
+        .error { background: #7f1d1d; color: #ef4444; }
+        .warning { background: #7c2d12; color: #f59e0b; }
+        .info { background: #1e3a8a; color: #3b82f6; }
+        select {
+            background: #2a2a2a;
+            color: #fff;
+            border: 1px solid #555;
+            padding: 8px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Mobile Notification System Test</h1>
+    
+    <div class="test-section">
+        <h2>Browser & Device Information</h2>
+        <div id="device-info"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Notification API Status</h2>
+        <div id="api-status"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Permission Tests</h2>
+        <button onclick="testBasicPermission()">Test Basic Permission Request</button>
+        <button onclick="testMobilePermission()">Test Mobile-Specific Permission</button>
+        <button onclick="testUserGesturePermission()">Test Permission with User Gesture</button>
+        <button onclick="checkCurrentPermission()">Check Current Permission</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>UI Event Simulation</h2>
+        <label for="notifications-toggle">Notifications Toggle:</label>
+        <select id="notifications-toggle">
+            <option value="enabled">Enabled</option>
+            <option value="disabled">Disabled</option>
+        </select>
+        <button onclick="simulateDropdownChange()">Simulate Dropdown Change</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test Results</h2>
+        <div id="test-status"></div>
+        <div class="log" id="test-log"></div>
+        <button onclick="clearLog()">Clear Log</button>
+    </div>
+
+    <script>
+        // Global variables for testing
+        let notificationsEnabled = false;
+        let testLog = [];
+        
+        // Logging function
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}`;
+            testLog.push(logEntry);
+            
+            const logElement = document.getElementById('test-log');
+            logElement.textContent = testLog.join('\n');
+            
+            const statusElement = document.getElementById('test-status');
+            statusElement.className = `status ${type}`;
+            statusElement.textContent = message;
+            
+            console.log(logEntry);
+        }
+        
+        // Initialize device information
+        function initializeDeviceInfo() {
+            const info = document.getElementById('device-info');
+            const userAgent = navigator.userAgent;
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(userAgent);
+            const isSafari = /Safari/i.test(userAgent) && !/Chrome/i.test(userAgent);
+            const isChrome = /Chrome/i.test(userAgent);
+            const isFirefox = /Firefox/i.test(userAgent);
+            
+            info.innerHTML = `
+                <p><strong>User Agent:</strong> ${userAgent}</p>
+                <p><strong>Is Mobile:</strong> ${isMobile}</p>
+                <p><strong>Is Safari:</strong> ${isSafari}</p>
+                <p><strong>Is Chrome:</strong> ${isChrome}</p>
+                <p><strong>Is Firefox:</strong> ${isFirefox}</p>
+                <p><strong>Screen Size:</strong> ${screen.width}x${screen.height}</p>
+                <p><strong>Viewport:</strong> ${window.innerWidth}x${window.innerHeight}</p>
+            `;
+        }
+        
+        // Check API availability
+        function checkAPIStatus() {
+            const apiStatus = document.getElementById('api-status');
+            const hasNotificationAPI = 'Notification' in window;
+            const hasServiceWorker = 'serviceWorker' in navigator;
+            const hasPermissionAPI = 'permissions' in navigator;
+            
+            let statusHTML = `
+                <p><strong>Notification API:</strong> ${hasNotificationAPI ? '✅ Available' : '❌ Not Available'}</p>
+                <p><strong>Service Worker:</strong> ${hasServiceWorker ? '✅ Available' : '❌ Not Available'}</p>
+                <p><strong>Permissions API:</strong> ${hasPermissionAPI ? '✅ Available' : '❌ Not Available'}</p>
+            `;
+            
+            if (hasNotificationAPI) {
+                statusHTML += `<p><strong>Current Permission:</strong> ${Notification.permission}</p>`;
+                statusHTML += `<p><strong>Request Function Type:</strong> ${typeof Notification.requestPermission}</p>`;
+                statusHTML += `<p><strong>Request Function Length:</strong> ${Notification.requestPermission.length}</p>`;
+            }
+            
+            apiStatus.innerHTML = statusHTML;
+        }
+        
+        // Test basic permission request
+        async function testBasicPermission() {
+            log('Testing basic permission request...', 'info');
+            
+            if (!('Notification' in window)) {
+                log('❌ Notification API not available', 'error');
+                return;
+            }
+            
+            if (Notification.permission === 'granted') {
+                log('✅ Permission already granted', 'success');
+                return;
+            }
+            
+            if (Notification.permission === 'denied') {
+                log('❌ Permission already denied', 'error');
+                return;
+            }
+            
+            try {
+                const permission = await Notification.requestPermission();
+                log(`Permission result: ${permission}`, permission === 'granted' ? 'success' : 'warning');
+            } catch (error) {
+                log(`❌ Permission request failed: ${error.message}`, 'error');
+            }
+        }
+        
+        // Test mobile-specific permission (matching the app's logic)
+        async function testMobilePermission() {
+            log('Testing mobile-specific permission logic...', 'info');
+            
+            if (!('Notification' in window)) {
+                log('❌ Notification API not available', 'error');
+                return;
+            }
+            
+            if (Notification.permission === 'granted') {
+                log('✅ Permission already granted', 'success');
+                return;
+            }
+            
+            if (Notification.permission === 'denied') {
+                log('❌ Permission already denied', 'error');
+                return;
+            }
+            
+            // Mobile Safari/Chrome specific handling (copied from app.js)
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            const isSafari = /Safari/i.test(navigator.userAgent) && !/Chrome/i.test(navigator.userAgent);
+            
+            log(`Mobile detected: ${isMobile}, Safari detected: ${isSafari}`, 'info');
+            
+            if (isMobile || isSafari) {
+                log('Using mobile-specific permission logic...', 'info');
+                
+                return new Promise((resolve) => {
+                    // Small delay to ensure user interaction context
+                    setTimeout(async () => {
+                        try {
+                            let permission;
+                            
+                            // Try modern async approach first
+                            if (typeof Notification.requestPermission === 'function') {
+                                if (Notification.requestPermission.length === 0) {
+                                    log('Using modern Promise-based API...', 'info');
+                                    permission = await Notification.requestPermission();
+                                } else {
+                                    log('Using legacy callback API...', 'info');
+                                    permission = await new Promise(resolve => {
+                                        Notification.requestPermission(resolve);
+                                    });
+                                }
+                            }
+                            
+                            const granted = permission === 'granted';
+                            log(`Mobile permission result: ${permission}`, granted ? 'success' : 'warning');
+                            
+                            if (granted) {
+                                log('✅ Mobile notification permission granted', 'success');
+                            } else {
+                                log('❌ Mobile notification permission denied', 'error');
+                            }
+                            
+                            resolve(granted);
+                        } catch (error) {
+                            log(`❌ Mobile notification request failed: ${error.message}`, 'error');
+                            resolve(false);
+                        }
+                    }, 100);
+                });
+            } else {
+                log('Using desktop permission logic...', 'info');
+                try {
+                    const permission = await Notification.requestPermission();
+                    const granted = permission === 'granted';
+                    log(`Desktop permission result: ${permission}`, granted ? 'success' : 'warning');
+                    return granted;
+                } catch (error) {
+                    log(`❌ Desktop permission request failed: ${error.message}`, 'error');
+                    return false;
+                }
+            }
+        }
+        
+        // Test permission with explicit user gesture
+        async function testUserGesturePermission() {
+            log('Testing permission with user gesture context...', 'info');
+            
+            // This function is called from a button click, so it should have user gesture context
+            if (!('Notification' in window)) {
+                log('❌ Notification API not available', 'error');
+                return;
+            }
+            
+            if (Notification.permission === 'granted') {
+                log('✅ Permission already granted', 'success');
+                return;
+            }
+            
+            if (Notification.permission === 'denied') {
+                log('❌ Permission already denied', 'error');
+                return;
+            }
+            
+            try {
+                // Test immediate request (should have user gesture)
+                log('Requesting permission immediately with user gesture...', 'info');
+                const permission = await Notification.requestPermission();
+                log(`User gesture permission result: ${permission}`, permission === 'granted' ? 'success' : 'warning');
+                
+                if (permission === 'granted') {
+                    // Test notification
+                    setTimeout(() => {
+                        new Notification('Test Notification', {
+                            body: 'This is a test notification from the permission test',
+                            icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🎯</text></svg>'
+                        });
+                    }, 1000);
+                }
+            } catch (error) {
+                log(`❌ User gesture permission request failed: ${error.message}`, 'error');
+            }
+        }
+        
+        // Check current permission
+        function checkCurrentPermission() {
+            if (!('Notification' in window)) {
+                log('❌ Notification API not available', 'error');
+                return;
+            }
+            
+            log(`Current permission state: ${Notification.permission}`, 'info');
+            
+            // Also check if we can create notifications
+            if (Notification.permission === 'granted') {
+                try {
+                    const testNotification = new Notification('Permission Test', {
+                        body: 'Notifications are working!',
+                        requireInteraction: false
+                    });
+                    testNotification.close();
+                    log('✅ Can create notifications successfully', 'success');
+                } catch (error) {
+                    log(`❌ Cannot create notifications: ${error.message}`, 'error');
+                }
+            }
+        }
+        
+        // Simulate dropdown change (matching the app's logic)
+        function simulateDropdownChange() {
+            const toggle = document.getElementById('notifications-toggle');
+            const enabled = toggle.value === 'enabled';
+            
+            log(`Simulating dropdown change to: ${enabled ? 'enabled' : 'disabled'}`, 'info');
+            
+            // Simulate the app's setNotifications function
+            setNotifications(enabled);
+        }
+        
+        // Simulate the app's setNotifications function
+        async function setNotifications(enabled) {
+            log(`setNotifications called with: ${enabled}`, 'info');
+            
+            try {
+                if (enabled) {
+                    log('Requesting notification permission...', 'info');
+                    const permission = await testMobilePermission();
+                    notificationsEnabled = permission;
+                    log(`Notifications enabled: ${notificationsEnabled}`, notificationsEnabled ? 'success' : 'warning');
+                } else {
+                    notificationsEnabled = false;
+                    log('Notifications disabled', 'info');
+                }
+                
+                // Simulate UI sync
+                const toggle = document.getElementById('notifications-toggle');
+                toggle.value = notificationsEnabled ? 'enabled' : 'disabled';
+                
+            } catch (error) {
+                log(`❌ setNotifications error: ${error.message}`, 'error');
+            }
+        }
+        
+        // Clear log
+        function clearLog() {
+            testLog = [];
+            document.getElementById('test-log').textContent = '';
+            document.getElementById('test-status').textContent = '';
+        }
+        
+        // Add dropdown change listener
+        document.getElementById('notifications-toggle').addEventListener('change', (e) => {
+            const enabled = e.target.value === 'enabled';
+            log(`Dropdown changed to: ${enabled ? 'enabled' : 'disabled'}`, 'info');
+            setNotifications(enabled);
+        });
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeDeviceInfo();
+            checkAPIStatus();
+            log('Notification test page loaded', 'info');
+        });
+    </script>
+</body>
+</html>

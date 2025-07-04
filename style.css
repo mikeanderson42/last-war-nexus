@@ -2909,8 +2909,10 @@ body {
     transition: all var(--transition-normal);
     display: flex;
     flex-direction: column;
-    height: 350px;
+    min-height: 280px; /* Minimum height instead of fixed */
     justify-content: space-between;
+    /* Prevent content overflow */
+    overflow: hidden;
 }
 
 .guide-preview-card:hover {
@@ -2923,9 +2925,10 @@ body {
 .guide-preview-header {
     display: flex;
     align-items: flex-start;
-    gap: var(--spacing-lg);
-    margin-bottom: var(--spacing-lg);
+    gap: var(--spacing-md); /* Reduced gap for better spacing */
+    margin-bottom: var(--spacing-md); /* Reduced margin */
     width: 100%;
+    flex-shrink: 0; /* Prevent header from shrinking */
 }
 
 .guide-preview-icon {
@@ -2993,22 +2996,27 @@ body {
     background: rgba(0, 255, 136, 0.1);
     border: 1px solid rgba(0, 255, 136, 0.3);
     border-radius: var(--border-radius);
-    padding: var(--spacing-md);
-    line-height: 1.5;
-    margin-top: var(--spacing-lg);
-    margin-bottom: 0;
+    padding: var(--spacing-sm); /* Reduced padding */
+    line-height: 1.4; /* Tighter line height */
+    margin-top: var(--spacing-md); /* Reduced margin */
+    margin-bottom: var(--spacing-sm); /* Add bottom margin for spacing */
     width: 100%;
     word-wrap: break-word;
     text-align: left;
     overflow-wrap: break-word;
+    flex-shrink: 0; /* Prevent shrinking */
+    /* Limit height to prevent overflow */
+    max-height: 100px;
+    overflow: hidden;
 }
 
 .guide-preview-content {
-    flex: 0 0 auto;
+    flex: 1; /* Take available space */
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     min-height: 0;
+    overflow: hidden; /* Prevent content overflow */
 }
 
 /* Fullscreen Overlay */
@@ -3872,16 +3880,10 @@ select:focus,
 .guide-card:hover {
     background: var(--glass-bg-elevated);
     border-color: var(--glass-border-hover);
-    box-shadow: var(--glass-shadow-hover);
+    box-shadow: var(--shadow-lg);
     backdrop-filter: var(--backdrop-blur-strong);
     -webkit-backdrop-filter: var(--backdrop-blur-strong);
     transition: all var(--transition-normal);
-    margin-bottom: var(--spacing-md);
-}
-
-.guide-card:hover {
-    box-shadow: var(--shadow-lg);
-    border-color: var(--border-accent);
 }
 
 .guide-header {
@@ -3889,7 +3891,6 @@ select:focus,
     align-items: center;
     gap: var(--spacing-md);
     padding: var(--spacing-lg);
-    background: var(--bg-surface);
     cursor: pointer;
     transition: background var(--transition-fast);
 }
@@ -3942,6 +3943,8 @@ select:focus,
 
 .guide-content {
     padding: var(--spacing-lg);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .guide-content h3 {
@@ -4968,6 +4971,35 @@ body.guide-open {
   /* MOBILE: Hide any desktop buttons */
   .guide-card-fullscreen .guide-preview-card > .guide-preview-btn:not(.mobile-repositioned) {
     display: none !important;
+  }
+  
+  /* MOBILE: Guide Card Layout Fixes */
+  .guide-card {
+    min-height: auto; /* Allow flexible height */
+    margin-bottom: var(--spacing-sm); /* Tighter spacing between cards */
+  }
+  
+  .guide-header {
+    padding: var(--spacing-sm); /* Reduced padding for mobile */
+    gap: var(--spacing-sm);
+  }
+  
+  .guide-content {
+    padding: var(--spacing-sm); /* Reduced padding for mobile */
+    max-height: none; /* Remove height restrictions */
+    overflow: visible; /* Ensure content isn't clipped */
+  }
+  
+  .guide-content ul,
+  .guide-content ol {
+    margin: var(--spacing-xs) 0;
+    padding-left: var(--spacing-md); /* Proper indentation */
+  }
+  
+  .guide-content li {
+    margin-bottom: var(--spacing-xs);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 }
 

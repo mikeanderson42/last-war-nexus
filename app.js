@@ -570,7 +570,7 @@
                         const permission = await this.requestNotificationPermission();
                         this.notificationsEnabled = permission;
                     } else {
-                        this.notificationsEnabled = true;
+                        this.notificationsEnabled = false; // FIXED: Was incorrectly set to true
                     }
                     
                     this.saveSettings();

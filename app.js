@@ -2582,13 +2582,10 @@
                                     <div class="guide-fullscreen-header">
                                         <div class="guide-fullscreen-title-section">
                                             <span class="guide-fullscreen-icon">${guide.icon}</span>
-                                            <div>
-                                                <h2 class="guide-fullscreen-title">${guide.title}</h2>
-                                                <div class="guide-fullscreen-category">${guide.category}</div>
-                                            </div>
+                                            <h2 class="guide-fullscreen-title">${guide.title}</h2>
                                         </div>
                                         <button class="guide-fullscreen-close" onclick="window.lastWarNexus.toggleGuideExpansion(${index})" aria-label="Close guide">
-                                            <span>×</span>
+                                            ×
                                         </button>
                                     </div>
                                     ${guide.keyTakeaway ? `<div class="guide-fullscreen-takeaway" style="display: none;">💡 <strong>Key Point:</strong> ${guide.keyTakeaway}</div>` : ''}
@@ -2946,19 +2943,65 @@
                             return false;
                         }
                         
-                        // Request permission with user interaction
-                        const permission = await Notification.requestPermission();
-                        const granted = permission === 'granted';
-                        this.notificationsEnabled = granted;
-                        this.saveSettings();
+                        // Mobile Safari/Chrome specific handling
+                        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+                        const isSafari = /Safari/i.test(navigator.userAgent) && !/Chrome/i.test(navigator.userAgent);
                         
-                        if (granted) {
-                            console.log('Notification permission granted');
+                        if (isMobile || isSafari) {
+                            // For mobile, use a more explicit approach with timeout
+                            return new Promise((resolve) => {
+                                // Small delay to ensure user interaction context
+                                setTimeout(async () => {
+                                    try {
+                                        let permission;
+                                        
+                                        // Try modern async approach first
+                                        if (typeof Notification.requestPermission === 'function') {
+                                            if (Notification.requestPermission.length === 0) {
+                                                // Modern Promise-based API
+                                                permission = await Notification.requestPermission();
+                                            } else {
+                                                // Legacy callback API (older Safari)
+                                                permission = await new Promise(resolve => {
+                                                    Notification.requestPermission(resolve);
+                                                });
+                                            }
+                                        }
+                                        
+                                        const granted = permission === 'granted';
+                                        this.notificationsEnabled = granted;
+                                        this.saveSettings();
+                                        
+                                        if (granted) {
+                                            console.log('Mobile notification permission granted');
+                                        } else {
+                                            console.log('Mobile notification permission denied');
+                                        }
+                                        
+                                        resolve(granted);
+                                    } catch (error) {
+                                        console.warn('Mobile notification request failed:', error);
+                                        this.notificationsEnabled = false;
+                                        this.saveSettings();
+                                        resolve(false);
+                                    }
+                                }, 100);
+                            });
                         } else {
-                            console.log('Notification permission denied');
+                            // Desktop browsers - standard approach
+                            const permission = await Notification.requestPermission();
+                            const granted = permission === 'granted';
+                            this.notificationsEnabled = granted;
+                            this.saveSettings();
+                            
+                            if (granted) {
+                                console.log('Desktop notification permission granted');
+                            } else {
+                                console.log('Desktop notification permission denied');
+                            }
+                            
+                            return granted;
                         }
-                        
-                        return granted;
                     } else {
                         console.log('Notifications not supported');
                         this.notificationsEnabled = false;

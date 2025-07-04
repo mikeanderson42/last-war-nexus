@@ -2033,7 +2033,7 @@ body {
         width: calc(100vw - var(--spacing-md) * 2);
         max-width: 320px;
         right: var(--spacing-sm);
-        left: var(--spacing-sm);
+        left: auto; /* Fixed: removed conflicting left positioning */
         top: 60px;
         /* Ensure dropdown stays within viewport */
         max-height: calc(100vh - 120px);
@@ -2342,7 +2342,7 @@ body {
         width: calc(100vw - var(--spacing-md) * 2);
         max-width: none;
         right: var(--spacing-sm);
-        left: var(--spacing-sm);
+        left: auto; /* Fixed: removed conflicting left positioning */
         top: 60px;
         /* Ensure dropdown stays within viewport */
         max-height: calc(100vh - 120px);
@@ -2543,7 +2543,7 @@ body {
     .settings-dropdown {
         width: calc(100vw - var(--spacing-sm) * 2);
         right: var(--spacing-xs);
-        left: var(--spacing-xs);
+        left: auto; /* Fixed: removed conflicting left positioning */
     }
     
     .dropdown-content {

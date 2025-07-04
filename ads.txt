@@ -1,0 +1,29 @@
+# Last War Nexus - Ads.txt
+# Generated for Ezoic Account ID: 19390
+# Domain: www.lastwarnexus.com
+
+# Google AdSense (original publisher)
+google.com, pub-2898635719839576, DIRECT, f08c47fec0942fa0
+
+# Ezoic seller entries
+ezoic.com, 19390, DIRECT
+google.com, pub-5617098543167621, RESELLER, f08c47fec0942fa0
+appnexus.com, 10239, RESELLER
+appnexus.com, 2764, RESELLER
+indexexchange.com, 175407, RESELLER
+openx.com, 537120563, RESELLER, 6a698e2ec38604c6
+pubmatic.com, 137711, RESELLER, 5d62403b186f2ace
+pubmatic.com, 156212, RESELLER, 5d62403b186f2ace
+rubiconproject.com, 13132, RESELLER, 0bfd66d529a55807
+amazon.com, 3411, RESELLER
+contextweb.com, 558511, RESELLER, 89ff185a4c4e857c
+districtm.io, 100962, RESELLER
+sovrn.com, 257611, RESELLER, fafdf38b16bf6b2b
+rhythmone.com, 1059622079, RESELLER, a670c89d4a324e47
+video.unrulymedia.com, 1059622079, RESELLER
+emxdgt.com, 326, RESELLER, 1e1d41537f7cad7f
+admanmedia.com, 552, RESELLER
+lemmatechnologies.com, 362, RESELLER, 7829010c5bebd1fb
+webeyemob.com, 70097, RESELLER
+conversantmedia.com, 40915, RESELLER, 03113cd04947736d
+sharethrough.com, 7144eb80, RESELLER, d53b998a7bd4ecd2

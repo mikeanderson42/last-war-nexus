@@ -169,6 +169,12 @@
                         this.startUpdateLoop();
                     }
                     
+                    // Ensure UI reflects current settings state after DOM is ready
+                    setTimeout(() => {
+                        this.syncSettingsToUI();
+                        console.log('Settings UI synchronized on app ready');
+                    }, 100);
+                    
                     // Mark core app as ready for Ezoic integration
                     LastWarNexus.isReady = true;
                     console.log('LastWarNexus core app is ready');
@@ -3043,7 +3049,7 @@
                     if (saved) {
                         const settings = JSON.parse(saved);
                         this.timeOffset = settings.timeOffset || 0;
-                        this.notificationsEnabled = settings.notificationsEnabled !== undefined ? settings.notificationsEnabled : true;
+                        this.notificationsEnabled = settings.notificationsEnabled !== undefined ? settings.notificationsEnabled : false;
                         this.isSetupComplete = settings.isSetupComplete || false;
                         this.currentPhaseOverride = settings.currentPhaseOverride || null;
                         this.nextPhaseOverride = settings.nextPhaseOverride || null;

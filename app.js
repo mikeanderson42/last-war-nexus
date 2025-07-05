@@ -228,9 +228,31 @@
 
                     const notificationsToggle = document.getElementById('notifications-toggle');
                     if (notificationsToggle) {
-                        notificationsToggle.addEventListener('change', (e) => {
+                        notificationsToggle.addEventListener('change', async (e) => {
                             const enabled = e.target.value === 'enabled';
-                            this.setNotifications(enabled);
+                            
+                            if (enabled) {
+                                // Request permission immediately with user gesture context
+                                console.log('User enabled notifications - requesting permission...');
+                                const permission = await this.requestNotificationPermission();
+                                if (!permission) {
+                                    // Reset dropdown if permission denied
+                                    console.log('Permission denied - resetting dropdown');
+                                    e.target.value = 'disabled';
+                                    this.notificationsEnabled = false;
+                                    this.saveSettings();
+                                    this.showUserMessage('Notifications require browser permission. Please enable in browser settings.');
+                                    return;
+                                }
+                                console.log('Permission granted - notifications enabled');
+                                this.notificationsEnabled = true;
+                            } else {
+                                console.log('User disabled notifications');
+                                this.notificationsEnabled = false;
+                            }
+                            
+                            this.saveSettings();
+                            this.syncSettingsToUI();
                         });
                     }
 
@@ -584,6 +606,13 @@
                     
                 } catch (error) {
                     console.error('Notification setting error:', error);
+                    
+                    // FIXED: Add user feedback for permission failures
+                    this.showUserMessage('Unable to change notification settings. Please check browser permissions.');
+                    
+                    // Reset UI state on error
+                    this.notificationsEnabled = false;
+                    this.syncSettingsToUI();
                 }
             }
 
@@ -595,7 +624,21 @@
                     const nextPhaseSelect = document.getElementById('next-phase-select');
 
                     if (timeOffsetSelect) this.timeOffset = parseFloat(timeOffsetSelect.value);
-                    if (notificationsToggle) this.notificationsEnabled = notificationsToggle.value === 'enabled';
+                    
+                    // FIXED: Don't bypass permission system for notifications
+                    if (notificationsToggle) {
+                        const wantsNotifications = notificationsToggle.value === 'enabled';
+                        if (wantsNotifications && !this.notificationsEnabled) {
+                            // Don't enable without permission - this should have been handled by dropdown change
+                            console.warn('Cannot save enabled notifications without permission');
+                            notificationsToggle.value = 'disabled';
+                            this.notificationsEnabled = false;
+                        } else {
+                            // Only save the state if it matches current permission status
+                            this.notificationsEnabled = wantsNotifications;
+                        }
+                    }
+                    
                     if (currentPhaseSelect) this.currentPhaseOverride = currentPhaseSelect.value;
                     if (nextPhaseSelect) this.nextPhaseOverride = nextPhaseSelect.value;
 
@@ -2954,45 +2997,42 @@
                         const isSafari = /Safari/i.test(navigator.userAgent) && !/Chrome/i.test(navigator.userAgent);
                         
                         if (isMobile || isSafari) {
-                            // For mobile, use a more explicit approach with timeout
-                            return new Promise((resolve) => {
-                                // Small delay to ensure user interaction context
-                                setTimeout(async () => {
-                                    try {
-                                        let permission;
-                                        
-                                        // Try modern async approach first
-                                        if (typeof Notification.requestPermission === 'function') {
-                                            if (Notification.requestPermission.length === 0) {
-                                                // Modern Promise-based API
-                                                permission = await Notification.requestPermission();
-                                            } else {
-                                                // Legacy callback API (older Safari)
-                                                permission = await new Promise(resolve => {
-                                                    Notification.requestPermission(resolve);
-                                                });
-                                            }
-                                        }
-                                        
-                                        const granted = permission === 'granted';
-                                        this.notificationsEnabled = granted;
-                                        this.saveSettings();
-                                        
-                                        if (granted) {
-                                            console.log('Mobile notification permission granted');
-                                        } else {
-                                            console.log('Mobile notification permission denied');
-                                        }
-                                        
-                                        resolve(granted);
-                                    } catch (error) {
-                                        console.warn('Mobile notification request failed:', error);
-                                        this.notificationsEnabled = false;
-                                        this.saveSettings();
-                                        resolve(false);
+                            // FIXED: Request permission immediately with user gesture context
+                            try {
+                                let permission;
+                                
+                                console.log('Mobile browser detected - requesting notification permission');
+                                
+                                // Try modern async approach first
+                                if (typeof Notification.requestPermission === 'function') {
+                                    if (Notification.requestPermission.length === 0) {
+                                        // Modern Promise-based API
+                                        permission = await Notification.requestPermission();
+                                    } else {
+                                        // Legacy callback API (older Safari)
+                                        permission = await new Promise(resolve => {
+                                            Notification.requestPermission(resolve);
+                                        });
                                     }
-                                }, 100);
-                            });
+                                }
+                                
+                                const granted = permission === 'granted';
+                                this.notificationsEnabled = granted;
+                                this.saveSettings();
+                                
+                                if (granted) {
+                                    console.log('Mobile notification permission granted');
+                                } else {
+                                    console.log('Mobile notification permission denied or dismissed');
+                                }
+                                
+                                return granted;
+                            } catch (error) {
+                                console.error('Mobile notification request failed:', error);
+                                this.notificationsEnabled = false;
+                                this.saveSettings();
+                                return false;
+                            }
                         } else {
                             // Desktop browsers - standard approach
                             const permission = await Notification.requestPermission();
@@ -3019,6 +3059,26 @@
                     this.notificationsEnabled = false;
                     this.saveSettings();
                     return false;
+                }
+            }
+
+            showUserMessage(message) {
+                try {
+                    // Create a temporary notification-style message for user feedback
+                    console.log('User Message:', message);
+                    
+                    // Try to use existing notification system or fallback to console
+                    if (this.notificationsEnabled && 'Notification' in window && Notification.permission === 'granted') {
+                        this.showNotification('Notification Setting', message);
+                    } else {
+                        // Fallback: show in console and potentially in UI (could be enhanced)
+                        console.warn('Notification feedback:', message);
+                        
+                        // Optional: Could add a toast notification or alert here
+                        // For now, just ensure the console message is visible
+                    }
+                } catch (error) {
+                    console.error('Error showing user message:', error);
                 }
             }
 

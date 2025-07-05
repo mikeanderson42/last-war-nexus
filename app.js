@@ -3049,7 +3049,7 @@
                     if (saved) {
                         const settings = JSON.parse(saved);
                         this.timeOffset = settings.timeOffset || 0;
-                        this.notificationsEnabled = settings.notificationsEnabled !== undefined ? settings.notificationsEnabled : false;
+                        this.notificationsEnabled = settings.notificationsEnabled !== undefined ? settings.notificationsEnabled : true;
                         this.isSetupComplete = settings.isSetupComplete || false;
                         this.currentPhaseOverride = settings.currentPhaseOverride || null;
                         this.nextPhaseOverride = settings.nextPhaseOverride || null;

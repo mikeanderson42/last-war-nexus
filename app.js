@@ -231,20 +231,38 @@
                             console.log('User changed notification setting to:', enabled);
                             
                             if (enabled) {
-                                // Request permission immediately with user gesture context
-                                console.log('Requesting browser notification permission...');
-                                const permission = await this.requestNotificationPermission();
-                                if (!permission) {
-                                    // Reset dropdown if permission denied
-                                    console.log('Permission denied - resetting dropdown to disabled');
+                                // Show loading state
+                                const originalText = e.target.options[e.target.selectedIndex].text;
+                                e.target.options[e.target.selectedIndex].text = 'Requesting...';
+                                e.target.disabled = true;
+                                
+                                try {
+                                    // Request permission with user gesture context
+                                    console.log('Requesting browser notification permission...');
+                                    this.hasUserGesture = true; // Mark user gesture
+                                    const permission = await this.requestNotificationPermission();
+                                    
+                                    if (!permission) {
+                                        // Reset dropdown if permission denied
+                                        console.log('Permission denied - resetting dropdown to disabled');
+                                        e.target.value = 'disabled';
+                                        this.notificationsEnabled = false;
+                                        this.saveSettings();
+                                        return;
+                                    }
+                                    
+                                    console.log('Permission granted - notifications enabled');
+                                    this.notificationsEnabled = true;
+                                } catch (error) {
+                                    console.error('Notification setup error:', error);
                                     e.target.value = 'disabled';
                                     this.notificationsEnabled = false;
-                                    this.showUserMessage('Please allow notifications in your browser to enable this feature.');
-                                    this.saveSettings();
-                                    return;
+                                    this.showUserMessage('Failed to set up notifications. Please try again.');
+                                } finally {
+                                    // Restore UI state
+                                    e.target.options[e.target.selectedIndex].text = originalText;
+                                    e.target.disabled = false;
                                 }
-                                console.log('Permission granted - notifications enabled');
-                                this.notificationsEnabled = true;
                             } else {
                                 console.log('User disabled notifications');
                                 this.notificationsEnabled = false;
@@ -2979,104 +2997,101 @@
 
             async requestNotificationPermission() {
                 try {
-                    if ('Notification' in window) {
-                        // Check current permission first
-                        if (Notification.permission === 'granted') {
-                            this.notificationsEnabled = true;
-                            this.saveSettings();
-                            return true;
-                        }
+                    // Check if notifications are supported
+                    if (!('Notification' in window)) {
+                        console.error('This browser does not support notifications');
+                        this.showUserMessage('Your browser does not support notifications.');
+                        this.notificationsEnabled = false;
+                        this.saveSettings();
+                        return false;
+                    }
+
+                    // Enhanced mobile browser detection
+                    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+                    const isSafari = /Safari/i.test(navigator.userAgent) && !/Chrome/i.test(navigator.userAgent);
+                    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+                    const isAndroid = /Android/i.test(navigator.userAgent);
+                    const isMobileChrome = /Chrome/i.test(navigator.userAgent) && /Mobile/i.test(navigator.userAgent);
+                    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+                    
+                    // Mark that we have user gesture for this request
+                    this.hasUserGesture = true;
+                    
+                    // Check current permission first
+                    if (Notification.permission === 'granted') {
+                        this.notificationsEnabled = true;
+                        this.saveSettings();
+                        return true;
+                    }
+                    
+                    if (Notification.permission === 'denied') {
+                        this.notificationsEnabled = false;
+                        this.saveSettings();
                         
-                        if (Notification.permission === 'denied') {
+                        // Show instructions for re-enabling on mobile
+                        if (isMobile) {
+                            this.showMobileNotificationInstructions();
+                        } else {
+                            this.showUserMessage('Notifications are blocked. Please enable them in your browser settings.');
+                        }
+                        return false;
+                    }
+                    
+                    // iOS Safari specific check
+                    if (isIOS && isSafari && !isStandalone) {
+                        this.showAddToHomeScreenInstructions();
+                        this.notificationsEnabled = false;
+                        this.saveSettings();
+                        return false;
+                    }
+                    
+                    // Request permission (default state)
+                    try {
+                        console.log(`Requesting permission on: ${isIOS ? 'iOS' : isAndroid ? 'Android' : 'Desktop'} ${isSafari ? 'Safari' : isMobileChrome ? 'Chrome' : 'Browser'}`);
+                        
+                        // User gesture is handled by the calling button click
+                        
+                        let permission;
+                        
+                        // Use Promise-based API
+                        if (typeof Notification.requestPermission === 'function') {
+                            permission = await Notification.requestPermission();
+                        } else {
+                            console.error('Notification.requestPermission is not available');
+                            this.showUserMessage('Your browser does not support notification permissions.');
                             this.notificationsEnabled = false;
                             this.saveSettings();
                             return false;
                         }
                         
-                        // Enhanced mobile browser detection
-                        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-                        const isSafari = /Safari/i.test(navigator.userAgent) && !/Chrome/i.test(navigator.userAgent);
-                        const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-                        const isAndroid = /Android/i.test(navigator.userAgent);
-                        const isMobileChrome = /Chrome/i.test(navigator.userAgent) && /Mobile/i.test(navigator.userAgent);
+                        const granted = permission === 'granted';
+                        this.notificationsEnabled = granted;
+                        this.saveSettings();
                         
-                        if (isMobile || isSafari) {
-                            // Mobile browser permission handling
-                            try {
-                                console.log(`Mobile browser: ${isIOS ? 'iOS' : isAndroid ? 'Android' : 'Mobile'} ${isSafari ? 'Safari' : isMobileChrome ? 'Chrome' : 'Browser'}`);
-                                
-                                if (!('Notification' in window)) {
-                                    console.error('This browser does not support notifications');
-                                    this.notificationsEnabled = false;
-                                    this.saveSettings();
-                                    return false;
-                                }
-
-                                // Check if permission is already granted
-                                if (Notification.permission === 'granted') {
-                                    console.log('Notification permission already granted');
-                                    this.notificationsEnabled = true;
-                                    this.saveSettings();
-                                    return true;
-                                }
-
-                                if (Notification.permission === 'denied') {
-                                    console.log('Notification permission previously denied');
-                                    this.notificationsEnabled = false;
-                                    this.saveSettings();
-                                    return false;
-                                }
-
-                                // Request permission with proper user gesture handling
-                                console.log('Requesting notification permission...');
-                                let permission;
-                                
-                                if (typeof Notification.requestPermission === 'function') {
-                                    // Use Promise-based API if available
-                                    permission = await Notification.requestPermission();
-                                } else {
-                                    console.error('Notification.requestPermission is not available');
-                                    this.notificationsEnabled = false;
-                                    this.saveSettings();
-                                    return false;
-                                }
-                                
-                                const granted = permission === 'granted';
-                                this.notificationsEnabled = granted;
-                                this.saveSettings();
-                                
-                                if (granted) {
-                                    console.log('Mobile notification permission granted');
-                                } else {
-                                    console.log('Mobile notification permission denied or dismissed');
-                                }
-                                
-                                return granted;
-                            } catch (error) {
-                                console.error('Mobile notification request failed:', error);
-                                this.notificationsEnabled = false;
-                                this.saveSettings();
-                                return false;
+                        if (granted) {
+                            console.log('Notification permission granted');
+                            // Register service worker for push notifications
+                            await this.registerServiceWorker();
+                            // Show test notification
+                            setTimeout(() => {
+                                this.showNotification('Notifications Enabled!', 'You will now receive priority window alerts.');
+                            }, 500);
+                        } else if (permission === 'denied') {
+                            console.log('Notification permission denied');
+                            if (isMobile) {
+                                this.showMobileNotificationInstructions();
                             }
                         } else {
-                            // Desktop browsers - standard approach
-                            const permission = await Notification.requestPermission();
-                            const granted = permission === 'granted';
-                            this.notificationsEnabled = granted;
-                            this.saveSettings();
-                            
-                            if (granted) {
-                                console.log('Desktop notification permission granted');
-                            } else {
-                                console.log('Desktop notification permission denied');
-                            }
-                            
-                            return granted;
+                            console.log('Notification permission dismissed');
+                            this.showUserMessage('You can enable notifications later from the settings menu.');
                         }
-                    } else {
-                        console.log('Notifications not supported');
+                        
+                        return granted;
+                    } catch (error) {
+                        console.error('Notification request failed:', error);
                         this.notificationsEnabled = false;
                         this.saveSettings();
+                        this.showUserMessage('Failed to request notification permission. Please try again.');
                         return false;
                     }
                 } catch (error) {
@@ -3107,24 +3122,150 @@
                 }
             }
 
-            showNotification(title, body) {
+            async showNotification(title, body, options = {}) {
                 try {
-                    if (this.notificationsEnabled && 'Notification' in window && Notification.permission === 'granted') {
-                        const notification = new Notification(title, {
-                            body: body,
-                            icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🎯</text></svg>',
-                            tag: 'lastwar-priority'
-                        });
-                        
-                        notification.onclick = () => {
-                            window.focus();
-                            notification.close();
-                        };
-                        
-                        setTimeout(() => notification.close(), 5000);
+                    if (!this.notificationsEnabled || !('Notification' in window)) {
+                        console.warn('Notifications not enabled or not supported');
+                        return;
                     }
+                    
+                    if (Notification.permission !== 'granted') {
+                        console.warn('Notifications not permitted');
+                        return;
+                    }
+                    
+                    const defaultOptions = {
+                        body: body,
+                        icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🎯</text></svg>',
+                        badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🎯</text></svg>',
+                        tag: 'lastwar-priority',
+                        requireInteraction: false,
+                        vibrate: [200, 100, 200],
+                        silent: false,
+                        renotify: false
+                    };
+                    
+                    const notificationOptions = { ...defaultOptions, ...options };
+                    
+                    // Try service worker notification first (for push)
+                    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                        try {
+                            const registration = await navigator.serviceWorker.ready;
+                            await registration.showNotification(title, notificationOptions);
+                            return;
+                        } catch (error) {
+                            console.warn('Service worker notification failed, falling back to Notification API:', error);
+                        }
+                    }
+                    
+                    // Fallback to Notification API
+                    const notification = new Notification(title, notificationOptions);
+                    
+                    notification.onclick = () => {
+                        window.focus();
+                        notification.close();
+                    };
+                    
+                    // Auto-close after 8 seconds
+                    setTimeout(() => {
+                        try {
+                            notification.close();
+                        } catch (e) {
+                            // Notification may already be closed
+                        }
+                    }, 8000);
+                    
                 } catch (error) {
                     console.error('Notification display error:', error);
+                }
+            }
+            
+            showAddToHomeScreenInstructions() {
+                const message = `
+                    <div style="text-align: left; line-height: 1.6;">
+                        <h3 style="margin-top: 0; color: #0ea5e9;">📱 Enable Notifications on iOS</h3>
+                        <p><strong>iOS Safari requires adding the website to your home screen:</strong></p>
+                        <ol style="padding-left: 20px;">
+                            <li>Tap the <strong>Share</strong> button <span style="font-size: 20px;">⎋</span> at the bottom</li>
+                            <li>Select <strong>"Add to Home Screen"</strong></li>
+                            <li>Tap <strong>"Add"</strong> to install the app</li>
+                            <li>Open the app from your home screen</li>
+                            <li>Enable notifications when prompted</li>
+                        </ol>
+                        <p style="font-size: 14px; color: #666; margin-top: 15px;">💡 <em>This is required by iOS Safari for web notifications to work.</em></p>
+                    </div>
+                `;
+                this.showUserMessage(message, 'iOS Notification Setup');
+            }
+            
+            showMobileNotificationInstructions() {
+                const isChrome = /Chrome/i.test(navigator.userAgent);
+                const isAndroid = /Android/i.test(navigator.userAgent);
+                const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+                
+                let instructions = '';
+                
+                if (isIOS) {
+                    instructions = `
+                        <h3 style="margin-top: 0; color: #0ea5e9;">📱 Enable Notifications on iOS</h3>
+                        <p><strong>To enable notifications:</strong></p>
+                        <ol style="padding-left: 20px;">
+                            <li>Go to <strong>Settings</strong> → <strong>Safari</strong></li>
+                            <li>Scroll down to <strong>"Website Settings"</strong></li>
+                            <li>Tap <strong>"Notifications"</strong></li>
+                            <li>Find this website and tap <strong>"Allow"</strong></li>
+                        </ol>
+                        <p style="font-size: 14px; color: #666; margin-top: 15px;">💡 <em>Then refresh this page and try again.</em></p>
+                    `;
+                } else if (isAndroid && isChrome) {
+                    instructions = `
+                        <h3 style="margin-top: 0; color: #0ea5e9;">📱 Enable Notifications on Android Chrome</h3>
+                        <p><strong>To enable notifications:</strong></p>
+                        <ol style="padding-left: 20px;">
+                            <li>Tap the <strong>three dots</strong> (⋮) menu</li>
+                            <li>Select <strong>"Site settings"</strong></li>
+                            <li>Tap <strong>"Notifications"</strong></li>
+                            <li>Change to <strong>"Allow"</strong></li>
+                        </ol>
+                        <p style="font-size: 14px; color: #666; margin-top: 15px;">💡 <em>Then refresh this page and try again.</em></p>
+                    `;
+                } else {
+                    instructions = `
+                        <h3 style="margin-top: 0; color: #0ea5e9;">📱 Enable Notifications</h3>
+                        <p><strong>Notifications are currently blocked.</strong></p>
+                        <p>To enable them:</p>
+                        <ol style="padding-left: 20px;">
+                            <li>Look for the <strong>lock icon</strong> 🔒 next to the website address</li>
+                            <li>Tap it and change <strong>"Notifications"</strong> to <strong>"Allow"</strong></li>
+                            <li>Refresh this page and try again</li>
+                        </ol>
+                        <p style="font-size: 14px; color: #666; margin-top: 15px;">💡 <em>The exact steps may vary by browser.</em></p>
+                    `;
+                }
+                
+                const message = `<div style="text-align: left; line-height: 1.6;">${instructions}</div>`;
+                this.showUserMessage(message, 'Notification Setup Help');
+            }
+            
+            async registerServiceWorker() {
+                if (!('serviceWorker' in navigator)) {
+                    console.log('Service Worker not supported');
+                    return;
+                }
+                
+                try {
+                    const registration = await navigator.serviceWorker.register('/service-worker.js');
+                    console.log('Service Worker registered successfully:', registration.scope);
+                    
+                    // Wait for the service worker to be ready
+                    await navigator.serviceWorker.ready;
+                    console.log('Service Worker is ready');
+                    
+                    return registration;
+                } catch (error) {
+                    console.error('Service Worker registration failed:', error);
+                    // Don't block notification functionality if SW fails
+                    return null;
                 }
             }
 

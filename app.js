@@ -24,8 +24,7 @@
                 this.updateInterval = null;
                 this.setupTimeInterval = null;
                 this.activeTab = 'priority';
-                this.notificationsEnabled = true;
-                this.userNotificationPreference = true; // Track user's preference separately from browser permission
+                this.notificationsEnabled = false; // Start with false, check actual browser permission on init
                 this.lastNotifiedWindow = null;
                 this.isSetupComplete = false;
                 this.currentPhaseOverride = null;
@@ -137,10 +136,8 @@
                     this.loadSettings();
                     console.log('Settings loaded successfully');
 
-                    // Auto-request notification permissions if enabled
-                    if (this.notificationsEnabled && this.isSetupComplete) {
-                        this.requestNotificationPermission();
-                    }
+                    // Check actual browser notification permission on startup
+                    this.checkActualNotificationPermission();
                     this.setupEventListeners();
                     console.log('Event listeners setup successfully');
                     
@@ -231,22 +228,19 @@
                     if (notificationsToggle) {
                         notificationsToggle.addEventListener('change', async (e) => {
                             const enabled = e.target.value === 'enabled';
-                            
-                            // FIXED: Always track user preference
-                            this.userNotificationPreference = enabled;
-                            console.log('User notification preference changed to:', enabled);
+                            console.log('User changed notification setting to:', enabled);
                             
                             if (enabled) {
                                 // Request permission immediately with user gesture context
-                                console.log('User enabled notifications - requesting permission...');
+                                console.log('Requesting browser notification permission...');
                                 const permission = await this.requestNotificationPermission();
                                 if (!permission) {
-                                    // Keep user preference but show they need browser permission
-                                    console.log('Permission denied - keeping user preference but notifications disabled');
+                                    // Reset dropdown if permission denied
+                                    console.log('Permission denied - resetting dropdown to disabled');
+                                    e.target.value = 'disabled';
                                     this.notificationsEnabled = false;
+                                    this.showUserMessage('Please allow notifications in your browser to enable this feature.');
                                     this.saveSettings();
-                                    this.showUserMessage('Notifications require browser permission. Please enable in browser settings and try again.');
-                                    // Note: We DON'T reset the dropdown - it shows user preference
                                     return;
                                 }
                                 console.log('Permission granted - notifications enabled');
@@ -257,7 +251,6 @@
                             }
                             
                             this.saveSettings();
-                            this.syncSettingsToUI();
                         });
                     }
 
@@ -551,22 +544,19 @@
                     const notificationChoice = setupNotifications?.value || 'enabled';
                     const wantsNotifications = notificationChoice === 'enabled';
 
-                    // FIXED: Always track user preference from setup
-                    this.userNotificationPreference = wantsNotifications;
-                    console.log('Setup: User notification preference set to:', wantsNotifications);
-
                     if (wantsNotifications) {
-                        console.log('Setup: Requesting notification permission...');
+                        console.log('Setup: User wants notifications - requesting permission...');
                         const permission = await this.requestNotificationPermission();
                         if (permission) {
                             console.log('Setup: Notification permission granted');
+                            this.notificationsEnabled = true;
                             // Send test notification if granted
                             setTimeout(() => {
                                 this.showNotification('Last War Nexus Ready!', 'You will now receive high-priority VS point alerts');
                             }, 1000);
                         } else {
-                            console.log('Setup: Notification permission denied, but keeping user preference');
-                            // User preference is preserved even if permission denied
+                            console.log('Setup: Notification permission denied');
+                            this.notificationsEnabled = false;
                         }
                     } else {
                         console.log('Setup: User chose to disable notifications');
@@ -640,20 +630,10 @@
 
                     if (timeOffsetSelect) this.timeOffset = parseFloat(timeOffsetSelect.value);
                     
-                    // FIXED: Save user preference properly
+                    // Save actual notification permission state  
                     if (notificationsToggle) {
-                        const wantsNotifications = notificationsToggle.value === 'enabled';
-                        this.userNotificationPreference = wantsNotifications;
-                        console.log('SaveAllSettings: User notification preference updated to:', wantsNotifications);
-                        
-                        // If user wants notifications but doesn't have permission, keep preference but note it
-                        if (wantsNotifications && !this.notificationsEnabled) {
-                            console.log('SaveAllSettings: User wants notifications but browser permission not granted');
-                            // User preference is preserved, permission state is separate
-                        } else {
-                            // Sync permission state if user disabled notifications
-                            this.notificationsEnabled = wantsNotifications;
-                        }
+                        this.notificationsEnabled = notificationsToggle.value === 'enabled';
+                        console.log('SaveAllSettings: Notification state:', this.notificationsEnabled);
                     }
                     
                     if (currentPhaseSelect) this.currentPhaseOverride = currentPhaseSelect.value;
@@ -686,16 +666,11 @@
                     const timeOffsetSelect = document.getElementById('time-offset');
                     if (timeOffsetSelect) timeOffsetSelect.value = this.timeOffset.toString();
 
-                    // FIXED: Show user preference in UI, not just browser permission state
+                    // Show actual browser notification permission state
                     const notificationsToggle = document.getElementById('notifications-toggle');
                     if (notificationsToggle) {
-                        notificationsToggle.value = this.userNotificationPreference ? 'enabled' : 'disabled';
-                        
-                        // Add visual indicator if permission is denied but user wants notifications
-                        if (this.userNotificationPreference && !this.notificationsEnabled) {
-                            console.log('User wants notifications but browser permission denied');
-                            // Could add visual indicator here in the future
-                        }
+                        notificationsToggle.value = this.notificationsEnabled ? 'enabled' : 'disabled';
+                        console.log('Syncing notifications UI - browser permission:', this.notificationsEnabled);
                     }
 
                     const currentPhaseSelect = document.getElementById('current-phase-select');
@@ -708,9 +683,9 @@
                         nextPhaseSelect.value = this.nextPhaseOverride;
                     }
 
-                    // Sync setup modal notifications field to user preference
+                    // Sync setup modal notifications field to actual permission
                     const setupNotifications = document.getElementById('setup-notifications');
-                    if (setupNotifications) setupNotifications.value = this.userNotificationPreference ? 'enabled' : 'disabled';
+                    if (setupNotifications) setupNotifications.value = this.notificationsEnabled ? 'enabled' : 'disabled';
                     
                     // Sync time mode labels
                     const timeMode = this.useLocalTime ? 'Local Time' : 'Server Time';
@@ -3026,38 +3001,39 @@
                         const isMobileChrome = /Chrome/i.test(navigator.userAgent) && /Mobile/i.test(navigator.userAgent);
                         
                         if (isMobile || isSafari) {
-                            // FIXED: Enhanced mobile browser permission handling
+                            // Mobile browser permission handling
                             try {
+                                console.log(`Mobile browser: ${isIOS ? 'iOS' : isAndroid ? 'Android' : 'Mobile'} ${isSafari ? 'Safari' : isMobileChrome ? 'Chrome' : 'Browser'}`);
+                                
+                                if (!('Notification' in window)) {
+                                    console.error('This browser does not support notifications');
+                                    this.notificationsEnabled = false;
+                                    this.saveSettings();
+                                    return false;
+                                }
+
+                                // Check if permission is already granted
+                                if (Notification.permission === 'granted') {
+                                    console.log('Notification permission already granted');
+                                    this.notificationsEnabled = true;
+                                    this.saveSettings();
+                                    return true;
+                                }
+
+                                if (Notification.permission === 'denied') {
+                                    console.log('Notification permission previously denied');
+                                    this.notificationsEnabled = false;
+                                    this.saveSettings();
+                                    return false;
+                                }
+
+                                // Request permission with proper user gesture handling
+                                console.log('Requesting notification permission...');
                                 let permission;
                                 
-                                console.log(`Mobile browser detected - ${isIOS ? 'iOS' : isAndroid ? 'Android' : 'Mobile'} ${isSafari ? 'Safari' : isMobileChrome ? 'Chrome' : 'Browser'}`);
-                                
-                                // Enhanced permission request with mobile browser compatibility
                                 if (typeof Notification.requestPermission === 'function') {
-                                    if (isIOS && isSafari) {
-                                        // iOS Safari may need legacy callback API
-                                        if (Notification.requestPermission.length === 0) {
-                                            // Modern Promise-based API
-                                            permission = await Notification.requestPermission();
-                                        } else {
-                                            // Legacy callback API for older iOS Safari
-                                            permission = await new Promise(resolve => {
-                                                Notification.requestPermission(resolve);
-                                            });
-                                        }
-                                    } else if (isAndroid && isMobileChrome) {
-                                        // Android Chrome - use modern API
-                                        permission = await Notification.requestPermission();
-                                    } else {
-                                        // Other mobile browsers - try modern first, fallback to legacy
-                                        if (Notification.requestPermission.length === 0) {
-                                            permission = await Notification.requestPermission();
-                                        } else {
-                                            permission = await new Promise(resolve => {
-                                                Notification.requestPermission(resolve);
-                                            });
-                                        }
-                                    }
+                                    // Use Promise-based API if available
+                                    permission = await Notification.requestPermission();
                                 } else {
                                     console.error('Notification.requestPermission is not available');
                                     this.notificationsEnabled = false;
@@ -3158,8 +3134,8 @@
                     if (saved) {
                         const settings = JSON.parse(saved);
                         this.timeOffset = settings.timeOffset || 0;
-                        this.notificationsEnabled = settings.notificationsEnabled !== undefined ? settings.notificationsEnabled : true;
-                        this.userNotificationPreference = settings.userNotificationPreference !== undefined ? settings.userNotificationPreference : true;
+                        // Check actual browser permission instead of saved preference
+                        this.checkActualNotificationPermission();
                         this.isSetupComplete = settings.isSetupComplete || false;
                         this.currentPhaseOverride = settings.currentPhaseOverride || null;
                         this.nextPhaseOverride = settings.nextPhaseOverride || null;
@@ -3172,12 +3148,31 @@
                 }
             }
 
+            checkActualNotificationPermission() {
+                try {
+                    if ('Notification' in window) {
+                        const permission = Notification.permission;
+                        this.notificationsEnabled = permission === 'granted';
+                        console.log('Actual browser notification permission:', permission);
+                        console.log('Notifications enabled:', this.notificationsEnabled);
+                        return this.notificationsEnabled;
+                    } else {
+                        console.log('Notifications not supported in this browser');
+                        this.notificationsEnabled = false;
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('Error checking notification permission:', error);
+                    this.notificationsEnabled = false;
+                    return false;
+                }
+            }
+
             saveSettings() {
                 try {
                     const settings = {
                         timeOffset: this.timeOffset,
                         notificationsEnabled: this.notificationsEnabled,
-                        userNotificationPreference: this.userNotificationPreference,
                         isSetupComplete: this.isSetupComplete,
                         currentPhaseOverride: this.currentPhaseOverride,
                         nextPhaseOverride: this.nextPhaseOverride,

@@ -51,17 +51,22 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- Header -->
-        <header class="app-header">
-            <div class="header-content">
-                <h1 class="app-title">
-                    <a href="/" style="color: inherit; text-decoration: none;">
-                        <span class="app-icon">🎯</span>
-                        Last War Nexus
+        <!-- Header Navigation -->
+        <header class="main-nav" role="banner">
+            <nav class="nav-container" role="navigation" aria-label="Main navigation">
+                <div class="brand">
+                    <a href="/" style="text-decoration: none; display: flex; align-items: center; gap: 8px;">
+                        <div class="brand-icon-container">
+                            <span class="brand-icon" aria-hidden="true">🎯</span>
+                            <div class="brand-glow" aria-hidden="true"></div>
+                        </div>
+                        <div class="brand-info">
+                            <span class="brand-text">Last War Nexus</span>
+                            <span class="brand-subtitle">Privacy Policy</span>
+                        </div>
                     </a>
-                </h1>
-                <div class="header-subtitle">Privacy Policy</div>
-            </div>
+                </div>
+            </nav>
         </header>
 
         <!-- Main Content -->
@@ -237,7 +242,7 @@
                 <!-- Back to Home Button -->
                 <div class="back-to-home">
                     <a href="/" class="btn btn-primary">
-                        ← Back to Last War Nexus
+                        <span style="font-size: 1.2rem; margin-right: 4px;">←</span> Back to App
                     </a>
                 </div>
             </div>

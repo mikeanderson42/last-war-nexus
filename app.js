@@ -33,6 +33,8 @@
                 this.activeGuideType = 'tips';
                 this.eventListenersSetup = false;
                 this.lastPhaseCheck = 0;
+                this.lastNotificationCheck = 0; // Track last notification check time
+                this.debugNotifications = true; // Enable notification debugging
 
                 // ENHANCED: Detailed spending information for each phase
                 this.data = {
@@ -1366,13 +1368,8 @@
                         currentPhaseElement.textContent = `${currentArmsPhase.name} Active`;
                     }
                     
-                    // CRITICAL: Check for notifications immediately when phases change
-                    if (nextWindow && nextWindow.isActive && this.notificationsEnabled && 
-                        this.lastNotifiedWindow !== nextWindow.alignment.reason) {
-                        this.showNotification('High Priority Active!', `${nextWindow.phase.name} + ${nextWindow.vsDay.title}`);
-                        this.lastNotifiedWindow = nextWindow.alignment.reason;
-                        console.log('Notification triggered for active priority:', nextWindow.phase.name);
-                    }
+                    // CRITICAL: Check for notifications with enhanced logic
+                    this.checkAndSendNotifications(nextWindow);
                     
                     // Update server reset information
                     this.updateServerResetInfo();
@@ -2965,11 +2962,15 @@
                         return;
                     }
                     
-                    // Check for active events and trigger notifications
+                    // Check for active events and trigger notifications with enhanced logic
                     const activeEvent = displayWindows.find(window => window.isActive);
-                    if (activeEvent && this.notificationsEnabled && this.lastNotifiedWindow !== activeEvent.alignment.reason) {
-                        this.showNotification('High Priority Active!', `${activeEvent.phase.name} + ${activeEvent.vsDay.title}`);
-                        this.lastNotifiedWindow = activeEvent.alignment.reason;
+                    if (activeEvent) {
+                        this.checkAndSendNotifications({
+                            isActive: true,
+                            phase: activeEvent.phase,
+                            vsDay: activeEvent.vsDay,
+                            alignment: activeEvent.alignment
+                        });
                     }
                     
                     // Take only first 3 events
@@ -3124,14 +3125,10 @@
 
             async showNotification(title, body, options = {}) {
                 try {
-                    if (!this.notificationsEnabled || !('Notification' in window)) {
-                        console.warn('Notifications not enabled or not supported');
-                        return;
-                    }
-                    
-                    if (Notification.permission !== 'granted') {
-                        console.warn('Notifications not permitted');
-                        return;
+                    // Enhanced permission verification
+                    if (!this.verifyNotificationPermission()) {
+                        console.warn('⚠️ Notification blocked: No permission');
+                        return false;
                     }
                     
                     const defaultOptions = {
@@ -3139,44 +3136,188 @@
                         icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🎯</text></svg>',
                         badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🎯</text></svg>',
                         tag: 'lastwar-priority',
-                        requireInteraction: false,
+                        requireInteraction: true, // Make notifications more persistent
                         vibrate: [200, 100, 200],
                         silent: false,
-                        renotify: false
+                        renotify: true, // Allow re-notifications
+                        data: {
+                            timestamp: Date.now(),
+                            url: window.location.origin
+                        }
                     };
                     
                     const notificationOptions = { ...defaultOptions, ...options };
                     
-                    // Try service worker notification first (for push)
+                    let notificationShown = false;
+                    
+                    // Try service worker notification first (better for mobile)
                     if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
                         try {
                             const registration = await navigator.serviceWorker.ready;
                             await registration.showNotification(title, notificationOptions);
-                            return;
+                            notificationShown = true;
+                            if (this.debugNotifications) {
+                                console.log('✅ Service Worker notification sent:', title);
+                            }
                         } catch (error) {
-                            console.warn('Service worker notification failed, falling back to Notification API:', error);
+                            console.warn('⚠️ Service worker notification failed:', error);
                         }
                     }
                     
-                    // Fallback to Notification API
-                    const notification = new Notification(title, notificationOptions);
-                    
-                    notification.onclick = () => {
-                        window.focus();
-                        notification.close();
-                    };
-                    
-                    // Auto-close after 8 seconds
-                    setTimeout(() => {
+                    // Fallback to direct Notification API if service worker failed
+                    if (!notificationShown) {
                         try {
-                            notification.close();
-                        } catch (e) {
-                            // Notification may already be closed
+                            const notification = new Notification(title, notificationOptions);
+                            
+                            notification.onclick = () => {
+                                window.focus();
+                                notification.close();
+                            };
+                            
+                            notification.onshow = () => {
+                                if (this.debugNotifications) {
+                                    console.log('✅ Direct notification shown:', title);
+                                }
+                            };
+                            
+                            notification.onerror = (error) => {
+                                console.error('❌ Notification error:', error);
+                            };
+                            
+                            // Auto-close after 10 seconds for persistent notifications
+                            setTimeout(() => {
+                                try {
+                                    notification.close();
+                                } catch (e) {
+                                    // Notification may already be closed
+                                }
+                            }, 10000);
+                            
+                            notificationShown = true;
+                            
+                        } catch (error) {
+                            console.error('❌ Direct notification failed:', error);
                         }
-                    }, 8000);
+                    }
+                    
+                    // Last resort: Console warning if all notification methods failed
+                    if (!notificationShown) {
+                        console.error('❌ ALL NOTIFICATION METHODS FAILED! Title:', title, 'Body:', body);
+                        // Could add visual notification to page here as fallback
+                    }
+                    
+                    return notificationShown;
                     
                 } catch (error) {
-                    console.error('Notification display error:', error);
+                    console.error('❌ Notification display error:', error);
+                    return false;
+                }
+            }
+            
+            // ENHANCED: Periodic notification check independent of other timers
+            performNotificationCheck() {
+                try {
+                    if (this.debugNotifications) {
+                        console.log('[NOTIFICATION DEBUG] Periodic check at:', new Date().toLocaleTimeString());
+                    }
+                    
+                    // Get current priority window using the same logic as main display
+                    const nextWindow = this.findNextPriorityWindow();
+                    
+                    if (nextWindow) {
+                        this.checkAndSendNotifications(nextWindow);
+                    }
+                    
+                    // Also verify permission state hasn't changed
+                    this.verifyNotificationPermission();
+                    
+                } catch (error) {
+                    console.error('Periodic notification check error:', error);
+                }
+            }
+            
+            // ENHANCED: Centralized notification checking with debugging
+            checkAndSendNotifications(window) {
+                try {
+                    const now = Date.now();
+                    
+                    if (this.debugNotifications) {
+                        console.log('[NOTIFICATION DEBUG] Check triggered:', {
+                            windowActive: window?.isActive,
+                            notificationsEnabled: this.notificationsEnabled,
+                            browserPermission: typeof Notification !== 'undefined' ? Notification.permission : 'not supported',
+                            lastNotified: this.lastNotifiedWindow,
+                            currentReason: window?.alignment?.reason,
+                            timeSinceLastCheck: now - this.lastNotificationCheck
+                        });
+                    }
+                    
+                    // Update last check time
+                    this.lastNotificationCheck = now;
+                    
+                    // Verify notification requirements
+                    if (!window || !window.isActive) {
+                        if (this.debugNotifications) console.log('[NOTIFICATION DEBUG] No active window');
+                        return;
+                    }
+                    
+                    // Enhanced permission check
+                    const hasPermission = this.verifyNotificationPermission();
+                    if (!hasPermission) {
+                        if (this.debugNotifications) console.log('[NOTIFICATION DEBUG] No permission');
+                        return;
+                    }
+                    
+                    // Check if already notified for this event
+                    const eventReason = window.alignment?.reason;
+                    if (this.lastNotifiedWindow === eventReason) {
+                        if (this.debugNotifications) console.log('[NOTIFICATION DEBUG] Already notified for:', eventReason);
+                        return;
+                    }
+                    
+                    // Send notification
+                    const title = 'High Priority Active!';
+                    const body = `${window.phase?.name} + ${window.vsDay?.title}`;
+                    
+                    if (this.debugNotifications) {
+                        console.log('[NOTIFICATION DEBUG] SENDING:', { title, body, eventReason });
+                    }
+                    
+                    this.showNotification(title, body);
+                    this.lastNotifiedWindow = eventReason;
+                    
+                    // Log successful notification
+                    console.log('✅ Notification sent:', { title, body, time: new Date().toLocaleTimeString() });
+                    
+                } catch (error) {
+                    console.error('Notification check error:', error);
+                }
+            }
+            
+            // ENHANCED: Verify notification permission with real-time check
+            verifyNotificationPermission() {
+                try {
+                    // Check if notifications are supported
+                    if (typeof Notification === 'undefined') {
+                        if (this.debugNotifications) console.log('[NOTIFICATION DEBUG] Notifications not supported');
+                        return false;
+                    }
+                    
+                    // Get actual browser permission
+                    const browserPermission = Notification.permission;
+                    const isGranted = browserPermission === 'granted';
+                    
+                    // Sync our internal state with browser reality
+                    if (this.notificationsEnabled !== isGranted) {
+                        console.warn('[NOTIFICATION DEBUG] Permission state mismatch! Internal:', this.notificationsEnabled, 'Browser:', browserPermission);
+                        this.notificationsEnabled = isGranted;
+                        this.syncSettingsToUI(); // Update UI to reflect reality
+                    }
+                    
+                    return isGranted;
+                } catch (error) {
+                    console.error('Permission verification error:', error);
+                    return false;
                 }
             }
             
@@ -3333,6 +3474,9 @@
                     if (this.countdownInterval) {
                         clearInterval(this.countdownInterval);
                     }
+                    if (this.notificationCheckInterval) {
+                        clearInterval(this.notificationCheckInterval);
+                    }
                     
                     // Update immediately
                     this.updateAllDisplays();
@@ -3350,6 +3494,14 @@
                             this.updateCountdowns();
                         }
                     }, 1000);
+                    
+                    // ENHANCED: More frequent notification checks (every 15 seconds)
+                    this.notificationCheckInterval = setInterval(() => {
+                        this.performNotificationCheck();
+                    }, 15000);
+                    
+                    console.log('✅ All update loops started (data: 5s, countdown: 1s, notifications: 15s)');
+                    
                 } catch (error) {
                     console.error('Update loop error:', error);
                     this.handleError('Failed to start update loop', error);

@@ -141,14 +141,46 @@
                     <section class="privacy-section">
                         <h2>5. Advertising and Third-Party Partners</h2>
                         
-                        <h3>5.1 Ezoic Advertising</h3>
-                        <p>We partner with Ezoic to display advertisements on our website. Ezoic may collect and use information about your visits to this and other websites to provide advertisements about goods and services of interest to you.</p>
+                        <h3>5.1 Ezoic Advertising Partnership</h3>
+                        <p>We use Ezoic to provide personalization and analytic services on this website. The following information outlines how Ezoic and its partners use your data:</p>
+                        
+                        <div style="background: rgba(14, 165, 233, 0.05); border: 1px solid rgba(14, 165, 233, 0.2); border-radius: 8px; padding: 16px; margin: 16px 0;">
+                            <h4 style="margin-top: 0; color: #0ea5e9;">Ezoic Privacy Disclosures</h4>
+                            <p><strong>Data Collection:</strong> Ezoic and its partners may collect and use the following information:</p>
+                            <ul>
+                                <li>IP address and device information</li>
+                                <li>Operating system and browser type</li>
+                                <li>Language preferences</li>
+                                <li>Hashed/encrypted email (when available)</li>
+                                <li>Browsing behavior and interaction data</li>
+                            </ul>
+                            
+                            <p><strong>Purpose:</strong> This data is used to:</p>
+                            <ul>
+                                <li>Deliver targeted advertisements based on your interests</li>
+                                <li>Improve website performance and user experience</li>
+                                <li>Create audience segments for advertising purposes</li>
+                                <li>Provide analytics and insights</li>
+                            </ul>
+                            
+                            <p><strong>Cookies:</strong> Ezoic uses first and third-party cookies. Disabling cookies may limit your access to certain website features. If you reject cookies, you will receive non-personalized advertisements.</p>
+                            
+                            <p><strong>Your Rights:</strong> You can manage your privacy preferences and opt-out of personalized advertising. For more information:</p>
+                            <ul>
+                                <li><a href="https://www.ezoic.com/privacy/" target="_blank" rel="noopener">View Ezoic's Privacy Policy</a></li>
+                                <li><a href="https://www.ezoic.com/privacy-policy/advertising-partners/" target="_blank" rel="noopener">View Ezoic's Advertising Partners</a></li>
+                                <li><a href="http://g.ezoic.net/privacy/lastwarnexus.com" target="_blank" rel="noopener">View Site-Specific Privacy Details</a></li>
+                            </ul>
+                            
+                            <!-- Ezoic Privacy Policy Embed -->
+                            <div id="ezoic-privacy-policy-embed" style="margin-top: 16px;"></div>
+                        </div>
                         
                         <h3>5.2 Google Advertising</h3>
                         <p>We may use Google AdSense and other Google advertising services. Google may use cookies and web beacons to serve ads based on your prior visits to our website.</p>
                         
                         <h3>5.3 Cookie Consent</h3>
-                        <p>By using our website, you consent to the use of cookies for advertising and analytics purposes. You can manage cookie preferences through your browser settings.</p>
+                        <p>By using our website, you consent to the use of cookies for advertising and analytics purposes. You can manage cookie preferences through your browser settings or through the cookie management tools provided on this site.</p>
                     </section>
 
                     <section class="privacy-section">
@@ -262,5 +294,32 @@
 
     <!-- Ezoic Ad Script -->
     <script async src="https://www.ezojs.com/ezoic/sa.min.js"></script>
+    
+    <!-- Ezoic Privacy Policy Embed Script -->
+    <script>
+        // Load Ezoic privacy policy content
+        window.addEventListener('load', function() {
+            // Check if Ezoic privacy embed element exists
+            const embedElement = document.getElementById('ezoic-privacy-policy-embed');
+            if (embedElement) {
+                // Add loading message
+                embedElement.innerHTML = '<p style="font-style: italic; color: #94a3b8;">Loading Ezoic privacy details...</p>';
+                
+                // Try to load Ezoic privacy content
+                setTimeout(function() {
+                    // If Ezoic hasn't populated it, add manual link
+                    if (embedElement.innerHTML.includes('Loading')) {
+                        embedElement.innerHTML = `
+                            <div style="padding: 12px; background: rgba(255, 255, 255, 0.03); border-radius: 6px;">
+                                <p style="margin: 0;"><strong>Additional Privacy Information:</strong></p>
+                                <p style="margin: 8px 0 0 0;">For complete details about how Ezoic processes data on this site, please visit:</p>
+                                <p style="margin: 8px 0 0 0;"><a href="http://g.ezoic.net/privacy/lastwarnexus.com" target="_blank" rel="noopener" style="color: #0ea5e9; font-weight: 600;">lastwarnexus.com Ezoic Privacy Details →</a></p>
+                            </div>
+                        `;
+                    }
+                }, 3000);
+            }
+        });
+    </script>
 </body>
 </html>

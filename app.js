@@ -35,6 +35,7 @@
                 this.lastPhaseCheck = 0;
                 this.lastNotificationCheck = 0; // Track last notification check time
                 this.debugNotifications = true; // Enable notification debugging
+                this.lastKnownPhase = null; // Track phase changes for immediate updates
 
                 // ENHANCED: Detailed spending information for each phase
                 this.data = {
@@ -664,6 +665,9 @@
                     if (currentPhaseSelect) this.currentPhaseOverride = currentPhaseSelect.value;
                     if (nextPhaseSelect) this.nextPhaseOverride = nextPhaseSelect.value;
 
+                    // Reset phase tracking to force immediate update when overrides change
+                    this.lastKnownPhase = null;
+                    
                     this.saveSettings();
                     this.updateAllDisplays();
                     
@@ -3602,24 +3606,25 @@
             checkForPhaseChanges() {
                 try {
                     const currentTime = this.getServerTime();
-                    const currentHour = currentTime.getUTCHours();
-                    const currentMinute = currentTime.getUTCMinutes();
+                    const currentPhase = this.getCurrentArmsPhase();
                     
-                    // Check if we're at a phase boundary (00:00, 04:00, 08:00, 12:00, 16:00, 20:00)
-                    const isPhaseTransitionTime = (currentMinute === 0) && 
-                        (currentHour === 0 || currentHour === 4 || currentHour === 8 || 
-                         currentHour === 12 || currentHour === 16 || currentHour === 20);
+                    // Check if the current phase has changed since last check (handles both time-based and override changes)
+                    const currentPhaseName = currentPhase.name;
+                    const hasPhaseChanged = this.lastKnownPhase && this.lastKnownPhase !== currentPhaseName;
                     
-                    // Also check if we haven't updated recently (for missed transitions)
+                    // Also check if we haven't updated recently (for initialization or missed transitions)
                     const lastUpdate = this.lastPhaseCheck || 0;
                     const timeSinceLastUpdate = currentTime.getTime() - lastUpdate;
                     const needsUpdate = timeSinceLastUpdate > 60000; // More than 1 minute since last check
                     
-                    if (isPhaseTransitionTime || needsUpdate) {
-                        console.log('Phase change detected, updating main cards immediately');
+                    if (hasPhaseChanged || needsUpdate || !this.lastKnownPhase) {
+                        if (hasPhaseChanged) {
+                            console.log('Phase change detected:', this.lastKnownPhase, '->', currentPhaseName);
+                        }
                         this.updateCurrentStatus();
                         this.updateBanner(); // Also update priority banner immediately
                         this.lastPhaseCheck = currentTime.getTime();
+                        this.lastKnownPhase = currentPhaseName;
                     }
                 } catch (error) {
                     console.error('Phase change check error:', error);

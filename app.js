@@ -1040,6 +1040,61 @@
                 }
             }
 
+            getTimeUntilNextPhase() {
+                try {
+                    const serverTime = this.getServerTime();
+                    const currentHour = serverTime.getUTCHours();
+                    const currentMinute = serverTime.getUTCMinutes();
+                    const currentSecond = serverTime.getUTCSeconds();
+                    
+                    // Handle overrides - if we have a current phase override, we need to calculate
+                    // the time differently since the normal time boundaries don't apply
+                    if (this.currentPhaseOverride) {
+                        // For overrides, calculate based on when the next normal phase change would occur
+                        // This provides a reasonable countdown for testing purposes
+                        let nextPhaseHour;
+                        if (currentHour < 4) nextPhaseHour = 4;
+                        else if (currentHour < 8) nextPhaseHour = 8;
+                        else if (currentHour < 12) nextPhaseHour = 12;
+                        else if (currentHour < 16) nextPhaseHour = 16;
+                        else if (currentHour < 20) nextPhaseHour = 20;
+                        else nextPhaseHour = 24; // Next day at 00:00
+                        
+                        const nextPhaseTime = new Date(serverTime);
+                        if (nextPhaseHour === 24) {
+                            nextPhaseTime.setUTCDate(nextPhaseTime.getUTCDate() + 1);
+                            nextPhaseTime.setUTCHours(0, 0, 0, 0);
+                        } else {
+                            nextPhaseTime.setUTCHours(nextPhaseHour, 0, 0, 0);
+                        }
+                        
+                        return nextPhaseTime.getTime() - serverTime.getTime();
+                    }
+                    
+                    // Normal time-based calculation
+                    let nextPhaseHour;
+                    if (currentHour < 4) nextPhaseHour = 4;
+                    else if (currentHour < 8) nextPhaseHour = 8;
+                    else if (currentHour < 12) nextPhaseHour = 12;
+                    else if (currentHour < 16) nextPhaseHour = 16;
+                    else if (currentHour < 20) nextPhaseHour = 20;
+                    else nextPhaseHour = 24; // Next day at 00:00
+                    
+                    const nextPhaseTime = new Date(serverTime);
+                    if (nextPhaseHour === 24) {
+                        nextPhaseTime.setUTCDate(nextPhaseTime.getUTCDate() + 1);
+                        nextPhaseTime.setUTCHours(0, 0, 0, 0);
+                    } else {
+                        nextPhaseTime.setUTCHours(nextPhaseHour, 0, 0, 0);
+                    }
+                    
+                    return nextPhaseTime.getTime() - serverTime.getTime();
+                } catch (error) {
+                    console.error('Time until next phase calculation error:', error);
+                    return 0;
+                }
+            }
+
             getCurrentVSDay() {
                 try {
                     const serverTime = this.getServerTime();
@@ -1115,21 +1170,39 @@
                             if (!phase) continue;
                             
                             const phaseIndex = this.data.armsRacePhases.findIndex(p => p.name === phase.name);
-                            const windowTime = new Date(checkDate);
-                            windowTime.setUTCHours(phaseIndex * 4, 0, 0, 0);
                             
-                            const timeDiff = windowTime.getTime() - now.getTime();
+                            // Calculate multiple potential start times for this phase
+                            const potentialTimes = [];
                             
-                            if (timeDiff > 0 && timeDiff < minTimeDiff) {
-                                minTimeDiff = timeDiff;
-                                nextWindow = {
-                                    isActive: false,
-                                    timeRemaining: timeDiff,
-                                    alignment: alignment,
-                                    phase: phase,
-                                    vsDay: vsDay,
-                                    startTime: windowTime
-                                };
+                            // Regular 4-hour slot time (0-19 hours)
+                            if (phaseIndex * 4 < 20) {
+                                const regularTime = new Date(checkDate);
+                                regularTime.setUTCHours(phaseIndex * 4, 0, 0, 0);
+                                potentialTimes.push(regularTime);
+                            }
+                            
+                            // Special case: City Building also occurs 20:00-00:00
+                            if (phase.name === "City Building") {
+                                const eveningTime = new Date(checkDate);
+                                eveningTime.setUTCHours(20, 0, 0, 0);
+                                potentialTimes.push(eveningTime);
+                            }
+                            
+                            // Check each potential window time
+                            for (const windowTime of potentialTimes) {
+                                const timeDiff = windowTime.getTime() - now.getTime();
+                                
+                                if (timeDiff > 0 && timeDiff < minTimeDiff) {
+                                    minTimeDiff = timeDiff;
+                                    nextWindow = {
+                                        isActive: false,
+                                        timeRemaining: timeDiff,
+                                        alignment: alignment,
+                                        phase: phase,
+                                        vsDay: vsDay,
+                                        startTime: windowTime
+                                    };
+                                }
                             }
                         }
                     }
@@ -1559,29 +1632,56 @@
                             if (!phase) continue;
                             
                             const phaseIndex = this.data.armsRacePhases.findIndex(p => p.name === phase.name);
-                            const startTime = new Date(checkDate);
-                            startTime.setUTCHours(phaseIndex * 4, 0, 0, 0);
                             
-                            const endTime = new Date(startTime);
-                            endTime.setUTCHours(startTime.getUTCHours() + 4);
+                            // Calculate multiple potential start times for this phase
+                            const potentialTimes = [];
                             
-                            const timeDiff = startTime.getTime() - now.getTime();
-                            const isActive = now >= startTime && now < endTime;
-                            const isPeak = alignment.benefit.includes('Perfect') || alignment.benefit.includes('Maximum');
+                            // Regular 4-hour slot time (0-19 hours)
+                            if (phaseIndex * 4 < 20) {
+                                const regularTime = new Date(checkDate);
+                                regularTime.setUTCHours(phaseIndex * 4, 0, 0, 0);
+                                potentialTimes.push({
+                                    start: regularTime,
+                                    end: new Date(regularTime.getTime() + 4 * 60 * 60 * 1000)
+                                });
+                            }
                             
-                            windows.push({
-                                startTime,
-                                endTime,
-                                timeDiff,
-                                isActive,
-                                isPeak,
-                                phase,
-                                vsDay,
-                                alignment,
-                                timeDisplay: isActive ? 'Active Now' : timeDiff > 0 ? `in ${this.formatTime(timeDiff)}` : 'Completed',
-                                startTimeLocal: new Date(startTime.getTime() - (this.timeOffset * 60 * 60 * 1000)),
-                                startTimeServer: startTime
-                            });
+                            // Special case: City Building also occurs 20:00-00:00
+                            if (phase.name === "City Building") {
+                                const eveningTime = new Date(checkDate);
+                                eveningTime.setUTCHours(20, 0, 0, 0);
+                                const eveningEnd = new Date(eveningTime);
+                                eveningEnd.setUTCDate(eveningEnd.getUTCDate() + 1);
+                                eveningEnd.setUTCHours(0, 0, 0, 0);
+                                potentialTimes.push({
+                                    start: eveningTime,
+                                    end: eveningEnd
+                                });
+                            }
+                            
+                            // Process each potential time window for this phase
+                            for (const timeWindow of potentialTimes) {
+                                const startTime = timeWindow.start;
+                                const endTime = timeWindow.end;
+                            
+                                const timeDiff = startTime.getTime() - now.getTime();
+                                const isActive = now >= startTime && now < endTime;
+                                const isPeak = alignment.benefit.includes('Perfect') || alignment.benefit.includes('Maximum');
+                                
+                                windows.push({
+                                    startTime,
+                                    endTime,
+                                    timeDiff,
+                                    isActive,
+                                    isPeak,
+                                    phase,
+                                    vsDay,
+                                    alignment,
+                                    timeDisplay: isActive ? 'Active Now' : timeDiff > 0 ? `in ${this.formatTime(timeDiff)}` : 'Completed',
+                                    startTimeLocal: new Date(startTime.getTime() - (this.timeOffset * 60 * 60 * 1000)),
+                                    startTimeServer: startTime
+                                });
+                            }
                         }
                     }
                     

@@ -177,7 +177,12 @@
                     
                     // Mark core app as ready for Ezoic integration
                     LastWarNexus.isReady = true;
+                    LastWarNexus.app = this; // Expose app instance globally for debugging
                     console.log('LastWarNexus core app is ready');
+                    
+                    // Expose timing refresh function globally for testing
+                    window.forceTimingRefresh = () => this.forceTimingRefresh();
+                    console.log('🔧 Debug: Use forceTimingRefresh() in console after changing system time');
                     
                 } catch (error) {
                     console.error('Initialization error:', error);
@@ -934,10 +939,14 @@
             getServerTime() {
                 try {
                     const now = new Date();
-                    return new Date(now.getTime() + (this.timeOffset * 60 * 60 * 1000));
+                    const offsetMs = (this.timeOffset || 0) * 60 * 60 * 1000;
+                    return new Date(now.getTime() + offsetMs);
                 } catch (error) {
                     console.error('Server time calculation error:', error);
-                    return new Date();
+                    // FIXED: Always apply offset even in error case
+                    const fallbackTime = new Date();
+                    const offsetMs = (this.timeOffset || 0) * 60 * 60 * 1000;
+                    return new Date(fallbackTime.getTime() + offsetMs);
                 }
             }
 
@@ -1185,7 +1194,8 @@
             updateTimeDisplay() {
                 try {
                     const serverTime = this.getServerTime();
-                    const localTime = new Date();
+                    // FIXED: Derive local time from server time for consistency
+                    const localTime = new Date(serverTime.getTime() - (this.timeOffset * 60 * 60 * 1000));
                     const displayTime = this.useLocalTime ? localTime : serverTime;
                     const displayTimeString = this.useLocalTime ? 
                         localTime.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }) :
@@ -1381,8 +1391,8 @@
 
             updateServerResetInfo() {
                 try {
-                    const now = new Date();
                     const serverTime = this.getServerTime();
+                    const localTime = new Date(serverTime.getTime() - (this.timeOffset * 60 * 60 * 1000));
                     
                     // Calculate next server reset (daily at 00:00 server time)
                     const nextReset = new Date(serverTime);
@@ -3214,11 +3224,46 @@
                 }
             }
             
+            // ENHANCED: Force refresh all timing components (useful for testing)
+            forceTimingRefresh() {
+                try {
+                    console.log('♾️ FORCING COMPLETE TIMING REFRESH');
+                    
+                    // Clear any cached timing data
+                    this.lastPhaseCheck = 0;
+                    this.lastNotificationCheck = 0;
+                    this.lastNotifiedWindow = null;
+                    
+                    // Force immediate update of all timing-dependent components
+                    this.updateAllDisplays();
+                    this.updateCountdowns();
+                    this.performNotificationCheck();
+                    
+                    // Log current timing state for debugging
+                    const serverTime = this.getServerTime();
+                    const currentPhase = this.getCurrentArmsPhase();
+                    const nextWindow = this.findNextPriorityWindow();
+                    
+                    console.log('♾️ TIMING STATE AFTER REFRESH:', {
+                        serverTime: serverTime.toISOString(),
+                        timeOffset: this.timeOffset,
+                        currentPhase: currentPhase?.name,
+                        currentPhaseActive: currentPhase?.hoursRemaining,
+                        nextWindowActive: nextWindow?.isActive,
+                        nextWindowPhase: nextWindow?.phase?.name,
+                        notificationsEnabled: this.notificationsEnabled
+                    });
+                    
+                } catch (error) {
+                    console.error('Force timing refresh error:', error);
+                }
+            }
+            
             // ENHANCED: Periodic notification check independent of other timers
             performNotificationCheck() {
                 try {
                     if (this.debugNotifications) {
-                        console.log('[NOTIFICATION DEBUG] Periodic check at:', new Date().toLocaleTimeString());
+                        console.log('[NOTIFICATION DEBUG] Periodic check at:', this.getServerTime().toISOString());
                     }
                     
                     // Get current priority window using the same logic as main display
@@ -3239,7 +3284,8 @@
             // ENHANCED: Centralized notification checking with debugging
             checkAndSendNotifications(window) {
                 try {
-                    const now = Date.now();
+                    const now = this.getServerTime();
+                    const nowTimestamp = now.getTime();
                     
                     if (this.debugNotifications) {
                         console.log('[NOTIFICATION DEBUG] Check triggered:', {
@@ -3248,12 +3294,12 @@
                             browserPermission: typeof Notification !== 'undefined' ? Notification.permission : 'not supported',
                             lastNotified: this.lastNotifiedWindow,
                             currentReason: window?.alignment?.reason,
-                            timeSinceLastCheck: now - this.lastNotificationCheck
+                            timeSinceLastCheck: nowTimestamp - this.lastNotificationCheck
                         });
                     }
                     
                     // Update last check time
-                    this.lastNotificationCheck = now;
+                    this.lastNotificationCheck = nowTimestamp;
                     
                     // Verify notification requirements
                     if (!window || !window.isActive) {
@@ -3287,7 +3333,7 @@
                     this.lastNotifiedWindow = eventReason;
                     
                     // Log successful notification
-                    console.log('✅ Notification sent:', { title, body, time: new Date().toLocaleTimeString() });
+                    console.log('✅ Notification sent:', { title, body, time: this.getServerTime().toISOString() });
                     
                 } catch (error) {
                     console.error('Notification check error:', error);
@@ -3524,10 +3570,11 @@
                     const timeUntilReset = document.getElementById('time-until-reset');
                     
                     if (countdownElement || priorityCountdown || timeUntilReset) {
-                        const now = this.useLocalTime ? new Date() : this.getServerTime();
+                        // FIXED: Always use server time for calculations, only display format changes
+                        const serverTime = this.getServerTime();
                         
                         // Update countdown-specific elements
-                        this.updateCountdownElements(now);
+                        this.updateCountdownElements(serverTime);
                     }
                 } catch (error) {
                     console.error('Countdown update error:', error);
@@ -3541,9 +3588,14 @@
                     // Update main time display with clear mode indicator
                     const mainTimeDisplay = document.getElementById('main-time-display');
                     if (mainTimeDisplay) {
-                        const timeString = this.useLocalTime ? 
-                            new Date().toLocaleTimeString('en-US', { hour12: false }) + ' LOCAL' :
-                            serverTime.toUTCString().slice(17, 25) + ' SERVER';
+                        let timeString;
+                        if (this.useLocalTime) {
+                            // FIXED: Convert server time to local display, don't use separate local time
+                            const localDisplayTime = new Date(serverTime.getTime() - (this.timeOffset * 60 * 60 * 1000));
+                            timeString = localDisplayTime.toLocaleTimeString('en-US', { hour12: false }) + ' LOCAL';
+                        } else {
+                            timeString = serverTime.toUTCString().slice(17, 25) + ' SERVER';
+                        }
                         mainTimeDisplay.textContent = timeString;
                         mainTimeDisplay.style.fontSize = '0.875rem';
                         mainTimeDisplay.style.fontWeight = '600';

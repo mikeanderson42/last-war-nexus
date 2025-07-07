@@ -1370,8 +1370,8 @@
                             if (i < 5) {
                                 // Regular 20-hour cycle phases
                                 phaseIndex = (startPhaseIndex + i) % 5;
-                                startHour = phaseIndex * 4;
-                                endHour = (phaseIndex * 4 + 4) % 24;
+                                startHour = i * 4;
+                                endHour = (i * 4 + 4) % 24;
                             } else {
                                 // Next day's first phase (20:00-00:00 + 00:00-04:00)
                                 phaseIndex = (startPhaseIndex + 5) % 5;
@@ -3794,8 +3794,8 @@
                             if (i < 5) {
                                 // Regular 20-hour cycle phases
                                 phaseIndex = (startPhaseIndex + i) % 5;
-                                startHour = phaseIndex * 4;
-                                endHour = (phaseIndex * 4 + 4) % 24;
+                                startHour = i * 4;
+                                endHour = (i * 4 + 4) % 24;
                             } else {
                                 // Next day's first phase (20:00-00:00 + 00:00-04:00)
                                 phaseIndex = (startPhaseIndex + 5) % 5;

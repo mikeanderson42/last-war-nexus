@@ -1139,10 +1139,30 @@
                     const currentVSDay = this.getCurrentVSDay();
                     const currentArmsPhase = this.getCurrentArmsPhase();
                     
-                    return this.data.priorityAlignments.find(alignment => 
+                    // Check for alignment between current VS Day and current Arms Phase
+                    const alignment = this.data.priorityAlignments.find(alignment => 
                         alignment.vsDay === currentVSDay.day && 
                         alignment.armsPhase === currentArmsPhase.name
                     );
+                    
+                    // ENHANCED: If there's a nextPhaseOverride that creates a priority alignment, 
+                    // treat it as currently active (since user manually triggered it)
+                    if (!alignment && this.nextPhaseOverride) {
+                        const nextPhaseAlignment = this.data.priorityAlignments.find(alignment => 
+                            alignment.vsDay === currentVSDay.day && 
+                            alignment.armsPhase === this.nextPhaseOverride
+                        );
+                        if (nextPhaseAlignment) {
+                            // Create a synthetic alignment for the override scenario
+                            return {
+                                ...nextPhaseAlignment,
+                                isOverride: true,
+                                reason: `Manual override: ${nextPhaseAlignment.reason}`
+                            };
+                        }
+                    }
+                    
+                    return alignment;
                 } catch (error) {
                     console.error('Priority check error:', error);
                     return null;

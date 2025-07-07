@@ -1446,6 +1446,27 @@
             updateCurrentStatus() {
                 try {
                     const serverTime = this.getServerTime();
+                    
+                    // ENHANCED: Handle automatic nextPhaseOverride -> currentPhaseOverride transition
+                    if (this.nextPhaseOverride && !this.currentPhaseOverride) {
+                        // Check if we've transitioned to the next phase time by comparing actual time-based phase
+                        const hour = serverTime.getUTCHours();
+                        let timeBasedPhaseIndex;
+                        if (hour >= 20) {
+                            timeBasedPhaseIndex = 0; // City Building restarts at 20:00
+                        } else {
+                            timeBasedPhaseIndex = Math.floor(hour / 4);
+                        }
+                        const timeBasedPhase = this.data.armsRacePhases[timeBasedPhaseIndex];
+                        
+                        if (timeBasedPhase.name === this.nextPhaseOverride) {
+                            console.log('🔄 Auto-transitioning nextPhaseOverride to currentPhaseOverride:', this.nextPhaseOverride);
+                            this.currentPhaseOverride = this.data.armsRacePhases.find(p => p.name === this.nextPhaseOverride)?.id;
+                            this.nextPhaseOverride = null;
+                            this.saveAllSettings(); // Persist the transition
+                        }
+                    }
+                    
                     const currentVSDay = this.getCurrentVSDay();
                     const currentArmsPhase = this.getCurrentArmsPhase();
                     
@@ -1941,8 +1962,21 @@
                             );
                             
                             // Check if this phase is currently active (respects overrides)
+                            // FIXED: Only mark ONE phase as active by checking both name AND time slot
                             const currentActivePhase = this.getCurrentArmsPhase();
-                            const isActive = isToday && currentActivePhase.name === phaseName;
+                            const currentHour = now.getUTCHours();
+                            let isActive = false;
+                            
+                            if (isToday && currentActivePhase.name === phaseName) {
+                                // Additional check: verify this is the actual time slot for this phase
+                                if (i === 5) {
+                                    // Next day's first phase (20:00-00:00)
+                                    isActive = currentHour >= 20;
+                                } else {
+                                    // Regular 4-hour phases - check if current hour falls in this phase's time slot
+                                    isActive = currentHour >= startHour && currentHour < endHour;
+                                }
+                            }
                             
                             // FIXED: Check if this is the chronologically next priority window to match main card
                             const isNextPriority = nextPriorityWindow && 

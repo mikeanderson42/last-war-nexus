@@ -5884,6 +5884,7 @@
             try {
                 const app = new VSPointsOptimizer();
                 window.lastWarNexus = app;
+                window.vsOptimizer = app; // Alias for testing scripts
                 
                 // Store app instance in namespace for Ezoic integration
                 LastWarNexus.app = app;

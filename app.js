@@ -138,6 +138,17 @@
 
             init() {
                 try {
+                    // OPTIMIZATION: App restart detection
+                    if (!window.LastWarNexus.initCount) {
+                        window.LastWarNexus.initCount = 0;
+                    }
+                    window.LastWarNexus.initCount++;
+                    
+                    if (window.LastWarNexus.initCount > 1) {
+                        console.warn(`⚠️ APP RESTART DETECTED! Init count: ${window.LastWarNexus.initCount}`);
+                        console.trace('App restart stack trace:');
+                    }
+                    
                     console.log('=== VSPointsOptimizer INIT START ===');
                     this.loadSettings();
                     console.log('Settings loaded successfully');
@@ -1421,16 +1432,30 @@
             }
 
             formatTime(milliseconds) {
-                if (milliseconds <= 0) return "0m";
-                
-                const totalMinutes = Math.floor(milliseconds / (1000 * 60));
-                const hours = Math.floor(totalMinutes / 60);
-                const minutes = totalMinutes % 60;
-                
-                if (hours > 0) {
-                    return `${hours}h ${minutes}m`;
-                } else {
-                    return `${Math.max(1, minutes)}m`;
+                // OPTIMIZATION: Robust error handling for all input types
+                try {
+                    // Handle various input types
+                    if (milliseconds === null || milliseconds === undefined) return "0m";
+                    if (typeof milliseconds === 'string') milliseconds = parseInt(milliseconds);
+                    if (isNaN(milliseconds) || !isFinite(milliseconds)) return "0m";
+                    if (milliseconds <= 0) return "0m";
+                    
+                    const totalMinutes = Math.floor(milliseconds / (1000 * 60));
+                    const hours = Math.floor(totalMinutes / 60);
+                    const minutes = totalMinutes % 60;
+                    const seconds = Math.floor((milliseconds % 60000) / 1000);
+                    
+                    // Include seconds for better precision
+                    if (hours > 0) {
+                        return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
+                    } else if (minutes > 0) {
+                        return seconds > 0 ? `${minutes}m ${seconds}s` : `${minutes}m`;
+                    } else {
+                        return `${Math.max(1, seconds)}s`;
+                    }
+                } catch (error) {
+                    console.error('formatTime error:', error);
+                    return "0m";
                 }
             }
 
@@ -3307,6 +3332,9 @@
             }
 
             updateCurrentStatus() {
+                // OPTIMIZATION: Performance monitoring
+                const startTime = performance.now();
+                
                 try {
                     const serverTime = this.getServerTime();
                     
@@ -3452,6 +3480,12 @@
                     
                     // Update server reset information
                     this.updateServerResetInfo();
+                    
+                    // OPTIMIZATION: Log slow updates
+                    const duration = performance.now() - startTime;
+                    if (duration > 50) {
+                        console.warn(`⚠️ Slow updateCurrentStatus: ${duration.toFixed(2)}ms`);
+                    }
                     
                 } catch (error) {
                     console.error('Status update error:', error);
@@ -5926,6 +5960,14 @@
 
                 // Add banner toggle function
                 window.lastWarNexus.toggleBanner = app.toggleBanner.bind(app);
+                
+                // OPTIMIZATION: Memory leak prevention - cleanup on page unload
+                window.addEventListener('beforeunload', () => {
+                    if (app.cleanup) {
+                        app.cleanup();
+                    }
+                    console.log('✅ App cleanup on unload');
+                });
                 
             } catch (error) {
                 console.error('Application initialization failed:', error);

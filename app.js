@@ -1062,18 +1062,37 @@
                     // 16:00-19:59 = Hero Advancement (phase 4)
                     // 20:00-23:59 = City Building (phase 0, cycle restarts)
                     
-                    let phaseIndex;
+                    // Calculate time-based phase first (this is the natural progression)
+                    let timeBasedPhaseIndex;
                     if (hour >= 20) {
-                        phaseIndex = 0; // City Building restarts at 20:00
+                        timeBasedPhaseIndex = 0; // City Building restarts at 20:00
                     } else {
-                        phaseIndex = Math.floor(hour / 4);
+                        timeBasedPhaseIndex = Math.floor(hour / 4);
                     }
                     
-                    // Handle override if set
+                    let phaseIndex = timeBasedPhaseIndex;
+                    
+                    // ENHANCED: Handle override but auto-clear when natural phase boundary is reached
                     if (this.currentPhaseOverride) {
                         const overridePhase = this.data.armsRacePhases.find(p => p.id === this.currentPhaseOverride);
                         if (overridePhase) {
-                            phaseIndex = this.data.armsRacePhases.indexOf(overridePhase);
+                            const overridePhaseIndex = this.data.armsRacePhases.indexOf(overridePhase);
+                            
+                            // Check if the override phase matches the current time-based phase
+                            if (overridePhaseIndex === timeBasedPhaseIndex) {
+                                // Override is still valid for this time period
+                                phaseIndex = overridePhaseIndex;
+                            } else {
+                                // Natural phase has changed - clear the override and follow natural progression
+                                console.log('🔄 CLEARING: currentPhaseOverride expired, natural phase boundary reached');
+                                this.currentPhaseOverride = null;
+                                this.saveSettings(); // Persist the clearing
+                                phaseIndex = timeBasedPhaseIndex; // Use natural phase
+                            }
+                        } else {
+                            // Invalid override phase - clear it
+                            this.currentPhaseOverride = null;
+                            phaseIndex = timeBasedPhaseIndex;
                         }
                     }
                     

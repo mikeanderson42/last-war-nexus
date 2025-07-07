@@ -1217,15 +1217,51 @@
                 try {
                     const currentVSDay = this.getCurrentVSDay();
                     const currentArmsPhase = this.getCurrentArmsPhase();
+                    const serverTime = this.getServerTime();
+                    const hour = serverTime.getUTCHours();
                     
-                    // Simple and reliable: Check for alignment between current VS Day and current Arms Phase
-                    // getCurrentArmsPhase() already handles currentPhaseOverride, so this should work correctly
-                    const alignment = this.data.priorityAlignments.find(alignment => 
+                    // Standard check: alignment between current VS Day and current Arms Phase
+                    let alignment = this.data.priorityAlignments.find(alignment => 
                         alignment.vsDay === currentVSDay.day && 
                         alignment.armsPhase === currentArmsPhase.name
                     );
                     
-                    return alignment;
+                    // If we found a standard alignment, return it
+                    if (alignment) {
+                        return alignment;
+                    }
+                    
+                    // ENHANCED: Handle nextPhaseOverride scenarios
+                    // If user set nextPhaseOverride and we're at the right time, activate it immediately
+                    if (this.nextPhaseOverride && !this.currentPhaseOverride) {
+                        // Calculate what the current time-based phase should be
+                        let timeBasedPhaseIndex;
+                        if (hour >= 20) {
+                            timeBasedPhaseIndex = 0; // City Building restarts at 20:00
+                        } else {
+                            timeBasedPhaseIndex = Math.floor(hour / 4);
+                        }
+                        const timeBasedPhase = this.data.armsRacePhases[timeBasedPhaseIndex];
+                        
+                        // If nextPhaseOverride matches current time-based phase, activate it
+                        if (timeBasedPhase.name === this.nextPhaseOverride) {
+                            const overrideAlignment = this.data.priorityAlignments.find(alignment => 
+                                alignment.vsDay === currentVSDay.day && 
+                                alignment.armsPhase === this.nextPhaseOverride
+                            );
+                            
+                            if (overrideAlignment) {
+                                console.log('🔄 ACTIVATING: nextPhaseOverride matches current time, making active now:', this.nextPhaseOverride);
+                                // Auto-transition to currentPhaseOverride
+                                this.currentPhaseOverride = this.data.armsRacePhases.find(p => p.name === this.nextPhaseOverride)?.id;
+                                this.nextPhaseOverride = null;
+                                this.saveAllSettings();
+                                return overrideAlignment;
+                            }
+                        }
+                    }
+                    
+                    return null;
                 } catch (error) {
                     console.error('Priority check error:', error);
                     return null;

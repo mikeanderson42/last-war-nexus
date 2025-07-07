@@ -289,6 +289,9 @@
                     if (currentPhaseSelect) {
                         currentPhaseSelect.addEventListener('change', (e) => {
                             this.currentPhaseOverride = e.target.value;
+                            // Immediate cache invalidation for instant updates
+                            this.lastKnownPhase = null;
+                            this.cachedNextWindow = null;
                             this.updateAllDisplays();
                         });
                     }
@@ -297,6 +300,9 @@
                     if (nextPhaseSelect) {
                         nextPhaseSelect.addEventListener('change', (e) => {
                             this.nextPhaseOverride = e.target.value;
+                            // Immediate cache invalidation for instant updates
+                            this.lastKnownPhase = null;
+                            this.cachedNextWindow = null;
                             this.updateAllDisplays();
                         });
                     }
@@ -571,6 +577,10 @@
                     this.timeOffset = parseFloat(setupTimeOffset?.value || '0');
                     this.currentPhaseOverride = setupCurrentPhase?.value || null;
                     this.nextPhaseOverride = setupNextPhase?.value || null;
+                    
+                    // Invalidate all caches when setup overrides are applied
+                    this.lastKnownPhase = null;
+                    this.cachedNextWindow = null;
 
                     const notificationChoice = setupNotifications?.value || 'enabled';
                     const wantsNotifications = notificationChoice === 'enabled';
@@ -1719,7 +1729,9 @@
                                 const endTime = timeWindow.end;
                             
                                 const timeDiff = startTime.getTime() - now.getTime();
-                                const isActive = now >= startTime && now < endTime;
+                                // Use override-aware active detection to prevent multiple active phases
+                                const currentActivePhase = this.getCurrentArmsPhase();
+                                const isActive = currentActivePhase.name === phase.name && Math.abs(timeDiff) < 4 * 60 * 60 * 1000;
                                 const isPeak = alignment.benefit.includes('Perfect') || alignment.benefit.includes('Maximum');
                                 
                                 windows.push({

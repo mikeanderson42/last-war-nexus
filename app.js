@@ -1171,44 +1171,79 @@
                         
                         const dayAlignments = this.data.priorityAlignments.filter(a => a.vsDay === dayOfWeek);
                         
-                        for (const alignment of dayAlignments) {
-                            const phase = this.data.armsRacePhases.find(p => p.name === alignment.armsPhase);
+                        // Use same phase rotation logic as populateSchedule() for consistency
+                        let startPhaseIndex = 0;
+                        const isToday = dayOffset === 0;
+                        
+                        if (isToday) {
+                            // For today, start from current active phase (respects overrides)
+                            const currentPhase = this.getCurrentArmsPhase();
+                            startPhaseIndex = this.data.armsRacePhases.findIndex(p => p.name === currentPhase.name);
+                            if (startPhaseIndex === -1) startPhaseIndex = 0; // Fallback
+                        } else {
+                            // For future days, calculate phase offset
+                            const currentHour = now.getUTCHours();
+                            let phasesRemainingToday = 0;
+                            
+                            if (currentHour >= 20) {
+                                phasesRemainingToday = 1; // Just City Building overnight
+                            } else if (currentHour < 4) {
+                                phasesRemainingToday = 5; // Full cycle ahead
+                            } else {
+                                const currentPhaseIndex = Math.floor(currentHour / 4);
+                                phasesRemainingToday = 5 - currentPhaseIndex;
+                            }
+                            
+                            startPhaseIndex = (phasesRemainingToday + (dayOffset - 1) * 5) % 5;
+                        }
+                        
+                        // Generate 6 phases (full daily schedule including next day transition)
+                        const basePhaseNames = ['City Building', 'Unit Progression', 'Tech Research', 'Drone Boost', 'Hero Advancement'];
+                        
+                        for (let i = 0; i < 6; i++) {
+                            let phaseIndex, startHour, endHour;
+                            
+                            if (i < 5) {
+                                // Regular 20-hour cycle phases
+                                phaseIndex = (startPhaseIndex + i) % 5;
+                                startHour = i * 4;
+                                endHour = (i + 1) * 4;
+                            } else {
+                                // Next day's first phase (20:00-00:00 + 00:00-04:00)
+                                phaseIndex = (startPhaseIndex + 5) % 5;
+                                startHour = 20;
+                                endHour = 24; // Show as 24:00 to indicate next day
+                            }
+                            
+                            const phaseName = basePhaseNames[phaseIndex];
+                            
+                            // Check if this phase matches any alignment for this day
+                            const alignment = dayAlignments.find(a => a.armsPhase === phaseName);
+                            if (!alignment) continue; // Skip non-priority phases
+                            
+                            const phase = this.data.armsRacePhases.find(p => p.name === phaseName);
                             if (!phase) continue;
                             
-                            const phaseIndex = this.data.armsRacePhases.findIndex(p => p.name === phase.name);
-                            
-                            // Calculate multiple potential start times for this phase
-                            const potentialTimes = [];
-                            
-                            // Regular 4-hour slot time (0-19 hours)
-                            if (phaseIndex * 4 < 20) {
-                                const regularTime = new Date(checkDate);
-                                regularTime.setUTCHours(phaseIndex * 4, 0, 0, 0);
-                                potentialTimes.push(regularTime);
+                            const windowTime = new Date(checkDate);
+                            if (i === 5) {
+                                // Special case: next day transition
+                                windowTime.setUTCHours(20, 0, 0, 0);
+                            } else {
+                                windowTime.setUTCHours(startHour, 0, 0, 0);
                             }
                             
-                            // Special case: City Building also occurs 20:00-00:00
-                            if (phase.name === "City Building") {
-                                const eveningTime = new Date(checkDate);
-                                eveningTime.setUTCHours(20, 0, 0, 0);
-                                potentialTimes.push(eveningTime);
-                            }
+                            const timeDiff = windowTime.getTime() - now.getTime();
                             
-                            // Check each potential window time
-                            for (const windowTime of potentialTimes) {
-                                const timeDiff = windowTime.getTime() - now.getTime();
-                                
-                                if (timeDiff > 0 && timeDiff < minTimeDiff) {
-                                    minTimeDiff = timeDiff;
-                                    nextWindow = {
-                                        isActive: false,
-                                        timeRemaining: timeDiff,
-                                        alignment: alignment,
-                                        phase: phase,
-                                        vsDay: vsDay,
-                                        startTime: windowTime
-                                    };
-                                }
+                            if (timeDiff > 0 && timeDiff < minTimeDiff) {
+                                minTimeDiff = timeDiff;
+                                nextWindow = {
+                                    isActive: false,
+                                    timeRemaining: timeDiff,
+                                    alignment: alignment,
+                                    phase: phase,
+                                    vsDay: vsDay,
+                                    startTime: windowTime
+                                };
                             }
                         }
                     }

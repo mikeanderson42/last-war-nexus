@@ -38,6 +38,7 @@
                 this.lastKnownPhase = null; // Track phase changes for immediate updates
                 this.cachedNextWindow = null; // Cache for priority window calculations
                 this.lastWindowCacheTime = 0; // Track when cache was last updated
+                this.notificationResetTimeout = null; // Timeout for resetting notification tracking
 
                 // ENHANCED: Detailed spending information for each phase
                 this.data = {
@@ -5405,11 +5406,8 @@
                     // Verify notification requirements
                     if (!window || !window.isActive) {
                         if (this.debugNotifications) console.log('[NOTIFICATION DEBUG] No active window');
-                        // Reset notification state when no active priority window
-                        if (this.lastNotifiedWindow) {
-                            if (this.debugNotifications) console.log('[NOTIFICATION DEBUG] Resetting notification state - no active window');
-                            this.lastNotifiedWindow = null;
-                        }
+                        // Don't reset notification state immediately - let it persist to prevent spam
+                        // when priority windows transition quickly
                         return;
                     }
                     
@@ -5441,6 +5439,17 @@
                     this.showNotification(title, body);
                     this.lastNotifiedWindow = notificationKey;
                     
+                    // Set up delayed reset of notification tracking to prevent immediate re-notification
+                    // but allow new notifications after phase changes
+                    if (this.notificationResetTimeout) {
+                        clearTimeout(this.notificationResetTimeout);
+                    }
+                    this.notificationResetTimeout = setTimeout(() => {
+                        if (this.debugNotifications) console.log("\[NOTIFICATION DEBUG\] Delayed reset of notification tracking");
+                        this.lastNotifiedWindow = null;
+                        this.notificationResetTimeout = null;
+                    }, 5 * 60 * 1000); // Reset after 5 minutes
+
                     // Log successful notification
                     console.log('✅ Notification sent:', { title, body, time: this.getServerTime().toISOString() });
                     

@@ -1255,7 +1255,12 @@
                                 // Auto-transition to currentPhaseOverride
                                 this.currentPhaseOverride = this.data.armsRacePhases.find(p => p.name === this.nextPhaseOverride)?.id;
                                 this.nextPhaseOverride = null;
-                                this.saveAllSettings();
+                                
+                                // Clear caches to ensure immediate updates
+                                this.lastKnownPhase = null;
+                                this.cachedNextWindow = null;
+                                
+                                this.saveSettings(); // Use direct save to avoid DOM conflicts
                                 return overrideAlignment;
                             }
                         }
@@ -1559,10 +1564,8 @@
                         const timeBasedPhase = this.data.armsRacePhases[timeBasedPhaseIndex];
                         
                         if (timeBasedPhase.name === this.nextPhaseOverride) {
-                            console.log('🔄 Auto-transitioning nextPhaseOverride to currentPhaseOverride:', this.nextPhaseOverride);
-                            this.currentPhaseOverride = this.data.armsRacePhases.find(p => p.name === this.nextPhaseOverride)?.id;
-                            this.nextPhaseOverride = null;
-                            this.saveAllSettings(); // Persist the transition
+                            console.log('🔄 DUPLICATE AUTO-TRANSITION: This should be handled in isCurrentlyHighPriority()');
+                            // This logic is now handled in isCurrentlyHighPriority() to avoid conflicts
                         }
                     }
                     

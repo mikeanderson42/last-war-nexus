@@ -187,6 +187,38 @@
                     window.forceTimingRefresh = () => this.forceTimingRefresh();
                     console.log('🔧 Debug: Use forceTimingRefresh() in console after changing system time');
                     
+                    // Expose priority debugging function globally
+                    window.debugPriority = () => {
+                        console.log('🔍 PRIORITY DETECTION DEBUG:');
+                        const serverTime = this.getServerTime();
+                        const currentVSDay = this.getCurrentVSDay();
+                        const currentArmsPhase = this.getCurrentArmsPhase();
+                        const alignment = this.data.priorityAlignments.find(a => 
+                            a.vsDay === currentVSDay.day && a.armsPhase === currentArmsPhase.name
+                        );
+                        const nextWindow = this.findNextPriorityWindow();
+                        
+                        console.log({
+                            serverTime: serverTime.toISOString(),
+                            dayOfWeek: serverTime.getUTCDay(),
+                            hour: serverTime.getUTCHours(),
+                            currentVSDay: currentVSDay,
+                            currentArmsPhase: currentArmsPhase,
+                            currentPhaseOverride: this.currentPhaseOverride,
+                            nextPhaseOverride: this.nextPhaseOverride,
+                            alignment: alignment,
+                            nextWindow: nextWindow,
+                            nextWindowActive: nextWindow?.isActive
+                        });
+                        
+                        console.log('All alignments for today (vsDay ' + currentVSDay.day + '):');
+                        this.data.priorityAlignments.filter(a => a.vsDay === currentVSDay.day).forEach(a => {
+                            console.log('  ' + a.armsPhase + ': ' + a.reason);
+                        });
+                        
+                        return nextWindow;
+                    };
+                    
                 } catch (error) {
                     console.error('Initialization error:', error);
                     this.handleError('Failed to initialize application');
@@ -1139,28 +1171,12 @@
                     const currentVSDay = this.getCurrentVSDay();
                     const currentArmsPhase = this.getCurrentArmsPhase();
                     
-                    // Check for alignment between current VS Day and current Arms Phase
+                    // Simple and reliable: Check for alignment between current VS Day and current Arms Phase
+                    // getCurrentArmsPhase() already handles currentPhaseOverride, so this should work correctly
                     const alignment = this.data.priorityAlignments.find(alignment => 
                         alignment.vsDay === currentVSDay.day && 
                         alignment.armsPhase === currentArmsPhase.name
                     );
-                    
-                    // ENHANCED: If there's a nextPhaseOverride that creates a priority alignment, 
-                    // treat it as currently active (since user manually triggered it)
-                    if (!alignment && this.nextPhaseOverride) {
-                        const nextPhaseAlignment = this.data.priorityAlignments.find(alignment => 
-                            alignment.vsDay === currentVSDay.day && 
-                            alignment.armsPhase === this.nextPhaseOverride
-                        );
-                        if (nextPhaseAlignment) {
-                            // Create a synthetic alignment for the override scenario
-                            return {
-                                ...nextPhaseAlignment,
-                                isOverride: true,
-                                reason: `Manual override: ${nextPhaseAlignment.reason}`
-                            };
-                        }
-                    }
                     
                     return alignment;
                 } catch (error) {

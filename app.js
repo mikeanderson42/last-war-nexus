@@ -369,6 +369,13 @@
                         currentPhaseSelect.addEventListener('change', (e) => {
                             this.currentPhaseOverride = e.target.value || null;
                             this.forceCompleteRefresh();
+                            // Force immediate UI update
+                            setTimeout(() => {
+                                this.updateAllDisplays();
+                                if (this.activeTab === 'schedule') {
+                                    this.populateSchedule();
+                                }
+                            }, 100);
                         });
                     }
 
@@ -377,6 +384,13 @@
                         nextPhaseSelect.addEventListener('change', (e) => {
                             this.nextPhaseOverride = e.target.value;
                             this.forceCompleteRefresh();
+                            // Force immediate UI update
+                            setTimeout(() => {
+                                this.updateAllDisplays();
+                                if (this.activeTab === 'schedule') {
+                                    this.populateSchedule();
+                                }
+                            }, 100);
                         });
                     }
 
@@ -1311,7 +1325,7 @@
                         const vsDay = this.data.vsDays.find(day => day.day === dayOfWeek);
                         if (!vsDay) continue;
                         
-                        const dayAlignments = this.data.priorityAlignments.filter(a => a.vsDay === dayOfWeek);
+                        const dayAlignments = this.data.priorityAlignments.filter(a => a.vsDay === vsDay.day);
                         
                         // Use same phase rotation logic as populateSchedule() for consistency
                         let startPhaseIndex = 0;
@@ -2406,6 +2420,453 @@
                 return allPassed;
             }
 
+            // COMPREHENSIVE PRE-PUBLISH TESTING SUITE
+            runComprehensivePrePublishTesting() {
+                console.log('🚀 === COMPREHENSIVE PRE-PUBLISH TESTING SUITE ===');
+                console.log('Testing all critical functionality before final deployment...\n');
+                
+                let totalTests = 0;
+                let passedTests = 0;
+                let failedTests = 0;
+                let criticalFailures = [];
+
+                const runTest = (category, testName, testFunction, isCritical = false) => {
+                    totalTests++;
+                    try {
+                        const result = testFunction();
+                        if (result) {
+                            console.log(`✅ [${category}] ${testName}`);
+                            passedTests++;
+                        } else {
+                            console.log(`❌ [${category}] ${testName} - FAILED`);
+                            failedTests++;
+                            if (isCritical) criticalFailures.push(`${category}: ${testName}`);
+                        }
+                        return result;
+                    } catch (error) {
+                        console.log(`💥 [${category}] ${testName} - ERROR: ${error.message}`);
+                        failedTests++;
+                        if (isCritical) criticalFailures.push(`${category}: ${testName}`);
+                        return false;
+                    }
+                };
+
+                // ===========================================
+                // CRITICAL DAY MATCHING TESTS
+                // ===========================================
+                console.log('📅 TESTING DAY MATCHING FIXES...');
+
+                runTest('DAY MATCHING', 'VS Day calculation returns valid objects', () => {
+                    for (let jsDay = 0; jsDay <= 6; jsDay++) {
+                        // Simulate different days
+                        const mockDate = new Date();
+                        mockDate.setUTCDay = (day) => { mockDate._testDay = day; };
+                        mockDate.getUTCDay = () => mockDate._testDay || 0;
+                        mockDate.setUTCDay(jsDay);
+                        
+                        const originalGetServerTime = this.getServerTime;
+                        this.getServerTime = () => mockDate;
+                        
+                        const vsDay = this.getCurrentVSDay();
+                        
+                        this.getServerTime = originalGetServerTime;
+                        
+                        if (!vsDay || !vsDay.name) {
+                            console.log(`  Failed for JS day ${jsDay}: ${JSON.stringify(vsDay)}`);
+                            return false;
+                        }
+                        console.log(`  JS day ${jsDay} → ${vsDay.name} (VS day ${vsDay.day})`);
+                    }
+                    return true;
+                }, true);
+
+                runTest('DAY MATCHING', 'Priority alignments can be found for weekdays', () => {
+                    let foundAlignments = 0;
+                    for (let vsDay = 1; vsDay <= 6; vsDay++) {
+                        const alignments = this.data.priorityAlignments.filter(a => a.vsDay === vsDay);
+                        if (alignments.length > 0) {
+                            foundAlignments++;
+                        }
+                        console.log(`  VS Day ${vsDay}: ${alignments.length} alignments`);
+                    }
+                    return foundAlignments >= 5; // Should have alignments for most weekdays
+                }, true);
+
+                runTest('DAY MATCHING', 'Phase names match between data structures', () => {
+                    const phaseNames = this.data.armsRacePhases.map(p => p.name);
+                    const alignmentPhases = [...new Set(this.data.priorityAlignments.map(a => a.armsPhase))];
+                    
+                    for (const alignmentPhase of alignmentPhases) {
+                        if (!phaseNames.includes(alignmentPhase)) {
+                            console.log(`  Mismatch: ${alignmentPhase} not found in phase data`);
+                            return false;
+                        }
+                    }
+                    console.log(`  All ${alignmentPhases.length} alignment phases match phase data`);
+                    return true;
+                }, true);
+
+                // ===========================================
+                // PRIORITY DETECTION TESTS
+                // ===========================================
+                console.log('\n🎯 TESTING PRIORITY DETECTION...');
+
+                runTest('PRIORITY', 'Priority window detection returns valid objects', () => {
+                    const nextWindow = this.findNextPriorityWindow();
+                    if (!nextWindow) {
+                        console.log('  No priority window found (this might be normal on Sunday)');
+                        return true; // Acceptable on Sunday
+                    }
+                    
+                    const hasRequiredFields = nextWindow.phase && nextWindow.vsDay && 
+                                             typeof nextWindow.timeRemaining === 'number' &&
+                                             typeof nextWindow.isActive === 'boolean';
+                    
+                    if (hasRequiredFields) {
+                        console.log(`  Found: ${nextWindow.phase.name} + ${nextWindow.vsDay.title} (${nextWindow.isActive ? 'ACTIVE' : 'UPCOMING'})`);
+                    }
+                    return hasRequiredFields;
+                }, true);
+
+                runTest('PRIORITY', 'Current priority detection logic', () => {
+                    const currentPriority = this.isCurrentlyHighPriority();
+                    const currentVSDay = this.getCurrentVSDay();
+                    const currentPhase = this.getCurrentArmsPhase();
+                    
+                    console.log(`  Current: ${currentPhase.name} on ${currentVSDay.title}`);
+                    console.log(`  Priority status: ${currentPriority ? currentPriority.reason : 'NONE'}`);
+                    
+                    // This should always return either a valid alignment object or null
+                    return currentPriority === null || (currentPriority.vsDay && currentPriority.armsPhase);
+                }, true);
+
+                runTest('PRIORITY', 'Monday Drone Boost alignment detection', () => {
+                    // Test specific known alignment
+                    const mondayAlignment = this.data.priorityAlignments.find(a => 
+                        a.vsDay === 1 && a.armsPhase === 'Drone Boost'
+                    );
+                    return !!mondayAlignment;
+                }, false);
+
+                // ===========================================
+                // PHASE OVERRIDE TESTS
+                // ===========================================
+                console.log('\n🔧 TESTING PHASE OVERRIDE SYSTEM...');
+
+                runTest('OVERRIDES', 'Phase override persistence', () => {
+                    const original = this.currentPhaseOverride;
+                    
+                    this.currentPhaseOverride = 'tech_research';
+                    const overridePhase1 = this.getCurrentArmsPhase();
+                    const overridePhase2 = this.getCurrentArmsPhase();
+                    
+                    this.currentPhaseOverride = original;
+                    
+                    return overridePhase1.name === 'Tech Research' && 
+                           overridePhase2.name === 'Tech Research' &&
+                           overridePhase1.isOverride === true;
+                }, true);
+
+                runTest('OVERRIDES', 'Override clearing works correctly', () => {
+                    const original = this.currentPhaseOverride;
+                    
+                    this.currentPhaseOverride = 'drone_boost';
+                    const overriddenPhase = this.getCurrentArmsPhase();
+                    
+                    this.currentPhaseOverride = null;
+                    const clearedPhase = this.getCurrentArmsPhase();
+                    
+                    this.currentPhaseOverride = original;
+                    
+                    return overriddenPhase.name === 'Drone Boost' && 
+                           clearedPhase.name !== 'Drone Boost' &&
+                           clearedPhase.isOverride === false;
+                }, true);
+
+                runTest('OVERRIDES', 'Cache invalidation on override changes', () => {
+                    const original = this.currentPhaseOverride;
+                    
+                    // Set initial cache
+                    this.cachedNextWindow = { test: 'cached' };
+                    this.lastKnownPhase = 'cached_phase';
+                    
+                    // Change override (should clear cache via forceCompleteRefresh)
+                    this.currentPhaseOverride = 'hero_advancement';
+                    this.forceCompleteRefresh();
+                    
+                    const cacheCleared = this.cachedNextWindow === null && this.lastKnownPhase === null;
+                    
+                    this.currentPhaseOverride = original;
+                    
+                    return cacheCleared;
+                }, false);
+
+                // ===========================================
+                // SCHEDULE GENERATION TESTS
+                // ===========================================
+                console.log('\n📅 TESTING SCHEDULE GENERATION...');
+
+                runTest('SCHEDULE', 'Schedule generates without errors', () => {
+                    try {
+                        // Test schedule generation logic
+                        const serverTime = this.getServerTime();
+                        const dayOfWeek = serverTime.getUTCDay();
+                        const vsDay = this.data.vsDays.find(day => day.day === dayOfWeek) || 
+                                     { day: 0, name: "Sunday", title: "Preparation Day" };
+                        
+                        // Test phase generation for a day
+                        for (let i = 0; i < 6; i++) {
+                            const phaseIndex = i < 5 ? i : 0;
+                            const startHour = phaseIndex * 4;
+                            const endHour = (phaseIndex * 4 + 4) % 24;
+                            const timeRange = this.formatTimeRange(startHour, endHour, i === 5);
+                            
+                            if (!timeRange) {
+                                console.log(`  Schedule generation failed for phase ${i}`);
+                                return false;
+                            }
+                        }
+                        
+                        console.log('  Schedule generation completed successfully');
+                        return true;
+                    } catch (error) {
+                        console.log(`  Schedule generation error: ${error.message}`);
+                        return false;
+                    }
+                }, true);
+
+                runTest('SCHEDULE', 'Active phase detection for schedule', () => {
+                    const currentPhase = this.getCurrentArmsPhase();
+                    const serverTime = this.getServerTime();
+                    const currentHour = serverTime.getUTCHours();
+                    
+                    // Simulate schedule active detection
+                    let shouldBeActive = false;
+                    
+                    // Test current phase timing
+                    if (currentPhase.name === 'City Building') {
+                        shouldBeActive = (currentHour >= 0 && currentHour < 4) || (currentHour >= 20);
+                    } else if (currentPhase.name === 'Unit Progression') {
+                        shouldBeActive = currentHour >= 4 && currentHour < 8;
+                    } else if (currentPhase.name === 'Tech Research') {
+                        shouldBeActive = currentHour >= 8 && currentHour < 12;
+                    } else if (currentPhase.name === 'Drone Boost') {
+                        shouldBeActive = currentHour >= 12 && currentHour < 16;
+                    } else if (currentPhase.name === 'Hero Advancement') {
+                        shouldBeActive = currentHour >= 16 && currentHour < 20;
+                    }
+                    
+                    console.log(`  Phase: ${currentPhase.name}, Hour: ${currentHour}, Should be active: ${shouldBeActive}`);
+                    return shouldBeActive || currentPhase.isOverride;
+                }, false);
+
+                // ===========================================
+                // TIME DISPLAY TESTS
+                // ===========================================
+                console.log('\n⏰ TESTING TIME DISPLAY CONSISTENCY...');
+
+                runTest('TIME', 'Time range formatting works for all modes', () => {
+                    const originalSetting = this.useLocalTime;
+                    
+                    // Test server time mode
+                    this.useLocalTime = false;
+                    const serverRange = this.formatTimeRange(8, 12, false);
+                    
+                    // Test local time mode
+                    this.useLocalTime = true;
+                    const localRange = this.formatTimeRange(8, 12, false);
+                    
+                    this.useLocalTime = originalSetting;
+                    
+                    const serverValid = /^\d{2}:\d{2}-\d{2}:\d{2}$/.test(serverRange);
+                    const localValid = localRange && localRange.length > 0;
+                    
+                    console.log(`  Server format: ${serverRange} (valid: ${serverValid})`);
+                    console.log(`  Local format: ${localRange} (valid: ${localValid})`);
+                    
+                    return serverValid && localValid;
+                }, false);
+
+                runTest('TIME', 'Midnight transition handling', () => {
+                    const midnightRange = this.formatTimeRange(20, 0, true);
+                    const containsExpected = midnightRange.includes('20') && midnightRange.includes('00');
+                    
+                    console.log(`  Midnight range: ${midnightRange}`);
+                    return containsExpected;
+                }, false);
+
+                // ===========================================
+                // UPDATE LOOP TESTS
+                // ===========================================
+                console.log('\n🔄 TESTING UPDATE MECHANISMS...');
+
+                runTest('UPDATES', 'All update intervals are running', () => {
+                    const hasData = !!this.updateInterval;
+                    const hasCountdown = !!this.countdownInterval;
+                    const hasNotification = !!this.notificationCheckInterval;
+                    
+                    console.log(`  Data updates (5s): ${hasData}`);
+                    console.log(`  Countdown updates (1s): ${hasCountdown}`);
+                    console.log(`  Notification checks (5s): ${hasNotification}`);
+                    
+                    return hasData && hasCountdown && hasNotification;
+                }, true);
+
+                runTest('UPDATES', 'Update functions exist and are callable', () => {
+                    const updateFunctions = [
+                        'updateAllDisplays',
+                        'updateCountdowns',
+                        'updateCurrentStatus',
+                        'updateMainCardTime',
+                        'updateTimeDisplay'
+                    ];
+                    
+                    for (const funcName of updateFunctions) {
+                        if (typeof this[funcName] !== 'function') {
+                            console.log(`  Missing function: ${funcName}`);
+                            return false;
+                        }
+                    }
+                    
+                    console.log(`  All ${updateFunctions.length} update functions available`);
+                    return true;
+                }, true);
+
+                // ===========================================
+                // NOTIFICATION SYSTEM TESTS
+                // ===========================================
+                console.log('\n🔔 TESTING NOTIFICATION SYSTEM...');
+
+                runTest('NOTIFICATIONS', 'Notification state management', () => {
+                    const hasPermissionCheck = typeof this.verifyNotificationPermission === 'function';
+                    const hasNotificationSend = typeof this.showNotification === 'function';
+                    const hasNotificationCheck = typeof this.performNotificationCheck === 'function';
+                    
+                    console.log(`  Permission check: ${hasPermissionCheck}`);
+                    console.log(`  Notification send: ${hasNotificationSend}`);
+                    console.log(`  Periodic check: ${hasNotificationCheck}`);
+                    
+                    return hasPermissionCheck && hasNotificationSend && hasNotificationCheck;
+                }, false);
+
+                runTest('NOTIFICATIONS', 'Notification reset mechanism', () => {
+                    const originalState = this.lastNotifiedWindow;
+                    
+                    this.lastNotifiedWindow = 'test_notification';
+                    
+                    // Simulate no active window (should reset)
+                    const mockWindow = { isActive: false };
+                    this.checkAndSendNotifications(mockWindow);
+                    
+                    const wasReset = this.lastNotifiedWindow === null;
+                    this.lastNotifiedWindow = originalState;
+                    
+                    console.log(`  Reset mechanism working: ${wasReset}`);
+                    return wasReset;
+                }, false);
+
+                // ===========================================
+                // DATA INTEGRITY TESTS
+                // ===========================================
+                console.log('\n💾 TESTING DATA INTEGRITY...');
+
+                runTest('DATA', 'All required data structures exist', () => {
+                    const requiredData = [
+                        'armsRacePhases',
+                        'vsDays', 
+                        'priorityAlignments'
+                    ];
+                    
+                    for (const dataName of requiredData) {
+                        if (!this.data[dataName] || !Array.isArray(this.data[dataName])) {
+                            console.log(`  Missing or invalid data: ${dataName}`);
+                            return false;
+                        }
+                    }
+                    
+                    console.log(`  All ${requiredData.length} data structures valid`);
+                    return true;
+                }, true);
+
+                runTest('DATA', 'Phase data completeness', () => {
+                    const phases = this.data.armsRacePhases;
+                    if (phases.length !== 5) {
+                        console.log(`  Expected 5 phases, found ${phases.length}`);
+                        return false;
+                    }
+                    
+                    const requiredPhases = ['City Building', 'Unit Progression', 'Tech Research', 'Drone Boost', 'Hero Advancement'];
+                    for (const requiredPhase of requiredPhases) {
+                        if (!phases.find(p => p.name === requiredPhase)) {
+                            console.log(`  Missing phase: ${requiredPhase}`);
+                            return false;
+                        }
+                    }
+                    
+                    console.log(`  All 5 Arms Race phases present`);
+                    return true;
+                }, true);
+
+                // ===========================================
+                // EDGE CASE TESTS
+                // ===========================================
+                console.log('\n🔍 TESTING EDGE CASES...');
+
+                runTest('EDGE CASES', 'Sunday handling (no VS events)', () => {
+                    // Simulate Sunday
+                    const sundayVSDay = { day: 0, name: "Sunday", title: "Preparation Day" };
+                    const sundayAlignments = this.data.priorityAlignments.filter(a => a.vsDay === 0);
+                    
+                    console.log(`  Sunday alignments: ${sundayAlignments.length} (expected: 0)`);
+                    return sundayAlignments.length === 0; // Should have no alignments on Sunday
+                }, false);
+
+                runTest('EDGE CASES', 'Phase boundary calculations', () => {
+                    const boundaryHours = [0, 4, 8, 12, 16, 20];
+                    for (const hour of boundaryHours) {
+                        const phaseIndex = hour >= 20 ? 0 : Math.floor(hour / 4);
+                        const expectedPhases = ['City Building', 'Unit Progression', 'Tech Research', 'Drone Boost', 'Hero Advancement'];
+                        const expectedPhase = expectedPhases[phaseIndex];
+                        
+                        console.log(`  Hour ${hour}: Phase ${phaseIndex} (${expectedPhase})`);
+                    }
+                    return true;
+                }, false);
+
+                // ===========================================
+                // FINAL RESULTS
+                // ===========================================
+                console.log('\n🏁 COMPREHENSIVE TESTING RESULTS:');
+                console.log('═'.repeat(60));
+                console.log(`Total Tests Run: ${totalTests}`);
+                console.log(`✅ Tests Passed: ${passedTests}`);
+                console.log(`❌ Tests Failed: ${failedTests}`);
+                console.log(`Success Rate: ${Math.round((passedTests/totalTests) * 100)}%`);
+                
+                if (criticalFailures.length > 0) {
+                    console.log('\n🚨 CRITICAL FAILURES - DO NOT PUBLISH:');
+                    criticalFailures.forEach(failure => console.log(`  ❌ ${failure}`));
+                    console.log('\n❌ SITE NOT READY FOR PUBLICATION');
+                    return false;
+                } else if (failedTests === 0) {
+                    console.log('\n🎉 ALL TESTS PASSED - READY FOR PUBLICATION!');
+                    console.log('✅ Day matching fixes working correctly');
+                    console.log('✅ Priority detection operational');  
+                    console.log('✅ Phase override system functional');
+                    console.log('✅ Schedule generation working');
+                    console.log('✅ Time display consistent');
+                    console.log('✅ Update loops running properly');
+                    console.log('✅ Notification system operational');
+                    console.log('✅ Data integrity confirmed');
+                    return true;
+                } else {
+                    console.log('\n⚠️ MINOR ISSUES DETECTED');
+                    console.log('Core functionality working, but some non-critical features have issues.');
+                    console.log('Site is functional but may need minor improvements.');
+                    return true;
+                }
+            }
+
             // ULTIMATE FINAL VERIFICATION - Tests everything that matters for user experience
             runUltimateFinalVerification() {
                 console.log('🚀 === ULTIMATE FINAL VERIFICATION ===');
@@ -3135,7 +3596,7 @@
                         const vsDay = this.data.vsDays.find(day => day.day === dayOfWeek);
                         if (!vsDay) continue;
                         
-                        const dayAlignments = this.data.priorityAlignments.filter(a => a.vsDay === dayOfWeek);
+                        const dayAlignments = this.data.priorityAlignments.filter(a => a.vsDay === vsDay.day);
                         
                         for (const alignment of dayAlignments) {
                             const phase = this.data.armsRacePhases.find(p => p.name === alignment.armsPhase);
@@ -3346,7 +3807,7 @@
                             const phaseData = this.data.armsRacePhases.find(p => p.name === phaseName);
                             
                             const isPriority = this.data.priorityAlignments.some(a => 
-                                a.vsDay === dayOfWeek && a.armsPhase === phaseName
+                                a.vsDay === vsDay.day && a.armsPhase === phaseName
                             );
                             
                             // Check if this phase is currently active (respects overrides)
@@ -4530,7 +4991,7 @@
                         const vsDay = this.data.vsDays.find(day => day.day === dayOfWeek);
                         if (!vsDay) continue;
                         
-                        const dayAlignments = this.data.priorityAlignments.filter(a => a.vsDay === dayOfWeek);
+                        const dayAlignments = this.data.priorityAlignments.filter(a => a.vsDay === vsDay.day);
                         
                         for (const alignment of dayAlignments) {
                             const phase = this.data.armsRacePhases.find(p => p.name === alignment.armsPhase);

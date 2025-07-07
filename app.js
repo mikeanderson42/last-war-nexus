@@ -1186,10 +1186,15 @@
                         const isToday = dayOffset === 0;
                         
                         if (isToday) {
-                            // For today, start from current active phase (respects overrides)
-                            const currentPhase = this.getCurrentArmsPhase();
-                            startPhaseIndex = this.data.armsRacePhases.findIndex(p => p.name === currentPhase.name);
-                            if (startPhaseIndex === -1) startPhaseIndex = 0; // Fallback
+                            // For today, prioritize nextPhaseOverride if set, otherwise use current phase
+                            if (this.nextPhaseOverride) {
+                                startPhaseIndex = this.data.armsRacePhases.findIndex(p => p.name === this.nextPhaseOverride);
+                                if (startPhaseIndex === -1) startPhaseIndex = 0; // Fallback
+                            } else {
+                                const currentPhase = this.getCurrentArmsPhase();
+                                startPhaseIndex = this.data.armsRacePhases.findIndex(p => p.name === currentPhase.name);
+                                if (startPhaseIndex === -1) startPhaseIndex = 0; // Fallback
+                            }
                         } else {
                             // For future days, calculate phase offset
                             const currentHour = now.getUTCHours();
@@ -1463,17 +1468,29 @@
                     const phaseDescription = document.getElementById('phase-description');
                     const efficiencyBadge = document.getElementById('efficiency-badge');
                     
-                    if (nextWindow && nextWindow.isActive) {
-                        // Currently active priority window
-                        if (phaseIcon) phaseIcon.textContent = nextWindow.phase.icon || '🎯';
-                        if (phaseTitle) phaseTitle.textContent = `${nextWindow.phase.name} + ${nextWindow.vsDay.title}`;
-                        if (phaseDescription) phaseDescription.textContent = `${nextWindow.phase.activities.join(', ')} align perfectly with ${nextWindow.vsDay.focus}`;
-                        if (efficiencyBadge) {
-                            efficiencyBadge.textContent = 'MAXIMUM EFFICIENCY';
-                            efficiencyBadge.style.background = 'var(--gradient-success)';
+                    if (nextWindow) {
+                        if (nextWindow.isActive) {
+                            // Currently active priority window
+                            if (phaseIcon) phaseIcon.textContent = nextWindow.phase.icon || '🎯';
+                            if (phaseTitle) phaseTitle.textContent = `${nextWindow.phase.name} + ${nextWindow.vsDay.title}`;
+                            if (phaseDescription) phaseDescription.textContent = `${nextWindow.phase.activities.join(', ')} align perfectly with ${nextWindow.vsDay.focus}`;
+                            if (efficiencyBadge) {
+                                efficiencyBadge.textContent = 'MAXIMUM EFFICIENCY';
+                                efficiencyBadge.style.background = 'var(--gradient-success)';
+                            }
+                        } else {
+                            // Upcoming priority window - show next high priority event
+                            if (phaseIcon) phaseIcon.textContent = nextWindow.phase.icon || '🎯';
+                            if (phaseTitle) phaseTitle.textContent = `Next: ${nextWindow.phase.name} + ${nextWindow.vsDay.title}`;
+                            if (phaseDescription) phaseDescription.textContent = `Upcoming high priority: ${nextWindow.phase.activities.join(', ')} + ${nextWindow.vsDay.focus}`;
+                            if (efficiencyBadge) {
+                                efficiencyBadge.textContent = 'HIGH PRIORITY AHEAD';
+                                efficiencyBadge.style.background = 'var(--gradient-primary)';
+                                efficiencyBadge.style.color = 'white';
+                            }
                         }
                     } else {
-                        // Regular phase information
+                        // Fallback to regular phase information
                         const phaseData = this.data.armsRacePhases.find(p => p.id === currentArmsPhase.id) || this.data.armsRacePhases[0];
                         if (phaseIcon) phaseIcon.textContent = phaseData.icon;
                         if (phaseTitle) phaseTitle.textContent = `${phaseData.name} + ${currentVSDay.title}`;

@@ -1413,6 +1413,58 @@
                 }
             }
 
+            // Helper function to format time ranges consistently with useLocalTime setting
+            formatTimeRange(startHour, endHour, isNextDay = false) {
+                try {
+                    if (!this.useLocalTime) {
+                        // Server time display (always UTC format)
+                        if (isNextDay) {
+                            return "20:00-00:00";
+                        }
+                        return `${String(startHour).padStart(2, '0')}:00-${String(endHour).padStart(2, '0')}:00`;
+                    }
+                    
+                    // Local time display - convert server hours to local time
+                    const serverTime = this.getServerTime();
+                    const baseDate = new Date(serverTime);
+                    baseDate.setUTCHours(startHour, 0, 0, 0);
+                    
+                    // Convert to local time for display
+                    const localStartTime = new Date(baseDate.getTime() - (this.timeOffset * 60 * 60 * 1000));
+                    
+                    let localEndTime;
+                    if (isNextDay) {
+                        // For 20:00-00:00 range (crosses midnight)
+                        const endDate = new Date(baseDate);
+                        endDate.setUTCDate(endDate.getUTCDate() + 1);
+                        endDate.setUTCHours(0, 0, 0, 0);
+                        localEndTime = new Date(endDate.getTime() - (this.timeOffset * 60 * 60 * 1000));
+                    } else {
+                        localEndTime = new Date(localStartTime.getTime() + (4 * 60 * 60 * 1000)); // +4 hours
+                    }
+                    
+                    const startStr = localStartTime.toLocaleTimeString('en-US', { 
+                        hour12: false, 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                    });
+                    const endStr = localEndTime.toLocaleTimeString('en-US', { 
+                        hour12: false, 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                    });
+                    
+                    return `${startStr}-${endStr}`;
+                } catch (error) {
+                    console.error('Time range formatting error:', error);
+                    // Fallback to server time format
+                    if (isNextDay) {
+                        return "20:00-00:00";
+                    }
+                    return `${String(startHour).padStart(2, '0')}:00-${String(endHour).padStart(2, '0')}:00`;
+                }
+            }
+
             toggleBanner() {
                 try {
                     const banner = document.getElementById('priority-events-banner');
@@ -1990,6 +2042,176 @@
                 return allPassed;
             }
 
+            // Test time consistency across all UI components
+            testTimeDisplayConsistency() {
+                console.log('🕐 === TIME DISPLAY CONSISTENCY TEST ===');
+                
+                const originalLocalTimeSetting = this.useLocalTime;
+                let testsPassed = 0;
+                let testsFailed = 0;
+
+                const tests = [
+                    {
+                        name: 'Schedule time format respects useLocalTime setting',
+                        test: () => {
+                            // Test server time mode
+                            this.useLocalTime = false;
+                            const serverTimeRange = this.formatTimeRange(4, 8, false);
+                            const serverExpected = "04:00-08:00";
+                            
+                            // Test local time mode
+                            this.useLocalTime = true;
+                            const localTimeRange = this.formatTimeRange(4, 8, false);
+                            
+                            console.log(`  Server mode: ${serverTimeRange}, Local mode: ${localTimeRange}`);
+                            
+                            return serverTimeRange === serverExpected && localTimeRange !== serverTimeRange;
+                        }
+                    },
+                    {
+                        name: 'Midnight transition time range formatting',
+                        test: () => {
+                            // Test server time mode for midnight transition
+                            this.useLocalTime = false;
+                            const serverMidnight = this.formatTimeRange(20, 0, true);
+                            const expected = "20:00-00:00";
+                            
+                            console.log(`  Midnight server format: ${serverMidnight}`);
+                            return serverMidnight === expected;
+                        }
+                    },
+                    {
+                        name: 'Active phase detection consistency',
+                        test: () => {
+                            const currentPhase = this.getCurrentArmsPhase();
+                            const serverTime = this.getServerTime();
+                            const hour = serverTime.getUTCHours();
+                            
+                            console.log(`  Current phase: ${currentPhase.name}, Server hour: ${hour}`);
+                            
+                            // Verify the phase matches the expected time slot
+                            if (hour >= 20 || hour < 4) {
+                                return currentPhase.name === 'City Building';
+                            } else if (hour >= 4 && hour < 8) {
+                                return currentPhase.name === 'Unit Progression';
+                            } else if (hour >= 8 && hour < 12) {
+                                return currentPhase.name === 'Tech Research';
+                            } else if (hour >= 12 && hour < 16) {
+                                return currentPhase.name === 'Drone Boost';
+                            } else if (hour >= 16 && hour < 20) {
+                                return currentPhase.name === 'Hero Advancement';
+                            }
+                            return false;
+                        }
+                    },
+                    {
+                        name: 'Schedule active phase matches current phase',
+                        test: () => {
+                            try {
+                                // Generate today's schedule
+                                const serverTime = this.getServerTime();
+                                const currentPhase = this.getCurrentArmsPhase();
+                                
+                                // Simulate schedule generation logic for today
+                                const now = serverTime;
+                                const dayOfWeek = (now.getUTCDay() + 6) % 7; // Monday = 0
+                                const isToday = true;
+                                const currentHour = now.getUTCHours();
+                                
+                                let hasActivePhase = false;
+                                
+                                // Check each phase slot
+                                for (let i = 0; i < 6; i++) {
+                                    let phaseIndex, startHour, endHour;
+                                    
+                                    if (i < 5) {
+                                        phaseIndex = i;
+                                        startHour = i * 4;
+                                        endHour = (i + 1) * 4;
+                                    } else {
+                                        phaseIndex = 0;
+                                        startHour = 20;
+                                        endHour = 24;
+                                    }
+                                    
+                                    const phaseName = this.data.armsRacePhases[phaseIndex].name;
+                                    
+                                    // Check if this phase should be active
+                                    let shouldBeActive = false;
+                                    if (isToday && currentPhase.name === phaseName) {
+                                        if (i === 5) {
+                                            shouldBeActive = currentHour >= 20;
+                                        } else {
+                                            shouldBeActive = currentHour >= startHour && currentHour < endHour;
+                                        }
+                                    }
+                                    
+                                    if (shouldBeActive) {
+                                        hasActivePhase = true;
+                                        console.log(`  Active phase found: ${phaseName} (${startHour}:00-${endHour}:00)`);
+                                        break;
+                                    }
+                                }
+                                
+                                return hasActivePhase;
+                            } catch (error) {
+                                console.error('  Schedule test error:', error);
+                                return false;
+                            }
+                        }
+                    },
+                    {
+                        name: 'Time toggle functionality',
+                        test: () => {
+                            const originalSetting = this.useLocalTime;
+                            
+                            // Test toggle to opposite setting
+                            this.useLocalTime = !originalSetting;
+                            const range1 = this.formatTimeRange(12, 16, false);
+                            
+                            // Toggle back
+                            this.useLocalTime = originalSetting;
+                            const range2 = this.formatTimeRange(12, 16, false);
+                            
+                            console.log(`  Setting ${!originalSetting}: ${range1}, Setting ${originalSetting}: ${range2}`);
+                            
+                            // Ranges should be different unless timezone offset is 0
+                            return this.timeOffset === 0 || range1 !== range2;
+                        }
+                    }
+                ];
+
+                tests.forEach(test => {
+                    try {
+                        const result = test.test();
+                        console.log(`${result ? '✅' : '❌'} ${test.name}`);
+                        if (result) {
+                            testsPassed++;
+                        } else {
+                            testsFailed++;
+                        }
+                    } catch (error) {
+                        console.log(`❌ ${test.name} - Error: ${error.message}`);
+                        testsFailed++;
+                    }
+                });
+
+                // Restore original setting
+                this.useLocalTime = originalLocalTimeSetting;
+
+                const allPassed = testsFailed === 0;
+                console.log(`\n📊 Time Consistency Results: ${testsPassed} passed, ${testsFailed} failed`);
+                
+                if (allPassed) {
+                    console.log('🎉 ALL TIME CONSISTENCY TESTS PASSED!');
+                } else {
+                    console.log('🚨 TIME CONSISTENCY ISSUES DETECTED!');
+                }
+                
+                console.log('🕐 === END TIME CONSISTENCY TEST ===');
+                return allPassed;
+            }
+
             // ENHANCED: Update all displays including server time in settings
             updateAllDisplays() {
                 try {
@@ -2037,13 +2259,13 @@
                         const serverDisplay = this.useLocalTime ? 
                             serverTime.toUTCString().slice(17, 25) : displayTimeString;
                         serverDisplayTime.textContent = `${serverDisplay} (${serverLabel})`;
+                    }
 
                     // Update settings dropdown live time
                     const settingsLiveTime = document.getElementById('settings-live-time');
                     if (settingsLiveTime) {
                         const serverTimeString = serverTime.toUTCString().slice(17, 25);
                         settingsLiveTime.textContent = serverTimeString + ' (UTC' + (this.timeOffset >= 0 ? '+' : '') + this.timeOffset + ')';
-                    }
                     }
 
                     // Phase end time
@@ -2637,8 +2859,8 @@
                                                  isPriority;
                             
                             const timeRange = i === 5 ? 
-                                "20:00-00:00" : 
-                                `${String(startHour).padStart(2, '0')}:00-${String(endHour).padStart(2, '0')}:00`;
+                                this.formatTimeRange(20, 0, true) : 
+                                this.formatTimeRange(startHour, endHour, false);
                             
                             phases.push({
                                 ...phaseData,

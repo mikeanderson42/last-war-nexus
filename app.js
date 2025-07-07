@@ -3425,8 +3425,8 @@
                         }
                     }
                     
-                    // CRITICAL: Check for notifications with enhanced logic
-                    this.checkAndSendNotifications(nextWindow);
+                    // NOTE: Notifications are handled separately in the 15-second periodic check
+                    // to prevent spam - removed from here
                     
                     // Update server reset information
                     this.updateServerResetInfo();
@@ -5076,16 +5076,8 @@
                         return;
                     }
                     
-                    // Check for active events and trigger notifications with enhanced logic
-                    const activeEvent = displayWindows.find(window => window.isActive);
-                    if (activeEvent) {
-                        this.checkAndSendNotifications({
-                            isActive: true,
-                            phase: activeEvent.phase,
-                            vsDay: activeEvent.vsDay,
-                            alignment: activeEvent.alignment
-                        });
-                    }
+                    // NOTE: Notifications are handled in the separate 15-second periodic check
+                    // to prevent spam - removed notification call from here
                     
                     // Take only first 3 events
                     const events = displayWindows.slice(0, 3);

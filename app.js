@@ -3408,10 +3408,19 @@
                         }
                     }
                     
-                    // Update spending tags
+                    // Update spending tags - must match what's displayed to user
                     const spendingTags = document.getElementById('spending-tags');
                     if (spendingTags) {
-                        const currentPhaseData = this.data.armsRacePhases.find(p => p.id === currentArmsPhase.id);
+                        let displayedPhase;
+                        if (nextWindow && nextWindow.isActive) {
+                            // Show spending for active priority window
+                            displayedPhase = nextWindow.phase;
+                        } else {
+                            // Show spending for current time-based phase
+                            displayedPhase = currentArmsPhase;
+                        }
+                        
+                        const currentPhaseData = this.data.armsRacePhases.find(p => p.id === displayedPhase.id);
                         if (currentPhaseData && currentPhaseData.bestSpending) {
                             const tagsHTML = currentPhaseData.bestSpending.map(item => 
                                 `<div class="spending-tag ${item.value}">${item.item}</div>`
@@ -3754,12 +3763,24 @@
                     
                     // DEBUG: Log the next priority window for comparison with main card
                     if (nextPriorityWindow) {
-                        console.log('🗓️ SCHEDULE: Next priority window:', {
-                            phase: nextPriorityWindow.phase.name,
-                            vsDay: nextPriorityWindow.vsDay.title,
-                            isActive: nextPriorityWindow.isActive,
-                            timeRemaining: this.formatTime(nextPriorityWindow.timeRemaining)
-                        });
+                        try {
+                            // Validate each property to prevent Object display
+                            const phaseName = String(nextPriorityWindow.phase?.name || "UNKNOWN");
+                            const vsDayTitle = String(nextPriorityWindow.vsDay?.title || "UNKNOWN");
+                            const isActive = Boolean(nextPriorityWindow.isActive);
+                            const timeFormatted = typeof nextPriorityWindow.timeRemaining === "number" ? 
+                                this.formatTime(nextPriorityWindow.timeRemaining) : String(nextPriorityWindow.timeRemaining || "UNKNOWN");
+                            
+                            console.log("🗓️ SCHEDULE: Next priority window:", {
+                                phase: phaseName,
+                                vsDay: vsDayTitle,
+                                isActive: isActive,
+                                timeRemaining: timeFormatted
+                            });
+                        } catch (error) {
+                            console.log("🗓️ SCHEDULE: Next priority window (ERROR):", nextPriorityWindow);
+                            console.error("Schedule console log error:", error);
+                        }
                     }
                     
                     for (let dayOffset = 0; dayOffset < 7; dayOffset++) {

@@ -3320,12 +3320,17 @@
                     
                     // DEBUG: Log the next priority window for comparison with schedule
                     if (nextWindow) {
-                        console.log('🎯 MAIN CARD: Next priority window:', {
-                            phase: nextWindow.phase.name,
-                            vsDay: nextWindow.vsDay.title,
-                            isActive: nextWindow.isActive,
-                            timeRemaining: this.formatTime(nextWindow.timeRemaining)
-                        });
+                        try {
+                            console.log("🎯 MAIN CARD: Next priority window:", {
+                                phase: nextWindow.phase?.name || "UNKNOWN",
+                                vsDay: nextWindow.vsDay?.title || "UNKNOWN",
+                                isActive: nextWindow.isActive,
+                                timeRemaining: this.formatTime(nextWindow.timeRemaining)
+                            });
+                        } catch (error) {
+                            console.log("🎯 MAIN CARD: Next priority window (ERROR):", nextWindow);
+                            console.error("Console log error:", error);
+                        }
                     }
                     
                     // Main time display is now updated every second in updateCountdowns()

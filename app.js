@@ -187,6 +187,53 @@
                     window.forceTimingRefresh = () => this.forceTimingRefresh();
                     console.log('🔧 Debug: Use forceTimingRefresh() in console after changing system time');
                     
+                    // Expose priority testing function
+                    window.testCurrentPriority = () => {
+                        console.log('🧪 TESTING CURRENT PRIORITY STATUS:');
+                        const currentVSDay = this.getCurrentVSDay();
+                        const currentArmsPhase = this.getCurrentArmsPhase();
+                        const serverTime = this.getServerTime();
+                        const hour = serverTime.getUTCHours();
+                        const isHighPriority = this.isCurrentlyHighPriority();
+                        
+                        console.log('Time & Phase Info:', {
+                            serverTime: serverTime.toISOString(),
+                            hour: hour,
+                            currentVSDay: currentVSDay.name + ' (day ' + currentVSDay.day + ')',
+                            currentArmsPhase: currentArmsPhase.name,
+                            currentPhaseOverride: this.currentPhaseOverride,
+                            nextPhaseOverride: this.nextPhaseOverride
+                        });
+                        
+                        console.log('Priority Detection:', {
+                            isCurrentlyHighPriority: isHighPriority,
+                            alignment: isHighPriority ? isHighPriority.reason : 'NONE'
+                        });
+                        
+                        // Test what phase should be active based on time
+                        let timeBasedPhaseIndex;
+                        if (hour >= 20) {
+                            timeBasedPhaseIndex = 0;
+                        } else {
+                            timeBasedPhaseIndex = Math.floor(hour / 4);
+                        }
+                        const timeBasedPhase = this.data.armsRacePhases[timeBasedPhaseIndex];
+                        console.log('Time-based phase should be:', timeBasedPhase.name);
+                        
+                        // Show all alignments for today
+                        console.log('All possible alignments for ' + currentVSDay.name + ':');
+                        this.data.priorityAlignments.filter(a => a.vsDay === currentVSDay.day).forEach(a => {
+                            console.log('  ' + a.armsPhase + ' → ' + a.reason);
+                        });
+                        
+                        return {
+                            isHighPriority,
+                            currentVSDay,
+                            currentArmsPhase,
+                            timeBasedPhase
+                        };
+                    };
+                    
                     // Expose priority debugging function globally
                     window.debugPriority = () => {
                         console.log('🔍 PRIORITY DETECTION DEBUG:');

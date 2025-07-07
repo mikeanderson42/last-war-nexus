@@ -1346,7 +1346,7 @@
                             if (currentHour >= 20) {
                                 phasesRemainingToday = 1; // Just City Building overnight
                             } else if (currentHour < 4) {
-                                phasesRemainingToday = 5; // Full cycle ahead
+                                phasesRemainingToday = 4; // 4 phases remaining: Unit, Tech, Drone, Hero
                             } else {
                                 const currentPhaseIndex = Math.floor(currentHour / 4);
                                 phasesRemainingToday = 5 - currentPhaseIndex;
@@ -2053,7 +2053,7 @@
                             if (currentHour >= 20) {
                                 phasesRemainingToday = 1; // Just City Building overnight
                             } else if (currentHour < 4) {
-                                phasesRemainingToday = 5; // Full cycle ahead
+                                phasesRemainingToday = 4; // 4 phases remaining: Unit, Tech, Drone, Hero
                             } else {
                                 const currentPhaseIndex = Math.floor(currentHour / 4);
                                 phasesRemainingToday = 5 - currentPhaseIndex;
@@ -2111,7 +2111,7 @@
                                                  isPriority;
                             
                             const timeRange = i === 5 ? 
-                                "20:00-04:00*" : 
+                                "20:00-00:00" : 
                                 `${String(startHour).padStart(2, '0')}:00-${String(endHour).padStart(2, '0')}:00`;
                             
                             phases.push({

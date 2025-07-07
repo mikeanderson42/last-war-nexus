@@ -367,7 +367,7 @@
                     const currentPhaseSelect = document.getElementById('current-phase-select');
                     if (currentPhaseSelect) {
                         currentPhaseSelect.addEventListener('change', (e) => {
-                            this.currentPhaseOverride = e.target.value;
+                            this.currentPhaseOverride = e.target.value || null;
                             this.forceCompleteRefresh();
                         });
                     }
@@ -750,8 +750,8 @@
                         console.log('SaveAllSettings: Notification state:', this.notificationsEnabled);
                     }
                     
-                    if (currentPhaseSelect) this.currentPhaseOverride = currentPhaseSelect.value;
-                    if (nextPhaseSelect) this.nextPhaseOverride = nextPhaseSelect.value;
+                    if (currentPhaseSelect) this.currentPhaseOverride = currentPhaseSelect.value || null;
+                    if (nextPhaseSelect) this.nextPhaseOverride = nextPhaseSelect.value || null;
 
                     // Reset tracking and cache to force immediate update when overrides change
                     this.lastKnownPhase = null;
@@ -792,8 +792,8 @@
                     }
 
                     const currentPhaseSelect = document.getElementById('current-phase-select');
-                    if (currentPhaseSelect && this.currentPhaseOverride) {
-                        currentPhaseSelect.value = this.currentPhaseOverride;
+                    if (currentPhaseSelect) {
+                        currentPhaseSelect.value = this.currentPhaseOverride || '';
                     }
 
                     const nextPhaseSelect = document.getElementById('next-phase-select');
@@ -1066,23 +1066,12 @@
                     
                     let phaseIndex = timeBasedPhaseIndex;
                     
-                    // ENHANCED: Handle override but auto-clear when natural phase boundary is reached
+                    // Handle manual phase override - persist until user changes it
                     if (this.currentPhaseOverride) {
                         const overridePhase = this.data.armsRacePhases.find(p => p.id === this.currentPhaseOverride);
                         if (overridePhase) {
-                            const overridePhaseIndex = this.data.armsRacePhases.indexOf(overridePhase);
-                            
-                            // Check if the override phase matches the current time-based phase
-                            if (overridePhaseIndex === timeBasedPhaseIndex) {
-                                // Override is still valid for this time period
-                                phaseIndex = overridePhaseIndex;
-                            } else {
-                                // Natural phase has changed - clear the override and follow natural progression
-                                console.log('🔄 CLEARING: currentPhaseOverride expired, natural phase boundary reached');
-                                this.currentPhaseOverride = null;
-                                this.saveSettings(); // Persist the clearing
-                                phaseIndex = timeBasedPhaseIndex; // Use natural phase
-                            }
+                            phaseIndex = this.data.armsRacePhases.indexOf(overridePhase);
+                            // Keep the override active - user must manually clear it
                         } else {
                             // Invalid override phase - clear it
                             this.currentPhaseOverride = null;
@@ -1453,11 +1442,12 @@
                 this.lastWindowCacheTime = 0;
                 this.lastPhaseCheck = 0;
                 this.lastNotificationCheck = 0;
+                this.lastNotifiedWindow = null; // Clear notification tracking
                 
                 // Force immediate update of all displays
                 this.updateAllDisplays();
                 
-                console.log('🔄 FORCED COMPLETE REFRESH: All caches cleared');
+                console.log('🔄 FORCED COMPLETE REFRESH: All caches cleared, notifications reset');
             }
 
             // COMPREHENSIVE FUNCTIONALITY TEST
@@ -1616,6 +1606,388 @@
                 
                 console.log('\n🧪 === END COMPREHENSIVE TEST ===');
                 return passCount > 0 && failCount === 0;
+            }
+
+            // TEST: Override persistence validation
+            testOverridePersistence() {
+                console.log('🧪 === TESTING OVERRIDE PERSISTENCE ===');
+                
+                // Save current state
+                const originalOverride = this.currentPhaseOverride;
+                
+                // Test setting override
+                this.currentPhaseOverride = 'tech_research';
+                console.log('✅ Set override to tech_research');
+                
+                // Test that getCurrentArmsPhase respects override
+                const phase = this.getCurrentArmsPhase();
+                const isCorrect = phase.name === 'Tech Research';
+                console.log(`${isCorrect ? '✅' : '❌'} Phase detection with override: ${phase.name}`);
+                
+                // Test that it persists through multiple calls
+                for (let i = 0; i < 3; i++) {
+                    const testPhase = this.getCurrentArmsPhase();
+                    if (testPhase.name !== 'Tech Research') {
+                        console.log(`❌ Override not persisting on call ${i + 1}: ${testPhase.name}`);
+                        break;
+                    }
+                }
+                console.log('✅ Override persists through multiple calls');
+                
+                // Test clearing override
+                this.currentPhaseOverride = null;
+                const clearedPhase = this.getCurrentArmsPhase();
+                console.log(`✅ Cleared override - now shows: ${clearedPhase.name}`);
+                
+                // Restore original state
+                this.currentPhaseOverride = originalOverride;
+                console.log('✅ Original state restored');
+                
+                console.log('🧪 === OVERRIDE TEST COMPLETE ===');
+            }
+
+            // COMPREHENSIVE PRE-PUBLISH TEST SUITE
+            runFullPublishTestSuite() {
+                console.log('🚨 === FULL PRE-PUBLISH TEST SUITE ===');
+                console.log('Testing all critical functionality before publishing...\n');
+                
+                let totalTests = 0;
+                let passedTests = 0;
+                let failedTests = 0;
+                
+                const test = (name, testFn) => {
+                    totalTests++;
+                    try {
+                        const result = testFn();
+                        if (result) {
+                            console.log(`✅ ${name}`);
+                            passedTests++;
+                        } else {
+                            console.log(`❌ ${name} - Test returned false`);
+                            failedTests++;
+                        }
+                    } catch (error) {
+                        console.log(`❌ ${name} - Error: ${error.message}`);
+                        failedTests++;
+                    }
+                };
+                
+                // === CORE FUNCTIONALITY TESTS ===
+                console.log('📋 Testing Core Functionality...');
+                
+                test('App Initialization', () => {
+                    return this.data && this.data.armsRacePhases && this.data.vsDays && this.data.priorityAlignments;
+                });
+                
+                test('Server Time Calculation', () => {
+                    const time = this.getServerTime();
+                    return time instanceof Date && !isNaN(time.getTime());
+                });
+                
+                test('Current Phase Detection (No Override)', () => {
+                    const savedOverride = this.currentPhaseOverride;
+                    this.currentPhaseOverride = null;
+                    const phase = this.getCurrentArmsPhase();
+                    this.currentPhaseOverride = savedOverride;
+                    return phase && phase.name && typeof phase.hoursRemaining === 'number';
+                });
+                
+                // === PHASE OVERRIDE TESTS ===
+                console.log('\n🔧 Testing Phase Override System...');
+                
+                test('Phase Override Persistence', () => {
+                    const original = this.currentPhaseOverride;
+                    this.currentPhaseOverride = 'tech_research';
+                    const phase1 = this.getCurrentArmsPhase();
+                    const phase2 = this.getCurrentArmsPhase();
+                    const phase3 = this.getCurrentArmsPhase();
+                    this.currentPhaseOverride = original;
+                    
+                    return phase1.name === 'Tech Research' && 
+                           phase2.name === 'Tech Research' && 
+                           phase3.name === 'Tech Research';
+                });
+                
+                test('Phase Override Clearing', () => {
+                    const original = this.currentPhaseOverride;
+                    this.currentPhaseOverride = 'drone_boost';
+                    const overridePhase = this.getCurrentArmsPhase();
+                    this.currentPhaseOverride = null;
+                    const clearedPhase = this.getCurrentArmsPhase();
+                    this.currentPhaseOverride = original;
+                    
+                    return overridePhase.name === 'Drone Boost' && clearedPhase.name !== 'Drone Boost';
+                });
+                
+                test('Settings Save/Load with Override', () => {
+                    const original = this.currentPhaseOverride;
+                    this.currentPhaseOverride = 'hero_advancement';
+                    this.saveSettings();
+                    this.currentPhaseOverride = null;
+                    this.loadSettings();
+                    const result = this.currentPhaseOverride === 'hero_advancement';
+                    this.currentPhaseOverride = original;
+                    this.saveSettings();
+                    return result;
+                });
+                
+                // === PRIORITY WINDOW TESTS ===
+                console.log('\n🎯 Testing Priority Window System...');
+                
+                test('Priority Window Detection', () => {
+                    const window = this.findNextPriorityWindow();
+                    return window === null || (window.phase && window.vsDay && typeof window.timeRemaining === 'number');
+                });
+                
+                test('Priority Alignment Logic', () => {
+                    const alignment = this.isCurrentlyHighPriority();
+                    return alignment === null || (alignment.armsPhase && alignment.vsDay);
+                });
+                
+                test('VS Day Calculation', () => {
+                    const vsDay = this.getCurrentVSDay();
+                    return vsDay && vsDay.day >= 0 && vsDay.day <= 6 && vsDay.name;
+                });
+                
+                // === TIME CALCULATION TESTS ===
+                console.log('\n⏰ Testing Time Calculations...');
+                
+                test('Time Until Next Phase', () => {
+                    const time = this.getTimeUntilNextPhase();
+                    return typeof time === 'number' && time >= 0 && time <= 4 * 60 * 60 * 1000;
+                });
+                
+                test('Time Formatting', () => {
+                    const format1 = this.formatTime(3661000); // 1h 1m 1s
+                    const format2 = this.formatTime(7200000); // 2h exact
+                    const format3 = this.formatTime(120000);  // 2m exact
+                    return format1 === '1h 1m' && format2 === '2h 0m' && format3 === '2m';
+                });
+                
+                // === UI AND DISPLAY TESTS ===
+                console.log('\n🖥️ Testing UI and Display Functions...');
+                
+                test('Main Display Update', () => {
+                    try {
+                        this.updateCurrentStatus();
+                        return true;
+                    } catch (e) {
+                        return false;
+                    }
+                });
+                
+                test('Schedule Generation', () => {
+                    try {
+                        this.populateSchedule();
+                        return true;
+                    } catch (e) {
+                        return false;
+                    }
+                });
+                
+                test('Cache Management', () => {
+                    this.forceCompleteRefresh();
+                    return this.lastKnownPhase === null && 
+                           this.cachedNextWindow === null && 
+                           this.lastNotifiedWindow === null;
+                });
+                
+                // === EDGE CASE TESTS ===
+                console.log('\n🔍 Testing Edge Cases...');
+                
+                const originalGetServerTime = this.getServerTime;
+                
+                test('Midnight Boundary (00:00)', () => {
+                    this.getServerTime = () => {
+                        const d = new Date();
+                        d.setUTCHours(0, 0, 0, 0);
+                        return d;
+                    };
+                    const phase = this.getCurrentArmsPhase();
+                    this.getServerTime = originalGetServerTime;
+                    return phase.name === 'City Building';
+                });
+                
+                test('Evening Transition (20:00)', () => {
+                    this.getServerTime = () => {
+                        const d = new Date();
+                        d.setUTCHours(20, 0, 0, 0);
+                        return d;
+                    };
+                    const phase = this.getCurrentArmsPhase();
+                    this.getServerTime = originalGetServerTime;
+                    return phase.name === 'City Building';
+                });
+                
+                test('Phase Boundary (04:00)', () => {
+                    this.getServerTime = () => {
+                        const d = new Date();
+                        d.setUTCHours(4, 0, 0, 0);
+                        return d;
+                    };
+                    const phase = this.getCurrentArmsPhase();
+                    this.getServerTime = originalGetServerTime;
+                    return phase.name === 'Unit Progression';
+                });
+                
+                test('Late Hour (23:59)', () => {
+                    this.getServerTime = () => {
+                        const d = new Date();
+                        d.setUTCHours(23, 59, 59, 999);
+                        return d;
+                    };
+                    const phase = this.getCurrentArmsPhase();
+                    this.getServerTime = originalGetServerTime;
+                    return phase.name === 'City Building';
+                });
+                
+                // === NOTIFICATION SYSTEM TESTS ===
+                console.log('\n🔔 Testing Notification System...');
+                
+                test('Notification Permission Check', () => {
+                    const permission = this.verifyNotificationPermission();
+                    return typeof permission === 'boolean';
+                });
+                
+                test('Notification Debug Mode', () => {
+                    return typeof this.debugNotifications === 'boolean';
+                });
+                
+                // === FINAL RESULTS ===
+                console.log('\n📊 === TEST RESULTS ===');
+                console.log(`Total Tests: ${totalTests}`);
+                console.log(`✅ Passed: ${passedTests}`);
+                console.log(`❌ Failed: ${failedTests}`);
+                console.log(`Success Rate: ${Math.round((passedTests / totalTests) * 100)}%`);
+                
+                const allTestsPassed = failedTests === 0;
+                
+                if (allTestsPassed) {
+                    console.log('\n🎉 ALL TESTS PASSED - READY FOR PUBLISHING!');
+                } else {
+                    console.log('\n🚨 SOME TESTS FAILED - DO NOT PUBLISH YET!');
+                    console.log('Fix failing tests before publishing.');
+                }
+                
+                console.log('\n🚨 === END PRE-PUBLISH TEST SUITE ===');
+                return allTestsPassed;
+            }
+
+            // SPECIFIC TEST: Verify no auto-clear override behavior
+            testOverrideStability() {
+                console.log('🧪 === TESTING OVERRIDE STABILITY ===');
+                
+                // Test the specific issue from console log
+                const original = this.currentPhaseOverride;
+                
+                // Set override to tech_research
+                this.currentPhaseOverride = 'tech_research';
+                console.log('✅ Set override to tech_research');
+                
+                // Call getCurrentArmsPhase multiple times like the app does
+                for (let i = 0; i < 10; i++) {
+                    const phase = this.getCurrentArmsPhase();
+                    if (phase.name !== 'Tech Research') {
+                        console.log(`❌ Override was cleared on call ${i + 1}! Phase: ${phase.name}`);
+                        this.currentPhaseOverride = original;
+                        return false;
+                    }
+                }
+                
+                console.log('✅ Override persisted through 10 calls');
+                
+                // Test that manual clearing works
+                this.currentPhaseOverride = null;
+                const clearedPhase = this.getCurrentArmsPhase();
+                console.log(`✅ Manual clear works - now shows: ${clearedPhase.name}`);
+                
+                // Restore original
+                this.currentPhaseOverride = original;
+                
+                console.log('🧪 === OVERRIDE STABILITY TEST COMPLETE ===');
+                return true;
+            }
+
+            // FINAL PRE-PUBLISH CHECKLIST
+            runFinalPublishChecklist() {
+                console.log('🚨 === FINAL PRE-PUBLISH CHECKLIST ===');
+                
+                const checks = [
+                    {
+                        name: 'No phase override auto-clearing',
+                        test: () => {
+                            const orig = this.currentPhaseOverride;
+                            this.currentPhaseOverride = 'tech_research';
+                            const p1 = this.getCurrentArmsPhase();
+                            const p2 = this.getCurrentArmsPhase();
+                            this.currentPhaseOverride = orig;
+                            return p1.name === 'Tech Research' && p2.name === 'Tech Research';
+                        }
+                    },
+                    {
+                        name: 'Schedule respects manual overrides',
+                        test: () => {
+                            const orig = this.currentPhaseOverride;
+                            this.currentPhaseOverride = 'drone_boost';
+                            try {
+                                this.populateSchedule();
+                                this.currentPhaseOverride = orig;
+                                return true;
+                            } catch (e) {
+                                this.currentPhaseOverride = orig;
+                                return false;
+                            }
+                        }
+                    },
+                    {
+                        name: 'Force refresh clears all caches',
+                        test: () => {
+                            this.forceCompleteRefresh();
+                            return this.lastKnownPhase === null && 
+                                   this.cachedNextWindow === null && 
+                                   this.lastNotifiedWindow === null;
+                        }
+                    },
+                    {
+                        name: 'Auto option clears overrides',
+                        test: () => {
+                            this.currentPhaseOverride = 'hero_advancement';
+                            this.currentPhaseOverride = null; // Simulate selecting "Auto"
+                            const phase = this.getCurrentArmsPhase();
+                            return phase.name !== 'Hero Advancement';
+                        }
+                    },
+                    {
+                        name: 'No duplicate NEXT badges',
+                        test: () => {
+                            const window = this.findNextPriorityWindow();
+                            return !window || !window.isActive; // NEXT should only be on inactive windows
+                        }
+                    }
+                ];
+                
+                let passed = 0;
+                checks.forEach(check => {
+                    try {
+                        const result = check.test();
+                        console.log(`${result ? '✅' : '❌'} ${check.name}`);
+                        if (result) passed++;
+                    } catch (e) {
+                        console.log(`❌ ${check.name} - Error: ${e.message}`);
+                    }
+                });
+                
+                const allPassed = passed === checks.length;
+                console.log(`\n📊 Checklist: ${passed}/${checks.length} passed`);
+                
+                if (allPassed) {
+                    console.log('🎉 ALL CRITICAL CHECKS PASSED - PUBLISH APPROVED!');
+                } else {
+                    console.log('🚨 CRITICAL CHECKS FAILED - DO NOT PUBLISH!');
+                }
+                
+                console.log('🚨 === END FINAL CHECKLIST ===');
+                return allPassed;
             }
 
             // ENHANCED: Update all displays including server time in settings

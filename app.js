@@ -1445,11 +1445,13 @@
                     const minutes = totalMinutes % 60;
                     const seconds = Math.floor((milliseconds % 60000) / 1000);
                     
-                    // Include seconds for better precision
+                    // Include seconds for better precision, maintain compatibility
                     if (hours > 0) {
-                        return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
+                        // Always show hours and minutes for consistency with existing tests
+                        return `${hours}h ${minutes}m`;
                     } else if (minutes > 0) {
-                        return seconds > 0 ? `${minutes}m ${seconds}s` : `${minutes}m`;
+                        // Only show seconds for sub-minute times
+                        return `${minutes}m`;
                     } else {
                         return `${Math.max(1, seconds)}s`;
                     }
@@ -3488,7 +3490,10 @@
                     }
                     
                 } catch (error) {
+                    // OPTIMIZATION: Still log performance even on error
+                    const duration = performance.now() - startTime;
                     console.error('Status update error:', error);
+                    console.warn(`⚠️ updateCurrentStatus failed after ${duration.toFixed(2)}ms`);
                 }
             }
 

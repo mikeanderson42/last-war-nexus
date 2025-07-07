@@ -36,6 +36,8 @@
                 this.lastNotificationCheck = 0; // Track last notification check time
                 this.debugNotifications = true; // Enable notification debugging
                 this.lastKnownPhase = null; // Track phase changes for immediate updates
+                this.cachedNextWindow = null; // Cache for priority window calculations
+                this.lastWindowCacheTime = 0; // Track when cache was last updated
 
                 // ENHANCED: Detailed spending information for each phase
                 this.data = {
@@ -228,6 +230,9 @@
                     if (timeOffsetSelect) {
                         timeOffsetSelect.addEventListener('change', (e) => {
                             this.timeOffset = parseFloat(e.target.value);
+                            // Invalidate cache for immediate updates
+                            this.cachedNextWindow = null;
+                            this.lastKnownPhase = null;
                             this.updateAllDisplays();
                         });
                     }
@@ -665,8 +670,9 @@
                     if (currentPhaseSelect) this.currentPhaseOverride = currentPhaseSelect.value;
                     if (nextPhaseSelect) this.nextPhaseOverride = nextPhaseSelect.value;
 
-                    // Reset phase tracking to force immediate update when overrides change
+                    // Reset tracking and cache to force immediate update when overrides change
                     this.lastKnownPhase = null;
+                    this.cachedNextWindow = null;
                     
                     this.saveSettings();
                     this.updateAllDisplays();
@@ -1372,6 +1378,9 @@
                     const serverTime = this.getServerTime();
                     const currentVSDay = this.getCurrentVSDay();
                     const currentArmsPhase = this.getCurrentArmsPhase();
+                    
+                    // Invalidate cache to ensure fresh calculation
+                    this.cachedNextWindow = null;
                     const nextWindow = this.findNextPriorityWindow();
                     
                     // Main time display is now updated every second in updateCountdowns()
@@ -3732,8 +3741,54 @@
             }
 
             updateCountdownElements(now) {
-                // Update only countdown-specific elements without full display refresh
-                // This method keeps countdown logic separated from time display
+                try {
+                    // Update priority countdown every second for real-time feedback
+                    const priorityCountdown = document.getElementById('priority-countdown');
+                    if (priorityCountdown) {
+                        // Use cached priority window if available and still valid
+                        if (!this.cachedNextWindow || !this.cachedNextWindow.startTime || 
+                            (now.getTime() - this.lastWindowCacheTime) > 10000) { // Recache every 10 seconds
+                            this.cachedNextWindow = this.findNextPriorityWindow();
+                            this.lastWindowCacheTime = now.getTime();
+                        }
+                        
+                        if (this.cachedNextWindow) {
+                            // Calculate real-time remaining time based on cached window
+                            const startTime = this.cachedNextWindow.startTime;
+                            const currentTime = this.getServerTime().getTime();
+                            let realTimeRemaining;
+                            
+                            if (this.cachedNextWindow.isActive) {
+                                // For active windows, calculate time until end of current phase
+                                realTimeRemaining = this.getTimeUntilNextPhase();
+                            } else {
+                                // For upcoming windows, calculate time until start
+                                realTimeRemaining = startTime.getTime() - currentTime;
+                            }
+                            
+                            priorityCountdown.textContent = this.formatTime(Math.max(0, realTimeRemaining));
+                        }
+                    }
+                    
+                    // Update other countdown elements here as needed
+                    const countdownElement = document.getElementById('countdown-timer');
+                    if (countdownElement) {
+                        const timeUntilNext = this.getTimeUntilNextPhase();
+                        countdownElement.textContent = this.formatTime(timeUntilNext);
+                    }
+                    
+                    const timeUntilReset = document.getElementById('time-until-reset');
+                    if (timeUntilReset) {
+                        const serverTime = this.getServerTime();
+                        const nextReset = new Date(serverTime);
+                        nextReset.setUTCDate(nextReset.getUTCDate() + 1);
+                        nextReset.setUTCHours(0, 0, 0, 0);
+                        const resetTime = nextReset.getTime() - serverTime.getTime();
+                        timeUntilReset.textContent = this.formatTime(resetTime);
+                    }
+                } catch (error) {
+                    console.error('Countdown elements update error:', error);
+                }
             }
 
             handleError(message, error = null) {

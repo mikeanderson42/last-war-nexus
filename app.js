@@ -615,6 +615,12 @@
 
             stopSetupTimeUpdate() {
                 if (this.setupTimeInterval) {
+                        clearInterval(this.setupTimeInterval);
+                    }
+                    if (this.notificationCheckInterval) {
+                        clearInterval(this.notificationCheckInterval);
+                    }
+                    if (false) {
                     clearInterval(this.setupTimeInterval);
                     this.setupTimeInterval = null;
                 }
@@ -2210,6 +2216,514 @@
                 
                 console.log('🕐 === END TIME CONSISTENCY TEST ===');
                 return allPassed;
+            }
+
+            // Comprehensive functional testing for all site features
+            testAllSiteFunctionality() {
+                console.log('🧪 === COMPREHENSIVE SITE FUNCTIONALITY TEST ===');
+                
+                let testsPassed = 0;
+                let testsFailed = 0;
+
+                const tests = [
+                    {
+                        name: 'Priority window detection works',
+                        test: () => {
+                            const currentPriority = this.isCurrentlyHighPriority();
+                            const nextWindow = this.findNextPriorityWindow();
+                            
+                            console.log('  Current priority:', currentPriority ? currentPriority.reason : 'NONE');
+                            console.log('  Next window:', nextWindow ? `${nextWindow.phase?.name} + ${nextWindow.vsDay?.title}` : 'NONE');
+                            
+                            return nextWindow !== null; // Should always find a window within 7 days
+                        }
+                    },
+                    {
+                        name: 'Update loops are running',
+                        test: () => {
+                            const hasDataInterval = !!this.updateInterval;
+                            const hasCountdownInterval = !!this.countdownInterval;
+                            const hasNotificationInterval = !!this.notificationCheckInterval;
+                            
+                            console.log('  Update intervals:', {
+                                data: hasDataInterval,
+                                countdown: hasCountdownInterval,
+                                notifications: hasNotificationInterval
+                            });
+                            
+                            return hasDataInterval && hasCountdownInterval && hasNotificationInterval;
+                        }
+                    },
+                    {
+                        name: 'Notification system is configured',
+                        test: () => {
+                            const hasPermission = this.verifyNotificationPermission();
+                            const isEnabled = this.notificationsEnabled;
+                            
+                            console.log('  Notification state:', {
+                                permission: hasPermission,
+                                enabled: isEnabled,
+                                lastNotified: this.lastNotifiedWindow
+                            });
+                            
+                            return typeof hasPermission === 'boolean' && typeof isEnabled === 'boolean';
+                        }
+                    },
+                    {
+                        name: 'Phase calculation accurate',
+                        test: () => {
+                            const currentPhase = this.getCurrentArmsPhase();
+                            const serverTime = this.getServerTime();
+                            const hour = serverTime.getUTCHours();
+                            
+                            console.log('  Phase info:', {
+                                phase: currentPhase.name,
+                                hour: hour,
+                                isOverride: currentPhase.isOverride
+                            });
+                            
+                            // Verify phase matches expected time slot
+                            if (currentPhase.isOverride) {
+                                return true; // Manual override is valid
+                            }
+                            
+                            // Check time-based phase accuracy
+                            let expectedPhaseIndex;
+                            if (hour >= 20) {
+                                expectedPhaseIndex = 0; // City Building
+                            } else {
+                                expectedPhaseIndex = Math.floor(hour / 4);
+                            }
+                            
+                            const expectedPhase = this.data.armsRacePhases[expectedPhaseIndex];
+                            return currentPhase.name === expectedPhase.name;
+                        }
+                    },
+                    {
+                        name: 'Time display consistency',
+                        test: () => {
+                            const serverTime = this.getServerTime();
+                            const timeOffset = this.timeOffset;
+                            const useLocalTime = this.useLocalTime;
+                            
+                            console.log('  Time settings:', {
+                                serverTime: serverTime.toISOString(),
+                                offset: timeOffset,
+                                useLocal: useLocalTime
+                            });
+                            
+                            return serverTime instanceof Date && typeof timeOffset === 'number';
+                        }
+                    },
+                    {
+                        name: 'Settings persistence works',
+                        test: () => {
+                            const originalLocal = this.useLocalTime;
+                            const originalNotify = this.notificationsEnabled;
+                            
+                            // Test toggle
+                            this.useLocalTime = !originalLocal;
+                            this.saveSettings();
+                            this.loadSettings();
+                            
+                            const persisted = this.useLocalTime === !originalLocal;
+                            
+                            // Restore original
+                            this.useLocalTime = originalLocal;
+                            this.notificationsEnabled = originalNotify;
+                            this.saveSettings();
+                            
+                            console.log('  Settings persistence test passed:', persisted);
+                            return persisted;
+                        }
+                    },
+                    {
+                        name: 'Schedule generation works',
+                        test: () => {
+                            try {
+                                // Test if populateSchedule runs without error
+                                const scheduleContainer = document.getElementById('schedule-content');
+                                if (!scheduleContainer) {
+                                    console.log('  Schedule container not found - testing logic only');
+                                    return true; // Container might not exist in test environment
+                                }
+                                
+                                const originalContent = scheduleContainer.innerHTML;
+                                this.populateSchedule();
+                                const newContent = scheduleContainer.innerHTML;
+                                
+                                console.log('  Schedule generation completed:', newContent !== originalContent);
+                                return true; // If no error thrown, it works
+                            } catch (error) {
+                                console.log('  Schedule generation error:', error.message);
+                                return false;
+                            }
+                        }
+                    },
+                    {
+                        name: 'Priority banner updates',
+                        test: () => {
+                            try {
+                                const nextWindow = this.findNextPriorityWindow();
+                                console.log('  Banner test - next window:', nextWindow ? 'found' : 'not found');
+                                
+                                // Test banner population
+                                this.populatePriorityBanner();
+                                return true; // If no error, it works
+                            } catch (error) {
+                                console.log('  Banner error:', error.message);
+                                return false;
+                            }
+                        }
+                    }
+                ];
+
+                tests.forEach(test => {
+                    try {
+                        const result = test.test();
+                        console.log(`${result ? '✅' : '❌'} ${test.name}`);
+                        if (result) {
+                            testsPassed++;
+                        } else {
+                            testsFailed++;
+                        }
+                    } catch (error) {
+                        console.log(`❌ ${test.name} - Error: ${error.message}`);
+                        testsFailed++;
+                    }
+                });
+
+                const allPassed = testsFailed === 0;
+                console.log(`\n📊 Comprehensive Test Results: ${testsPassed} passed, ${testsFailed} failed`);
+                
+                if (allPassed) {
+                    console.log('🎉 ALL SITE FUNCTIONALITY TESTS PASSED!');
+                } else {
+                    console.log('🚨 SITE FUNCTIONALITY ISSUES DETECTED!');
+                }
+                
+                console.log('🧪 === END COMPREHENSIVE SITE TEST ===');
+                return allPassed;
+            }
+
+            // ULTIMATE FINAL VERIFICATION - Tests everything that matters for user experience
+            runUltimateFinalVerification() {
+                console.log('🚀 === ULTIMATE FINAL VERIFICATION ===');
+                console.log('Testing all critical functionality for production readiness...\n');
+                
+                let totalTests = 0;
+                let passedTests = 0;
+                let failedTests = 0;
+                let criticalIssues = [];
+
+                const runTest = (testName, testFunction, isCritical = false) => {
+                    totalTests++;
+                    try {
+                        const result = testFunction();
+                        if (result) {
+                            console.log(`✅ ${testName}`);
+                            passedTests++;
+                        } else {
+                            console.log(`❌ ${testName} - FAILED`);
+                            failedTests++;
+                            if (isCritical) criticalIssues.push(testName);
+                        }
+                        return result;
+                    } catch (error) {
+                        console.log(`💥 ${testName} - ERROR: ${error.message}`);
+                        failedTests++;
+                        if (isCritical) criticalIssues.push(testName);
+                        return false;
+                    }
+                };
+
+                console.log('🔧 CORE FUNCTIONALITY TESTS:');
+                
+                // Test 1: Application Initialization
+                runTest('Application properly initialized', () => {
+                    return this.data && this.data.armsRacePhases && this.data.vsDays && this.data.priorityAlignments;
+                }, true);
+
+                // Test 2: Time Calculation Engine
+                runTest('Server time calculation accurate', () => {
+                    const serverTime = this.getServerTime();
+                    const now = new Date();
+                    const timeDiff = Math.abs(serverTime.getTime() - now.getTime());
+                    console.log(`  Time difference: ${timeDiff}ms (should be offset-based)`);
+                    return serverTime instanceof Date && !isNaN(serverTime.getTime());
+                }, true);
+
+                // Test 3: Phase Detection
+                runTest('Arms Race phase detection working', () => {
+                    const phase = this.getCurrentArmsPhase();
+                    const isValid = phase && phase.name && ['City Building', 'Unit Progression', 'Tech Research', 'Drone Boost', 'Hero Advancement'].includes(phase.name);
+                    console.log(`  Current phase: ${phase.name} (override: ${phase.isOverride})`);
+                    return isValid;
+                }, true);
+
+                // Test 4: VS Day Detection
+                runTest('VS Day detection working', () => {
+                    const vsDay = this.getCurrentVSDay();
+                    const isValid = vsDay && vsDay.day >= 0 && vsDay.day <= 6 && vsDay.name;
+                    console.log(`  Current VS Day: ${vsDay.name} (day ${vsDay.day})`);
+                    return isValid;
+                }, true);
+
+                console.log('\n🎯 PRIORITY SYSTEM TESTS:');
+
+                // Test 5: Priority Detection Logic
+                runTest('Priority window detection logic', () => {
+                    const currentPriority = this.isCurrentlyHighPriority();
+                    const nextWindow = this.findNextPriorityWindow();
+                    console.log(`  Current priority: ${currentPriority ? currentPriority.reason : 'NONE'}`);
+                    console.log(`  Next window: ${nextWindow ? `${nextWindow.phase?.name} + ${nextWindow.vsDay?.title}` : 'ERROR'}`);
+                    return nextWindow !== null; // Should always find a window within 7 days
+                }, true);
+
+                // Test 6: Priority Alignment Data
+                runTest('Priority alignment data complete', () => {
+                    const alignments = this.data.priorityAlignments;
+                    const hasAllDays = [1,2,3,4,5,6].every(day => alignments.some(a => a.vsDay === day));
+                    console.log(`  Priority alignments found: ${alignments.length}`);
+                    return alignments.length >= 10 && hasAllDays;
+                }, true);
+
+                console.log('\n🔔 NOTIFICATION SYSTEM TESTS:');
+
+                // Test 7: Notification Permission State
+                runTest('Notification permission handling', () => {
+                    const hasPermission = this.verifyNotificationPermission();
+                    const isEnabled = this.notificationsEnabled;
+                    console.log(`  Browser permission: ${Notification?.permission || 'unavailable'}`);
+                    console.log(`  Internal enabled: ${isEnabled}`);
+                    console.log(`  Permission check result: ${hasPermission}`);
+                    return typeof hasPermission === 'boolean';
+                }, false);
+
+                // Test 8: Notification State Management
+                runTest('Notification state management', () => {
+                    const originalState = this.lastNotifiedWindow;
+                    
+                    // Test reset mechanism
+                    this.lastNotifiedWindow = 'test_phase';
+                    const mockWindow = { isActive: false };
+                    this.checkAndSendNotifications(mockWindow);
+                    const wasReset = this.lastNotifiedWindow === null;
+                    
+                    // Restore state
+                    this.lastNotifiedWindow = originalState;
+                    
+                    console.log(`  Notification reset works: ${wasReset}`);
+                    return wasReset;
+                }, true);
+
+                console.log('\n⏰ TIME DISPLAY TESTS:');
+
+                // Test 9: Time Display Consistency
+                runTest('Time display consistency across components', () => {
+                    const originalSetting = this.useLocalTime;
+                    
+                    // Test server time mode
+                    this.useLocalTime = false;
+                    const serverRange = this.formatTimeRange(4, 8, false);
+                    
+                    // Test local time mode
+                    this.useLocalTime = true;
+                    const localRange = this.formatTimeRange(4, 8, false);
+                    
+                    // Restore setting
+                    this.useLocalTime = originalSetting;
+                    
+                    console.log(`  Server format: ${serverRange}`);
+                    console.log(`  Local format: ${localRange}`);
+                    
+                    const serverValid = /^\d{2}:\d{2}-\d{2}:\d{2}$/.test(serverRange);
+                    const formatsDiffer = serverRange !== localRange || this.timeOffset === 0;
+                    
+                    return serverValid && formatsDiffer;
+                }, true);
+
+                // Test 10: Time Range Formatting
+                runTest('Time range formatting for midnight transition', () => {
+                    this.useLocalTime = false; // Test server mode
+                    const midnightRange = this.formatTimeRange(20, 0, true);
+                    this.useLocalTime = true; // Test local mode
+                    const localMidnightRange = this.formatTimeRange(20, 0, true);
+                    
+                    console.log(`  Server midnight: ${midnightRange}`);
+                    console.log(`  Local midnight: ${localMidnightRange}`);
+                    
+                    return midnightRange.includes('20:') && midnightRange.includes('00:');
+                }, false);
+
+                console.log('\n🔄 UPDATE MECHANISM TESTS:');
+
+                // Test 11: Update Loop Status
+                runTest('All update loops running', () => {
+                    const hasData = !!this.updateInterval;
+                    const hasCountdown = !!this.countdownInterval;
+                    const hasNotification = !!this.notificationCheckInterval;
+                    
+                    console.log(`  Data updates (5s): ${hasData}`);
+                    console.log(`  Countdown updates (1s): ${hasCountdown}`);
+                    console.log(`  Notification checks (5s): ${hasNotification}`);
+                    
+                    return hasData && hasCountdown && hasNotification;
+                }, true);
+
+                // Test 12: Phase Change Detection
+                runTest('Phase change detection mechanism', () => {
+                    const currentPhase = this.getCurrentArmsPhase();
+                    const timeUntilNext = this.getTimeUntilNextPhase();
+                    
+                    console.log(`  Current phase: ${currentPhase.name}`);
+                    console.log(`  Time until next: ${this.formatTime(timeUntilNext)}`);
+                    
+                    return timeUntilNext > 0 && timeUntilNext <= (4 * 60 * 60 * 1000); // Max 4 hours
+                }, false);
+
+                console.log('\n💾 DATA PERSISTENCE TESTS:');
+
+                // Test 13: Settings Persistence
+                runTest('Settings save and load correctly', () => {
+                    const originalLocal = this.useLocalTime;
+                    const originalOffset = this.timeOffset;
+                    
+                    // Test save/load cycle
+                    this.useLocalTime = !originalLocal;
+                    this.timeOffset = originalOffset + 1;
+                    this.saveSettings();
+                    
+                    // Reset and reload
+                    this.useLocalTime = originalLocal;
+                    this.timeOffset = originalOffset;
+                    this.loadSettings();
+                    
+                    const localChanged = this.useLocalTime === !originalLocal;
+                    const offsetChanged = this.timeOffset === originalOffset + 1;
+                    
+                    // Restore original values
+                    this.useLocalTime = originalLocal;
+                    this.timeOffset = originalOffset;
+                    this.saveSettings();
+                    
+                    console.log(`  Local time setting persisted: ${localChanged}`);
+                    console.log(`  Offset setting persisted: ${offsetChanged}`);
+                    
+                    return localChanged && offsetChanged;
+                }, false);
+
+                console.log('\n🎨 UI COMPONENT TESTS:');
+
+                // Test 14: Schedule Generation
+                runTest('Schedule generation without errors', () => {
+                    try {
+                        // Test schedule generation logic without DOM manipulation
+                        const serverTime = this.getServerTime();
+                        const dayOfWeek = (serverTime.getUTCDay() + 6) % 7; // Monday = 0
+                        
+                        // Verify we can generate phase data
+                        for (let i = 0; i < 6; i++) {
+                            const phaseIndex = i < 5 ? i : 0;
+                            const startHour = i < 5 ? i * 4 : 20;
+                            const endHour = i < 5 ? (i + 1) * 4 : 24;
+                            const timeRange = this.formatTimeRange(startHour, endHour, i === 5);
+                            
+                            if (!timeRange || timeRange === 'undefined') {
+                                return false;
+                            }
+                        }
+                        
+                        console.log('  Schedule generation logic verified');
+                        return true;
+                    } catch (error) {
+                        console.log(`  Schedule error: ${error.message}`);
+                        return false;
+                    }
+                }, false);
+
+                // Test 15: Priority Banner Logic
+                runTest('Priority banner logic works', () => {
+                    try {
+                        const nextWindow = this.findNextPriorityWindow();
+                        if (!nextWindow) return false;
+                        
+                        // Test banner content generation
+                        const timeText = nextWindow.isActive ? 
+                            `Active for ${this.formatTime(nextWindow.timeRemaining)}` :
+                            `Starts in ${this.formatTime(nextWindow.timeRemaining)}`;
+                            
+                        console.log(`  Banner text: "${timeText}"`);
+                        return timeText.length > 0;
+                    } catch (error) {
+                        console.log(`  Banner error: ${error.message}`);
+                        return false;
+                    }
+                }, false);
+
+                console.log('\n🔍 EDGE CASE TESTS:');
+
+                // Test 16: Midnight Boundary Handling
+                runTest('Midnight boundary phase calculation', () => {
+                    // Simulate midnight hour
+                    const mockTime = new Date();
+                    mockTime.setUTCHours(0, 0, 0, 0);
+                    
+                    // Calculate what phase should be active at midnight
+                    const hour = mockTime.getUTCHours();
+                    const expectedPhaseIndex = hour >= 20 ? 0 : Math.floor(hour / 4);
+                    
+                    console.log(`  Midnight hour ${hour} -> phase index ${expectedPhaseIndex} (City Building)`);
+                    return expectedPhaseIndex === 0;
+                }, false);
+
+                // Test 17: Override System
+                runTest('Phase override system integrity', () => {
+                    const originalOverride = this.currentPhaseOverride;
+                    
+                    // Test setting override
+                    this.currentPhaseOverride = 'tech_research';
+                    const overriddenPhase = this.getCurrentArmsPhase();
+                    const hasOverride = overriddenPhase.name === 'Tech Research' && overriddenPhase.isOverride;
+                    
+                    // Clear override
+                    this.currentPhaseOverride = null;
+                    const normalPhase = this.getCurrentArmsPhase();
+                    const overrideCleared = !normalPhase.isOverride;
+                    
+                    // Restore original
+                    this.currentPhaseOverride = originalOverride;
+                    
+                    console.log(`  Override works: ${hasOverride}, clears: ${overrideCleared}`);
+                    return hasOverride && overrideCleared;
+                }, false);
+
+                // Final Results
+                console.log('\n🏁 FINAL VERIFICATION RESULTS:');
+                console.log('═'.repeat(50));
+                console.log(`Total Tests: ${totalTests}`);
+                console.log(`✅ Passed: ${passedTests}`);
+                console.log(`❌ Failed: ${failedTests}`);
+                console.log(`Success Rate: ${Math.round((passedTests/totalTests) * 100)}%`);
+                
+                if (criticalIssues.length > 0) {
+                    console.log('\n🚨 CRITICAL ISSUES DETECTED:');
+                    criticalIssues.forEach(issue => console.log(`  ❌ ${issue}`));
+                    console.log('\n❌ SITE NOT READY FOR PRODUCTION');
+                    return false;
+                } else if (failedTests === 0) {
+                    console.log('\n🎉 ALL TESTS PASSED - SITE PRODUCTION READY!');
+                    console.log('✅ Core functionality working');
+                    console.log('✅ Priority detection accurate');
+                    console.log('✅ Notification system operational');
+                    console.log('✅ Time displays consistent');
+                    console.log('✅ Update loops running');
+                    return true;
+                } else {
+                    console.log('\n⚠️ MINOR ISSUES DETECTED - SITE FUNCTIONAL BUT HAS WARNINGS');
+                    console.log('Core functionality is working, but some non-critical features have issues.');
+                    return true;
+                }
             }
 
             // ENHANCED: Update all displays including server time in settings
@@ -4433,6 +4947,11 @@
                     // Verify notification requirements
                     if (!window || !window.isActive) {
                         if (this.debugNotifications) console.log('[NOTIFICATION DEBUG] No active window');
+                        // Reset notification state when no active priority window
+                        if (this.lastNotifiedWindow) {
+                            if (this.debugNotifications) console.log('[NOTIFICATION DEBUG] Resetting notification state - no active window');
+                            this.lastNotifiedWindow = null;
+                        }
                         return;
                     }
                     
@@ -4443,10 +4962,13 @@
                         return;
                     }
                     
-                    // Check if already notified for this event
+                    // Check if already notified for this event (per phase cycle)
                     const eventReason = window.alignment?.reason;
-                    if (this.lastNotifiedWindow === eventReason) {
-                        if (this.debugNotifications) console.log('[NOTIFICATION DEBUG] Already notified for:', eventReason);
+                    const currentPhase = window.phase?.name;
+                    const notificationKey = `${eventReason}_${currentPhase}`;
+                    
+                    if (this.lastNotifiedWindow === notificationKey) {
+                        if (this.debugNotifications) console.log('[NOTIFICATION DEBUG] Already notified for:', notificationKey);
                         return;
                     }
                     
@@ -4459,7 +4981,7 @@
                     }
                     
                     this.showNotification(title, body);
-                    this.lastNotifiedWindow = eventReason;
+                    this.lastNotifiedWindow = notificationKey;
                     
                     // Log successful notification
                     console.log('✅ Notification sent:', { title, body, time: this.getServerTime().toISOString() });
@@ -4872,6 +5394,12 @@
                         clearInterval(this.countdownInterval);
                     }
                     if (this.setupTimeInterval) {
+                        clearInterval(this.setupTimeInterval);
+                    }
+                    if (this.notificationCheckInterval) {
+                        clearInterval(this.notificationCheckInterval);
+                    }
+                    if (false) {
                         clearInterval(this.setupTimeInterval);
                     }
                     

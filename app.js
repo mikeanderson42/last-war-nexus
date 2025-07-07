@@ -1329,8 +1329,11 @@
                         const isToday = dayOffset === 0;
                         
                         if (isToday) {
-                            // For today, prioritize nextPhaseOverride if set, otherwise use current phase
-                            if (this.nextPhaseOverride) {
+                            // For today, respect current and next phase overrides
+                            if (this.currentPhaseOverride) {
+                                startPhaseIndex = this.data.armsRacePhases.findIndex(p => p.id === this.currentPhaseOverride);
+                                if (startPhaseIndex === -1) startPhaseIndex = 0; // Fallback
+                            } else if (this.nextPhaseOverride) {
                                 startPhaseIndex = this.data.armsRacePhases.findIndex(p => p.name === this.nextPhaseOverride);
                                 if (startPhaseIndex === -1) startPhaseIndex = 0; // Fallback
                             } else {

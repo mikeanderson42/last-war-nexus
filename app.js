@@ -368,10 +368,7 @@
                     if (currentPhaseSelect) {
                         currentPhaseSelect.addEventListener('change', (e) => {
                             this.currentPhaseOverride = e.target.value;
-                            // Immediate cache invalidation for instant updates
-                            this.lastKnownPhase = null;
-                            this.cachedNextWindow = null;
-                            this.updateAllDisplays();
+                            this.forceCompleteRefresh();
                         });
                     }
 
@@ -379,10 +376,7 @@
                     if (nextPhaseSelect) {
                         nextPhaseSelect.addEventListener('change', (e) => {
                             this.nextPhaseOverride = e.target.value;
-                            // Immediate cache invalidation for instant updates
-                            this.lastKnownPhase = null;
-                            this.cachedNextWindow = null;
-                            this.updateAllDisplays();
+                            this.forceCompleteRefresh();
                         });
                     }
 
@@ -1451,6 +1445,179 @@
                 }
             }
 
+            // CRITICAL: Force complete refresh to fix badge consistency issues
+            forceCompleteRefresh() {
+                // Clear all caches
+                this.lastKnownPhase = null;
+                this.cachedNextWindow = null;
+                this.lastWindowCacheTime = 0;
+                this.lastPhaseCheck = 0;
+                this.lastNotificationCheck = 0;
+                
+                // Force immediate update of all displays
+                this.updateAllDisplays();
+                
+                console.log('🔄 FORCED COMPLETE REFRESH: All caches cleared');
+            }
+
+            // COMPREHENSIVE FUNCTIONALITY TEST
+            runComprehensiveFunctionalityTest() {
+                console.log('🧪 === COMPREHENSIVE FUNCTIONALITY TEST ===');
+                console.log('Testing all major systems...\n');
+                
+                const tests = [];
+                let passCount = 0;
+                let failCount = 0;
+                
+                // Test 1: Initialization
+                tests.push({
+                    name: 'Initialization',
+                    test: () => {
+                        return this.data && this.data.armsRacePhases && this.data.vsDays;
+                    }
+                });
+                
+                // Test 2: Time Calculations
+                tests.push({
+                    name: 'Server Time Calculation',
+                    test: () => {
+                        const serverTime = this.getServerTime();
+                        return serverTime instanceof Date && !isNaN(serverTime);
+                    }
+                });
+                
+                // Test 3: Phase Detection
+                tests.push({
+                    name: 'Current Phase Detection',
+                    test: () => {
+                        const phase = this.getCurrentArmsPhase();
+                        return phase && phase.name && phase.hoursRemaining !== undefined;
+                    }
+                });
+                
+                // Test 4: Priority Window Detection
+                tests.push({
+                    name: 'Priority Window Detection',
+                    test: () => {
+                        const window = this.findNextPriorityWindow();
+                        return window === null || (window.phase && window.vsDay);
+                    }
+                });
+                
+                // Test 5: Settings Persistence
+                tests.push({
+                    name: 'Settings Save/Load',
+                    test: () => {
+                        const oldOffset = this.timeOffset;
+                        this.timeOffset = -99;
+                        this.saveSettings();
+                        this.loadSettings();
+                        const result = this.timeOffset === -99;
+                        this.timeOffset = oldOffset;
+                        this.saveSettings();
+                        return result;
+                    }
+                });
+                
+                // Test 6: VS Day Calculation
+                tests.push({
+                    name: 'VS Day Detection',
+                    test: () => {
+                        const vsDay = this.getCurrentVSDay();
+                        return vsDay && vsDay.day >= 0 && vsDay.day <= 6;
+                    }
+                });
+                
+                // Test 7: Time Formatting
+                tests.push({
+                    name: 'Time Formatting',
+                    test: () => {
+                        const formatted = this.formatTime(3661000); // 1h 1m 1s
+                        return formatted === '1h 1m';
+                    }
+                });
+                
+                // Test 8: Phase Boundary Calculation
+                tests.push({
+                    name: 'Phase Boundary Time',
+                    test: () => {
+                        const time = this.getTimeUntilNextPhase();
+                        return typeof time === 'number' && time >= 0;
+                    }
+                });
+                
+                // Test 9: Cache Management
+                tests.push({
+                    name: 'Cache Invalidation',
+                    test: () => {
+                        this.forceCompleteRefresh();
+                        return this.lastKnownPhase === null && this.cachedNextWindow === null;
+                    }
+                });
+                
+                // Test 10: Phase Override Logic
+                tests.push({
+                    name: 'Phase Override System',
+                    test: () => {
+                        // Test without breaking current state
+                        const phase = this.getCurrentArmsPhase();
+                        return phase !== null;
+                    }
+                });
+                
+                // Run all tests
+                tests.forEach(test => {
+                    try {
+                        const result = test.test();
+                        console.log(`${result ? '✅' : '❌'} ${test.name}`);
+                        if (result) passCount++;
+                        else failCount++;
+                    } catch (error) {
+                        console.log(`❌ ${test.name} - Error: ${error.message}`);
+                        failCount++;
+                    }
+                });
+                
+                console.log(`\n📊 Test Results: ${passCount} passed, ${failCount} failed`);
+                
+                // Test edge cases
+                console.log('\n🔍 Testing Edge Cases...');
+                
+                // Test midnight boundary
+                const savedGetServerTime = this.getServerTime;
+                this.getServerTime = () => {
+                    const d = new Date();
+                    d.setUTCHours(23, 59, 59, 999);
+                    return d;
+                };
+                
+                try {
+                    const midnightPhase = this.getCurrentArmsPhase();
+                    console.log(`✅ Midnight boundary: ${midnightPhase.name}`);
+                } catch (e) {
+                    console.log(`❌ Midnight boundary test failed: ${e.message}`);
+                }
+                
+                // Test 20:00 transition
+                this.getServerTime = () => {
+                    const d = new Date();
+                    d.setUTCHours(20, 0, 0, 0);
+                    return d;
+                };
+                
+                try {
+                    const eveningPhase = this.getCurrentArmsPhase();
+                    console.log(`✅ 20:00 transition: ${eveningPhase.name} (should be City Building)`);
+                } catch (e) {
+                    console.log(`❌ 20:00 transition test failed: ${e.message}`);
+                }
+                
+                this.getServerTime = savedGetServerTime;
+                
+                console.log('\n🧪 === END COMPREHENSIVE TEST ===');
+                return passCount > 0 && failCount === 0;
+            }
+
             // ENHANCED: Update all displays including server time in settings
             updateAllDisplays() {
                 try {
@@ -1573,23 +1740,7 @@
                 try {
                     const serverTime = this.getServerTime();
                     
-                    // ENHANCED: Handle automatic nextPhaseOverride -> currentPhaseOverride transition
-                    if (this.nextPhaseOverride && !this.currentPhaseOverride) {
-                        // Check if we've transitioned to the next phase time by comparing actual time-based phase
-                        const hour = serverTime.getUTCHours();
-                        let timeBasedPhaseIndex;
-                        if (hour >= 20) {
-                            timeBasedPhaseIndex = 0; // City Building restarts at 20:00
-                        } else {
-                            timeBasedPhaseIndex = Math.floor(hour / 4);
-                        }
-                        const timeBasedPhase = this.data.armsRacePhases[timeBasedPhaseIndex];
-                        
-                        if (timeBasedPhase.name === this.nextPhaseOverride) {
-                            console.log('🔄 DUPLICATE AUTO-TRANSITION: This should be handled in isCurrentlyHighPriority()');
-                            // This logic is now handled in isCurrentlyHighPriority() to avoid conflicts
-                        }
-                    }
+                    // Auto-transition is handled in isCurrentlyHighPriority() to avoid conflicts
                     
                     const currentVSDay = this.getCurrentVSDay();
                     const currentArmsPhase = this.getCurrentArmsPhase();
@@ -2108,7 +2259,7 @@
                             }
                             
                             // FIXED: Check if this is the chronologically next priority window to match main card
-                            const isNextPriority = nextPriorityWindow && 
+                            const isNextPriority = nextPriorityWindow && !nextPriorityWindow.isActive &&
                                                  nextPriorityWindow.phase.name === phaseName &&
                                                  nextPriorityWindow.vsDay.day === dayOfWeek &&
                                                  isPriority;

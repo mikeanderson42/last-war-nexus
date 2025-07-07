@@ -1684,17 +1684,22 @@
                         }
                     }
                     
-                    // Update countdown display (legacy support)
+                    // Update countdown display - use same logic as updateCountdownElements() for consistency
                     const countdownElement = document.getElementById('countdown-timer');
                     if (countdownElement) {
-                        const timeRemaining = (currentArmsPhase.hoursRemaining * 60 * 60 * 1000) +
-                                           (currentArmsPhase.minutesRemaining * 60 * 1000);
-                        countdownElement.textContent = this.formatTime(timeRemaining);
+                        const timeUntilNext = this.getTimeUntilNextPhase();
+                        countdownElement.textContent = this.formatTime(timeUntilNext);
                     }
                     
                     const currentPhaseElement = document.getElementById('current-phase');
                     if (currentPhaseElement) {
-                        currentPhaseElement.textContent = `${currentArmsPhase.name} Active`;
+                        if (nextWindow && nextWindow.isActive) {
+                            // Show active priority window
+                            currentPhaseElement.textContent = `${nextWindow.phase.name} Active`;
+                        } else {
+                            // Show current time-based phase when no priority is active
+                            currentPhaseElement.textContent = `${currentArmsPhase.name} Active`;
+                        }
                     }
                     
                     // CRITICAL: Check for notifications with enhanced logic

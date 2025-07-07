@@ -1383,6 +1383,16 @@
                     this.cachedNextWindow = null;
                     const nextWindow = this.findNextPriorityWindow();
                     
+                    // DEBUG: Log the next priority window for comparison with schedule
+                    if (nextWindow) {
+                        console.log('🎯 MAIN CARD: Next priority window:', {
+                            phase: nextWindow.phase.name,
+                            vsDay: nextWindow.vsDay.title,
+                            isActive: nextWindow.isActive,
+                            timeRemaining: this.formatTime(nextWindow.timeRemaining)
+                        });
+                    }
+                    
                     // Main time display is now updated every second in updateCountdowns()
                     
                     // Update priority countdown and banner text based on active vs upcoming
@@ -1772,6 +1782,19 @@
                     const schedule = [];
                     const now = this.getServerTime();
                     
+                    // FIXED: Get the chronologically next priority window to highlight consistently with main card
+                    const nextPriorityWindow = this.findNextPriorityWindow();
+                    
+                    // DEBUG: Log the next priority window for comparison with main card
+                    if (nextPriorityWindow) {
+                        console.log('🗓️ SCHEDULE: Next priority window:', {
+                            phase: nextPriorityWindow.phase.name,
+                            vsDay: nextPriorityWindow.vsDay.title,
+                            isActive: nextPriorityWindow.isActive,
+                            timeRemaining: this.formatTime(nextPriorityWindow.timeRemaining)
+                        });
+                    }
+                    
                     for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
                         const checkDate = new Date(now);
                         checkDate.setUTCDate(now.getUTCDate() + dayOffset);
@@ -1837,6 +1860,12 @@
                             const currentActivePhase = this.getCurrentArmsPhase();
                             const isActive = isToday && currentActivePhase.name === phaseName;
                             
+                            // FIXED: Check if this is the chronologically next priority window to match main card
+                            const isNextPriority = nextPriorityWindow && 
+                                                 nextPriorityWindow.phase.name === phaseName &&
+                                                 nextPriorityWindow.vsDay.day === dayOfWeek &&
+                                                 isPriority;
+                            
                             const timeRange = i === 5 ? 
                                 "20:00-04:00*" : 
                                 `${String(startHour).padStart(2, '0')}:00-${String(endHour).padStart(2, '0')}:00`;
@@ -1846,6 +1875,7 @@
                                 position: phaseIndex,
                                 isPriority,
                                 isActive,
+                                isNextPriority,
                                 timeRange,
                                 isNextDay: i === 5
                             });
@@ -1872,11 +1902,11 @@
                             </div>
                             <div style="padding: var(--spacing-md);">
                                 ${day.phases.map(phase => `
-                                    <div style="background: var(--bg-tertiary); border: 1px solid ${phase.isPriority ? 'var(--accent-warning)' : 'var(--border-primary)'}; border-radius: var(--border-radius); padding: var(--spacing-md); margin-bottom: var(--spacing-xs); display: flex; justify-content: space-between; align-items: center; position: relative; ${phase.isPriority ? 'background: rgba(245, 158, 11, 0.1);' : ''} ${phase.isActive ? 'border-color: var(--accent-success); background: rgba(34, 197, 94, 0.1);' : ''}">
+                                    <div style="background: var(--bg-tertiary); border: 1px solid ${phase.isNextPriority ? 'var(--accent-primary)' : phase.isPriority ? 'var(--accent-warning)' : 'var(--border-primary)'}; border-radius: var(--border-radius); padding: var(--spacing-md); margin-bottom: var(--spacing-xs); display: flex; justify-content: space-between; align-items: center; position: relative; ${phase.isNextPriority ? 'background: rgba(59, 130, 246, 0.15); border-width: 2px;' : phase.isPriority ? 'background: rgba(245, 158, 11, 0.1);' : ''} ${phase.isActive ? 'border-color: var(--accent-success); background: rgba(34, 197, 94, 0.1);' : ''}">
                                         <div style="font-family: var(--font-mono); font-size: 0.7rem; font-weight: 600; color: var(--text-muted);">${phase.timeRange}</div>
                                         <div style="flex: 1; text-align: center; font-size: 0.8rem; font-weight: 600; color: var(--text-primary);">${phase.name}</div>
                                         <div style="font-size: 1rem;">${phase.icon}</div>
-                                        ${phase.isPriority ? '<div style="position: absolute; top: -4px; right: 4px; background: var(--gradient-secondary); color: white; padding: 2px 4px; border-radius: 3px; font-size: 0.6rem; font-weight: 700;">HIGH</div>' : ''}
+                                        ${phase.isNextPriority ? '<div style="position: absolute; top: -4px; right: 4px; background: var(--gradient-primary); color: white; padding: 2px 4px; border-radius: 3px; font-size: 0.6rem; font-weight: 700;">NEXT</div>' : phase.isPriority ? '<div style="position: absolute; top: -4px; right: 4px; background: var(--gradient-secondary); color: white; padding: 2px 4px; border-radius: 3px; font-size: 0.6rem; font-weight: 700;">HIGH</div>' : ''}
                                         ${phase.isActive ? '<div style="position: absolute; top: -4px; left: 4px; background: var(--gradient-success); color: white; padding: 2px 4px; border-radius: 3px; font-size: 0.6rem; font-weight: 700;">NOW</div>' : ''}
                                     </div>
                                 `).join('')}

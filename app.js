@@ -3322,11 +3322,18 @@
                     // DEBUG: Log the next priority window for comparison with schedule
                     if (nextWindow) {
                         try {
+                            // Validate each property to prevent Object display
+                            const phaseName = String(nextWindow.phase?.name || "UNKNOWN");
+                            const vsDayTitle = String(nextWindow.vsDay?.title || "UNKNOWN");
+                            const isActive = Boolean(nextWindow.isActive);
+                            const timeFormatted = typeof nextWindow.timeRemaining === "number" ? 
+                                this.formatTime(nextWindow.timeRemaining) : String(nextWindow.timeRemaining || "UNKNOWN");
+                            
                             console.log("🎯 MAIN CARD: Next priority window:", {
-                                phase: nextWindow.phase?.name || "UNKNOWN",
-                                vsDay: nextWindow.vsDay?.title || "UNKNOWN",
-                                isActive: nextWindow.isActive,
-                                timeRemaining: this.formatTime(nextWindow.timeRemaining)
+                                phase: phaseName,
+                                vsDay: vsDayTitle,
+                                isActive: isActive,
+                                timeRemaining: timeFormatted
                             });
                         } catch (error) {
                             console.log("🎯 MAIN CARD: Next priority window (ERROR):", nextWindow);
@@ -5421,7 +5428,11 @@
                     // Check if already notified for this event (per phase cycle)
                     const eventReason = window.alignment?.reason;
                     const currentPhase = window.phase?.name;
-                    const notificationKey = `${eventReason}_${currentPhase}`;
+                    // Include phase time slot to distinguish between different periods of same phase
+                    const serverTime = this.getServerTime();
+                    const hour = serverTime.getUTCHours();
+                    const phaseSlot = hour >= 20 ? "20-00" : `${Math.floor(hour/4)*4}-${Math.floor(hour/4)*4+4}`;
+                    const notificationKey = `${eventReason}_${currentPhase}_${phaseSlot}`;
                     
                     if (this.lastNotifiedWindow === notificationKey) {
                         if (this.debugNotifications) console.log('[NOTIFICATION DEBUG] Already notified for:', notificationKey);
